@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BBL Liegenschaftsinventar - Korrekturen</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <div class="swiss-cross"></div>
+      <div class="logo-text">
+        <div class="logo-text-primary">Bundesamt für Bauten und Logistik</div>
+        <div class="logo-text-secondary">Korrekturen Liegenschaftsinventar</div>
+      </div>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-tab="karte">Karte</button>
+      <button class="nav-tab" data-tab="aufgaben">Aufgaben</button>
+      <button class="nav-tab" data-tab="statistik">Statistik</button>
+      <button class="nav-tab" data-tab="handbuch">Handbuch & Downloads</button>
+    </nav>
+
+    <div class="header-actions">
+      <div class="search-container" id="search-container">
+        <button class="search-toggle" id="search-toggle" type="button">
+          <i data-lucide="search" class="icon"></i>
+        </button>
+        <input type="text" class="search-input" placeholder="Suchen..." id="globalSearch">
+      </div>
+      <button class="filter-toggle active" id="filter-toggle" type="button">
+        <i data-lucide="sliders-horizontal" class="icon"></i>
+      </button>
+      <div class="user-avatar">MK</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Global Filter Bar -->
+    <div class="filter-bar" id="filter-bar">
+      <div class="filter-chips">
+        <button class="filter-chip priority-high active" data-filter="high">
+          <span class="priority-indicator high"></span>
+          <span>Hoch</span>
+          <span class="count" id="count-high">(3)</span>
+        </button>
+        <button class="filter-chip priority-medium active" data-filter="medium">
+          <span class="priority-indicator medium"></span>
+          <span>Mittel</span>
+          <span class="count" id="count-medium">(4)</span>
+        </button>
+        <button class="filter-chip priority-low active" data-filter="low">
+          <span class="priority-indicator low"></span>
+          <span>Niedrig</span>
+          <span class="count" id="count-low">(5)</span>
+        </button>
+      </div>
+      <div class="filter-divider"></div>
+      <button class="filter-chip" data-filter="my-tasks">Meine Aufgaben</button>
+      <div class="filter-divider"></div>
+      <select class="filter-dropdown" id="filter-kanton">
+        <option value="">Kanton</option>
+        <option value="TG">TG</option>
+        <option value="SG">SG</option>
+        <option value="ZH">ZH</option>
+        <option value="BE">BE</option>
+        <option value="GR">GR</option>
+      </select>
+      <select class="filter-dropdown" id="filter-status">
+        <option value="">Status</option>
+        <option value="open">Offen</option>
+        <option value="assigned">Zugewiesen</option>
+        <option value="review">In Prüfung</option>
+        <option value="done">Erledigt</option>
+      </select>
+      <select class="filter-dropdown" id="filter-confidence">
+        <option value="">Konfidenz</option>
+        <option value="critical">Kritisch</option>
+        <option value="warning">Warnung</option>
+        <option value="ok">OK</option>
+      </select>
+    </div>
+
+    <!-- Karte Tab -->
+    <div class="tab-content active" id="tab-karte">
+      <div class="karte-layout">
+        <!-- Map Container (map + table) -->
+        <div class="map-container">
+          <!-- Map Panel -->
+          <div class="map-panel">
+            <div id="map"></div>
+            <div class="basemap-selector" id="basemap-selector">
+              <button class="basemap-preview" id="basemap-preview">
+                <div class="basemap-preview-img" id="basemap-preview-img"></div>
+                <span class="basemap-preview-label">Hintergrund</span>
+              </button>
+              <div class="basemap-menu" id="basemap-menu">
+                <button class="basemap-option" data-basemap="none">
+                  <div class="basemap-thumb basemap-none"></div>
+                  <span>Kein Hintergrund</span>
+                </button>
+                <button class="basemap-option" data-basemap="grey">
+                  <div class="basemap-thumb basemap-grey"></div>
+                  <span>Grau</span>
+                </button>
+                <button class="basemap-option active" data-basemap="color">
+                  <div class="basemap-thumb basemap-color"></div>
+                  <span>Farbig</span>
+                </button>
+                <button class="basemap-option" data-basemap="satellite">
+                  <div class="basemap-thumb basemap-satellite"></div>
+                  <span>Luftbild</span>
+                </button>
+              </div>
+            </div>
+            <button class="table-toggle-btn active" id="table-toggle-btn">
+              <i data-lucide="chevron-up" class="icon-sm chevron"></i>
+              <span>Tabelle</span>
+            </button>
+          </div>
+
+          <!-- Table View Panel (hidden by default) -->
+          <div class="table-panel visible" id="table-panel">
+            <div class="table-resize-handle" id="table-resize-handle">
+              <div class="resize-handle-bar"></div>
+            </div>
+            <div class="table-panel-header">
+              <div class="table-panel-title">
+                <i data-lucide="table-2" class="icon"></i>
+                <span>Tabellenansicht</span>
+                <span id="table-count">(0)</span>
+              </div>
+              <button class="table-panel-close" id="table-close-btn">
+                <i data-lucide="x" class="icon"></i>
+              </button>
+            </div>
+            <div class="table-panel-content">
+              <table class="buildings-table">
+                <thead>
+                  <tr>
+                    <th>Priorität</th>
+                    <th>SAP ID</th>
+                    <th>Name</th>
+                    <th>Kanton</th>
+                    <th>Konfidenz</th>
+                    <th>Fehlertypen</th>
+                    <th>Zugewiesen</th>
+                    <th>Alter</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="detail-panel">
+          <div class="detail-empty" id="detail-empty">
+            <div class="detail-empty-icon"><i data-lucide="map-pin" class="icon-2xl"></i></div>
+            <div>Objekt auswählen um Details zu sehen</div>
+          </div>
+          <div class="detail-content" id="detail-content">
+            <div class="detail-header">
+              <h2 class="detail-title" id="detail-title">Building Name</h2>
+              <p class="detail-subtitle" id="detail-sap-id">SAP ID</p>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-title">Konfidenz</div>
+              <div class="confidence-container">
+                <div class="confidence-total" id="confidence-total">67%</div>
+                <div class="confidence-bars">
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">Georef</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill" id="bar-georef" style="width: 67%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-georef">67%</span>
+                  </div>
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">SAP</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill ok" id="bar-sap" style="width: 100%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-sap">100%</span>
+                  </div>
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">GWR</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill ok" id="bar-gwr" style="width: 100%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-gwr">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-title">Fehler</div>
+              <div id="error-cards">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-title">Zugewiesen</div>
+              <div class="assignee-display" id="assignee-display">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-title">Datenvergleich</div>
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Attribut</th>
+                    <th>SAP RE-FX</th>
+                    <th>GWR</th>
+                  </tr>
+                </thead>
+                <tbody id="data-comparison">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+
+            <div class="detail-actions">
+              <button class="action-btn primary" id="btn-assign">Zuweisen</button>
+              <button class="action-btn secondary" id="btn-correct">Korrigieren</button>
+              <button class="action-btn success" id="btn-done">Als erledigt markieren</button>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <div class="detail-section-title">Kommentare</div>
+                <button class="add-comment-btn" id="btn-comment">
+                  <i data-lucide="plus" class="icon-sm"></i>
+                  <span>Hinzufügen</span>
+                </button>
+              </div>
+              <div id="comments-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <div class="detail-section">
+              <div class="detail-section-title">Ereignisse</div>
+              <div class="events-list" id="events-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aufgaben Tab -->
+    <div class="tab-content" id="tab-aufgaben">
+      <div class="aufgaben-content">
+        <div class="aufgaben-header">
+          <h1 class="aufgaben-title">Aufgaben-Board</h1>
+          <div class="aufgaben-views">
+            <button class="view-btn active">Board</button>
+            <button class="view-btn">Liste</button>
+            <button class="view-btn">Meine Aufgaben</button>
+          </div>
+        </div>
+
+        <div class="kanban-container">
+          <div class="kanban-column">
+            <div class="kanban-header">
+              <span class="kanban-header-icon"><i data-lucide="inbox" class="icon"></i></span>
+              <span class="kanban-header-title">Offen</span>
+              <span class="kanban-header-count" id="kanban-open-count">234</span>
+            </div>
+            <div class="kanban-cards" id="kanban-open">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-header">
+              <span class="kanban-header-icon"><i data-lucide="user" class="icon"></i></span>
+              <span class="kanban-header-title">Zugewiesen</span>
+              <span class="kanban-header-count" id="kanban-assigned-count">89</span>
+            </div>
+            <div class="kanban-cards" id="kanban-assigned">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-header">
+              <span class="kanban-header-icon"><i data-lucide="search" class="icon"></i></span>
+              <span class="kanban-header-title">In Prüfung</span>
+              <span class="kanban-header-count" id="kanban-review-count">34</span>
+            </div>
+            <div class="kanban-cards" id="kanban-review">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <div class="kanban-column">
+            <div class="kanban-header">
+              <span class="kanban-header-icon"><i data-lucide="check-circle" class="icon"></i></span>
+              <span class="kanban-header-title">Erledigt</span>
+              <span class="kanban-header-count" id="kanban-done-count">1'842</span>
+            </div>
+            <div class="kanban-cards" id="kanban-done">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="team-overview">
+          <h3 class="team-overview-title">Team Übersicht</h3>
+          <div class="team-cards" id="team-cards">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistik Tab -->
+    <div class="tab-content" id="tab-statistik">
+      <div class="statistik-content">
+        <div class="statistik-header">
+          <div class="statistik-period">
+            <span>Zeitraum:</span>
+            <select class="filter-dropdown">
+              <option>Letzte 30 Tage</option>
+              <option>Letzte 7 Tage</option>
+              <option>Dieses Jahr</option>
+              <option>Gesamt</option>
+            </select>
+          </div>
+          <button class="export-btn btn-icon"><i data-lucide="download" class="icon"></i> Export CSV</button>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card">
+            <div class="stat-label">Fortschritt</div>
+            <div class="stat-value">62%</div>
+            <div class="stat-change positive">+8% ↑</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Erledigt</div>
+            <div class="stat-value">1'842</div>
+            <div class="stat-change positive">+127 ↑</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Offen</div>
+            <div class="stat-value">547</div>
+            <div class="stat-change positive">-89 ↓</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ø Bearbeitungszeit</div>
+            <div class="stat-value">3.2 Tage</div>
+            <div class="stat-change positive">-0.5d ↑</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <h3 class="chart-title">Gesamtfortschritt</h3>
+            <div class="progress-chart">
+              <div class="progress-bar-large">
+                <div class="progress-bar-fill" style="width: 62%"></div>
+              </div>
+              <div class="progress-text">62%</div>
+              <div class="progress-label">1'842 / 3'000 Objekte geprüft</div>
+            </div>
+          </div>
+          <div class="chart-card error-type-chart">
+            <h3 class="chart-title">Fehler nach Typ</h3>
+            <div class="chart-row">
+              <span class="chart-row-label">Georef</span>
+              <div class="chart-row-bar">
+                <div class="chart-row-fill georef" style="width: 45%"></div>
+              </div>
+              <span class="chart-row-value">234</span>
+            </div>
+            <div class="chart-row">
+              <span class="chart-row-label">GWR</span>
+              <div class="chart-row-bar">
+                <div class="chart-row-fill gwr" style="width: 30%"></div>
+              </div>
+              <span class="chart-row-value">156</span>
+            </div>
+            <div class="chart-row">
+              <span class="chart-row-label">SAP</span>
+              <div class="chart-row-bar">
+                <div class="chart-row-fill sap" style="width: 17%"></div>
+              </div>
+              <span class="chart-row-value">89</span>
+            </div>
+            <div class="chart-row">
+              <span class="chart-row-label">Adresse</span>
+              <div class="chart-row-bar">
+                <div class="chart-row-fill address" style="width: 9%"></div>
+              </div>
+              <span class="chart-row-value">45</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Handbuch Tab -->
+    <div class="tab-content" id="tab-handbuch">
+      <div class="handbuch-content">
+        <div class="handbuch-section">
+          <h2 class="handbuch-section-title section-title-icon"><i data-lucide="book-open" class="icon-lg"></i> Handbuch</h2>
+          <ul class="doc-tree">
+            <li class="doc-item">
+              <div class="doc-item-header" onclick="toggleDocItem(this)">
+                <span class="doc-item-icon">▸</span>
+                <span class="doc-item-title">Einführung</span>
+              </div>
+            </li>
+            <li class="doc-item">
+              <div class="doc-item-header" onclick="toggleDocItem(this)">
+                <span class="doc-item-icon">▸</span>
+                <span class="doc-item-title">Fehlertypen verstehen</span>
+              </div>
+              <ul class="doc-children">
+                <li class="doc-item">
+                  <div class="doc-item-header">
+                    <span class="doc-item-title">Georeferenzierung</span>
+                  </div>
+                </li>
+                <li class="doc-item">
+                  <div class="doc-item-header">
+                    <span class="doc-item-title">SAP Stammdaten</span>
+                  </div>
+                </li>
+                <li class="doc-item">
+                  <div class="doc-item-header">
+                    <span class="doc-item-title">GWR Abgleich</span>
+                  </div>
+                </li>
+              </ul>
+            </li>
+            <li class="doc-item">
+              <div class="doc-item-header" onclick="toggleDocItem(this)">
+                <span class="doc-item-icon">▸</span>
+                <span class="doc-item-title">Korrektur-Workflow</span>
+              </div>
+            </li>
+            <li class="doc-item">
+              <div class="doc-item-header" onclick="toggleDocItem(this)">
+                <span class="doc-item-icon">▸</span>
+                <span class="doc-item-title">Häufige Fragen (FAQ)</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="handbuch-section">
+          <h2 class="handbuch-section-title section-title-icon"><i data-lucide="download" class="icon-lg"></i> Downloads</h2>
+          <table class="downloads-table">
+            <tr>
+              <td class="download-name">Checkliste Vor-Ort-Prüfung</td>
+              <td><span class="download-type pdf">PDF</span></td>
+              <td><button class="download-btn">Download</button></td>
+            </tr>
+            <tr>
+              <td class="download-name">Excel-Vorlage Massenkorrektur</td>
+              <td><span class="download-type xlsx">XLSX</span></td>
+              <td><button class="download-btn">Download</button></td>
+            </tr>
+            <tr>
+              <td class="download-name">Aktueller Fehlerbericht</td>
+              <td><span class="download-type csv">CSV</span></td>
+              <td><button class="download-btn">Download</button></td>
+            </tr>
+            <tr>
+              <td class="download-name">Meine offenen Aufgaben</td>
+              <td><span class="download-type pdf">PDF</span></td>
+              <td><button class="download-btn">Download</button></td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="handbuch-section">
+          <h2 class="handbuch-section-title section-title-icon"><i data-lucide="external-link" class="icon-lg"></i> Externe Ressourcen</h2>
+          <ul class="external-links">
+            <li class="external-link">
+              <a href="#">• GWR Dokumentation (BFS) ↗</a>
+            </li>
+            <li class="external-link">
+              <a href="#">• SAP RE-FX Handbuch (intern) ↗</a>
+            </li>
+            <li class="external-link">
+              <a href="#">• swisstopo Koordinatensysteme ↗</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Assignment Modal -->
+  <div class="modal-overlay" id="modal-assign">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Aufgabe zuweisen</h3>
+        <button class="modal-close" onclick="closeModal('modal-assign')">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-description">Wählen Sie einen Teamkollegen:</p>
+        <div class="team-select" id="team-select">
+          <!-- Populated by JS -->
+        </div>
+        <label class="modal-label">Notiz (optional):</label>
+        <textarea class="modal-textarea" placeholder="Zusätzliche Hinweise..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel" onclick="closeModal('modal-assign')">Abbrechen</button>
+        <button class="modal-btn primary" onclick="assignTask()">Zuweisen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Correction Modal -->
+  <div class="modal-overlay" id="modal-correct">
+    <div class="modal wide">
+      <div class="modal-header">
+        <h3 class="modal-title">Daten korrigieren</h3>
+        <button class="modal-close" onclick="closeModal('modal-correct')">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="correction-compare">
+          <div class="correction-source">
+            <div class="correction-source-title">SAP RE-FX (Quelle)</div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Koordinaten:</span>
+              <span class="mismatch">Fehlt</span>
+            </div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Adresse:</span>
+              <span>Friedrichshafnerstr.</span>
+            </div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Baujahr:</span>
+              <span>1965</span>
+            </div>
+          </div>
+          <div class="correction-source">
+            <div class="correction-source-title">GWR (Referenz)</div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Koordinaten:</span>
+              <span class="match">✓ Vorhanden</span>
+            </div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Adresse:</span>
+              <span>Friedrichshafnerstr.</span>
+            </div>
+            <div class="correction-source-row">
+              <span class="correction-source-label">Baujahr:</span>
+              <span>1967</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="correction-suggestion">
+          <div class="correction-suggestion-title section-title-icon"><i data-lucide="lightbulb" class="icon"></i> Vorgeschlagene Aktion</div>
+          <p class="correction-suggestion-text">Koordinaten aus GWR übernehmen nach SAP RE-FX</p>
+          <button class="correction-apply-btn">Koordinaten übernehmen</button>
+        </div>
+
+        <label class="modal-label">Kommentar zur Korrektur:</label>
+        <textarea class="modal-textarea" placeholder="Begründung der Korrektur..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn cancel" onclick="closeModal('modal-correct')">Abbrechen</button>
+        <button class="modal-btn primary">Korrektur speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // ========================================
+    // Data (loaded from JSON files)
+    // ========================================
+    let teamMembers = [];
+    let buildings = [];
+    let events = [];
+
+    async function loadData() {
+      try {
+        const [buildingsResponse, teamResponse, eventsResponse] = await Promise.all([
+          fetch('data/buildings.json'),
+          fetch('data/team.json'),
+          fetch('data/events.json')
+        ]);
+
+        if (!buildingsResponse.ok || !teamResponse.ok || !eventsResponse.ok) {
+          throw new Error('Failed to load data files');
+        }
+
+        buildings = await buildingsResponse.json();
+        teamMembers = await teamResponse.json();
+        events = await eventsResponse.json();
+
+        console.log(`Loaded ${buildings.length} buildings, ${teamMembers.length} team members, ${events.length} events`);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // Show error to user
+        document.body.innerHTML = `
+          <div class="error-container">
+            <h1>Fehler beim Laden der Daten</h1>
+            <p>Die Anwendung konnte die Daten nicht laden. Bitte stellen Sie sicher, dass die Anwendung über einen Webserver ausgeführt wird.</p>
+            <code>${error.message}</code>
+          </div>
+        `;
+        throw error;
+      }
+    }
+
+    // ========================================
+    // State
+    // ========================================
+    let state = {
+      selectedBuildingId: null,
+      activeFilters: {
+        high: true,
+        medium: true,
+        low: true,
+        myTasks: false
+      },
+      filterKanton: '',
+      filterStatus: '',
+      filterConfidence: '',
+      currentTab: 'karte',
+      selectedTeamMember: null
+    };
+
+    let map;
+    let markers = {};
+
+    // ========================================
+    // URL Navigation
+    // ========================================
+    function updateURL(replace = false) {
+      const params = new URLSearchParams();
+
+      // Add current tab
+      params.set('tab', state.currentTab);
+
+      // Add selected building if any
+      if (state.selectedBuildingId) {
+        params.set('id', state.selectedBuildingId);
+      }
+
+      // Add active filters (only non-default values)
+      const defaultFilters = { high: true, medium: true, low: true, myTasks: false };
+      const filterDiff = [];
+      Object.entries(state.activeFilters).forEach(([key, value]) => {
+        if (value !== defaultFilters[key]) {
+          filterDiff.push(value ? key : `-${key}`);
+        }
+      });
+      if (filterDiff.length > 0) {
+        params.set('filters', filterDiff.join(','));
+      }
+
+      // Add dropdown filters
+      if (state.filterKanton) params.set('kanton', state.filterKanton);
+      if (state.filterStatus) params.set('status', state.filterStatus);
+      if (state.filterConfidence) params.set('confidence', state.filterConfidence);
+
+      // Add table visibility (only add param if hidden, since visible is default)
+      if (!tableVisible) params.set('table', '0');
+
+      // Update URL without page reload
+      const newURL = `${window.location.pathname}?${params.toString()}`;
+      if (replace) {
+        window.history.replaceState({ ...state, tableVisible }, '', newURL);
+      } else {
+        window.history.pushState({ ...state, tableVisible }, '', newURL);
+      }
+    }
+
+    function parseURL() {
+      const params = new URLSearchParams(window.location.search);
+
+      // Parse tab
+      const tab = params.get('tab');
+      if (tab && ['karte', 'aufgaben', 'statistik', 'handbuch'].includes(tab)) {
+        state.currentTab = tab;
+      }
+
+      // Parse selected building
+      const buildingId = params.get('id');
+      if (buildingId) {
+        state.selectedBuildingId = buildingId;
+      }
+
+      // Parse filters
+      const filters = params.get('filters');
+      if (filters) {
+        filters.split(',').forEach(filter => {
+          if (filter.startsWith('-')) {
+            const key = filter.substring(1);
+            if (state.activeFilters.hasOwnProperty(key)) {
+              state.activeFilters[key] = false;
+            }
+          } else if (filter === 'myTasks') {
+            state.activeFilters.myTasks = true;
+          } else if (state.activeFilters.hasOwnProperty(filter)) {
+            state.activeFilters[filter] = true;
+          }
+        });
+      }
+
+      // Parse dropdown filters
+      state.filterKanton = params.get('kanton') || '';
+      state.filterStatus = params.get('status') || '';
+      state.filterConfidence = params.get('confidence') || '';
+
+      // Return table visibility (default is visible, so check for explicit hide)
+      return params.get('table') !== '0';
+    }
+
+    function applyURLState() {
+      const shouldShowTable = parseURL();
+
+      // Apply tab UI
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
+      });
+
+      // Apply filters UI
+      document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+        const filterName = chip.dataset.filter;
+        if (filterName === 'my-tasks') {
+          chip.classList.toggle('active', state.activeFilters.myTasks);
+        } else if (state.activeFilters.hasOwnProperty(filterName)) {
+          chip.classList.toggle('active', state.activeFilters[filterName]);
+        }
+      });
+
+      // Apply dropdown filters
+      document.getElementById('filter-kanton').value = state.filterKanton;
+      document.getElementById('filter-status').value = state.filterStatus;
+      document.getElementById('filter-confidence').value = state.filterConfidence;
+
+      // Apply table visibility (default is visible)
+      tableVisible = shouldShowTable;
+      document.getElementById('table-panel').classList.toggle('visible', tableVisible);
+      document.getElementById('table-toggle-btn').classList.toggle('active', tableVisible);
+
+      // Set initial URL state (replace to not add to history)
+      updateURL(true);
+    }
+
+    function handlePopState(event) {
+      if (event.state) {
+        // Restore state from history
+        state.currentTab = event.state.currentTab || 'karte';
+        state.selectedBuildingId = event.state.selectedBuildingId || null;
+        state.activeFilters = event.state.activeFilters || { high: true, medium: true, low: true, myTasks: false };
+        state.filterKanton = event.state.filterKanton || '';
+        state.filterStatus = event.state.filterStatus || '';
+        state.filterConfidence = event.state.filterConfidence || '';
+        tableVisible = event.state.tableVisible !== undefined ? event.state.tableVisible : true;
+
+        // Apply tab
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+          tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
+        });
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
+        });
+
+        // Update filter chips UI
+        document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+          const filterName = chip.dataset.filter;
+          if (filterName === 'my-tasks') {
+            chip.classList.toggle('active', state.activeFilters.myTasks);
+          } else if (state.activeFilters.hasOwnProperty(filterName)) {
+            chip.classList.toggle('active', state.activeFilters[filterName]);
+          }
+        });
+
+        // Update dropdowns
+        document.getElementById('filter-kanton').value = state.filterKanton;
+        document.getElementById('filter-status').value = state.filterStatus;
+        document.getElementById('filter-confidence').value = state.filterConfidence;
+
+        // Update table visibility
+        document.getElementById('table-panel').classList.toggle('visible', tableVisible);
+        document.getElementById('table-toggle-btn').classList.toggle('active', tableVisible);
+
+        // Render views
+        updateMapMarkers();
+        updateCounts();
+
+        if (state.selectedBuildingId) {
+          const building = buildings.find(b => b.id === state.selectedBuildingId);
+          if (building) {
+            // Update list selection
+            document.querySelectorAll('.list-item').forEach(item => {
+              item.classList.toggle('selected', item.dataset.id === state.selectedBuildingId);
+            });
+            // Update map
+            Object.entries(markers).forEach(([markerId, marker]) => {
+              const isSelected = markerId === state.selectedBuildingId;
+              const markerBuilding = buildings.find(b => b.id === markerId);
+              marker.setIcon(L.divIcon({
+                className: 'custom-marker-container',
+                html: `<div class="custom-marker ${markerBuilding.priority} ${isSelected ? 'selected' : ''}" data-id="${markerId}"></div>`,
+                iconSize: isSelected ? [24, 24] : [16, 16],
+                iconAnchor: isSelected ? [12, 12] : [8, 8]
+              }));
+            });
+            map.setView([building.lat, building.lng], 12);
+            renderDetailPanel(building);
+          }
+        } else {
+          renderDetailPanel(null);
+        }
+
+        if (tableVisible) renderTableView();
+
+        // Resize map if on karte tab
+        if (state.currentTab === 'karte') {
+          setTimeout(() => map.invalidateSize(), 100);
+        }
+      }
+    }
+
+    // ========================================
+    // Initialization
+    // ========================================
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Initialize Lucide icons
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      // Load data from JSON files
+      await loadData();
+
+      initMap();
+
+      // Parse URL and apply initial state
+      applyURLState();
+
+      renderKanbanBoard();
+      renderTeamOverview();
+      renderTeamSelect();
+      setupEventListeners();
+      setupTableViewListeners();
+      setupExpandingSearch();
+      setupFilterToggle();
+      setupTableResize();
+      setupBasemapSelector();
+      updateCounts();
+
+      // Apply building selection from URL after rendering
+      if (state.selectedBuildingId) {
+        selectBuilding(state.selectedBuildingId, false);
+      }
+
+      // Render table if visible
+      if (tableVisible) renderTableView();
+
+      // Listen for browser back/forward
+      window.addEventListener('popstate', handlePopState);
+    });
+
+    function initMap() {
+      map = L.map('map', { zoomControl: false }).setView([47.0, 8.3], 8);
+
+      // Add zoom control to top-right
+      L.control.zoom({ position: 'topright' }).addTo(map);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '© OpenStreetMap contributors © CARTO',
+        maxZoom: 19
+      }).addTo(map);
+
+      buildings.forEach(building => {
+        const marker = createMarker(building);
+        markers[building.id] = marker;
+        marker.addTo(map);
+      });
+    }
+
+    function createMarker(building) {
+      const icon = L.divIcon({
+        className: 'custom-marker-container',
+        html: `<div class="custom-marker ${building.priority}" data-id="${building.id}"></div>`,
+        iconSize: [16, 16],
+        iconAnchor: [8, 8]
+      });
+
+      const marker = L.marker([building.lat, building.lng], { icon });
+      marker.on('click', () => selectBuilding(building.id));
+      return marker;
+    }
+
+    // ========================================
+    // Rendering Functions
+    // ========================================
+    function renderDetailPanel(building) {
+      if (!building) {
+        document.getElementById('detail-empty').style.display = 'flex';
+        document.getElementById('detail-content').classList.remove('visible');
+        return;
+      }
+
+      document.getElementById('detail-empty').style.display = 'none';
+      document.getElementById('detail-content').classList.add('visible');
+
+      document.getElementById('detail-title').textContent = building.name;
+      document.getElementById('detail-sap-id').textContent = building.id;
+
+      // Confidence
+      const totalClass = building.confidence.total < 50 ? 'critical' :
+                         building.confidence.total < 80 ? 'warning' : 'ok';
+      document.getElementById('confidence-total').textContent = building.confidence.total + '%';
+      document.getElementById('confidence-total').className = 'confidence-total ' + totalClass;
+
+      ['georef', 'sap', 'gwr'].forEach(key => {
+        const val = building.confidence[key];
+        const barClass = val < 50 ? 'critical' : val < 80 ? 'warning' : 'ok';
+        document.getElementById(`bar-${key}`).style.width = val + '%';
+        document.getElementById(`bar-${key}`).className = 'confidence-bar-fill ' + barClass;
+        document.getElementById(`val-${key}`).textContent = val + '%';
+      });
+
+      // Errors
+      document.getElementById('error-cards').innerHTML = building.errors.length > 0
+        ? building.errors.map(error => `
+            <div class="error-card ${error.severity}">
+              <div class="error-card-header">
+                <span class="tag ${error.type}">${getTagLabel(error.type)}</span>
+                <span class="error-card-title">${error.title}</span>
+              </div>
+              <div class="error-card-desc">${error.description}</div>
+            </div>
+          `).join('')
+        : '<p class="empty-text">Keine Fehler gefunden.</p>';
+
+      // Data comparison
+      document.getElementById('data-comparison').innerHTML = Object.entries(building.data).map(([key, val]) => `
+        <tr>
+          <td>${getDataLabel(key)}</td>
+          <td class="${val.match ? 'match' : (val.sap === 'Fehlt' || val.sap === '—' ? 'missing' : 'mismatch')}">${val.sap}</td>
+          <td class="${val.match ? 'match' : (val.gwr === '—' ? 'missing' : 'mismatch')}">${val.gwr}</td>
+        </tr>
+      `).join('');
+
+      // Comments
+      document.getElementById('comments-list').innerHTML = building.comments.length > 0
+        ? building.comments.map(comment => `
+            <div class="comment ${comment.system ? 'system' : ''}">
+              <div class="comment-header">
+                <span class="comment-author">${comment.author}</span>
+                <span class="comment-date">${comment.date}</span>
+              </div>
+              <div class="comment-text">${comment.text}</div>
+            </div>
+          `).join('')
+        : '<p class="empty-text">Keine Kommentare.</p>';
+
+      // Assignee
+      renderAssigneeDisplay(building);
+
+      // Events
+      renderEventsLog(building.id);
+
+      // Refresh Lucide icons
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function renderAssigneeDisplay(building) {
+      const container = document.getElementById('assignee-display');
+
+      if (!building.assignee) {
+        container.innerHTML = '<div class="assignee-empty">Noch nicht zugewiesen</div>';
+        return;
+      }
+
+      // Find team member by name
+      const member = teamMembers.find(m => m.name === building.assignee);
+
+      if (member) {
+        container.innerHTML = `
+          <div class="assignee-card">
+            <div class="assignee-avatar">${member.initials}</div>
+            <div class="assignee-info">
+              <div class="assignee-name">${member.name}</div>
+              <div class="assignee-role">${member.role}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div class="assignee-card">
+            <div class="assignee-avatar">${building.assignee.split(' ').map(n => n[0]).join('')}</div>
+            <div class="assignee-info">
+              <div class="assignee-name">${building.assignee}</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function renderEventsLog(buildingId) {
+      const container = document.getElementById('events-list');
+      const buildingEvents = events
+        .filter(e => e.buildingId === buildingId)
+        .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      if (buildingEvents.length === 0) {
+        container.innerHTML = '<p class="empty-text">Keine Ereignisse.</p>';
+        return;
+      }
+
+      container.innerHTML = buildingEvents.map(event => `
+        <div class="event-item">
+          <div class="event-icon ${event.type}">
+            ${getEventIcon(event.type)}
+          </div>
+          <div class="event-content">
+            <div class="event-header">
+              <span class="event-action">${event.action}</span>
+              <span class="event-time">${formatEventTime(event.timestamp)}</span>
+            </div>
+            <div class="event-details">${event.details}</div>
+            <div class="event-user">von ${event.user}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getEventIcon(type) {
+      const icons = {
+        assignment: '<i data-lucide="user-plus" class="icon-sm"></i>',
+        comment: '<i data-lucide="message-square" class="icon-sm"></i>',
+        status: '<i data-lucide="refresh-cw" class="icon-sm"></i>',
+        correction: '<i data-lucide="check-circle" class="icon-sm"></i>',
+        detection: '<i data-lucide="alert-triangle" class="icon-sm"></i>'
+      };
+      return icons[type] || '<i data-lucide="circle" class="icon-sm"></i>';
+    }
+
+    function formatEventTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 0) {
+        return date.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
+      } else if (diffDays === 1) {
+        return 'Gestern';
+      } else if (diffDays < 7) {
+        return `vor ${diffDays} Tagen`;
+      } else {
+        return date.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      }
+    }
+
+    function renderKanbanBoard() {
+      const columns = {
+        open: buildings.filter(b => b.kanbanStatus === 'open'),
+        assigned: buildings.filter(b => b.kanbanStatus === 'assigned'),
+        review: buildings.filter(b => b.kanbanStatus === 'review'),
+        done: buildings.filter(b => b.kanbanStatus === 'done')
+      };
+
+      Object.entries(columns).forEach(([status, items]) => {
+        const container = document.getElementById(`kanban-${status}`);
+        const displayItems = items.slice(0, 3);
+
+        container.innerHTML = displayItems.map(building => `
+          <div class="kanban-card ${building.priority}" onclick="selectBuildingAndSwitch('${building.id}')">
+            <div class="kanban-card-name">${building.name}</div>
+            <div class="kanban-card-sap-id">${building.id}</div>
+            <div class="kanban-card-tags">
+              ${building.tags.map(tag => `<span class="tag ${tag}">${getTagLabel(tag)}</span>`).join('')}
+            </div>
+            <div class="kanban-card-meta">
+              <span>${building.assignee || 'Nicht zugewiesen'}</span>
+              <span class="meta-icon"><i data-lucide="clock" class="icon-sm"></i> ${building.age}</span>
+            </div>
+          </div>
+        `).join('');
+
+        if (items.length > 3) {
+          container.innerHTML += `<div class="kanban-more">+${items.length - 3} mehr</div>`;
+        }
+
+        document.getElementById(`kanban-${status}-count`).textContent = items.length;
+      });
+
+      // Re-initialize Lucide icons for dynamically added content
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function renderTeamOverview() {
+      const container = document.getElementById('team-cards');
+      container.innerHTML = teamMembers.map(member => `
+        <div class="team-card">
+          <div class="team-card-header">
+            <div class="team-avatar">${member.initials}</div>
+            <div class="team-name">${member.name}</div>
+          </div>
+          <div class="team-role">${member.role}</div>
+          <div class="team-workload">
+            ${Array(member.openTasks).fill('<div class="workload-dot" style="background: var(--status-warning)"></div>').join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTeamSelect() {
+      const container = document.getElementById('team-select');
+      container.innerHTML = teamMembers.map(member => `
+        <label class="team-select-option ${state.selectedTeamMember === member.id ? 'selected' : ''}"
+               onclick="selectTeamMember(${member.id})">
+          <input type="radio" name="team" value="${member.id}">
+          <div class="team-select-radio"></div>
+          <div class="team-avatar">${member.initials}</div>
+          <div class="team-select-info">
+            <div class="team-select-name">${member.name}</div>
+            <div class="team-select-role">${member.role}</div>
+          </div>
+        </label>
+      `).join('');
+    }
+
+    // ========================================
+    // Event Handlers
+    // ========================================
+    function setupEventListeners() {
+      // Tab switching
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      });
+
+      // Filter chips
+      document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
+        chip.addEventListener('click', () => toggleFilter(chip.dataset.filter));
+      });
+
+      // Dropdown filters
+      document.getElementById('filter-kanton').addEventListener('change', (e) => {
+        state.filterKanton = e.target.value;
+        applyFilters();
+      });
+
+      document.getElementById('filter-status').addEventListener('change', (e) => {
+        state.filterStatus = e.target.value;
+        applyFilters();
+      });
+
+      document.getElementById('filter-confidence').addEventListener('change', (e) => {
+        state.filterConfidence = e.target.value;
+        applyFilters();
+      });
+
+      // Basemap selector
+      document.querySelectorAll('.basemap-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchBasemap(btn.dataset.basemap));
+      });
+
+      // Action buttons
+      document.getElementById('btn-assign').addEventListener('click', () => openModal('modal-assign'));
+      document.getElementById('btn-correct').addEventListener('click', () => openModal('modal-correct'));
+
+      // Global search
+      document.getElementById('globalSearch').addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        filterBySearch(query);
+      });
+
+      // Close modals on escape
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+            modal.classList.remove('active');
+          });
+        }
+      });
+
+      // Close modals on backdrop click
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
+    }
+
+    function switchTab(tabId, shouldUpdateURL = true) {
+      state.currentTab = tabId;
+
+      document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabId);
+      });
+
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.toggle('active', content.id === `tab-${tabId}`);
+      });
+
+      if (tabId === 'karte') {
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+
+      if (shouldUpdateURL) updateURL();
+    }
+
+    function selectBuilding(id, shouldUpdateURL = true) {
+      state.selectedBuildingId = id;
+      const building = buildings.find(b => b.id === id);
+
+      // Update list selection
+      document.querySelectorAll('.list-item').forEach(item => {
+        item.classList.toggle('selected', item.dataset.id === id);
+      });
+
+      // Update map marker
+      Object.entries(markers).forEach(([markerId, marker]) => {
+        const isSelected = markerId === id;
+        const markerBuilding = buildings.find(b => b.id === markerId);
+        marker.setIcon(L.divIcon({
+          className: 'custom-marker-container',
+          html: `<div class="custom-marker ${markerBuilding.priority} ${isSelected ? 'selected' : ''}" data-id="${markerId}"></div>`,
+          iconSize: isSelected ? [24, 24] : [16, 16],
+          iconAnchor: isSelected ? [12, 12] : [8, 8]
+        }));
+      });
+
+      // Center map on selected building
+      if (building) {
+        map.setView([building.lat, building.lng], 12);
+      }
+
+      // Update detail panel
+      renderDetailPanel(building);
+
+      // Update table view if visible
+      if (tableVisible) renderTableView();
+
+      if (shouldUpdateURL) updateURL();
+    }
+
+    function selectBuildingAndSwitch(id) {
+      switchTab('karte');
+      setTimeout(() => selectBuilding(id), 100);
+    }
+
+    function toggleFilter(filterName, shouldUpdateURL = true) {
+      if (filterName === 'my-tasks') {
+        state.activeFilters.myTasks = !state.activeFilters.myTasks;
+      } else {
+        state.activeFilters[filterName] = !state.activeFilters[filterName];
+      }
+
+      document.querySelectorAll(`.filter-chip[data-filter="${filterName}"]`).forEach(chip => {
+        chip.classList.toggle('active', state.activeFilters[filterName] ||
+          (filterName === 'my-tasks' && state.activeFilters.myTasks));
+      });
+
+      applyFilters(shouldUpdateURL);
+    }
+
+    function applyFilters(shouldUpdateURL = true) {
+      updateMapMarkers();
+      updateCounts();
+      if (tableVisible) renderTableView();
+      if (shouldUpdateURL) updateURL();
+    }
+
+    function getFilteredBuildings() {
+      return buildings.filter(building => {
+        // Search filter
+        if (searchQuery) {
+          const matchesSearch = building.name.toLowerCase().includes(searchQuery) ||
+                                building.id.toLowerCase().includes(searchQuery);
+          if (!matchesSearch) return false;
+        }
+
+        // Priority filters
+        if (!state.activeFilters[building.priority]) {
+          return false;
+        }
+
+        // My tasks filter
+        if (state.activeFilters.myTasks && building.assignee !== 'M. Keller') {
+          return false;
+        }
+
+        // Kanton filter
+        if (state.filterKanton && building.kanton !== state.filterKanton) {
+          return false;
+        }
+
+        // Status filter
+        if (state.filterStatus && building.kanbanStatus !== state.filterStatus) {
+          return false;
+        }
+
+        // Confidence filter
+        if (state.filterConfidence) {
+          const conf = building.confidence.total;
+          if (state.filterConfidence === 'critical' && conf >= 50) return false;
+          if (state.filterConfidence === 'warning' && (conf < 50 || conf >= 80)) return false;
+          if (state.filterConfidence === 'ok' && conf < 80) return false;
+        }
+
+        return true;
+      });
+    }
+
+    function updateMapMarkers() {
+      const filteredIds = new Set(getFilteredBuildings().map(b => b.id));
+
+      Object.entries(markers).forEach(([id, marker]) => {
+        if (filteredIds.has(id)) {
+          marker.addTo(map);
+        } else {
+          marker.remove();
+        }
+      });
+    }
+
+    function updateCounts() {
+      const counts = { high: 0, medium: 0, low: 0 };
+      buildings.forEach(b => {
+        if (counts[b.priority] !== undefined) counts[b.priority]++;
+      });
+
+      Object.entries(counts).forEach(([priority, count]) => {
+        const el = document.getElementById(`count-${priority}`);
+        if (el) el.textContent = `(${count})`;
+      });
+    }
+
+    function switchBasemap(basemap) {
+      document.querySelectorAll('.basemap-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.basemap === basemap);
+      });
+
+      // In a real app, you would switch tile layers here
+      // For the prototype, we just update the active state
+    }
+
+    // Search state
+    let searchQuery = '';
+
+    function filterBySearch(query) {
+      searchQuery = query.toLowerCase();
+
+      // Update map markers based on search
+      const filtered = getFilteredBuildings();
+      const filteredIds = new Set(filtered.map(b => b.id));
+
+      Object.entries(markers).forEach(([id, marker]) => {
+        if (filteredIds.has(id)) {
+          marker.addTo(map);
+        } else {
+          marker.remove();
+        }
+      });
+
+      // Update table view
+      if (tableVisible) renderTableView();
+    }
+
+    // ========================================
+    // Modal Functions
+    // ========================================
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function selectTeamMember(id) {
+      state.selectedTeamMember = id;
+      renderTeamSelect();
+    }
+
+    function assignTask() {
+      if (!state.selectedTeamMember || !state.selectedBuildingId) return;
+
+      const building = buildings.find(b => b.id === state.selectedBuildingId);
+      const member = teamMembers.find(m => m.id === state.selectedTeamMember);
+
+      if (building && member) {
+        building.assignee = member.name;
+        building.kanbanStatus = 'assigned';
+
+        closeModal('modal-assign');
+        renderDetailPanel(building);
+        if (tableVisible) renderTableView();
+        renderKanbanBoard();
+      }
+    }
+
+    // ========================================
+    // Handbuch Functions
+    // ========================================
+    function toggleDocItem(element) {
+      const item = element.closest('.doc-item');
+      const children = item.querySelector('.doc-children');
+      const icon = element.querySelector('.doc-item-icon');
+
+      if (children) {
+        children.classList.toggle('expanded');
+        icon.textContent = children.classList.contains('expanded') ? '▾' : '▸';
+      }
+    }
+
+    // ========================================
+    // Utility Functions
+    // ========================================
+    function getTagLabel(tag) {
+      const labels = {
+        georef: 'Georef',
+        sap: 'SAP',
+        gwr: 'GWR',
+        address: 'Adresse'
+      };
+      return labels[tag] || tag;
+    }
+
+    function getDataLabel(key) {
+      const labels = {
+        address: 'Adresse',
+        plz: 'PLZ',
+        coords: 'Koordinaten',
+        egid: 'EGID',
+        year: 'Baujahr'
+      };
+      return labels[key] || key;
+    }
+
+    // ========================================
+    // Table View Functions
+    // ========================================
+    let tableVisible = true;
+
+    function toggleTableView() {
+      tableVisible = !tableVisible;
+      const tablePanel = document.getElementById('table-panel');
+      const toggleBtn = document.getElementById('table-toggle-btn');
+
+      if (tableVisible) {
+        tablePanel.classList.add('visible');
+        toggleBtn.classList.add('active');
+        renderTableView();
+        // Resize map after table is shown
+        setTimeout(() => map.invalidateSize(), 100);
+      } else {
+        tablePanel.classList.remove('visible');
+        toggleBtn.classList.remove('active');
+        // Resize map after table is hidden
+        setTimeout(() => map.invalidateSize(), 100);
+      }
+
+      updateURL();
+    }
+
+    function closeTableView() {
+      tableVisible = false;
+      document.getElementById('table-panel').classList.remove('visible');
+      document.getElementById('table-toggle-btn').classList.remove('active');
+      setTimeout(() => map.invalidateSize(), 100);
+      updateURL();
+    }
+
+    function renderTableView() {
+      const filteredBuildings = getFilteredBuildings();
+      const tbody = document.getElementById('table-body');
+
+      const priorityLabels = {
+        high: 'Hoch',
+        medium: 'Mittel',
+        low: 'Niedrig'
+      };
+
+      tbody.innerHTML = filteredBuildings.map(building => `
+        <tr class="${state.selectedBuildingId === building.id ? 'selected' : ''}"
+            onclick="selectBuilding('${building.id}')">
+          <td>
+            <span class="priority-pill ${building.priority}">
+              ${priorityLabels[building.priority] || building.priority}
+            </span>
+          </td>
+          <td><code class="sap-id-cell">${building.id}</code></td>
+          <td>${building.name}</td>
+          <td>${building.kanton}</td>
+          <td>
+            <span class="confidence-value ${building.confidence.total < 50 ? 'critical' : building.confidence.total < 80 ? 'warning' : 'ok'}">
+              ${building.confidence.total}%
+            </span>
+          </td>
+          <td>
+            <div class="table-tags">
+              ${building.tags.map(tag => `<span class="tag ${tag}">${getTagLabel(tag)}</span>`).join('')}
+              ${building.tags.length === 0 ? '<span class="text-muted">—</span>' : ''}
+            </div>
+          </td>
+          <td>${building.assignee ? `<span class="assignee-tag">${building.assignee}</span>` : '<span class="text-muted">—</span>'}</td>
+          <td>${building.age}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('table-count').textContent = `(${filteredBuildings.length})`;
+    }
+
+    // Setup table view event listeners
+    function setupTableViewListeners() {
+      document.getElementById('table-toggle-btn').addEventListener('click', toggleTableView);
+      document.getElementById('table-close-btn').addEventListener('click', closeTableView);
+    }
+
+    // ========================================
+    // Expanding Search Bar
+    // ========================================
+    function setupExpandingSearch() {
+      const searchContainer = document.getElementById('search-container');
+      const searchToggle = document.getElementById('search-toggle');
+      const searchInput = document.getElementById('globalSearch');
+
+      searchToggle.addEventListener('click', () => {
+        searchContainer.classList.add('expanded');
+        searchInput.focus();
+      });
+
+      searchInput.addEventListener('blur', () => {
+        // Collapse if empty
+        if (!searchInput.value.trim()) {
+          searchContainer.classList.remove('expanded');
+        }
+      });
+
+      // Handle Escape to close
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          searchInput.value = '';
+          searchInput.blur();
+          searchContainer.classList.remove('expanded');
+          filterBySearch('');
+        }
+      });
+    }
+
+    // ========================================
+    // Filter Bar Toggle
+    // ========================================
+    let filterBarVisible = true;
+
+    function setupFilterToggle() {
+      const filterToggle = document.getElementById('filter-toggle');
+      const filterBar = document.getElementById('filter-bar');
+
+      filterToggle.addEventListener('click', () => {
+        filterBarVisible = !filterBarVisible;
+        filterBar.classList.toggle('hidden', !filterBarVisible);
+        filterToggle.classList.toggle('active', filterBarVisible);
+      });
+    }
+
+    // ========================================
+    // Basemap Selector (swisstopo style)
+    // ========================================
+    let currentBasemap = 'color';
+
+    function setupBasemapSelector() {
+      const preview = document.getElementById('basemap-preview');
+      const menu = document.getElementById('basemap-menu');
+      const previewImg = document.getElementById('basemap-preview-img');
+      const options = document.querySelectorAll('.basemap-option');
+
+      // Toggle menu on preview click
+      preview.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menu.classList.toggle('expanded');
+        if (menu.classList.contains('expanded')) {
+          preview.style.display = 'none';
+        }
+      });
+
+      // Handle option selection
+      options.forEach(option => {
+        option.addEventListener('click', () => {
+          const basemap = option.dataset.basemap;
+          currentBasemap = basemap;
+
+          // Update active state
+          options.forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+
+          // Update preview thumbnail class
+          previewImg.className = 'basemap-preview-img basemap-' + basemap;
+
+          // Close menu
+          menu.classList.remove('expanded');
+          preview.style.display = 'flex';
+
+          // Here you would switch the actual map tiles
+          // switchBasemapTiles(basemap);
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!menu.contains(e.target) && !preview.contains(e.target)) {
+          menu.classList.remove('expanded');
+          preview.style.display = 'flex';
+        }
+      });
+
+      // Set initial preview
+      previewImg.className = 'basemap-preview-img basemap-' + currentBasemap;
+    }
+
+    // ========================================
+    // Table Panel Resize
+    // ========================================
+    function setupTableResize() {
+      const resizeHandle = document.getElementById('table-resize-handle');
+      const tablePanel = document.getElementById('table-panel');
+      let isResizing = false;
+      let startY = 0;
+      let startHeight = 0;
+
+      resizeHandle.addEventListener('mousedown', (e) => {
+        isResizing = true;
+        startY = e.clientY;
+        startHeight = tablePanel.offsetHeight;
+        resizeHandle.classList.add('dragging');
+        document.body.style.cursor = 'ns-resize';
+        document.body.style.userSelect = 'none';
+        e.preventDefault();
+      });
+
+      document.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+
+        const deltaY = startY - e.clientY;
+        const newHeight = Math.min(Math.max(startHeight + deltaY, 100), window.innerHeight * 0.7);
+        tablePanel.style.height = newHeight + 'px';
+
+        // Resize map to fit
+        map.invalidateSize();
+      });
+
+      document.addEventListener('mouseup', () => {
+        if (isResizing) {
+          isResizing = false;
+          resizeHandle.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+        }
+      });
+
+      // Touch support
+      resizeHandle.addEventListener('touchstart', (e) => {
+        isResizing = true;
+        startY = e.touches[0].clientY;
+        startHeight = tablePanel.offsetHeight;
+        resizeHandle.classList.add('dragging');
+        e.preventDefault();
+      });
+
+      document.addEventListener('touchmove', (e) => {
+        if (!isResizing) return;
+
+        const deltaY = startY - e.touches[0].clientY;
+        const newHeight = Math.min(Math.max(startHeight + deltaY, 100), window.innerHeight * 0.7);
+        tablePanel.style.height = newHeight + 'px';
+        map.invalidateSize();
+      });
+
+      document.addEventListener('touchend', () => {
+        if (isResizing) {
+          isResizing = false;
+          resizeHandle.classList.remove('dragging');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

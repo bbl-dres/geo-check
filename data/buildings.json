@@ -1,0 +1,725 @@
+[
+  {
+    "id": "1080/2020/AA",
+    "name": "Romanshorn, Friedrichshafnerstrasse",
+    "lat": 47.5656,
+    "lng": 9.3744,
+    "kanton": "TG",
+    "priority": "medium",
+    "confidence": {
+      "total": 67,
+      "georef": 67,
+      "sap": 100,
+      "gwr": 100
+    },
+    "errors": [
+      {
+        "type": "georef",
+        "title": "Koordinatenabweichung",
+        "description": "SAP - GWR: 47m Differenz",
+        "severity": "warning"
+      }
+    ],
+    "tags": [
+      "georef"
+    ],
+    "assignee": "M. Keller",
+    "kanbanStatus": "assigned",
+    "data": {
+      "address": {
+        "sap": "Friedrichshafnerstr.",
+        "gwr": "Friedrichshafnerstr.",
+        "match": true
+      },
+      "plz": {
+        "sap": "8590",
+        "gwr": "8590",
+        "match": true
+      },
+      "coords": {
+        "sap": "Fehlt",
+        "gwr": "2'738'456 / 1'278'234",
+        "match": false
+      },
+      "egid": {
+        "sap": "—",
+        "gwr": "2340212",
+        "match": false
+      },
+      "year": {
+        "sap": "1965",
+        "gwr": "1967",
+        "match": false
+      }
+    },
+    "comments": [
+      {
+        "author": "M. Keller",
+        "date": "12.01.2026",
+        "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
+        "system": false
+      },
+      {
+        "author": "System",
+        "date": "10.01.2026",
+        "text": "Automatisch erkannt: Koordinatenabweichung > 30m",
+        "system": true
+      }
+    ],
+    "age": "3d"
+  },
+  {
+    "id": "1080/2021/AB",
+    "name": "Kreuzlingen, Hauptstrasse 12",
+    "lat": 47.65,
+    "lng": 9.175,
+    "kanton": "TG",
+    "priority": "high",
+    "confidence": {
+      "total": 42,
+      "georef": 0,
+      "sap": 85,
+      "gwr": 40
+    },
+    "errors": [
+      {
+        "type": "georef",
+        "title": "Keine Koordinaten",
+        "description": "Koordinaten in SAP RE-FX fehlen vollständig",
+        "severity": "critical"
+      },
+      {
+        "type": "gwr",
+        "title": "EGID nicht gefunden",
+        "description": "Gebäude im GWR nicht registriert",
+        "severity": "critical"
+      }
+    ],
+    "tags": [
+      "georef",
+      "gwr"
+    ],
+    "assignee": null,
+    "kanbanStatus": "open",
+    "data": {
+      "address": {
+        "sap": "Hauptstrasse 12",
+        "gwr": "—",
+        "match": false
+      },
+      "plz": {
+        "sap": "8280",
+        "gwr": "—",
+        "match": false
+      },
+      "coords": {
+        "sap": "Fehlt",
+        "gwr": "—",
+        "match": false
+      },
+      "egid": {
+        "sap": "—",
+        "gwr": "—",
+        "match": false
+      },
+      "year": {
+        "sap": "1989",
+        "gwr": "—",
+        "match": false
+      }
+    },
+    "comments": [],
+    "age": "7d"
+  },
+  {
+    "id": "1090/3010/AC",
+    "name": "St. Gallen, Bahnhofplatz 1",
+    "lat": 47.4237,
+    "lng": 9.368,
+    "kanton": "SG",
+    "priority": "low",
+    "confidence": {
+      "total": 78,
+      "georef": 95,
+      "sap": 70,
+      "gwr": 70
+    },
+    "errors": [
+      {
+        "type": "sap",
+        "title": "Baujahr Diskrepanz",
+        "description": "SAP: 1952, GWR: 1954",
+        "severity": "minor"
+      }
+    ],
+    "tags": [
+      "sap"
+    ],
+    "assignee": "S. Brunner",
+    "kanbanStatus": "review",
+    "data": {
+      "address": {
+        "sap": "Bahnhofplatz 1",
+        "gwr": "Bahnhofplatz 1",
+        "match": true
+      },
+      "plz": {
+        "sap": "9000",
+        "gwr": "9000",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'746'234 / 1'254'876",
+        "gwr": "2'746'230 / 1'254'880",
+        "match": true
+      },
+      "egid": {
+        "sap": "1892345",
+        "gwr": "1892345",
+        "match": true
+      },
+      "year": {
+        "sap": "1952",
+        "gwr": "1954",
+        "match": false
+      }
+    },
+    "comments": [
+      {
+        "author": "S. Brunner",
+        "date": "14.01.2026",
+        "text": "Archivdokumente angefragt zur Klärung.",
+        "system": false
+      }
+    ],
+    "age": "2d"
+  },
+  {
+    "id": "1100/4050/AD",
+    "name": "Zürich, Stampfenbachstrasse 85",
+    "lat": 47.3834,
+    "lng": 8.5397,
+    "kanton": "ZH",
+    "priority": "low",
+    "confidence": {
+      "total": 98,
+      "georef": 100,
+      "sap": 95,
+      "gwr": 100
+    },
+    "errors": [],
+    "tags": [],
+    "assignee": null,
+    "kanbanStatus": "done",
+    "data": {
+      "address": {
+        "sap": "Stampfenbachstrasse 85",
+        "gwr": "Stampfenbachstrasse 85",
+        "match": true
+      },
+      "plz": {
+        "sap": "8006",
+        "gwr": "8006",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'683'456 / 1'248'234",
+        "gwr": "2'683'456 / 1'248'234",
+        "match": true
+      },
+      "egid": {
+        "sap": "3456789",
+        "gwr": "3456789",
+        "match": true
+      },
+      "year": {
+        "sap": "1978",
+        "gwr": "1978",
+        "match": true
+      }
+    },
+    "comments": [
+      {
+        "author": "System",
+        "date": "08.01.2026",
+        "text": "Alle Prüfungen bestanden.",
+        "system": true
+      }
+    ],
+    "age": "0d"
+  },
+  {
+    "id": "1110/5020/AE",
+    "name": "Bern, Bundesgasse 3",
+    "lat": 46.948,
+    "lng": 7.4474,
+    "kanton": "BE",
+    "priority": "medium",
+    "confidence": {
+      "total": 72,
+      "georef": 85,
+      "sap": 60,
+      "gwr": 70
+    },
+    "errors": [
+      {
+        "type": "sap",
+        "title": "Adressformat",
+        "description": "Unterschiedliche Schreibweise der Strasse",
+        "severity": "warning"
+      },
+      {
+        "type": "address",
+        "title": "PLZ Abweichung",
+        "description": "SAP: 3003, GWR: 3011",
+        "severity": "warning"
+      }
+    ],
+    "tags": [
+      "sap",
+      "address"
+    ],
+    "assignee": "T. Weber",
+    "kanbanStatus": "assigned",
+    "data": {
+      "address": {
+        "sap": "Bundesgasse 3",
+        "gwr": "Bundes-Gasse 3",
+        "match": false
+      },
+      "plz": {
+        "sap": "3003",
+        "gwr": "3011",
+        "match": false
+      },
+      "coords": {
+        "sap": "2'600'123 / 1'199'456",
+        "gwr": "2'600'125 / 1'199'458",
+        "match": true
+      },
+      "egid": {
+        "sap": "5678901",
+        "gwr": "5678901",
+        "match": true
+      },
+      "year": {
+        "sap": "1965",
+        "gwr": "1965",
+        "match": true
+      }
+    },
+    "comments": [],
+    "age": "5d"
+  },
+  {
+    "id": "1120/6030/AF",
+    "name": "Chur, Grabenstrasse 1",
+    "lat": 46.8499,
+    "lng": 9.5329,
+    "kanton": "GR",
+    "priority": "high",
+    "confidence": {
+      "total": 35,
+      "georef": 20,
+      "sap": 50,
+      "gwr": 35
+    },
+    "errors": [
+      {
+        "type": "georef",
+        "title": "Massive Abweichung",
+        "description": "Koordinaten weichen um 234m ab",
+        "severity": "critical"
+      },
+      {
+        "type": "gwr",
+        "title": "Falsches Gebäude",
+        "description": "EGID verweist auf anderes Gebäude",
+        "severity": "critical"
+      }
+    ],
+    "tags": [
+      "georef",
+      "gwr"
+    ],
+    "assignee": null,
+    "kanbanStatus": "open",
+    "data": {
+      "address": {
+        "sap": "Grabenstrasse 1",
+        "gwr": "Grabenstrasse 1",
+        "match": true
+      },
+      "plz": {
+        "sap": "7000",
+        "gwr": "7000",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'759'876 / 1'190'234",
+        "gwr": "2'759'650 / 1'190'100",
+        "match": false
+      },
+      "egid": {
+        "sap": "9012345",
+        "gwr": "9012999",
+        "match": false
+      },
+      "year": {
+        "sap": "1920",
+        "gwr": "1985",
+        "match": false
+      }
+    },
+    "comments": [
+      {
+        "author": "System",
+        "date": "05.01.2026",
+        "text": "Kritischer Fehler erkannt - manuelle Prüfung erforderlich",
+        "system": true
+      }
+    ],
+    "age": "10d"
+  },
+  {
+    "id": "1100/4051/AG",
+    "name": "Winterthur, Technikumstrasse 8",
+    "lat": 47.4979,
+    "lng": 8.7246,
+    "kanton": "ZH",
+    "priority": "medium",
+    "confidence": {
+      "total": 65,
+      "georef": 80,
+      "sap": 55,
+      "gwr": 60
+    },
+    "errors": [
+      {
+        "type": "sap",
+        "title": "Fehlende Attribute",
+        "description": "Nutzungsart nicht erfasst",
+        "severity": "warning"
+      }
+    ],
+    "tags": [
+      "sap"
+    ],
+    "assignee": "A. Meier",
+    "kanbanStatus": "assigned",
+    "data": {
+      "address": {
+        "sap": "Technikumstrasse 8",
+        "gwr": "Technikumstrasse 8",
+        "match": true
+      },
+      "plz": {
+        "sap": "8400",
+        "gwr": "8400",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'697'123 / 1'261'456",
+        "gwr": "2'697'125 / 1'261'458",
+        "match": true
+      },
+      "egid": {
+        "sap": "2345678",
+        "gwr": "2345678",
+        "match": true
+      },
+      "year": {
+        "sap": "—",
+        "gwr": "2001",
+        "match": false
+      }
+    },
+    "comments": [],
+    "age": "4d"
+  },
+  {
+    "id": "1080/2022/AH",
+    "name": "Frauenfeld, Schlossmühlestrasse 15",
+    "lat": 47.5533,
+    "lng": 8.8987,
+    "kanton": "TG",
+    "priority": "low",
+    "confidence": {
+      "total": 82,
+      "georef": 90,
+      "sap": 75,
+      "gwr": 80
+    },
+    "errors": [
+      {
+        "type": "gwr",
+        "title": "Gebäudefläche",
+        "description": "Differenz von 12m² zur GWR-Angabe",
+        "severity": "minor"
+      }
+    ],
+    "tags": [
+      "gwr"
+    ],
+    "assignee": null,
+    "kanbanStatus": "open",
+    "data": {
+      "address": {
+        "sap": "Schlossmühlestrasse 15",
+        "gwr": "Schlossmühlestrasse 15",
+        "match": true
+      },
+      "plz": {
+        "sap": "8510",
+        "gwr": "8510",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'709'876 / 1'269'234",
+        "gwr": "2'709'878 / 1'269'236",
+        "match": true
+      },
+      "egid": {
+        "sap": "4567890",
+        "gwr": "4567890",
+        "match": true
+      },
+      "year": {
+        "sap": "1995",
+        "gwr": "1995",
+        "match": true
+      }
+    },
+    "comments": [],
+    "age": "1d"
+  },
+  {
+    "id": "1130/7010/AI",
+    "name": "Basel, Elisabethenstrasse 51",
+    "lat": 47.548,
+    "lng": 7.5896,
+    "kanton": "BS",
+    "priority": "low",
+    "confidence": {
+      "total": 95,
+      "georef": 98,
+      "sap": 92,
+      "gwr": 95
+    },
+    "errors": [],
+    "tags": [],
+    "assignee": null,
+    "kanbanStatus": "done",
+    "data": {
+      "address": {
+        "sap": "Elisabethenstrasse 51",
+        "gwr": "Elisabethenstrasse 51",
+        "match": true
+      },
+      "plz": {
+        "sap": "4051",
+        "gwr": "4051",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'611'234 / 1'267'890",
+        "gwr": "2'611'234 / 1'267'890",
+        "match": true
+      },
+      "egid": {
+        "sap": "6789012",
+        "gwr": "6789012",
+        "match": true
+      },
+      "year": {
+        "sap": "2010",
+        "gwr": "2010",
+        "match": true
+      }
+    },
+    "comments": [],
+    "age": "0d"
+  },
+  {
+    "id": "1140/8020/AJ",
+    "name": "Luzern, Hirschengraben 15",
+    "lat": 47.0502,
+    "lng": 8.3093,
+    "kanton": "LU",
+    "priority": "medium",
+    "confidence": {
+      "total": 70,
+      "georef": 75,
+      "sap": 68,
+      "gwr": 67
+    },
+    "errors": [
+      {
+        "type": "address",
+        "title": "Hausnummer",
+        "description": "SAP: 15, GWR: 15a",
+        "severity": "warning"
+      }
+    ],
+    "tags": [
+      "address"
+    ],
+    "assignee": "M. Keller",
+    "kanbanStatus": "review",
+    "data": {
+      "address": {
+        "sap": "Hirschengraben 15",
+        "gwr": "Hirschengraben 15a",
+        "match": false
+      },
+      "plz": {
+        "sap": "6003",
+        "gwr": "6003",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'666'123 / 1'211'456",
+        "gwr": "2'666'125 / 1'211'458",
+        "match": true
+      },
+      "egid": {
+        "sap": "7890123",
+        "gwr": "7890123",
+        "match": true
+      },
+      "year": {
+        "sap": "1975",
+        "gwr": "1975",
+        "match": true
+      }
+    },
+    "comments": [
+      {
+        "author": "M. Keller",
+        "date": "13.01.2026",
+        "text": "Vor Ort geprüft - Hausnummer ist 15a.",
+        "system": false
+      }
+    ],
+    "age": "2d"
+  },
+  {
+    "id": "1150/9030/AK",
+    "name": "Genf, Rue de Lausanne 65",
+    "lat": 46.2138,
+    "lng": 6.149,
+    "kanton": "GE",
+    "priority": "high",
+    "confidence": {
+      "total": 28,
+      "georef": 10,
+      "sap": 45,
+      "gwr": 30
+    },
+    "errors": [
+      {
+        "type": "georef",
+        "title": "Position falsch",
+        "description": "Gebäude am falschen Standort eingetragen",
+        "severity": "critical"
+      },
+      {
+        "type": "sap",
+        "title": "Daten veraltet",
+        "description": "Letzte Aktualisierung vor 5 Jahren",
+        "severity": "warning"
+      }
+    ],
+    "tags": [
+      "georef",
+      "sap"
+    ],
+    "assignee": null,
+    "kanbanStatus": "open",
+    "data": {
+      "address": {
+        "sap": "Rue de Lausanne 65",
+        "gwr": "Rue de Lausanne 65",
+        "match": true
+      },
+      "plz": {
+        "sap": "1202",
+        "gwr": "1202",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'500'000 / 1'118'000",
+        "gwr": "2'500'456 / 1'118'789",
+        "match": false
+      },
+      "egid": {
+        "sap": "—",
+        "gwr": "8901234",
+        "match": false
+      },
+      "year": {
+        "sap": "1960",
+        "gwr": "1962",
+        "match": false
+      }
+    },
+    "comments": [],
+    "age": "14d"
+  },
+  {
+    "id": "1160/1040/AL",
+    "name": "Lugano, Via Nassa 29",
+    "lat": 46.005,
+    "lng": 8.952,
+    "kanton": "TI",
+    "priority": "low",
+    "confidence": {
+      "total": 85,
+      "georef": 92,
+      "sap": 80,
+      "gwr": 82
+    },
+    "errors": [
+      {
+        "type": "gwr",
+        "title": "Stockwerke",
+        "description": "SAP: 4, GWR: 3",
+        "severity": "minor"
+      }
+    ],
+    "tags": [
+      "gwr"
+    ],
+    "assignee": "S. Brunner",
+    "kanbanStatus": "assigned",
+    "data": {
+      "address": {
+        "sap": "Via Nassa 29",
+        "gwr": "Via Nassa 29",
+        "match": true
+      },
+      "plz": {
+        "sap": "6900",
+        "gwr": "6900",
+        "match": true
+      },
+      "coords": {
+        "sap": "2'717'234 / 1'095'678",
+        "gwr": "2'717'236 / 1'095'680",
+        "match": true
+      },
+      "egid": {
+        "sap": "9012345",
+        "gwr": "9012345",
+        "match": true
+      },
+      "year": {
+        "sap": "1988",
+        "gwr": "1988",
+        "match": true
+      }
+    },
+    "comments": [],
+    "age": "6d"
+  }
+]

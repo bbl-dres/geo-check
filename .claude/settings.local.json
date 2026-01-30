@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m http.server:*)",
+      "Bash(timeout:*)",
+      "Bash(powershell -Command \"$content = Get-Content index.html -Raw; $pattern = ''\\(?s\\)  <!-- REMOVE_START -->.*?<!-- REMOVE_END -->\\\\r?\\\\n''; $content = $content -replace $pattern, ''''; Set-Content index.html -Value $content -NoNewline\")",
+      "Bash(python -c:*)"
+    ]
+  }
+}
