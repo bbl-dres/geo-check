@@ -10,7 +10,8 @@
       "WebFetch(domain:docs.geo.admin.ch)",
       "WebFetch(domain:api3.geo.admin.ch)",
       "Bash(curl:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(git -C \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\geo-check\" log --oneline -10)"
     ]
   }
 }
