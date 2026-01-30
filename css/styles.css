@@ -568,6 +568,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   min-width: 400px;
   position: relative;
   min-height: 300px;
+  border: 3px solid transparent;
+  transition: border-color var(--transition-base);
+}
+
+.map-panel.edit-mode {
+  border-color: var(--color-critical);
 }
 
 #map {
@@ -1324,29 +1330,26 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   line-height: var(--leading-normal);
 }
 
-/* Status Section */
+/* Status Section - Grid layout for consistent alignment */
 .status-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: var(--space-md) var(--space-lg);
+  align-items: center;
 }
 
 .status-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-}
-
-.status-row .assignee-display {
-  flex: 1;
-  min-width: 0;
+  display: contents;
 }
 
 .status-label {
   font-size: var(--font-sm);
   color: var(--text-muted);
-  flex-shrink: 0;
+}
+
+.status-row .status-display,
+.status-row .assignee-display {
+  min-width: 0;
 }
 
 .status-badge {
@@ -1378,27 +1381,116 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--color-success);
 }
 
-.status-action-link {
+/* Status Display - Interactive Dropdown */
+.status-display {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.status-trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-sm) 0;
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: var(--font-sm);
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: color var(--transition-fast);
-  margin-top: var(--space-xs);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
 }
 
-.status-action-link:hover {
-  color: var(--color-success);
+.status-trigger:hover {
+  background: var(--bg-muted);
 }
 
-.status-action-link .icon-sm {
+.status-display.open .status-trigger {
+  border-color: var(--federal-blue);
+}
+
+.status-trigger .icon-sm {
   width: 16px;
   height: 16px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.status-trigger span {
+  flex: 1;
+  text-align: left;
+  font-weight: var(--font-medium);
+}
+
+.status-chevron {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.status-display.open .status-chevron {
+  transform: rotate(180deg);
+}
+
+/* Status Dropdown */
+.status-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--bg-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.status-display.open .status-dropdown {
+  display: block;
+}
+
+.status-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.status-option:hover {
+  background: var(--interactive-hover);
+}
+
+.status-option.selected {
+  background: var(--bg-active);
+}
+
+.status-option .icon-sm {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.status-option span {
+  flex: 1;
+}
+
+.status-option-check {
+  opacity: 0;
+  color: var(--text-primary);
+}
+
+.status-option.selected .status-option-check {
+  opacity: 1;
 }
 
 /* Assignee Display - Interactive Dropdown */
@@ -1623,35 +1715,65 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .data-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .data-table th {
   text-align: left;
   font-weight: var(--font-medium);
-  padding: var(--space-xs) var(--space-sm);
-  border-bottom: 1px solid var(--border-default);
+  padding: var(--space-sm) var(--space-sm);
+  border-bottom: 1px solid var(--border-strong);
   color: var(--text-muted);
   font-size: var(--font-sm);
 }
 
 .data-table td {
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm) var(--space-sm);
   border-bottom: 1px solid var(--border-default);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: var(--font-sm);
+  vertical-align: top;
+  word-wrap: break-word;
 }
 
-.data-table .match {
+/* Column widths */
+.data-table .col-attr {
+  width: 28%;
+  color: var(--text-muted);
+}
+
+.data-table .col-sap {
+  width: 32%;
+}
+
+.data-table .col-gwr {
+  width: 32%;
+  color: var(--text-secondary);
+}
+
+.data-table .col-match {
+  width: 8%;
+  text-align: center;
+  padding-right: 0;
+}
+
+/* Data rows */
+.data-row:last-child td {
+  border-bottom: none;
+}
+
+/* Match indicator icons */
+.match-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.match-icon.match {
   color: var(--color-success);
 }
 
-.data-table .mismatch {
+.match-icon.mismatch {
   color: var(--color-critical);
-}
-
-.data-table .missing {
-  color: var(--text-muted);
-  font-style: italic;
 }
 
 /* Data Correct Button */
@@ -1738,6 +1860,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* Edit Mode Table Styles */
 .edit-row td {
   vertical-align: middle;
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
 }
 
 .edit-cell {
@@ -1746,7 +1870,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .edit-input {
   width: 100%;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-sm);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
   font-size: var(--font-sm);
@@ -1769,35 +1893,16 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* GWR locked column in edit mode */
 .gwr-locked {
-  color: var(--text-muted);
-  background: var(--bg-subtle);
+  color: var(--text-muted) !important;
   font-style: italic;
 }
 
-/* Coordinates cell in edit mode */
-.coords-cell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
+/* Coordinates value in edit mode */
 .coords-value {
   font-family: var(--font-family-mono);
   font-size: var(--font-sm);
   color: var(--text-primary);
-}
-
-.coords-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  font-size: var(--font-xs);
-  color: var(--federal-blue);
-}
-
-.coords-hint .icon-xs {
-  width: 12px;
-  height: 12px;
+  font-weight: var(--font-medium);
 }
 
 /* Draggable marker indicator (Leaflet) */
@@ -1806,27 +1911,22 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .leaflet-marker-icon.draggable .custom-marker {
-  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.3);
-  animation: pulse-marker 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 4px var(--color-critical), 0 0 12px rgba(220, 38, 38, 0.5);
+  animation: pulse-marker 1s ease-in-out infinite;
 }
 
 @keyframes pulse-marker {
   0%, 100% {
-    box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.3);
+    box-shadow: 0 0 0 4px var(--color-critical), 0 0 12px rgba(220, 38, 38, 0.5);
+    transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 0 6px rgba(26, 54, 93, 0.15);
+    box-shadow: 0 0 0 8px rgba(220, 38, 38, 0.3), 0 0 20px rgba(220, 38, 38, 0.4);
+    transform: scale(1.05);
   }
 }
 
-/* Edit mode indicator on detail panel */
-.detail-panel.edit-mode {
-  border-left: 3px solid var(--federal-blue);
-}
-
-.detail-panel.edit-mode .detail-header {
-  background: linear-gradient(to bottom, rgba(26, 54, 93, 0.05), transparent);
-}
+/* Edit mode - no special styling on detail panel, only map border */
 
 /* Comments */
 .comment {

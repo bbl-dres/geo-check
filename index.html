@@ -185,7 +185,7 @@
             <div id="map"></div>
 
             <!-- Layer Visibility Widget -->
-            <div class="layer-widget" id="layer-widget">
+            <div class="layer-widget collapsed" id="layer-widget">
               <button class="layer-widget-trigger" id="layer-widget-trigger" title="Kartenebenen">
                 <i data-lucide="layers" class="icon"></i>
               </button>
@@ -360,7 +360,9 @@
                 <div class="status-section">
                   <div class="status-row">
                     <span class="status-label">Status</span>
-                    <span class="status-badge" id="detail-status">Backlog</span>
+                    <div class="status-display" id="status-display">
+                      <!-- Populated by JS -->
+                    </div>
                   </div>
                   <div class="status-row">
                     <span class="status-label">Zugewiesen</span>
@@ -368,10 +370,6 @@
                       <!-- Populated by JS -->
                     </div>
                   </div>
-                  <button class="status-action-link" id="btn-done" type="button">
-                    <i data-lucide="check-circle" class="icon-sm"></i>
-                    Als erledigt markieren
-                  </button>
                 </div>
               </div>
             </div>
@@ -385,9 +383,10 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Attribut</th>
-                      <th>SAP RE-FX</th>
-                      <th>GWR</th>
+                      <th class="col-attr">Attribut</th>
+                      <th class="col-sap">SAP RE-FX</th>
+                      <th class="col-gwr">GWR</th>
+                      <th class="col-match"></th>
                     </tr>
                   </thead>
                   <tbody id="data-comparison">
@@ -1424,24 +1423,10 @@
         commentsCountEl.style.display = 'none';
       }
 
-      // Status
-      const statusEl = document.getElementById('detail-status');
-      const statusLabels = {
-        'backlog': 'Backlog',
-        'inprogress': 'In Bearbeitung',
-        'clarification': 'Klärung',
-        'done': 'Erledigt'
-      };
-      const statusClasses = {
-        'backlog': 'status-backlog',
-        'inprogress': 'status-inprogress',
-        'clarification': 'status-clarification',
-        'done': 'status-done'
-      };
-      statusEl.textContent = statusLabels[building.kanbanStatus] || building.kanbanStatus;
-      statusEl.className = 'status-badge ' + (statusClasses[building.kanbanStatus] || '');
+      // Status dropdown
+      renderStatusDisplay(building);
 
-      // Assignee
+      // Assignee dropdown
       renderAssigneeDisplay(building);
 
       // Events
@@ -1467,40 +1452,46 @@
         const isCoords = key === 'coords';
         const sapValue = isCoords ? sapCoords : val.sap;
         const gwrValue = val.gwr;
+        const isMatch = val.match;
+        const matchIcon = isMatch
+          ? '<i data-lucide="check" class="match-icon match"></i>'
+          : '<i data-lucide="x" class="match-icon mismatch"></i>';
 
         if (isEditMode) {
           // Edit mode rendering
           if (isCoords) {
-            // Coordinates - read-only but shows live position, with map hint
+            // Coordinates - read-only, updates when marker is dragged
             return `
-              <tr class="edit-row">
-                <td>${getDataLabel(key)}</td>
-                <td class="edit-cell coords-cell">
+              <tr class="data-row edit-row">
+                <td class="col-attr">${getDataLabel(key)}</td>
+                <td class="col-sap edit-cell">
                   <span class="coords-value" id="edit-coords-display">${sapValue}</span>
-                  <span class="coords-hint"><i data-lucide="move" class="icon-xs"></i> Punkt verschieben</span>
                 </td>
-                <td class="gwr-locked">${gwrValue}</td>
+                <td class="col-gwr gwr-locked">${gwrValue}</td>
+                <td class="col-match"></td>
               </tr>
             `;
           } else {
             // Regular editable field
             return `
-              <tr class="edit-row">
-                <td>${getDataLabel(key)}</td>
-                <td class="edit-cell">
+              <tr class="data-row edit-row">
+                <td class="col-attr">${getDataLabel(key)}</td>
+                <td class="col-sap edit-cell">
                   <input type="text" class="edit-input" data-field="${key}" value="${sapValue === '—' || sapValue === 'Fehlt' ? '' : sapValue}" placeholder="${gwrValue !== '—' ? gwrValue : ''}">
                 </td>
-                <td class="gwr-locked">${gwrValue}</td>
+                <td class="col-gwr gwr-locked">${gwrValue}</td>
+                <td class="col-match"></td>
               </tr>
             `;
           }
         } else {
-          // View mode rendering (original)
+          // View mode rendering
           return `
-            <tr>
-              <td>${getDataLabel(key)}</td>
-              <td class="${val.match ? 'match' : (val.sap === 'Fehlt' || val.sap === '—' ? 'missing' : 'mismatch')}">${val.sap}</td>
-              <td class="${val.match ? 'match' : (gwrValue === '—' ? 'missing' : 'mismatch')}">${gwrValue}</td>
+            <tr class="data-row">
+              <td class="col-attr">${getDataLabel(key)}</td>
+              <td class="col-sap">${sapValue}</td>
+              <td class="col-gwr">${gwrValue}</td>
+              <td class="col-match">${matchIcon}</td>
             </tr>
           `;
         }
@@ -1564,8 +1555,9 @@
       // Re-render data comparison in edit mode
       renderDataComparison(building);
 
-      // Add edit mode class to detail panel
+      // Add edit mode class to detail panel and map
       document.getElementById('detail-panel')?.classList.add('edit-mode');
+      document.querySelector('.map-panel')?.classList.add('edit-mode');
 
       // Refresh icons for new elements
       if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -1642,8 +1634,9 @@
       state.originalBuildingData = null;
       state.editedCoords = null;
 
-      // Remove edit mode class
+      // Remove edit mode class from detail panel and map
       document.getElementById('detail-panel')?.classList.remove('edit-mode');
+      document.querySelector('.map-panel')?.classList.remove('edit-mode');
 
       // Re-render everything
       renderDataComparison(building);
@@ -1652,6 +1645,83 @@
 
       // Refresh icons
       if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    // Status options for dropdown
+    const statusOptions = [
+      { value: 'backlog', label: 'Backlog', icon: 'layers' },
+      { value: 'inprogress', label: 'In Bearbeitung', icon: 'play-circle' },
+      { value: 'clarification', label: 'Klärung', icon: 'help-circle' },
+      { value: 'done', label: 'Erledigt', icon: 'check-circle' }
+    ];
+
+    function renderStatusDisplay(building) {
+      const container = document.getElementById('status-display');
+      const currentStatus = building.kanbanStatus || 'backlog';
+      const currentOption = statusOptions.find(s => s.value === currentStatus) || statusOptions[0];
+
+      // Build dropdown options
+      const options = statusOptions.map(opt => `
+        <button class="status-option ${currentStatus === opt.value ? 'selected' : ''}" data-status="${opt.value}">
+          <i data-lucide="${opt.icon}" class="icon-sm"></i>
+          <span>${opt.label}</span>
+          <i data-lucide="check" class="icon-sm status-option-check"></i>
+        </button>
+      `).join('');
+
+      container.innerHTML = `
+        <button class="status-trigger" type="button">
+          <i data-lucide="${currentOption.icon}" class="icon-sm"></i>
+          <span>${currentOption.label}</span>
+          <i data-lucide="chevron-down" class="icon-sm status-chevron"></i>
+        </button>
+        <div class="status-dropdown">
+          ${options}
+        </div>
+      `;
+
+      // Setup event listeners
+      const trigger = container.querySelector('.status-trigger');
+
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        container.classList.toggle('open');
+      });
+
+      // Handle option selection
+      container.querySelectorAll('.status-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const newStatus = option.dataset.status;
+          updateBuildingStatus(building.id, newStatus);
+          container.classList.remove('open');
+        });
+      });
+
+      // Close on outside click
+      document.addEventListener('click', (e) => {
+        if (!container.contains(e.target)) {
+          container.classList.remove('open');
+        }
+      }, { once: true });
+
+      // Refresh Lucide icons
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+
+    function updateBuildingStatus(buildingId, newStatus) {
+      const building = buildings.find(b => b.id === buildingId);
+      if (building) {
+        building.kanbanStatus = newStatus;
+        building.lastUpdate = new Date().toISOString();
+        building.lastUpdateBy = 'M. Keller';
+
+        // Re-render
+        renderStatusDisplay(building);
+        renderKanbanBoard();
+        if (tableVisible) renderTableView();
+        updateCounts();
+        updateStatistik();
+      }
     }
 
     function renderAssigneeDisplay(building) {
@@ -2020,24 +2090,6 @@
       // Edit save button
       document.getElementById('btn-edit-save').addEventListener('click', () => {
         exitEditMode(true); // true = save changes
-      });
-
-      // Mark as done button
-      document.getElementById('btn-done').addEventListener('click', () => {
-        if (!state.selectedBuildingId) return;
-        const building = buildings.find(b => b.id === state.selectedBuildingId);
-        if (!building) return;
-
-        // Update status to done
-        building.kanbanStatus = 'done';
-        building.lastUpdate = new Date().toISOString();
-        building.lastUpdateBy = 'M. Keller';
-
-        // Re-render
-        renderDetailPanel(building);
-        renderKanbanBoard();
-        renderBuildingsList();
-        updateStatistik();
       });
 
       // Global search
