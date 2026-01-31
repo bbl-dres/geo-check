@@ -45,7 +45,8 @@ import {
 import {
   renderKanbanBoard,
   setupKanbanDragDrop,
-  setCallbacks as setKanbanCallbacks
+  setCallbacks as setKanbanCallbacks,
+  updateKanbanSelection
 } from './kanban.js';
 
 import {
@@ -223,6 +224,13 @@ function switchTab(tabId, shouldUpdateURL = true) {
     content.classList.toggle('active', content.id === `tab-${tabId}`);
   });
 
+  // Detail panel visibility: show only on karte and aufgaben tabs
+  const detailPanel = document.getElementById('detail-panel');
+  const showDetailPanel = ['karte', 'aufgaben'].includes(tabId) && state.selectedBuildingId;
+  if (detailPanel) {
+    detailPanel.classList.toggle('visible', showDetailPanel);
+  }
+
   // Resize map if switching to karte tab
   if (tabId === 'karte' && map) {
     setTimeout(() => map.resize(), 100);
@@ -250,6 +258,9 @@ function selectBuilding(id, shouldUpdateURL = true) {
     document.querySelectorAll('.table-row').forEach(row => {
       row.classList.toggle('selected', row.dataset.id === id);
     });
+
+    // Update kanban selection
+    updateKanbanSelection(id);
 
     // Update map
     selectMarker(id);
@@ -494,6 +505,7 @@ function setupEventListeners() {
     state.selectedBuildingId = null;
     renderDetailPanel(null);
     deselectAllMarkers();
+    updateKanbanSelection(null);  // Clear kanban selection
     updateURL();
   });
 
@@ -579,7 +591,7 @@ function setupModuleCallbacks() {
 
   // Kanban callbacks
   setKanbanCallbacks({
-    onSelectBuilding: selectBuildingAndSwitch,
+    onSelectBuilding: selectBuilding,  // No longer switches tab
     onDataChange: () => {
       if (tableVisible) renderTableView();
     }

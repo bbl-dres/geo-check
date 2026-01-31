@@ -43,7 +43,8 @@
       }
     },
     "lastUpdate": "2026-01-27T14:30:00Z",
-    "lastUpdateBy": "M. Keller"
+    "lastUpdateBy": "M. Keller",
+    "dueDate": "2026-02-15"
   },
   {
     "id": "1080/2021/AB",
@@ -89,7 +90,8 @@
       }
     },
     "lastUpdate": "2026-01-23T09:15:00Z",
-    "lastUpdateBy": "System"
+    "lastUpdateBy": "System",
+    "dueDate": "2026-01-25"
   },
   {
     "id": "1090/3010/AC",
@@ -135,7 +137,8 @@
       }
     },
     "lastUpdate": "2026-01-28T11:45:00Z",
-    "lastUpdateBy": "S. Brunner"
+    "lastUpdateBy": "S. Brunner",
+    "dueDate": "2026-02-03"
   },
   {
     "id": "1100/4050/AD",

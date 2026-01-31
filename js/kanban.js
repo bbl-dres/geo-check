@@ -45,17 +45,24 @@ export function renderKanbanBoard() {
       const confidenceClass = building.confidence.total < 50 ? 'critical' :
                               building.confidence.total < 80 ? 'warning' : 'ok';
 
+      // Priority icon with arrow
+      const priorityIcon = getPriorityIcon(building.priority);
+
+      // Assignee avatar
       const assigneeHtml = building.assignee
-        ? `<div class="kanban-card-assignee">
-             <div class="kanban-avatar">${getInitials(building.assignee)}</div>
-           </div>`
-        : '';
+        ? `<div class="kanban-avatar">${getInitials(building.assignee)}</div>`
+        : `<div class="kanban-avatar placeholder"><i data-lucide="user" class="icon"></i></div>`;
+
+      // Due date
+      const dueDateHtml = building.dueDate
+        ? `<span class="kanban-card-due ${getDueDateClass(building.dueDate)}">${formatDueDate(building.dueDate)}</span>`
+        : `<span class="kanban-card-due placeholder">—</span>`;
 
       return `
         <div class="kanban-card" draggable="true" data-building-id="${building.id}">
           <div class="kanban-card-header">
             <span class="kanban-card-id">${building.id}</span>
-            <span class="priority-indicator ${confidenceClass}"></span>
+            ${priorityIcon}
           </div>
           <div class="kanban-card-title">${building.name}</div>
           <div class="kanban-card-meta">
@@ -63,9 +70,7 @@ export function renderKanbanBoard() {
             <span class="kanban-card-confidence ${confidenceClass}">${building.confidence.total}%</span>
           </div>
           <div class="kanban-card-footer">
-            <div class="kanban-card-errors">
-              ${building.errors.length > 0 ? `<span class="error-count">${building.errors.length}</span>` : ''}
-            </div>
+            ${dueDateHtml}
             ${assigneeHtml}
           </div>
         </div>
@@ -80,9 +85,72 @@ export function renderKanbanBoard() {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
+// ========================================
+// Kanban Selection
+// ========================================
+export function updateKanbanSelection(selectedId) {
+  document.querySelectorAll('.kanban-card').forEach(card => {
+    card.classList.toggle('selected', card.dataset.buildingId === selectedId);
+  });
+}
+
 function getInitials(name) {
   if (!name) return '?';
   return name.split(' ').map(n => n[0]).join('').toUpperCase();
+}
+
+function getPriorityIcon(priority) {
+  const icons = {
+    high: '<span class="priority-icon priority-high"><i data-lucide="chevrons-up" class="icon"></i></span>',
+    medium: '<span class="priority-icon priority-medium"><i data-lucide="chevron-up" class="icon"></i></span>',
+    low: '<span class="priority-icon priority-low"><i data-lucide="minus" class="icon"></i></span>'
+  };
+  return icons[priority] || icons.medium;
+}
+
+function formatDueDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  if (dateOnly.getTime() === today.getTime()) {
+    return 'Heute';
+  }
+  if (dateOnly.getTime() === tomorrow.getTime()) {
+    return 'Morgen';
+  }
+
+  // Format as "15. Jan" or "15. Jan 2027" if different year
+  const day = date.getDate();
+  const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+  const month = monthNames[date.getMonth()];
+
+  if (date.getFullYear() !== today.getFullYear()) {
+    return `${day}. ${month} ${date.getFullYear()}`;
+  }
+  return `${day}. ${month}`;
+}
+
+function getDueDateClass(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.ceil((dateOnly - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'overdue';
+  if (diffDays <= 7) return 'soon';
+  return '';
 }
 
 // ========================================

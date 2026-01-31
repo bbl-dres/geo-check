@@ -64,14 +64,17 @@
     <div class="filter-bar" id="filter-bar">
       <div class="filter-chips">
         <button class="filter-chip" data-filter="high">
+          <i data-lucide="chevrons-up" class="icon-sm"></i>
           <span>Hoch</span>
           <span class="count" id="count-high">(3)</span>
         </button>
         <button class="filter-chip" data-filter="medium">
+          <i data-lucide="chevron-up" class="icon-sm"></i>
           <span>Mittel</span>
           <span class="count" id="count-medium">(4)</span>
         </button>
         <button class="filter-chip" data-filter="low">
+          <i data-lucide="minus" class="icon-sm"></i>
           <span>Niedrig</span>
           <span class="count" id="count-low">(5)</span>
         </button>
@@ -197,6 +200,10 @@
         <span id="filtered-count">12</span> / <span id="total-count">20</span> Gebäude
       </div>
     </div>
+
+    <!-- Content with shared detail panel -->
+    <div class="content-with-panel">
+      <div class="tabs-content">
 
     <!-- Karte Tab -->
     <div class="tab-content active" id="tab-karte">
@@ -413,161 +420,13 @@
             </div>
           </div>
         </div>
-
-        <!-- Detail Panel -->
-        <div class="detail-panel" id="detail-panel">
-          <div class="detail-resize-handle" id="detail-resize-handle">
-            <div class="resize-handle-bar-vertical"></div>
-          </div>
-          <div class="detail-content" id="detail-content">
-            <div class="detail-header">
-              <button class="detail-close-btn" id="detail-close-btn" title="Schliessen">
-                <i data-lucide="x"></i>
-              </button>
-              <h2 class="detail-title" id="detail-title">Building Name</h2>
-              <p class="detail-subtitle" id="detail-sap-id">SAP ID</p>
-            </div>
-
-            <div class="detail-section accordion open" data-accordion="konfidenz">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Konfidenz</span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <div class="confidence-container">
-                  <div class="confidence-total" id="confidence-total">67%</div>
-                  <div class="confidence-bars">
-                    <div class="confidence-bar-row">
-                      <span class="confidence-bar-label">Georef</span>
-                      <div class="confidence-bar-track">
-                        <div class="confidence-bar-fill" id="bar-georef" style="width: 67%"></div>
-                      </div>
-                      <span class="confidence-bar-value" id="val-georef">67%</span>
-                    </div>
-                    <div class="confidence-bar-row">
-                      <span class="confidence-bar-label">SAP</span>
-                      <div class="confidence-bar-track">
-                        <div class="confidence-bar-fill ok" id="bar-sap" style="width: 100%"></div>
-                      </div>
-                      <span class="confidence-bar-value" id="val-sap">100%</span>
-                    </div>
-                    <div class="confidence-bar-row">
-                      <span class="confidence-bar-label">GWR</span>
-                      <div class="confidence-bar-track">
-                        <div class="confidence-bar-fill ok" id="bar-gwr" style="width: 100%"></div>
-                      </div>
-                      <span class="confidence-bar-value" id="val-gwr">100%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="detail-section accordion" data-accordion="fehler">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Fehler</span>
-                <span class="accordion-count" id="error-count"></span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <div id="error-cards">
-                  <!-- Populated by JS -->
-                </div>
-              </div>
-            </div>
-
-            <div class="detail-section accordion open" data-accordion="status">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Status & Zugewiesen</span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <div class="status-section">
-                  <div class="status-row">
-                    <span class="status-label">Status</span>
-                    <div class="status-display" id="status-display">
-                      <!-- Populated by JS -->
-                    </div>
-                  </div>
-                  <div class="status-row">
-                    <span class="status-label">Zugewiesen</span>
-                    <div class="assignee-display" id="assignee-display">
-                      <!-- Populated by JS -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="detail-section accordion open" data-accordion="datenvergleich">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Datenvergleich</span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <table class="data-table">
-                  <thead>
-                    <tr>
-                      <th class="col-attr">Attribut</th>
-                      <th class="col-sap">SAP RE-FX</th>
-                      <th class="col-gwr">GWR</th>
-                      <th class="col-match"></th>
-                    </tr>
-                  </thead>
-                  <tbody id="data-comparison">
-                    <!-- Populated by JS -->
-                  </tbody>
-                </table>
-                <div class="data-actions">
-                  <button class="data-correct-btn" id="btn-correct" type="button">Daten bearbeiten</button>
-                  <div class="edit-actions" id="edit-actions" style="display: none;">
-                    <button class="edit-cancel-btn" id="btn-edit-cancel" type="button">Abbrechen</button>
-                    <button class="edit-save-btn" id="btn-edit-save" type="button">Speichern</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="detail-section accordion" data-accordion="kommentare">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Kommentare</span>
-                <span class="accordion-count" id="comments-count"></span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <div id="comments-list">
-                  <!-- Populated by JS -->
-                </div>
-                <div class="comment-input-section">
-                  <textarea class="comment-input" id="comment-input" placeholder="Kommentar schreiben..." rows="2"></textarea>
-                  <div class="comment-actions">
-                    <button class="action-btn secondary btn-sm" id="btn-cancel-comment" type="button">Abbrechen</button>
-                    <button class="action-btn primary btn-sm" id="btn-submit-comment" type="button">Speichern</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="detail-section accordion" data-accordion="ereignisse">
-              <button class="accordion-header" type="button">
-                <span class="accordion-title">Ereignisse</span>
-                <span class="accordion-count" id="events-count"></span>
-                <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-              </button>
-              <div class="accordion-content">
-                <div class="events-list" id="events-list">
-                  <!-- Populated by JS -->
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- NO detail panel here anymore -->
       </div>
     </div>
 
     <!-- Aufgaben Tab -->
     <div class="tab-content" id="tab-aufgaben">
-      <div class="aufgaben-content">
+      <div class="aufgaben-layout">
         <div class="kanban-container">
           <div class="kanban-column">
             <div class="kanban-header">
@@ -877,6 +736,165 @@
         </div>
       </div>
     </div>
+
+      </div><!-- /tabs-content -->
+
+      <!-- Shared Detail Panel (moved here from inside tab-karte) -->
+      <div class="detail-panel" id="detail-panel">
+        <div class="detail-resize-handle" id="detail-resize-handle">
+          <div class="resize-handle-bar-vertical"></div>
+        </div>
+        <div class="detail-content" id="detail-content">
+          <div class="detail-header">
+            <button class="detail-close-btn" id="detail-close-btn" title="Schliessen">
+              <i data-lucide="x"></i>
+            </button>
+            <h2 class="detail-title" id="detail-title">Building Name</h2>
+            <p class="detail-subtitle" id="detail-sap-id">SAP ID</p>
+          </div>
+
+          <div class="detail-section accordion open" data-accordion="konfidenz">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Konfidenz</span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div class="confidence-container">
+                <div class="confidence-total" id="confidence-total">67%</div>
+                <div class="confidence-bars">
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">Georef</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill" id="bar-georef" style="width: 67%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-georef">67%</span>
+                  </div>
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">SAP</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill ok" id="bar-sap" style="width: 100%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-sap">100%</span>
+                  </div>
+                  <div class="confidence-bar-row">
+                    <span class="confidence-bar-label">GWR</span>
+                    <div class="confidence-bar-track">
+                      <div class="confidence-bar-fill ok" id="bar-gwr" style="width: 100%"></div>
+                    </div>
+                    <span class="confidence-bar-value" id="val-gwr">100%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section accordion" data-accordion="fehler">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Fehler</span>
+              <span class="accordion-count" id="error-count"></span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div id="error-cards">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section accordion open" data-accordion="status">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Status & Zugewiesen</span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div class="status-section">
+                <div class="status-row">
+                  <span class="status-label">Priorität</span>
+                  <div class="priority-display" id="priority-display">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+                <div class="status-row">
+                  <span class="status-label">Status</span>
+                  <div class="status-display" id="status-display">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+                <div class="status-row">
+                  <span class="status-label">Zugewiesen</span>
+                  <div class="assignee-display" id="assignee-display">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section accordion open" data-accordion="datenvergleich">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Datenvergleich</span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th class="col-attr">Attribut</th>
+                    <th class="col-sap">SAP RE-FX</th>
+                    <th class="col-gwr">GWR</th>
+                    <th class="col-match"></th>
+                  </tr>
+                </thead>
+                <tbody id="data-comparison">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+              <div class="data-actions">
+                <button class="data-correct-btn" id="btn-correct" type="button">Daten bearbeiten</button>
+                <div class="edit-actions" id="edit-actions" style="display: none;">
+                  <button class="edit-cancel-btn" id="btn-edit-cancel" type="button">Abbrechen</button>
+                  <button class="edit-save-btn" id="btn-edit-save" type="button">Speichern</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section accordion" data-accordion="kommentare">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Kommentare</span>
+              <span class="accordion-count" id="comments-count"></span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div id="comments-list">
+                <!-- Populated by JS -->
+              </div>
+              <div class="comment-input-section">
+                <textarea class="comment-input" id="comment-input" placeholder="Kommentar schreiben..." rows="2"></textarea>
+                <div class="comment-actions">
+                  <button class="action-btn secondary btn-sm" id="btn-cancel-comment" type="button">Abbrechen</button>
+                  <button class="action-btn primary btn-sm" id="btn-submit-comment" type="button">Speichern</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section accordion" data-accordion="ereignisse">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Ereignisse</span>
+              <span class="accordion-count" id="events-count"></span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div class="events-list" id="events-list">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content-with-panel -->
   </main>
 
   <!-- Footer -->

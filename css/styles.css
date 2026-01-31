@@ -203,6 +203,55 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   align-items: center;
 }
 
+/* --- Priority Badges (Confluence style with arrows) --- */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.priority-badge .icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+.priority-badge.priority-high,
+.priority-badge.priority-medium,
+.priority-badge.priority-low {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
+/* Priority icon in kanban cards (standalone) */
+.priority-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.priority-icon .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.priority-icon.priority-high,
+.priority-icon.priority-medium,
+.priority-icon.priority-low {
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+}
+
 /* --- Avatar --- */
 .avatar {
   display: flex;
@@ -653,6 +702,17 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-muted);
 }
 
+/* Priority filter chips with icons */
+.filter-chip .icon-sm {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
+.filter-chip.active .icon-sm {
+  color: var(--text-primary);
+}
+
 /* Priority indicator in filter chips */
 .priority-indicator {
   width: 8px;
@@ -794,6 +854,24 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .filter-total #filtered-count {
   font-weight: var(--font-semibold);
   color: var(--text-primary);
+}
+
+/* ========================================
+   Content with Shared Detail Panel
+   ======================================== */
+.content-with-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.tabs-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ========================================
@@ -1590,6 +1668,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-muted);
 }
 
+.status-row .priority-display,
 .status-row .status-display,
 .status-row .assignee-display {
   min-width: 0;
@@ -1608,6 +1687,111 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border-radius: var(--radius-sm);
   background: var(--bg-muted);
   color: var(--text-secondary);
+}
+
+/* Priority Display Dropdown */
+.priority-display {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.priority-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.priority-trigger:hover {
+  background: var(--bg-muted);
+}
+
+.priority-display.open .priority-trigger {
+  border-color: var(--federal-blue);
+}
+
+.priority-trigger .icon-sm {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.priority-trigger .icon-sm:first-child {
+  color: var(--text-secondary);
+}
+
+.priority-trigger span {
+  flex: 1;
+  text-align: left;
+  font-weight: var(--font-medium);
+}
+
+.priority-chevron {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.priority-display.open .priority-chevron {
+  transform: rotate(180deg);
+}
+
+.priority-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--bg-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.priority-display.open .priority-dropdown {
+  display: block;
+}
+
+.priority-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.priority-option:hover {
+  background: var(--interactive-hover);
+}
+
+.priority-option.selected {
+  background: var(--bg-active);
+}
+
+.priority-option .icon-sm {
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+}
+
+.priority-option span {
+  flex: 1;
 }
 
 /* Status Display Dropdown */
@@ -2283,7 +2467,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* ========================================
    Aufgaben Tab - Kanban
    ======================================== */
-.aufgaben-content {
+.aufgaben-content,
+.aufgaben-layout {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2358,6 +2543,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background: var(--bg-subtle);
 }
 
+.kanban-card.selected {
+  border-color: var(--federal-blue);
+  background: var(--bg-active);
+  box-shadow: 0 0 0 2px rgba(0, 51, 102, 0.15);
+}
+
 .kanban-card[draggable="true"] {
   cursor: grab;
 }
@@ -2385,48 +2576,99 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .kanban-card-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
   margin-bottom: var(--space-xs);
 }
 
-.kanban-card-priority {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-full);
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-
-.kanban-card.high .kanban-card-priority { background: var(--color-critical); }
-.kanban-card.medium .kanban-card-priority { background: var(--color-warning); }
-.kanban-card.low .kanban-card-priority { background: var(--color-success); }
-
-.kanban-card-name {
-  font-weight: var(--font-medium);
-  font-size: var(--font-base);
-  color: var(--text-primary);
-}
-
-.kanban-card-sap-id {
+.kanban-card-id {
   font-size: var(--font-sm);
   font-family: var(--font-family-mono);
   color: var(--text-muted);
-  margin-bottom: var(--space-sm);
 }
 
-.kanban-card .badge-group {
-  margin-bottom: var(--space-sm);
+.kanban-card-title {
+  font-weight: var(--font-medium);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: var(--space-xs);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .kanban-card-meta {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.kanban-card-location {
+  color: var(--text-muted);
+}
+
+.kanban-card-confidence {
+  font-family: var(--font-family-mono);
+}
+
+.kanban-card-confidence.critical { color: var(--color-critical); }
+.kanban-card-confidence.warning { color: var(--color-warning); }
+.kanban-card-confidence.ok { color: var(--color-success); }
+
+.kanban-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-top: var(--space-sm);
   border-top: 1px solid var(--border-default);
-  font-size: var(--font-sm);
+}
+
+.kanban-card-due {
+  font-size: var(--font-xs);
   color: var(--text-muted);
+}
+
+.kanban-card-due.overdue {
+  color: var(--color-critical);
+  font-weight: var(--font-medium);
+}
+
+.kanban-card-due.soon {
+  color: var(--color-warning);
+}
+
+.kanban-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: var(--federal-blue);
+  color: white;
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kanban-avatar.placeholder {
+  background: var(--bg-tertiary);
+  color: var(--text-tertiary);
+}
+
+.kanban-avatar.placeholder .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.kanban-card-due.placeholder {
+  color: var(--text-tertiary);
 }
 
 .kanban-more {

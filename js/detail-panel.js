@@ -25,14 +25,23 @@ const statusOptions = [
   { value: 'done', label: 'Erledigt', icon: 'check-circle' }
 ];
 
+// Priority options for dropdown
+const priorityOptions = [
+  { value: 'high', label: 'Hoch', icon: 'chevrons-up' },
+  { value: 'medium', label: 'Mittel', icon: 'chevron-up' },
+  { value: 'low', label: 'Niedrig', icon: 'minus' }
+];
+
 // Callbacks for external updates
 let onStatusChange = null;
 let onAssigneeChange = null;
+let onPriorityChange = null;
 let onDataChange = null;
 
 export function setCallbacks(callbacks) {
   onStatusChange = callbacks.onStatusChange;
   onAssigneeChange = callbacks.onAssigneeChange;
+  onPriorityChange = callbacks.onPriorityChange;
   onDataChange = callbacks.onDataChange;
 }
 
@@ -52,10 +61,16 @@ export function renderDetailPanel(building) {
     return;
   }
 
-  detailPanel.classList.add('visible');
-  if (map) {
-    // Resize map after panel shows
-    setTimeout(() => map.resize(), 50);
+  // Only show detail panel on karte and aufgaben tabs
+  const currentTab = state.currentTab || 'karte';
+  const showOnTab = ['karte', 'aufgaben'].includes(currentTab);
+
+  if (showOnTab) {
+    detailPanel.classList.add('visible');
+    if (map) {
+      // Resize map after panel shows
+      setTimeout(() => map.resize(), 50);
+    }
   }
 
   document.getElementById('detail-title').textContent = building.name;
@@ -124,6 +139,9 @@ export function renderDetailPanel(building) {
   } else {
     commentsCountEl.style.display = 'none';
   }
+
+  // Priority dropdown
+  renderPriorityDisplay(building);
 
   // Status dropdown
   renderStatusDisplay(building);
@@ -337,6 +355,82 @@ export function exitEditMode(save) {
   if (onDataChange) onDataChange();
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+// ========================================
+// Priority Dropdown
+// ========================================
+function renderPriorityDisplay(building) {
+  const container = document.getElementById('priority-display');
+  const currentPriority = building.priority || 'medium';
+  const currentOption = priorityOptions.find(p => p.value === currentPriority) || priorityOptions[1];
+
+  const priorityClass = `priority-${currentPriority}`;
+
+  const options = priorityOptions.map(opt => `
+    <button class="priority-option ${currentPriority === opt.value ? 'selected' : ''}" data-priority="${opt.value}">
+      <span>${opt.label}</span>
+    </button>
+  `).join('');
+
+  container.innerHTML = `
+    <button class="priority-trigger ${priorityClass}" type="button">
+      <span>${currentOption.label}</span>
+      <i data-lucide="chevron-down" class="icon-sm priority-chevron"></i>
+    </button>
+    <div class="priority-dropdown">
+      ${options}
+    </div>
+  `;
+
+  const trigger = container.querySelector('.priority-trigger');
+  let outsideClickHandler = null;
+
+  const closeDropdown = () => {
+    container.classList.remove('open');
+    if (outsideClickHandler) {
+      document.removeEventListener('click', outsideClickHandler);
+      outsideClickHandler = null;
+    }
+  };
+
+  trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = container.classList.toggle('open');
+    if (isOpen) {
+      outsideClickHandler = (evt) => {
+        if (!container.contains(evt.target)) {
+          closeDropdown();
+        }
+      };
+      document.addEventListener('click', outsideClickHandler);
+    } else {
+      closeDropdown();
+    }
+  });
+
+  container.querySelectorAll('.priority-option').forEach(option => {
+    option.addEventListener('click', () => {
+      const newPriority = option.dataset.priority;
+      closeDropdown();
+      updateBuildingPriority(building.id, newPriority);
+    });
+  });
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function updateBuildingPriority(buildingId, newPriority) {
+  const building = buildings.find(b => b.id === buildingId);
+  if (building) {
+    building.priority = newPriority;
+    building.lastUpdate = new Date().toISOString();
+    building.lastUpdateBy = 'M. Keller';
+
+    renderPriorityDisplay(building);
+
+    if (onPriorityChange) onPriorityChange();
+  }
 }
 
 // ========================================

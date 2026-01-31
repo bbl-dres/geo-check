@@ -482,9 +482,9 @@ function getStatusLabel(status) {
 
 function getPriorityLabel(priority) {
   const labels = {
-    high: '<span class="priority-badge">Hoch</span>',
-    medium: '<span class="priority-badge">Mittel</span>',
-    low: '<span class="priority-badge">Niedrig</span>'
+    high: '<span class="priority-badge priority-high"><i data-lucide="chevrons-up" class="icon"></i>Hoch</span>',
+    medium: '<span class="priority-badge priority-medium"><i data-lucide="chevron-up" class="icon"></i>Mittel</span>',
+    low: '<span class="priority-badge priority-low"><i data-lucide="minus" class="icon"></i>Niedrig</span>'
   };
   return labels[priority] || '<span class="text-muted">—</span>';
 }
