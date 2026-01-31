@@ -59,7 +59,9 @@ import {
 
 import {
   updateCounts,
-  updateStatistik
+  updateStatistik,
+  setChartFilterCallback,
+  clearChartFilters
 } from './statistics.js';
 
 import { setupSearch, removeSearchMarker } from './search.js';
@@ -330,6 +332,9 @@ function setupFilterToggle() {
     // Clear location search
     document.getElementById('globalSearch').value = '';
     removeSearchMarker();
+
+    // Clear chart filters
+    clearChartFilters();
 
     document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
       chip.classList.remove('active');
@@ -650,6 +655,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupContextMenu();
   setupAccordions();
   setupRunChecksButton();
+
+  // Setup chart filter callback (cross-filtering updates other views)
+  setChartFilterCallback(() => {
+    updateMapMarkers();
+    renderKanbanBoard();
+    if (tableVisible) renderTableView();
+  });
 
   // Update counts and statistics
   updateCounts();

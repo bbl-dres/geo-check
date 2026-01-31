@@ -16,6 +16,9 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 
+  <!-- ApexCharts -->
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -480,34 +483,34 @@
       <div class="statistik-content">
         <div class="stat-cards stat-cards-6">
           <div class="stat-card">
-            <div class="stat-label">Gebäude</div>
-            <div class="stat-value" id="stat-total">20</div>
-            <div class="stat-sublabel">Total im Filter</div>
+            <div class="stat-label">Fortschritt</div>
+            <div class="stat-value" id="stat-progress">0/0</div>
+            <div class="stat-sublabel" id="stat-progress-pct">0% erledigt</div>
           </div>
           <div class="stat-card">
             <div class="stat-label">Datenqualität</div>
-            <div class="stat-value" id="stat-quality">68%</div>
+            <div class="stat-value" id="stat-quality">0%</div>
             <div class="stat-sublabel">Ø Konfidenz</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Fehler</div>
-            <div class="stat-value error" id="stat-errors">24</div>
-            <div class="stat-sublabel">Alle Abweichungen</div>
-          </div>
-          <div class="stat-card">
             <div class="stat-label">Kritisch</div>
-            <div class="stat-value error" id="stat-critical">12</div>
+            <div class="stat-value error" id="stat-critical">0</div>
             <div class="stat-sublabel">Konfidenz &lt; 50%</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Validiert</div>
-            <div class="stat-value success" id="stat-validated">3</div>
-            <div class="stat-sublabel">Konfidenz ≥ 90%</div>
+            <div class="stat-label">In Bearbeitung</div>
+            <div class="stat-value" id="stat-inprogress">0</div>
+            <div class="stat-sublabel">Aktive Aufgaben</div>
           </div>
           <div class="stat-card">
-            <div class="stat-label">Offen</div>
-            <div class="stat-value" id="stat-pending">17</div>
-            <div class="stat-sublabel">Nicht erledigt</div>
+            <div class="stat-label">Nicht zugewiesen</div>
+            <div class="stat-value warning" id="stat-unassigned">0</div>
+            <div class="stat-sublabel">Ohne Bearbeiter</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Überfällig</div>
+            <div class="stat-value error" id="stat-overdue">0</div>
+            <div class="stat-sublabel">Fälligkeit überschritten</div>
           </div>
         </div>
 
@@ -515,154 +518,37 @@
           <!-- Confidence Distribution -->
           <div class="chart-card">
             <h3 class="chart-title">Konfidenz-Verteilung</h3>
-            <div class="histogram-chart" id="confidence-histogram">
-              <div class="histogram-bar-group">
-                <div class="histogram-bar critical" style="height: 60%"></div>
-                <span class="histogram-label">0-40%</span>
-                <span class="histogram-value">4</span>
-              </div>
-              <div class="histogram-bar-group">
-                <div class="histogram-bar warning" style="height: 45%"></div>
-                <span class="histogram-label">40-60%</span>
-                <span class="histogram-value">3</span>
-              </div>
-              <div class="histogram-bar-group">
-                <div class="histogram-bar moderate" style="height: 80%"></div>
-                <span class="histogram-label">60-80%</span>
-                <span class="histogram-value">10</span>
-              </div>
-              <div class="histogram-bar-group">
-                <div class="histogram-bar success" style="height: 25%"></div>
-                <span class="histogram-label">80-100%</span>
-                <span class="histogram-value">3</span>
-              </div>
-            </div>
+            <div id="chart-confidence"></div>
           </div>
 
-          <!-- Errors by Severity -->
+          <!-- Status Distribution -->
           <div class="chart-card">
-            <h3 class="chart-title">Fehler nach Schweregrad</h3>
-            <div class="severity-chart" id="severity-chart">
-              <div class="severity-bars">
-                <div class="severity-bar-row">
-                  <span class="severity-indicator error"></span>
-                  <span class="severity-label">Fehler</span>
-                  <div class="severity-bar-track">
-                    <div class="severity-bar-fill error" style="width: 60%"></div>
-                  </div>
-                  <span class="severity-value">12</span>
-                </div>
-                <div class="severity-bar-row">
-                  <span class="severity-indicator warning"></span>
-                  <span class="severity-label">Warnung</span>
-                  <div class="severity-bar-track">
-                    <div class="severity-bar-fill warning" style="width: 40%"></div>
-                  </div>
-                  <span class="severity-value">8</span>
-                </div>
-                <div class="severity-bar-row">
-                  <span class="severity-indicator info"></span>
-                  <span class="severity-label">Hinweis</span>
-                  <div class="severity-bar-track">
-                    <div class="severity-bar-fill info" style="width: 20%"></div>
-                  </div>
-                  <span class="severity-value">4</span>
-                </div>
-              </div>
-            </div>
+            <h3 class="chart-title">Status-Verteilung</h3>
+            <div id="chart-status"></div>
           </div>
 
           <!-- Errors by Source -->
           <div class="chart-card">
             <h3 class="chart-title">Abweichungen nach Quelle</h3>
-            <div class="source-chart" id="source-chart">
-              <div class="chart-row">
-                <span class="chart-row-label">Georef</span>
-                <div class="chart-row-bar">
-                  <div class="chart-row-fill georef" style="width: 70%"></div>
-                </div>
-                <span class="chart-row-value">14</span>
-              </div>
-              <div class="chart-row">
-                <span class="chart-row-label">GWR</span>
-                <div class="chart-row-bar">
-                  <div class="chart-row-fill gwr" style="width: 40%"></div>
-                </div>
-                <span class="chart-row-value">8</span>
-              </div>
-              <div class="chart-row">
-                <span class="chart-row-label">SAP</span>
-                <div class="chart-row-bar">
-                  <div class="chart-row-fill sap" style="width: 55%"></div>
-                </div>
-                <span class="chart-row-value">11</span>
-              </div>
-              <div class="chart-row">
-                <span class="chart-row-label">Adresse</span>
-                <div class="chart-row-bar">
-                  <div class="chart-row-fill address" style="width: 25%"></div>
-                </div>
-                <span class="chart-row-value">5</span>
-              </div>
-            </div>
+            <div id="chart-source"></div>
           </div>
 
-          <!-- Status by Canton -->
+          <!-- Due Dates -->
           <div class="chart-card">
-            <h3 class="chart-title">Status nach Kanton</h3>
-            <div class="kanton-chart" id="kanton-chart">
-              <div class="kanton-row">
-                <span class="kanton-label">ZH</span>
-                <div class="kanton-bar-track">
-                  <div class="kanton-bar-fill" style="width: 85%"></div>
-                </div>
-                <span class="kanton-value">85%</span>
-              </div>
-              <div class="kanton-row">
-                <span class="kanton-label">BE</span>
-                <div class="kanton-bar-track">
-                  <div class="kanton-bar-fill" style="width: 72%"></div>
-                </div>
-                <span class="kanton-value">72%</span>
-              </div>
-              <div class="kanton-row">
-                <span class="kanton-label">SG</span>
-                <div class="kanton-bar-track">
-                  <div class="kanton-bar-fill" style="width: 68%"></div>
-                </div>
-                <span class="kanton-value">68%</span>
-              </div>
-              <div class="kanton-row">
-                <span class="kanton-label">LU</span>
-                <div class="kanton-bar-track">
-                  <div class="kanton-bar-fill" style="width: 55%"></div>
-                </div>
-                <span class="kanton-value">55%</span>
-              </div>
-              <div class="kanton-row">
-                <span class="kanton-label">GR</span>
-                <div class="kanton-bar-track">
-                  <div class="kanton-bar-fill" style="width: 42%"></div>
-                </div>
-                <span class="kanton-value">42%</span>
-              </div>
-            </div>
+            <h3 class="chart-title">Fälligkeiten</h3>
+            <div id="chart-duedate"></div>
           </div>
 
           <!-- Tasks per Assignee -->
           <div class="chart-card">
             <h3 class="chart-title">Aufgaben pro Bearbeiter</h3>
-            <div class="assignee-chart" id="assignee-chart">
-              <!-- Will be populated dynamically -->
-            </div>
+            <div id="chart-assignee"></div>
           </div>
 
-          <!-- Status by Portfolio -->
+          <!-- Priority Distribution -->
           <div class="chart-card">
-            <h3 class="chart-title">Status nach Portfolio</h3>
-            <div class="portfolio-chart" id="portfolio-chart">
-              <!-- Will be populated dynamically -->
-            </div>
+            <h3 class="chart-title">Prioritäten</h3>
+            <div id="chart-priority"></div>
           </div>
         </div>
       </div>
