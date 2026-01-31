@@ -518,11 +518,11 @@ function setupEventListeners() {
   });
 
   // Multi-select filter dropdowns
-  setupMultiSelectFilter('filter-kanton', 'filterKanton');
-  setupMultiSelectFilter('filter-confidence', 'filterConfidence');
-  setupMultiSelectFilter('filter-portfolio', 'filterPortfolio');
-  setupMultiSelectFilter('filter-status', 'filterStatus');
-  setupMultiSelectFilter('filter-assignee', 'filterAssignee');
+  setupMultiSelectFilter('filter-kanton', 'filterKanton', applyFilters);
+  setupMultiSelectFilter('filter-confidence', 'filterConfidence', applyFilters);
+  setupMultiSelectFilter('filter-portfolio', 'filterPortfolio', applyFilters);
+  setupMultiSelectFilter('filter-status', 'filterStatus', applyFilters);
+  setupMultiSelectFilter('filter-assignee', 'filterAssignee', applyFilters);
 
   // Correct button
   document.getElementById('btn-correct').addEventListener('click', enterEditMode);

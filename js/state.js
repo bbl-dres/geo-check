@@ -189,8 +189,9 @@ export function getFilteredBuildings() {
   // Assignee filter
   if (state.filterAssignee.length > 0) {
     filtered = filtered.filter(b => {
-      if (state.filterAssignee.includes('unassigned')) {
-        return !b.assignee || state.filterAssignee.includes(b.assignee);
+      // Empty string means "Nicht zugewiesen" (unassigned)
+      if (state.filterAssignee.includes('')) {
+        if (!b.assignee) return true;
       }
       return state.filterAssignee.includes(b.assignee);
     });
@@ -234,7 +235,7 @@ export function toggleFilter(filterName, shouldUpdateURL = true) {
 // ========================================
 // Multi-Select Filter Dropdowns
 // ========================================
-export function setupMultiSelectFilter(elementId, stateKey) {
+export function setupMultiSelectFilter(elementId, stateKey, onChange = null) {
   const container = document.getElementById(elementId);
   if (!container) return;
 
@@ -266,6 +267,9 @@ export function setupMultiSelectFilter(elementId, stateKey) {
     }
 
     updateURL();
+
+    // Call onChange callback if provided
+    if (onChange) onChange();
   };
 
   checkboxes.forEach(checkbox => {

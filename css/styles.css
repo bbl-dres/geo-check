@@ -2472,7 +2472,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .aufgaben-layout {
   flex: 1;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
   min-width: 0;
 }
@@ -2482,13 +2481,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: flex;
   gap: var(--space-md);
   padding: var(--space-lg) var(--space-xl);
-  overflow-x: auto;
   min-width: 0;
+  overflow-x: auto;
 }
 
 .kanban-column {
-  flex: 1 1 280px;
-  min-width: 220px;
+  flex: 1 1 0;
+  min-width: 200px;
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
   display: flex;
@@ -4674,11 +4673,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* Desktop (≤1280px) */
 @media (max-width: 1280px) {
-  /* Kanban: reduce column min-width to prevent overflow */
-  .kanban-column {
-    min-width: 220px;
-  }
-
   /* Detail panel: reduce width slightly */
   .detail-panel {
     width: 380px;
@@ -4687,16 +4681,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* Small Desktop / Large Laptop (≤1024px) */
 @media (max-width: 1024px) {
-  /* Kanban: stack columns in 2x2 grid */
-  .kanban-container {
-    flex-wrap: wrap;
-    overflow-x: visible;
-  }
-
-  .kanban-column {
-    min-width: calc(50% - var(--space-md));
-    flex: 1 1 calc(50% - var(--space-md));
-  }
 
   /* Charts: single column layout */
   .charts-grid {
@@ -4726,13 +4710,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* Laptop (≤900px) */
 @media (max-width: 900px) {
-  /* Kanban: single column stack */
-  .kanban-column {
-    min-width: 100%;
-    flex: 1 1 100%;
-  }
-
-  /* Detail panel: keep in flex flow, just reduce width */
+  /* Detail panel: keep in flex flow, reduce width */
   .detail-panel {
     width: 320px;
     min-width: 280px;
@@ -4763,8 +4741,22 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     min-width: 240px;
   }
 
-  /* Kanban: tighter padding */
+  /* Aufgaben layout: allow vertical scroll */
+  .aufgaben-layout {
+    overflow-y: auto;
+  }
+
+  /* Kanban: stack columns vertically */
   .kanban-container {
+    flex-direction: column;
     padding: var(--space-md);
+    overflow: visible;
+    gap: var(--space-lg);
+  }
+
+  .kanban-column {
+    flex: none;
+    min-width: 100%;
+    max-height: none;
   }
 }
