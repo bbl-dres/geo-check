@@ -112,18 +112,14 @@ export function initMap() {
     if (marker.dragging) marker.dragging.disable();
   });
 
-  // Show/hide marker labels and scale markers based on zoom level
+  // Show/hide marker labels based on zoom level
   const mapContainer = document.getElementById('map');
-  function updateZoomDependentStyles() {
+  function updateLabelVisibility() {
     const zoom = map.getZoom();
-    // Show labels at zoom >= 15
     mapContainer.classList.toggle('show-labels', zoom >= 15);
-    // Scale markers: 0.6x at zoom 6, 1x at zoom 12, 1.5x at zoom 18
-    const scale = Math.max(0.6, Math.min(1.5, zoom / 12));
-    mapContainer.style.setProperty('--marker-scale', scale);
   }
-  map.on('zoomend', updateZoomDependentStyles);
-  updateZoomDependentStyles();
+  map.on('zoomend', updateLabelVisibility);
+  updateLabelVisibility();
 
   // Scale bar
   setupScaleBar();

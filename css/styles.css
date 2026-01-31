@@ -3465,8 +3465,6 @@ a.leaflet-control-home:hover {
   border-radius: var(--radius-full);
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transform: scale(var(--marker-scale, 1));
-  transition: transform 0.15s ease-out;
 }
 
 .custom-marker.high { background: var(--color-critical); }
