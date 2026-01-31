@@ -255,13 +255,14 @@ export function renderTableView() {
   // Render table rows
   if (paginatedBuildings.length === 0) {
     if (tableSearchQuery.trim()) {
-      tbody.innerHTML = `<tr><td colspan="9" class="table-empty">Keine Treffer für «${escapeHtml(tableSearchQuery)}»</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="12" class="table-empty">Keine Treffer für «${escapeHtml(tableSearchQuery)}»</td></tr>`;
     } else {
-      tbody.innerHTML = '<tr><td colspan="9" class="table-empty">Keine Gebäude gefunden</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="12" class="table-empty">Keine Gebäude gefunden</td></tr>';
     }
   } else {
     tbody.innerHTML = paginatedBuildings.map(building => {
-      const priorityClass = building.priority || 'medium';
+      // Use confidence-based colors for consistency across the app
+      const confidenceClass = building.confidence.total < 50 ? 'critical' : building.confidence.total < 80 ? 'warning' : 'ok';
       const statusLabel = getStatusLabel(building.kanbanStatus);
       const isChecked = selectedIds.has(building.id);
 
@@ -270,30 +271,32 @@ export function renderTableView() {
           <td class="col-checkbox">
             <input type="checkbox" class="table-row-checkbox" data-id="${building.id}" ${isChecked ? 'checked' : ''}>
           </td>
-          <td>
+          <td data-col="priority">${getPriorityLabel(building.priority)}</td>
+          <td data-col="id">
             <div class="table-cell-id">
-              <span class="priority-indicator ${priorityClass}"></span>
+              <span class="priority-indicator ${confidenceClass}"></span>
               <span class="building-id">${building.id}</span>
             </div>
           </td>
-          <td>${building.name}</td>
-          <td>${building.kanton}</td>
-          <td>
+          <td data-col="name">${building.name}</td>
+          <td data-col="kanton">${building.kanton}</td>
+          <td data-col="portfolio">${building.portfolio || '<span class="text-muted">—</span>'}</td>
+          <td data-col="status">
             <span class="status-badge status-${building.kanbanStatus || 'backlog'}">${statusLabel}</span>
           </td>
-          <td>
+          <td data-col="confidence">
             <span class="confidence-value ${building.confidence.total < 50 ? 'critical' : building.confidence.total < 80 ? 'warning' : 'ok'}">
               ${building.confidence.total}%
             </span>
           </td>
-          <td>
+          <td data-col="errors">
             <div class="badge-group">
               ${building.errors.map(err => `<span class="badge badge-${err.type} badge-caps badge-sm">${getTagLabel(err.type)}</span>`).join('')}
               ${building.errors.length === 0 ? '<span class="text-muted">—</span>' : ''}
             </div>
           </td>
-          <td>${building.assignee ? `<span class="text-secondary">${building.assignee}</span>` : '<span class="text-muted">—</span>'}</td>
-          <td class="text-muted" title="${formatDateTime(building.lastUpdate)} von ${building.lastUpdateBy || '—'}">${formatRelativeTime(building.lastUpdate)}</td>
+          <td data-col="assignee">${building.assignee ? `<span class="text-secondary">${building.assignee}</span>` : '<span class="text-muted">—</span>'}</td>
+          <td data-col="updated" class="text-muted" title="${formatDateTime(building.lastUpdate)} von ${building.lastUpdateBy || '—'}">${formatRelativeTime(building.lastUpdate)}</td>
         </tr>
       `;
     }).join('');
@@ -333,6 +336,9 @@ export function renderTableView() {
 
   // Refresh icons
   if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Reapply column visibility to newly rendered rows
+  applyInitialColumnVisibility();
 }
 
 function getStatusLabel(status) {
@@ -343,6 +349,15 @@ function getStatusLabel(status) {
     done: 'Erledigt'
   };
   return labels[status] || labels.backlog;
+}
+
+function getPriorityLabel(priority) {
+  const labels = {
+    high: '<span class="priority-badge">Hoch</span>',
+    medium: '<span class="priority-badge">Mittel</span>',
+    low: '<span class="priority-badge">Niedrig</span>'
+  };
+  return labels[priority] || '<span class="text-muted">—</span>';
 }
 
 function escapeHtml(text) {
@@ -520,6 +535,9 @@ export function setupTableViewListeners() {
 
   // Export dropdown
   setupExportDropdown();
+
+  // Column visibility dropdown
+  setupColumnVisibility();
 }
 
 function setupExportDropdown() {
@@ -556,6 +574,73 @@ function setupExportDropdown() {
       exportData(format, scope === 'selection');
       exportDropdown.classList.remove('visible');
     });
+  });
+}
+
+// ========================================
+// Column Visibility
+// ========================================
+function setupColumnVisibility() {
+  const columnsBtn = document.getElementById('table-columns-btn');
+  const columnsDropdown = document.getElementById('table-columns-dropdown');
+  const table = document.querySelector('.buildings-table');
+
+  if (!columnsBtn || !columnsDropdown || !table) return;
+
+  // Toggle dropdown
+  columnsBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    columnsDropdown.classList.toggle('visible');
+    // Close export dropdown if open
+    document.getElementById('table-export-dropdown')?.classList.remove('visible');
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!columnsDropdown.contains(e.target) && !columnsBtn.contains(e.target)) {
+      columnsDropdown.classList.remove('visible');
+    }
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      columnsDropdown.classList.remove('visible');
+    }
+  });
+
+  // Column visibility checkboxes
+  columnsDropdown.querySelectorAll('input[data-col]').forEach(checkbox => {
+    checkbox.addEventListener('change', () => {
+      const col = checkbox.dataset.col;
+      const isVisible = checkbox.checked;
+      toggleColumnVisibility(col, isVisible);
+    });
+  });
+
+  // Apply initial visibility (Portfolio hidden by default)
+  applyInitialColumnVisibility();
+}
+
+function toggleColumnVisibility(col, isVisible) {
+  const table = document.querySelector('.buildings-table');
+  if (!table) return;
+
+  // Find all th and td with this data-col
+  const cells = table.querySelectorAll(`[data-col="${col}"]`);
+  cells.forEach(cell => {
+    cell.classList.toggle('col-hidden', !isVisible);
+  });
+}
+
+function applyInitialColumnVisibility() {
+  const dropdown = document.getElementById('table-columns-dropdown');
+  if (!dropdown) return;
+
+  dropdown.querySelectorAll('input[data-col]').forEach(checkbox => {
+    const col = checkbox.dataset.col;
+    const isVisible = checkbox.checked;
+    toggleColumnVisibility(col, isVisible);
   });
 }
 

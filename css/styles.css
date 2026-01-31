@@ -181,18 +181,18 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 2px var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-sm);
-  font-weight: var(--font-medium);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  letter-spacing: 0.02em;
   white-space: nowrap;
   background: var(--bg-muted);
   color: var(--text-secondary);
 }
 
-.badge-type {
+.badge-caps {
   text-transform: uppercase;
-  font-size: var(--font-xs);
   letter-spacing: 0.5px;
 }
 
@@ -661,6 +661,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   flex-shrink: 0;
 }
 
+/* Confidence-based colors (consistent across app) */
+.priority-indicator.critical { background: var(--color-critical); }
+.priority-indicator.warning { background: var(--color-warning); }
+.priority-indicator.ok { background: var(--color-success); }
+
+/* Legacy priority-based colors */
 .priority-indicator.high { background: var(--color-critical); }
 .priority-indicator.medium { background: var(--color-warning); }
 .priority-indicator.low { background: var(--color-success); }
@@ -1589,9 +1595,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   min-width: 0;
 }
 
-.status-badge {
+/* Unified table badge styles */
+.status-badge,
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
   font-size: var(--font-sm);
-  font-weight: var(--font-medium);
+  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  letter-spacing: 0.02em;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   background: var(--bg-muted);
@@ -3530,14 +3542,24 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
+/* Confidence-based marker colors (consistent with table and detail panel) */
+.custom-marker.critical { background: var(--color-critical); }
+.custom-marker.warning { background: var(--color-warning); }
+.custom-marker.ok { background: var(--color-success); }
+
+/* Legacy priority-based colors (kept for backwards compatibility) */
 .custom-marker.high { background: var(--color-critical); }
 .custom-marker.medium { background: var(--color-warning); }
 .custom-marker.low { background: var(--color-success); }
 
 .custom-marker.selected {
-  width: 22px;
-  height: 22px;
-  border-width: 3px;
+  width: 24px;
+  height: 24px;
+  border: 3px solid var(--federal-blue);
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.9),
+    0 0 0 6px var(--federal-blue),
+    0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .marker-label {
@@ -3677,7 +3699,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* Table Export Dropdown */
 .table-export-container {
   position: relative;
-  margin-left: auto;
 }
 
 .table-export-btn {
@@ -3749,6 +3770,98 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .export-dropdown-item:hover {
   background: var(--interactive-hover);
+}
+
+/* Table Column Visibility Dropdown */
+.table-columns-container {
+  position: relative;
+  margin-left: auto;
+}
+
+.table-columns-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
+  height: var(--button-height-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--bg-white);
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.table-columns-btn:hover {
+  background: var(--interactive-hover);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.table-columns-dropdown {
+  position: absolute;
+  top: calc(100% + var(--space-xs));
+  right: 0;
+  min-width: 180px;
+  background: var(--bg-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: 100;
+  display: none;
+  padding: var(--space-sm) 0;
+}
+
+.table-columns-dropdown.visible {
+  display: block;
+}
+
+.columns-dropdown-label {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-xs);
+}
+
+.columns-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.columns-dropdown-item:hover {
+  background: var(--interactive-hover);
+}
+
+.columns-dropdown-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.columns-dropdown-item input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.columns-dropdown-item input[type="checkbox"]:disabled + span {
+  color: var(--text-muted);
+}
+
+/* Column Hidden State */
+.col-hidden {
+  display: none !important;
 }
 
 /* Table Pagination */
@@ -4230,14 +4343,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .badge-warning::before { background: var(--color-warning); }
 .badge-ok::before { background: var(--color-success); }
 
-.badge-georef,
-.badge-sap,
-.badge-gwr,
-.badge-address {
-  text-transform: uppercase;
-  font-size: var(--font-xs);
-  letter-spacing: 0.5px;
-}
 
 /* Type indicator tags */
 .tag {

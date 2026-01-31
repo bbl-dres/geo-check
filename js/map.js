@@ -257,11 +257,21 @@ function updateZoomButtonStates() {
 // ========================================
 // Marker Functions
 // ========================================
+
+// Get confidence class based on total confidence value
+// This provides consistent colors across markers, table, and detail panel
+export function getConfidenceClass(confidence) {
+  if (confidence < 50) return 'critical';
+  if (confidence < 80) return 'warning';
+  return 'ok';
+}
+
 export function createMarker(building) {
+  const confidenceClass = getConfidenceClass(building.confidence.total);
   const el = document.createElement('div');
   el.className = 'mapbox-marker-wrapper';
   el.innerHTML = `<div class="custom-marker-container">
-                    <div class="custom-marker ${building.priority}" data-id="${building.id}"></div>
+                    <div class="custom-marker ${confidenceClass}" data-id="${building.id}"></div>
                     <span class="marker-label">${building.id}</span>
                   </div>`;
 
@@ -545,15 +555,28 @@ function readdOverlayLayers() {
 // Layer Identify (Click to Query) - Using swisstopo REST API
 // ========================================
 export function setupLayerIdentify() {
-  identifyPopup = new mapboxgl.Popup({ maxWidth: '350px' });
+  identifyPopup = new mapboxgl.Popup({ maxWidth: '400px' });
 
   map.on('click', async (e) => {
+    // Close any existing popup first
+    identifyPopup.remove();
+
     if (activeOverlayLayers.size === 0) return;
+
+    // Check if we clicked on a marker (let marker handle it)
+    const markerEl = e.originalEvent.target.closest('.mapbox-marker-wrapper');
+    if (markerEl) return;
 
     if (identifyController) {
       identifyController.abort();
     }
     identifyController = new AbortController();
+
+    // Show loading indicator
+    identifyPopup
+      .setLngLat(e.lngLat)
+      .setHTML('<div class="identify-popup"><em>Laden...</em></div>')
+      .addTo(map);
 
     // Convert click location to LV95 coordinates
     const lv95 = wgs84ToLV95(e.lngLat.lat, e.lngLat.lng);
@@ -569,36 +592,45 @@ export function setupLayerIdentify() {
     const imageDisplay = `${canvas.width},${canvas.height},96`;
 
     try {
+      let featureFound = false;
+
       for (const layerId of activeOverlayLayers) {
         const config = layerConfigs[layerId];
         if (!config) continue;
 
         // Use swisstopo REST API for identify
+        // See: https://docs.geo.admin.ch/access-data/identify-features.html
         const params = new URLSearchParams({
           geometry: `${lv95.E},${lv95.N}`,
           geometryType: 'esriGeometryPoint',
-          geometryFormat: 'geojson',
+          sr: '2056', // LV95 coordinate system (required - API defaults to LV03)
           imageDisplay: imageDisplay,
           mapExtent: mapExtent,
           tolerance: '10',
           layers: `all:${config.layers}`,
-          lang: 'de'
+          lang: 'de',
+          returnGeometry: 'false'
         });
 
-        const response = await fetch(`https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?${params}`, {
+        const url = `https://api3.geo.admin.ch/rest/services/api/MapServer/identify?${params}`;
+        console.log('Identify request:', url);
+
+        const response = await fetch(url, {
           signal: identifyController.signal
         });
 
         if (response.ok) {
           const data = await response.json();
+          console.log('Identify response:', data);
+
           if (data.results && data.results.length > 0) {
             const feature = data.results[0];
             const props = feature.properties || feature.attributes || {};
 
             // Build popup content from properties
             const content = Object.entries(props)
-              .filter(([k, v]) => v !== null && v !== '' && !k.startsWith('objectid') && !k.startsWith('id'))
-              .slice(0, 10)
+              .filter(([k, v]) => v !== null && v !== '' && !k.startsWith('objectid') && k !== 'id')
+              .slice(0, 12)
               .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`)
               .join('');
 
@@ -612,14 +644,43 @@ export function setupLayerIdentify() {
                   </div>
                 </div>`)
                 .addTo(map);
+              featureFound = true;
+              break;
+            } else {
+              // Show feature even if no filterable properties
+              identifyPopup
+                .setLngLat(e.lngLat)
+                .setHTML(`<div class="identify-popup">
+                  <strong>${config.name}</strong>
+                  <div class="identify-content">
+                    <p>Feature gefunden (ID: ${feature.id || feature.featureId || 'N/A'})</p>
+                  </div>
+                </div>`)
+                .addTo(map);
+              featureFound = true;
               break;
             }
           }
+        } else {
+          console.error('Identify request failed:', response.status, response.statusText);
         }
+      }
+
+      // If no features were found for any layer, show message
+      if (!featureFound && identifyPopup.isOpen()) {
+        const layerNames = [...activeOverlayLayers]
+          .map(id => layerConfigs[id]?.name || id)
+          .join(', ');
+        identifyPopup.setHTML(`<div class="identify-popup">
+          <em>Keine Features gefunden für: ${layerNames}</em>
+        </div>`);
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Identify error:', error);
+        identifyPopup.setHTML(`<div class="identify-popup">
+          <em>Fehler beim Abfragen</em>
+        </div>`);
       }
     }
   });
@@ -650,7 +711,7 @@ export function setupLayerInfoButtons() {
 
       try {
         // Fetch layer legend from swisstopo API
-        const response = await fetch(`https://api3.geo.admin.ch/rest/services/ech/MapServer/${layerId}/legend?lang=de`);
+        const response = await fetch(`https://api3.geo.admin.ch/rest/services/api/MapServer/${layerId}/legend?lang=de`);
 
         if (response.ok) {
           const html = await response.text();

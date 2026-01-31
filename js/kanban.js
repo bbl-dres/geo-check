@@ -41,7 +41,7 @@ export function renderKanbanBoard() {
     if (!container) return;
 
     container.innerHTML = items.map(building => {
-      const priorityClass = building.priority || 'medium';
+      // Use confidence-based colors for consistency across the app
       const confidenceClass = building.confidence.total < 50 ? 'critical' :
                               building.confidence.total < 80 ? 'warning' : 'ok';
 
@@ -55,7 +55,7 @@ export function renderKanbanBoard() {
         <div class="kanban-card" draggable="true" data-building-id="${building.id}">
           <div class="kanban-card-header">
             <span class="kanban-card-id">${building.id}</span>
-            <span class="priority-indicator ${priorityClass}"></span>
+            <span class="priority-indicator ${confidenceClass}"></span>
           </div>
           <div class="kanban-card-title">${building.name}</div>
           <div class="kanban-card-meta">

@@ -63,18 +63,15 @@
     <!-- Global Filter Bar -->
     <div class="filter-bar" id="filter-bar">
       <div class="filter-chips">
-        <button class="filter-chip priority-high" data-filter="high">
-          <span class="priority-indicator high"></span>
+        <button class="filter-chip" data-filter="high">
           <span>Hoch</span>
           <span class="count" id="count-high">(3)</span>
         </button>
-        <button class="filter-chip priority-medium" data-filter="medium">
-          <span class="priority-indicator medium"></span>
+        <button class="filter-chip" data-filter="medium">
           <span>Mittel</span>
           <span class="count" id="count-medium">(4)</span>
         </button>
-        <button class="filter-chip priority-low" data-filter="low">
-          <span class="priority-indicator low"></span>
+        <button class="filter-chip" data-filter="low">
           <span>Niedrig</span>
           <span class="count" id="count-low">(5)</span>
         </button>
@@ -271,6 +268,56 @@
                   <i data-lucide="x" class="icon-sm"></i>
                 </button>
               </div>
+              <div class="table-columns-container">
+                <button class="table-columns-btn" id="table-columns-btn" type="button" title="Spalten ein-/ausblenden">
+                  <i data-lucide="columns-3" class="icon-sm"></i>
+                  <span>Spalten</span>
+                  <i data-lucide="chevron-down" class="icon-sm"></i>
+                </button>
+                <div class="table-columns-dropdown" id="table-columns-dropdown">
+                  <div class="columns-dropdown-label">Spalten anzeigen</div>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="priority" checked>
+                    <span>Priorität</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="id" checked disabled>
+                    <span>ID</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="name" checked disabled>
+                    <span>Name</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="kanton">
+                    <span>Kanton</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="portfolio">
+                    <span>Portfolio</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="status" checked>
+                    <span>Status</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="confidence">
+                    <span>Konfidenz</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="errors" checked>
+                    <span>Fehlertypen</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="assignee" checked>
+                    <span>Zugewiesen</span>
+                  </label>
+                  <label class="columns-dropdown-item">
+                    <input type="checkbox" data-col="updated" checked>
+                    <span>Aktualisiert</span>
+                  </label>
+                </div>
+              </div>
               <div class="table-export-container">
                 <button class="table-export-btn" id="table-export-btn" type="button">
                   <i data-lucide="download" class="icon-sm"></i>
@@ -301,14 +348,16 @@
                 <thead>
                   <tr>
                     <th class="col-checkbox"><input type="checkbox" id="table-select-all-header" title="Alle auf dieser Seite auswählen"></th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Kanton</th>
-                    <th>Status</th>
-                    <th>Konfidenz</th>
-                    <th>Fehlertypen</th>
-                    <th>Zugewiesen</th>
-                    <th>Aktualisiert</th>
+                    <th data-col="priority">Priorität</th>
+                    <th data-col="id">ID</th>
+                    <th data-col="name">Name</th>
+                    <th data-col="kanton" class="col-hidden">Kanton</th>
+                    <th data-col="portfolio" class="col-hidden">Portfolio</th>
+                    <th data-col="status">Status</th>
+                    <th data-col="confidence" class="col-hidden">Konfidenz</th>
+                    <th data-col="errors">Fehlertypen</th>
+                    <th data-col="assignee">Zugewiesen</th>
+                    <th data-col="updated">Aktualisiert</th>
                   </tr>
                 </thead>
                 <tbody id="table-body">
