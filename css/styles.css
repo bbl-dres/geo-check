@@ -2406,7 +2406,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .stat-cards {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-md);
+  gap: var(--space-lg);
   margin-bottom: var(--space-xl);
 }
 
@@ -2445,7 +2445,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .charts-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 .chart-card {
