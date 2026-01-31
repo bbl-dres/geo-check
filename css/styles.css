@@ -2293,13 +2293,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   flex: 1;
   overflow-y: auto;
   padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 .kanban-card {
   background: var(--bg-white);
   border-radius: var(--radius-md);
   padding: var(--space-md);
-  margin-bottom: var(--space-sm);
   border: 1px solid var(--border-default);
   cursor: pointer;
 }
