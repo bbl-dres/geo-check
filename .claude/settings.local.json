@@ -17,7 +17,8 @@
       "Bash(findstr:*)",
       "Bash(taskkill:*)",
       "Bash(git checkout:*)",
-      "Bash(npx http-server:*)"
+      "Bash(npx http-server:*)",
+      "Bash(find:*)"
     ]
   }
 }

@@ -158,7 +158,6 @@ async function searchLocations(query) {
       showEmpty();
     }
   } catch (error) {
-    console.error('Search error:', error);
     showEmpty('Suche fehlgeschlagen');
   }
 }

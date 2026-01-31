@@ -3,7 +3,7 @@
 // Kanban board rendering and drag-drop
 // ========================================
 
-import { state, buildings, getFilteredBuildings, tableVisible } from './state.js';
+import { state, buildings, getFilteredBuildings, tableVisible, currentUser } from './state.js';
 import { updateMapMarkers } from './map.js';
 
 // Drag state
@@ -51,12 +51,12 @@ export function renderKanbanBoard() {
       // Assignee avatar or placeholder
       const assigneeHtml = building.assignee
         ? `<div class="kanban-avatar">${getInitials(building.assignee)}</div>`
-        : `<span class="kanban-card-assign-placeholder">Zuweisen...</span>`;
+        : `<span class="placeholder-badge">Zuweisen...</span>`;
 
       // Due date or placeholder
       const dueDateHtml = building.dueDate
         ? `<span class="kanban-card-due ${getDueDateClass(building.dueDate)}">${formatDueDate(building.dueDate)}</span>`
-        : `<span class="kanban-card-due-placeholder">Fällig...</span>`;
+        : `<span class="placeholder-badge">Fällig...</span>`;
 
       return `
         <div class="kanban-card" draggable="true" data-building-id="${building.id}">
@@ -237,7 +237,7 @@ function handleDrop(e) {
   if (building && building.kanbanStatus !== newStatus) {
     building.kanbanStatus = newStatus;
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
 
     renderKanbanBoard();
     updateMapMarkers();

@@ -557,7 +557,7 @@ function exportGeoJSON(buildings) {
     },
     geometry: {
       type: 'Point',
-      coordinates: [b.coords[1], b.coords[0]] // GeoJSON uses [lon, lat]
+      coordinates: [b.lng, b.lat] // GeoJSON uses [lon, lat]
     }
   }));
 

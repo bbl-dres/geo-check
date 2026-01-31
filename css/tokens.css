@@ -139,4 +139,12 @@
   --detail-width: 480px;
   --sidebar-width: 320px;
   --max-content-width: 1400px;
+
+  /* ======================================
+     Z-INDEX SCALE
+     ====================================== */
+  --z-dropdown: 100;
+  --z-sticky: 500;
+  --z-overlay: 1000;
+  --z-modal: 2000;
 }

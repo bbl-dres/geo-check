@@ -176,6 +176,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--color-critical);
 }
 
+.btn-block {
+  width: 100%;
+}
+
 /* --- Status Indicator (dots) --- */
 .indicator {
   width: 8px;
@@ -221,12 +225,22 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   align-items: center;
 }
 
+/* --- Placeholder Badge (empty state) --- */
+.placeholder-badge {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-default);
+}
+
 /* --- Priority Badges (Confluence style with arrows) --- */
 .priority-badge {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
-  padding: 2px 8px;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-xs);
   font-weight: var(--font-medium);
@@ -368,6 +382,132 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-md);
+}
+
+/* --- Dropdown Base System --- */
+.dropdown-base {
+  position: relative;
+}
+
+.dropdown-base.flex-1 {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropdown-trigger-base {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.dropdown-trigger-base:hover {
+  background: var(--bg-muted);
+}
+
+.dropdown-base.open .dropdown-trigger-base {
+  border-color: var(--federal-blue);
+}
+
+.dropdown-trigger-base .icon-sm {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.dropdown-trigger-base span {
+  flex: 1;
+  text-align: left;
+  font-weight: var(--font-medium);
+}
+
+.dropdown-menu-base {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: var(--space-xs);
+  background: var(--bg-white);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-dropdown);
+  overflow: hidden;
+}
+
+.dropdown-base.open .dropdown-menu-base {
+  display: block;
+}
+
+.dropdown-menu-base.scrollable {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.dropdown-option-base {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+}
+
+.dropdown-option-base:hover {
+  background: var(--interactive-hover);
+}
+
+.dropdown-option-base.selected {
+  background: var(--bg-active);
+}
+
+.dropdown-option-base .icon-sm {
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+}
+
+.dropdown-option-base span {
+  flex: 1;
+}
+
+.dropdown-chevron-base {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+  margin-left: auto;
+}
+
+.dropdown-base.open .dropdown-chevron-base {
+  transform: rotate(180deg);
+}
+
+.dropdown-check {
+  opacity: 0;
+  color: var(--text-primary);
+}
+
+.dropdown-option-base.selected .dropdown-check {
+  opacity: 1;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-default);
+  margin: var(--space-xs) 0;
 }
 
 /* ========================================
@@ -516,7 +656,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   box-shadow: var(--shadow-lg);
   display: none;
   overflow: hidden;
-  z-index: 1002;
+  z-index: var(--z-overlay);
 }
 
 .search-container.expanded .search-dropdown.visible {
@@ -797,7 +937,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 1000;
+  z-index: var(--z-overlay);
   display: none;
   overflow: hidden;
 }
@@ -934,7 +1074,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   position: absolute;
   bottom: var(--space-2xl);
   right: var(--space-lg);
-  z-index: 1000;
+  z-index: var(--z-overlay);
   display: flex;
 }
 
@@ -1082,7 +1222,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   position: absolute;
   top: var(--space-lg);
   right: var(--space-lg);
-  z-index: 1000;
+  z-index: var(--z-overlay);
 }
 
 .layer-widget-trigger {
@@ -1211,7 +1351,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 2000;
+  z-index: var(--z-modal);
   background: var(--overlay);
   display: none;
   align-items: center;
@@ -1804,271 +1944,21 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-secondary);
 }
 
-/* Priority Display Dropdown */
-.priority-display {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-}
-
-.priority-trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-subtle);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.priority-trigger:hover {
-  background: var(--bg-muted);
-}
-
-.priority-display.open .priority-trigger {
-  border-color: var(--federal-blue);
-}
-
-.priority-trigger .icon-sm {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
+/* Priority Display Dropdown - extends dropdown-base */
 .priority-trigger .icon-sm:first-child {
   color: var(--text-secondary);
 }
 
-.priority-trigger span {
-  flex: 1;
-  text-align: left;
-  font-weight: var(--font-medium);
-}
-
-.priority-chevron {
-  color: var(--text-muted);
-  transition: transform var(--transition-fast);
-}
-
-.priority-display.open .priority-chevron {
-  transform: rotate(180deg);
-}
-
-.priority-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: var(--space-xs);
-  background: var(--bg-white);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  overflow: hidden;
-}
-
-.priority-display.open .priority-dropdown {
-  display: block;
-}
-
-.priority-option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.priority-option:hover {
-  background: var(--interactive-hover);
-}
-
-.priority-option.selected {
-  background: var(--bg-active);
-}
-
 .priority-option .icon-sm {
-  width: 16px;
-  height: 16px;
   color: var(--text-secondary);
 }
 
-.priority-option span {
-  flex: 1;
-}
+/* Status Display Dropdown - extends dropdown-base */
+/* Base styles provided by dropdown-base system */
 
-/* Status Display Dropdown */
-.status-display {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-}
-
-.status-trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-subtle);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.status-trigger:hover {
-  background: var(--bg-muted);
-}
-
-.status-display.open .status-trigger {
-  border-color: var(--federal-blue);
-}
-
-.status-trigger .icon-sm {
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.status-trigger span {
-  flex: 1;
-  text-align: left;
-  font-weight: var(--font-medium);
-}
-
-.status-chevron {
-  color: var(--text-muted);
-  transition: transform var(--transition-fast);
-}
-
-.status-display.open .status-chevron {
-  transform: rotate(180deg);
-}
-
-.status-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: var(--space-xs);
-  background: var(--bg-white);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  overflow: hidden;
-}
-
-.status-display.open .status-dropdown {
-  display: block;
-}
-
-.status-option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.status-option:hover {
-  background: var(--interactive-hover);
-}
-
-.status-option.selected {
-  background: var(--bg-active);
-}
-
-.status-option .icon-sm {
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-}
-
-.status-option span {
-  flex: 1;
-}
-
-.status-option-check {
-  opacity: 0;
-  color: var(--text-primary);
-}
-
-.status-option.selected .status-option-check {
-  opacity: 1;
-}
-
-/* Assignee Display Dropdown */
-.assignee-display {
-  position: relative;
-}
-
-.assignee-trigger {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-subtle);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.assignee-trigger:hover {
-  background: var(--bg-muted);
-}
-
-.assignee-display.open .assignee-trigger {
-  border-color: var(--federal-blue);
-}
-
-.assignee-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-full);
-  background: var(--bg-emphasis);
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: var(--font-semibold);
-  font-size: var(--font-sm);
-  flex-shrink: 0;
-}
-
-.assignee-avatar.empty {
-  background: var(--bg-muted);
-  color: var(--text-muted);
-}
-
-.assignee-info {
-  flex: 1;
-  text-align: left;
+/* Assignee Display Dropdown - extends dropdown-base */
+.assignee-option {
+  gap: var(--space-md);
 }
 
 .assignee-name {
@@ -2086,145 +1976,34 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
 }
 
-.assignee-chevron {
-  width: 16px;
-  height: 16px;
-  color: var(--text-muted);
-  flex-shrink: 0;
-  transition: transform var(--transition-fast);
-}
-
-.assignee-display.open .assignee-chevron {
-  transform: rotate(180deg);
-}
-
-.assignee-dropdown {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  margin-top: var(--space-xs);
-  background: var(--bg-white);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
-  z-index: 100;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.assignee-display.open .assignee-dropdown {
-  display: block;
-}
-
-.assignee-option {
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
-  cursor: pointer;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-}
-
-.assignee-option:hover {
-  background: var(--interactive-hover);
-}
-
-.assignee-option.selected {
-  background: var(--bg-active);
-}
-
-.assignee-option .assignee-avatar {
-  width: 28px;
-  height: 28px;
-  font-size: var(--font-xs);
-}
-
-.assignee-option-info {
-  flex: 1;
-}
-
-.assignee-option-name {
-  font-weight: var(--font-medium);
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-}
-
-.assignee-option-check {
-  color: var(--text-primary);
-  opacity: 0;
-}
-
-.assignee-option.selected .assignee-option-check {
-  opacity: 1;
-}
-
-.assignee-divider {
-  height: 1px;
-  background: var(--border-default);
-  margin: var(--space-xs) 0;
-}
-
-.assignee-option.unassign .assignee-option-name {
+.assignee-option.unassign span {
   color: var(--color-critical);
 }
 
-/* Due Date Display */
+/* Due Date Display - uses dropdown-trigger-base for consistent styling */
 .duedate-display {
   position: relative;
   flex: 1;
   min-width: 0;
 }
 
-.duedate-container {
+.duedate-trigger {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  width: 100%;
-  padding: var(--space-sm) var(--space-md);
-  background: var(--bg-subtle);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
 }
 
-.duedate-container:hover {
-  background: var(--bg-muted);
-}
-
-.duedate-container:focus-within {
+.duedate-trigger:focus-within {
   border-color: var(--federal-blue);
-  background: var(--bg-white);
-}
-
-/* Placeholder state (no date set) */
-.duedate-container.placeholder {
-  background: var(--bg-muted);
-  border: 1px dashed var(--border-default);
-}
-
-.duedate-container.placeholder:hover {
-  border-color: var(--border-strong);
 }
 
 .duedate-input {
   position: absolute;
   left: 0;
-  top: 0;
+  top: 100%;
+  margin-top: var(--space-xs);
   width: 100%;
-  height: 100%;
+  height: 1px;
   border: none;
   background: transparent;
-  font-size: var(--font-sm);
-  font-family: inherit;
   color: transparent;
   cursor: pointer;
   opacity: 0;
@@ -2235,32 +2014,26 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: none;
 }
 
-.duedate-placeholder {
+.duedate-empty-text {
   flex: 1;
+  text-align: left;
   color: var(--text-muted);
   font-size: var(--font-sm);
-  pointer-events: none;
 }
 
 .duedate-value {
   flex: 1;
+  text-align: left;
   font-weight: var(--font-medium);
   pointer-events: none;
 }
 
-.duedate-chevron {
-  color: var(--text-muted);
-  flex-shrink: 0;
-  transition: transform var(--transition-fast);
-  pointer-events: none;
-}
-
 /* Due date status colors */
-.duedate-container.overdue .duedate-value {
+.duedate-trigger.overdue .duedate-value {
   color: var(--color-critical);
 }
 
-.duedate-container.soon .duedate-value {
+.duedate-trigger.soon .duedate-value {
   color: var(--color-warning);
 }
 
@@ -2467,8 +2240,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   padding-bottom: var(--space-sm);
 }
 
-.edit-cell {
-  padding: var(--space-xs) var(--space-sm) !important;
+.data-table td.edit-cell {
+  padding: var(--space-xs) var(--space-sm);
 }
 
 .edit-input {
@@ -2620,54 +2393,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   justify-content: flex-end;
   gap: var(--space-sm);
   margin-top: var(--space-sm);
-}
-
-/* Legacy button support */
-.btn-sm {
-  width: auto;
-  min-height: var(--button-height-sm);
-  padding: var(--space-sm) var(--space-md);
-  font-size: var(--font-sm);
-}
-
-.action-btn {
-  width: 100%;
-  padding: var(--space-md) var(--space-lg);
-  border-radius: var(--radius-md);
-  font-size: var(--font-base);
-  font-weight: var(--font-medium);
-  min-height: var(--button-height-md);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-}
-
-.action-btn.primary {
-  background: var(--federal-blue);
-  color: var(--text-inverse);
-}
-
-.action-btn.primary:hover {
-  background: var(--federal-blue-dark);
-}
-
-.action-btn.secondary {
-  background: var(--bg-muted);
-  color: var(--text-primary);
-}
-
-.action-btn.secondary:hover {
-  background: var(--bg-emphasis);
-}
-
-.action-row {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-.action-row .action-btn {
-  flex: 1;
 }
 
 /* ========================================
@@ -2872,26 +2597,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .kanban-card-due.placeholder {
   color: var(--text-tertiary);
-}
-
-/* Missing assignee placeholder */
-.kanban-card-assign-placeholder {
-  font-size: var(--font-xs);
-  color: var(--text-muted);
-  background: var(--bg-muted);
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--border-default);
-}
-
-/* Missing due date placeholder */
-.kanban-card-due-placeholder {
-  font-size: var(--font-xs);
-  color: var(--text-muted);
-  background: var(--bg-muted);
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  border: 1px dashed var(--border-default);
 }
 
 .kanban-more {
@@ -3294,11 +2999,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   margin-bottom: 0;
 }
 
-.section-header-with-action .action-btn {
-  width: auto;
-  flex-shrink: 0;
-}
-
 .section-description {
   font-size: var(--font-sm);
   color: var(--text-muted);
@@ -3433,13 +3133,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-xs);
   color: var(--text-muted);
   background: var(--bg-muted);
-  padding: 2px var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-full);
 }
 
 .rule-set-status {
   font-size: var(--font-xs);
-  padding: 2px var(--space-sm);
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   background: var(--bg-muted);
   color: var(--text-muted);
@@ -3725,7 +3425,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: var(--z-modal);
 }
 
 .modal-overlay.active {
@@ -4220,7 +3920,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .table-export-btn:hover {
@@ -4238,7 +3938,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 100;
+  z-index: var(--z-dropdown);
   display: none;
 }
 
@@ -4297,7 +3997,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   font-weight: var(--font-medium);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .table-columns-btn:hover {
@@ -4315,7 +4015,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
-  z-index: 100;
+  z-index: var(--z-dropdown);
   display: none;
   padding: var(--space-sm) 0;
 }
@@ -4342,7 +4042,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background var(--transition-fast);
 }
 
 .columns-dropdown-item:hover {
@@ -4572,7 +4272,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .buildings-table th.sortable {
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 
 .buildings-table th.sortable:hover {
@@ -4653,7 +4353,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   bottom: var(--space-md);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: var(--z-overlay);
   padding: var(--space-sm) var(--space-md);
   background: var(--bg-white);
   border: 1px solid var(--border-default);
@@ -4695,7 +4395,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   min-width: 180px;
-  z-index: 1001;
+  z-index: var(--z-overlay);
   display: none;
   overflow: hidden;
 }
@@ -4914,7 +4614,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 6px;
+  padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-xs);
   font-weight: var(--font-medium);

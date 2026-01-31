@@ -13,7 +13,8 @@ import {
   updateURL,
   toggleFilter,
   setupMultiSelectFilter,
-  applyMultiSelectState
+  applyMultiSelectState,
+  setSearchQuery
 } from './state.js';
 
 import {
@@ -67,6 +68,22 @@ import {
 import { setupSearch, removeSearchMarker } from './search.js';
 
 // ========================================
+// Tab UI Helper
+// ========================================
+function updateTabUI(tabId) {
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.tab === tabId);
+  });
+  document.querySelectorAll('.tab-content').forEach(content => {
+    content.classList.toggle('active', content.id === `tab-${tabId}`);
+  });
+
+  // Toggle page-scroll mode for non-map tabs
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+  document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(tabId));
+}
+
+// ========================================
 // Data Loading
 // ========================================
 async function loadData() {
@@ -102,9 +119,8 @@ async function loadData() {
       rulesConfig
     });
 
-    console.log(`Loaded ${buildingsData.length} buildings, ${usersData.length} team members, ${Object.keys(eventsData).length} event sets, ${Object.keys(errorsData).length} error sets, ${Object.keys(commentsData).length} comment sets`);
   } catch (error) {
-    console.error('Error loading data:', error);
+    // Data loading failed - app will show empty state
   }
 }
 
@@ -115,16 +131,7 @@ function applyURLState() {
   const shouldShowTable = parseURL();
 
   // Apply tab UI
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
-  });
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
-  });
-
-  // Toggle page-scroll mode for non-map tabs
-  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
-  document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(state.currentTab));
+  updateTabUI(state.currentTab);
 
   // Apply filters UI
   document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
@@ -167,16 +174,7 @@ function handlePopState(event) {
     setTableVisible(event.state.tableVisible !== undefined ? event.state.tableVisible : true);
 
     // Apply tab
-    document.querySelectorAll('.nav-tab').forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.tab === state.currentTab);
-    });
-    document.querySelectorAll('.tab-content').forEach(content => {
-      content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
-    });
-
-    // Toggle page-scroll mode for non-map tabs
-    const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
-    document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(state.currentTab));
+    updateTabUI(state.currentTab);
 
     // Update filter chips UI
     document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
@@ -227,18 +225,10 @@ function handlePopState(event) {
 function switchTab(tabId, shouldUpdateURL = true) {
   state.currentTab = tabId;
 
-  document.querySelectorAll('.nav-tab').forEach(tab => {
-    tab.classList.toggle('active', tab.dataset.tab === tabId);
-  });
-  document.querySelectorAll('.tab-content').forEach(content => {
-    content.classList.toggle('active', content.id === `tab-${tabId}`);
-  });
-
-  // Toggle page-scroll mode for non-map tabs
-  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
-  document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(tabId));
+  updateTabUI(tabId);
 
   // Reset scroll position when switching tabs
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
   if (pageScrollTabs.includes(tabId)) {
     window.scrollTo(0, 0);
   }
@@ -557,7 +547,8 @@ function setupEventListeners() {
 
   // Global search
   document.getElementById('globalSearch').addEventListener('input', (e) => {
-    filterBySearch(e.target.value);
+    setSearchQuery(e.target.value);
+    applyFilters();
   });
 
   // Close modals on escape

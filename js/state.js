@@ -3,6 +3,9 @@
 // Central state, URL sync, and filtering
 // ========================================
 
+// Current user (centralized for easy swapping)
+export const currentUser = 'M. Keller';
+
 // Application state
 export const state = {
   selectedBuildingId: null,
@@ -155,7 +158,7 @@ export function getFilteredBuildings() {
 
   // My tasks filter
   if (state.activeFilters.myTasks) {
-    filtered = filtered.filter(b => b.assignee === 'M. Keller');
+    filtered = filtered.filter(b => b.assignee === currentUser);
   }
 
   // Kanton filter
@@ -197,14 +200,14 @@ export function getFilteredBuildings() {
     });
   }
 
-  // Search query
+  // Search query (with null safety for missing properties)
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     filtered = filtered.filter(b =>
-      b.name.toLowerCase().includes(q) ||
-      b.id.toLowerCase().includes(q) ||
-      b.address.toLowerCase().includes(q) ||
-      b.kanton.toLowerCase().includes(q)
+      (b.name?.toLowerCase() || '').includes(q) ||
+      (b.id?.toLowerCase() || '').includes(q) ||
+      (b.address?.toLowerCase() || '').includes(q) ||
+      (b.kanton?.toLowerCase() || '').includes(q)
     );
   }
 
@@ -363,5 +366,31 @@ export function formatDateTime(isoString) {
     year: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
+  });
+}
+
+export function formatDisplayDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  if (dateOnly.getTime() === today.getTime()) {
+    return 'Heute';
+  }
+  if (dateOnly.getTime() === tomorrow.getTime()) {
+    return 'Morgen';
+  }
+
+  // Format as "15. Feb 2026" for Swiss German locale
+  return date.toLocaleDateString('de-CH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
   });
 }

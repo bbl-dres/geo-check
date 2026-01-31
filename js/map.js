@@ -641,7 +641,6 @@ export function setupLayerIdentify() {
         });
 
         const url = `https://api3.geo.admin.ch/rest/services/api/MapServer/identify?${params}`;
-        console.log('Identify request:', url);
 
         const response = await fetch(url, {
           signal: identifyController.signal
@@ -649,7 +648,6 @@ export function setupLayerIdentify() {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Identify response:', data);
 
           if (data.results && data.results.length > 0) {
             const feature = data.results[0];
@@ -689,8 +687,6 @@ export function setupLayerIdentify() {
               break;
             }
           }
-        } else {
-          console.error('Identify request failed:', response.status, response.statusText);
         }
       }
 
@@ -705,7 +701,6 @@ export function setupLayerIdentify() {
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Identify error:', error);
         identifyPopup.setHTML(`<div class="identify-popup">
           <em>Fehler beim Abfragen</em>
         </div>`);
@@ -801,7 +796,6 @@ export function setupLayerInfoButtons() {
           modalBody.innerHTML = '<p>Fehler beim Laden der Layer-Informationen.</p>';
         }
       } catch (error) {
-        console.error('Layer info error:', error);
         modalBody.innerHTML = '<p>Fehler beim Laden der Layer-Informationen.</p>';
       }
     });
@@ -888,8 +882,8 @@ export function setupContextMenu() {
     navigator.clipboard.writeText(coordsText).then(() => {
       contextMenuCoords.classList.add('copied');
       setTimeout(hideContextMenu, 500);
-    }).catch((err) => {
-      console.error('Failed to copy coordinates:', err);
+    }).catch(() => {
+      // Clipboard API failed - silent fallback
     });
   });
 

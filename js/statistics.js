@@ -36,14 +36,13 @@ export function setChartFilterCallback(callback) {
 function getChartFilteredBuildings() {
   let filtered = getFilteredBuildings();
 
-  // Apply chart-specific filters
+  // Apply chart-specific filters (aligned with main filters: 50/80 thresholds)
   if (chartFilters.confidence) {
     filtered = filtered.filter(b => {
       const conf = b.confidence.total;
-      if (chartFilters.confidence === 'critical') return conf < 40;
-      if (chartFilters.confidence === 'warning') return conf >= 40 && conf < 60;
-      if (chartFilters.confidence === 'moderate') return conf >= 60 && conf < 80;
-      if (chartFilters.confidence === 'success') return conf >= 80;
+      if (chartFilters.confidence === 'critical') return conf < 50;
+      if (chartFilters.confidence === 'warning') return conf >= 50 && conf < 80;
+      if (chartFilters.confidence === 'ok') return conf >= 80;
       return true;
     });
   }
@@ -136,12 +135,11 @@ const chartColors = {
   muted: '#868e96',        // --text-muted
   subtle: '#adb5bd',       // lighter muted
 
-  // Confidence buckets
+  // Confidence buckets (aligned with main filters: 50/80 thresholds)
   confidence: {
-    critical: '#dc2626',   // --color-critical (0-40%)
-    warning: '#d97706',    // --color-warning (40-60%)
-    moderate: '#1a365d',   // --federal-blue (60-80%)
-    success: '#059669'     // --color-success (80-100%)
+    critical: '#dc2626',   // --color-critical (<50%)
+    warning: '#d97706',    // --color-warning (50-80%)
+    ok: '#059669'          // --color-success (>=80%)
   },
 
   // Kanban status
@@ -275,20 +273,19 @@ export function updateStatistik() {
 // Confidence Distribution Chart
 // ========================================
 function renderConfidenceChart(filtered) {
-  const confBuckets = { critical: 0, warning: 0, moderate: 0, success: 0 };
+  const confBuckets = { critical: 0, warning: 0, ok: 0 };
   filtered.forEach(b => {
     const conf = b.confidence.total;
-    if (conf < 40) confBuckets.critical++;
-    else if (conf < 60) confBuckets.warning++;
-    else if (conf < 80) confBuckets.moderate++;
-    else confBuckets.success++;
+    if (conf < 50) confBuckets.critical++;
+    else if (conf < 80) confBuckets.warning++;
+    else confBuckets.ok++;
   });
 
   const options = {
     ...baseChartOptions,
     series: [{
       name: 'Gebäude',
-      data: [confBuckets.critical, confBuckets.warning, confBuckets.moderate, confBuckets.success]
+      data: [confBuckets.critical, confBuckets.warning, confBuckets.ok]
     }],
     chart: {
       ...baseChartOptions.chart,
@@ -296,7 +293,7 @@ function renderConfidenceChart(filtered) {
       height: 220,
       events: {
         dataPointSelection: (event, chartContext, config) => {
-          const categories = ['critical', 'warning', 'moderate', 'success'];
+          const categories = ['critical', 'warning', 'ok'];
           toggleChartFilter('confidence', categories[config.dataPointIndex]);
         }
       }
@@ -308,9 +305,9 @@ function renderConfidenceChart(filtered) {
         distributed: true
       }
     },
-    colors: [chartColors.confidence.critical, chartColors.confidence.warning, chartColors.confidence.moderate, chartColors.confidence.success],
+    colors: [chartColors.confidence.critical, chartColors.confidence.warning, chartColors.confidence.ok],
     xaxis: {
-      categories: ['0-40%', '40-60%', '60-80%', '80-100%'],
+      categories: ['<50%', '50-80%', '≥80%'],
       labels: { style: { fontSize: '12px' } }
     },
     yaxis: {

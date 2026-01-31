@@ -10,12 +10,118 @@ import {
   eventsData,
   commentsData,
   tableVisible,
+  currentUser,
   getTagLabel,
   getDataLabel,
   formatRelativeTime,
-  formatDateTime
+  formatDateTime,
+  formatDisplayDate
 } from './state.js';
 import { map, markers } from './map.js';
+
+// Store cleanup functions to prevent memory leaks from duplicate event listeners
+const dropdownCleanup = new Map();
+
+// ========================================
+// Dropdown Factory
+// ========================================
+function createDropdown(config) {
+  const {
+    containerId,
+    cleanupKey,
+    options,
+    currentValue,
+    dataAttribute,
+    triggerClass,
+    optionClass,
+    getTriggerContent,
+    getOptionContent,
+    extraClasses = '',
+    scrollable = false,
+    extraOptions = '',
+    onSelect
+  } = config;
+
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Clean up previous event listeners
+  if (dropdownCleanup.has(cleanupKey)) {
+    dropdownCleanup.get(cleanupKey)();
+  }
+
+  const optionsHtml = options.map(opt => {
+    const isSelected = currentValue === opt.value;
+    const content = getOptionContent ? getOptionContent(opt) : `<span>${opt.label}</span>`;
+    return `
+      <button class="dropdown-option-base ${optionClass} ${isSelected ? 'selected' : ''}" data-${dataAttribute}="${opt.value}">
+        ${content}
+      </button>
+    `;
+  }).join('');
+
+  container.classList.add('dropdown-base');
+  if (extraClasses) {
+    extraClasses.split(' ').forEach(cls => cls && container.classList.add(cls));
+  }
+
+  container.innerHTML = `
+    <button class="dropdown-trigger-base ${triggerClass}" type="button">
+      ${getTriggerContent()}
+      <i data-lucide="chevron-down" class="icon-sm dropdown-chevron-base"></i>
+    </button>
+    <div class="dropdown-menu-base ${scrollable ? 'scrollable' : ''}">
+      ${optionsHtml}
+      ${extraOptions}
+    </div>
+  `;
+
+  // Handle triggerClass with multiple classes (extract first for selector)
+  const triggerSelector = triggerClass.split(' ')[0];
+  const trigger = container.querySelector(`.${triggerSelector}`);
+  let outsideClickHandler = null;
+
+  const closeDropdown = () => {
+    container.classList.remove('open');
+    if (outsideClickHandler) {
+      document.removeEventListener('click', outsideClickHandler);
+      outsideClickHandler = null;
+    }
+  };
+
+  const handleTriggerClick = (e) => {
+    e.stopPropagation();
+    const isOpen = container.classList.toggle('open');
+    if (isOpen) {
+      outsideClickHandler = (evt) => {
+        if (!container.contains(evt.target)) {
+          closeDropdown();
+        }
+      };
+      document.addEventListener('click', outsideClickHandler);
+    } else {
+      closeDropdown();
+    }
+  };
+
+  trigger.addEventListener('click', handleTriggerClick);
+
+  container.querySelectorAll(`.${optionClass}`).forEach(option => {
+    option.addEventListener('click', () => {
+      const value = option.dataset[dataAttribute];
+      closeDropdown();
+      onSelect(value);
+    });
+  });
+
+  // Store cleanup function
+  dropdownCleanup.set(cleanupKey, () => {
+    trigger.removeEventListener('click', handleTriggerClick);
+    closeDropdown();
+  });
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
 
 // Status options for dropdown
 const statusOptions = [
@@ -320,7 +426,7 @@ export function exitEditMode(save) {
     }
 
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
   } else {
     if (state.originalBuildingData) {
       building.data = state.originalBuildingData;
@@ -366,63 +472,21 @@ export function exitEditMode(save) {
 // Priority Dropdown
 // ========================================
 function renderPriorityDisplay(building) {
-  const container = document.getElementById('priority-display');
   const currentPriority = building.priority || 'medium';
   const currentOption = priorityOptions.find(p => p.value === currentPriority) || priorityOptions[1];
 
-  const priorityClass = `priority-${currentPriority}`;
-
-  const options = priorityOptions.map(opt => `
-    <button class="priority-option ${currentPriority === opt.value ? 'selected' : ''}" data-priority="${opt.value}">
-      <span>${opt.label}</span>
-    </button>
-  `).join('');
-
-  container.innerHTML = `
-    <button class="priority-trigger ${priorityClass}" type="button">
-      <span>${currentOption.label}</span>
-      <i data-lucide="chevron-down" class="icon-sm priority-chevron"></i>
-    </button>
-    <div class="priority-dropdown">
-      ${options}
-    </div>
-  `;
-
-  const trigger = container.querySelector('.priority-trigger');
-  let outsideClickHandler = null;
-
-  const closeDropdown = () => {
-    container.classList.remove('open');
-    if (outsideClickHandler) {
-      document.removeEventListener('click', outsideClickHandler);
-      outsideClickHandler = null;
-    }
-  };
-
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = container.classList.toggle('open');
-    if (isOpen) {
-      outsideClickHandler = (evt) => {
-        if (!container.contains(evt.target)) {
-          closeDropdown();
-        }
-      };
-      document.addEventListener('click', outsideClickHandler);
-    } else {
-      closeDropdown();
-    }
+  createDropdown({
+    containerId: 'priority-display',
+    cleanupKey: 'priority',
+    options: priorityOptions,
+    currentValue: currentPriority,
+    dataAttribute: 'priority',
+    triggerClass: `priority-trigger priority-${currentPriority}`,
+    optionClass: 'priority-option',
+    extraClasses: 'flex-1',
+    getTriggerContent: () => `<span>${currentOption.label}</span>`,
+    onSelect: (value) => updateBuildingPriority(building.id, value)
   });
-
-  container.querySelectorAll('.priority-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const newPriority = option.dataset.priority;
-      closeDropdown();
-      updateBuildingPriority(building.id, newPriority);
-    });
-  });
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function updateBuildingPriority(buildingId, newPriority) {
@@ -430,7 +494,7 @@ function updateBuildingPriority(buildingId, newPriority) {
   if (building) {
     building.priority = newPriority;
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
 
     renderPriorityDisplay(building);
 
@@ -442,61 +506,21 @@ function updateBuildingPriority(buildingId, newPriority) {
 // Status Dropdown
 // ========================================
 function renderStatusDisplay(building) {
-  const container = document.getElementById('status-display');
   const currentStatus = building.kanbanStatus || 'backlog';
   const currentOption = statusOptions.find(s => s.value === currentStatus) || statusOptions[0];
 
-  const options = statusOptions.map(opt => `
-    <button class="status-option ${currentStatus === opt.value ? 'selected' : ''}" data-status="${opt.value}">
-      <span>${opt.label}</span>
-    </button>
-  `).join('');
-
-  container.innerHTML = `
-    <button class="status-trigger" type="button">
-      <span>${currentOption.label}</span>
-      <i data-lucide="chevron-down" class="icon-sm status-chevron"></i>
-    </button>
-    <div class="status-dropdown">
-      ${options}
-    </div>
-  `;
-
-  const trigger = container.querySelector('.status-trigger');
-  let outsideClickHandler = null;
-
-  const closeDropdown = () => {
-    container.classList.remove('open');
-    if (outsideClickHandler) {
-      document.removeEventListener('click', outsideClickHandler);
-      outsideClickHandler = null;
-    }
-  };
-
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = container.classList.toggle('open');
-    if (isOpen) {
-      outsideClickHandler = (evt) => {
-        if (!container.contains(evt.target)) {
-          closeDropdown();
-        }
-      };
-      document.addEventListener('click', outsideClickHandler);
-    } else {
-      closeDropdown();
-    }
+  createDropdown({
+    containerId: 'status-display',
+    cleanupKey: 'status',
+    options: statusOptions,
+    currentValue: currentStatus,
+    dataAttribute: 'status',
+    triggerClass: 'status-trigger',
+    optionClass: 'status-option',
+    extraClasses: 'flex-1',
+    getTriggerContent: () => `<span>${currentOption.label}</span>`,
+    onSelect: (value) => updateBuildingStatus(building.id, value)
   });
-
-  container.querySelectorAll('.status-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const newStatus = option.dataset.status;
-      closeDropdown();
-      updateBuildingStatus(building.id, newStatus);
-    });
-  });
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function updateBuildingStatus(buildingId, newStatus) {
@@ -504,7 +528,7 @@ function updateBuildingStatus(buildingId, newStatus) {
   if (building) {
     building.kanbanStatus = newStatus;
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
 
     renderStatusDisplay(building);
 
@@ -516,76 +540,31 @@ function updateBuildingStatus(buildingId, newStatus) {
 // Assignee Dropdown
 // ========================================
 function renderAssigneeDisplay(building) {
-  const container = document.getElementById('assignee-display');
   const currentAssignee = building.assignee;
-  const member = currentAssignee ? teamMembers.find(m => m.name === currentAssignee) : null;
-
-  let triggerContent;
-  if (currentAssignee) {
-    triggerContent = `<span class="assignee-name">${currentAssignee}</span>`;
-  } else {
-    triggerContent = `<span class="assignee-empty-text">Zuweisen...</span>`;
-  }
-
-  const options = teamMembers.map(m => `
-    <button class="assignee-option ${currentAssignee === m.name ? 'selected' : ''}" data-assignee="${m.name}">
-      <span>${m.name}</span>
-    </button>
-  `).join('');
+  const assigneeOptions = teamMembers.map(m => ({ value: m.name, label: m.name }));
 
   const unassignOption = currentAssignee ? `
-    <div class="assignee-divider"></div>
-    <button class="assignee-option unassign" data-assignee="">
+    <div class="dropdown-divider assignee-divider"></div>
+    <button class="dropdown-option-base assignee-option unassign" data-assignee="">
       <span>Zuweisung aufheben</span>
     </button>
   ` : '';
 
-  container.innerHTML = `
-    <button class="assignee-trigger" type="button">
-      ${triggerContent}
-      <i data-lucide="chevron-down" class="icon-sm assignee-chevron"></i>
-    </button>
-    <div class="assignee-dropdown">
-      ${options}
-      ${unassignOption}
-    </div>
-  `;
-
-  const trigger = container.querySelector('.assignee-trigger');
-  let outsideClickHandler = null;
-
-  const closeDropdown = () => {
-    container.classList.remove('open');
-    if (outsideClickHandler) {
-      document.removeEventListener('click', outsideClickHandler);
-      outsideClickHandler = null;
-    }
-  };
-
-  trigger.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = container.classList.toggle('open');
-    if (isOpen) {
-      outsideClickHandler = (evt) => {
-        if (!container.contains(evt.target)) {
-          closeDropdown();
-        }
-      };
-      document.addEventListener('click', outsideClickHandler);
-    } else {
-      closeDropdown();
-    }
+  createDropdown({
+    containerId: 'assignee-display',
+    cleanupKey: 'assignee',
+    options: assigneeOptions,
+    currentValue: currentAssignee,
+    dataAttribute: 'assignee',
+    triggerClass: 'assignee-trigger',
+    optionClass: 'assignee-option',
+    scrollable: true,
+    extraOptions: unassignOption,
+    getTriggerContent: () => currentAssignee
+      ? `<span class="assignee-name">${currentAssignee}</span>`
+      : `<span class="assignee-empty-text">Zuweisen...</span>`,
+    onSelect: (value) => assignBuilding(building.id, value || null)
   });
-
-  container.querySelectorAll('.assignee-option').forEach(option => {
-    option.addEventListener('click', () => {
-      const newAssignee = option.dataset.assignee || null;
-      closeDropdown();
-      assignBuilding(building.id, newAssignee);
-    });
-  });
-
-  if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
 function assignBuilding(buildingId, assigneeName) {
@@ -593,7 +572,7 @@ function assignBuilding(buildingId, assigneeName) {
   if (building) {
     building.assignee = assigneeName;
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
 
     renderAssigneeDisplay(building);
 
@@ -607,6 +586,9 @@ function assignBuilding(buildingId, assigneeName) {
 function renderDueDateDisplay(building) {
   const container = document.getElementById('duedate-display');
   if (!container) return;
+
+  // Add dropdown-base class for consistent styling with other dropdowns
+  container.classList.add('dropdown-base', 'flex-1');
 
   const currentDueDate = building.dueDate;
   const hasDate = !!currentDueDate;
@@ -636,20 +618,20 @@ function renderDueDateDisplay(building) {
   const inputValue = hasDate ? currentDueDate : '';
 
   container.innerHTML = `
-    <div class="duedate-container ${hasDate ? statusClass : 'placeholder'}">
+    <button class="dropdown-trigger-base duedate-trigger ${hasDate ? statusClass : ''}" type="button">
       ${hasDate ? `
         <span class="duedate-value">${formattedDate}</span>
       ` : `
-        <span class="duedate-placeholder">Datum setzen...</span>
+        <span class="duedate-empty-text">Datum setzen...</span>
       `}
       <input type="date" class="duedate-input" value="${inputValue}">
-      <i data-lucide="chevron-down" class="icon-sm duedate-chevron"></i>
-    </div>
+      <i data-lucide="chevron-down" class="icon-sm dropdown-chevron-base"></i>
+    </button>
   `;
 
   // Setup event handlers
   const dateInput = container.querySelector('.duedate-input');
-  const duedateContainer = container.querySelector('.duedate-container');
+  const duedateTrigger = container.querySelector('.duedate-trigger');
 
   if (dateInput) {
     dateInput.addEventListener('change', (e) => {
@@ -658,9 +640,9 @@ function renderDueDateDisplay(building) {
     });
   }
 
-  // Click on container opens the date picker
-  if (duedateContainer && dateInput) {
-    duedateContainer.addEventListener('click', () => {
+  // Click on trigger opens the date picker
+  if (duedateTrigger && dateInput) {
+    duedateTrigger.addEventListener('click', () => {
       dateInput.showPicker();
     });
   }
@@ -668,38 +650,12 @@ function renderDueDateDisplay(building) {
   if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 
-function formatDisplayDate(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const dateOnly = new Date(date);
-  dateOnly.setHours(0, 0, 0, 0);
-
-  if (dateOnly.getTime() === today.getTime()) {
-    return 'Heute';
-  }
-  if (dateOnly.getTime() === tomorrow.getTime()) {
-    return 'Morgen';
-  }
-
-  // Format as "15. Feb 2026" for Swiss German locale
-  return date.toLocaleDateString('de-CH', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
-  });
-}
-
 function updateBuildingDueDate(buildingId, newDueDate) {
   const building = buildings.find(b => b.id === buildingId);
   if (building) {
     building.dueDate = newDueDate;
     building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = 'M. Keller';
+    building.lastUpdateBy = currentUser;
 
     renderDueDateDisplay(building);
 
@@ -759,7 +715,7 @@ export function submitComment() {
   if (!building) return;
 
   const newComment = {
-    author: 'M. Keller',
+    author: currentUser,
     date: new Date().toLocaleDateString('de-CH'),
     text: text,
     system: false
