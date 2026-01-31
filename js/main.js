@@ -133,6 +133,7 @@ function applyURLState() {
   applyMultiSelectState('filter-kanton', state.filterKanton);
   applyMultiSelectState('filter-confidence', state.filterConfidence);
   applyMultiSelectState('filter-portfolio', state.filterPortfolio);
+  applyMultiSelectState('filter-status', state.filterStatus);
   applyMultiSelectState('filter-assignee', state.filterAssignee);
 
   // Apply table visibility
@@ -180,6 +181,7 @@ function handlePopState(event) {
     applyMultiSelectState('filter-kanton', state.filterKanton);
     applyMultiSelectState('filter-confidence', state.filterConfidence);
     applyMultiSelectState('filter-portfolio', state.filterPortfolio);
+    applyMultiSelectState('filter-status', state.filterStatus);
     applyMultiSelectState('filter-assignee', state.filterAssignee);
 
     // Update table visibility
@@ -311,6 +313,7 @@ function setupFilterToggle() {
     state.filterKanton = [];
     state.filterConfidence = [];
     state.filterPortfolio = [];
+    state.filterStatus = [];
     state.filterAssignee = [];
 
     // Clear location search
@@ -324,6 +327,7 @@ function setupFilterToggle() {
     applyMultiSelectState('filter-kanton', []);
     applyMultiSelectState('filter-confidence', []);
     applyMultiSelectState('filter-portfolio', []);
+    applyMultiSelectState('filter-status', []);
     applyMultiSelectState('filter-assignee', []);
 
     applyFilters();
@@ -505,6 +509,7 @@ function setupEventListeners() {
   setupMultiSelectFilter('filter-kanton', 'filterKanton');
   setupMultiSelectFilter('filter-confidence', 'filterConfidence');
   setupMultiSelectFilter('filter-portfolio', 'filterPortfolio');
+  setupMultiSelectFilter('filter-status', 'filterStatus');
   setupMultiSelectFilter('filter-assignee', 'filterAssignee');
 
   // Correct button

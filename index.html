@@ -145,6 +145,26 @@
         </div>
       </div>
 
+      <!-- Multi-select: Status -->
+      <div class="multi-select" id="filter-status">
+        <button class="multi-select-trigger" type="button">
+          <span class="multi-select-label">Status</span>
+          <i data-lucide="chevron-down" class="icon-sm"></i>
+        </button>
+        <div class="multi-select-dropdown">
+          <div class="multi-select-actions">
+            <button type="button" class="multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+          </div>
+          <div class="multi-select-options">
+            <label class="multi-select-option"><input type="checkbox" value="backlog"><span>Backlog</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="inprogress"><span>In Bearbeitung</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="clarification"><span>Abklärung</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="done"><span>Erledigt</span></label>
+          </div>
+        </div>
+      </div>
+
       <!-- Multi-select: Zugewiesen -->
       <div class="multi-select" id="filter-assignee">
         <button class="multi-select-trigger" type="button">
@@ -301,11 +321,11 @@
                     <span>Status</span>
                   </label>
                   <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="confidence">
+                    <input type="checkbox" data-col="confidence" checked>
                     <span>Konfidenz</span>
                   </label>
                   <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="errors" checked>
+                    <input type="checkbox" data-col="errors">
                     <span>Fehlertypen</span>
                   </label>
                   <label class="columns-dropdown-item">
@@ -354,8 +374,8 @@
                     <th data-col="kanton" class="col-hidden">Kanton</th>
                     <th data-col="portfolio" class="col-hidden">Portfolio</th>
                     <th data-col="status">Status</th>
-                    <th data-col="confidence" class="col-hidden">Konfidenz</th>
-                    <th data-col="errors">Fehlertypen</th>
+                    <th data-col="confidence">Konfidenz</th>
+                    <th data-col="errors" class="col-hidden">Fehlertypen</th>
                     <th data-col="assignee">Zugewiesen</th>
                     <th data-col="updated">Aktualisiert</th>
                   </tr>

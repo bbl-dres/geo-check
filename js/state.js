@@ -15,6 +15,7 @@ export const state = {
   filterKanton: [],
   filterConfidence: [],
   filterPortfolio: [],
+  filterStatus: [],
   filterAssignee: [],
   currentTab: 'karte',
   editMode: false,
@@ -84,6 +85,7 @@ export function updateURL(replace = false) {
   if (state.filterKanton.length > 0) params.set('kanton', state.filterKanton.join(','));
   if (state.filterConfidence.length > 0) params.set('confidence', state.filterConfidence.join(','));
   if (state.filterPortfolio.length > 0) params.set('portfolio', state.filterPortfolio.join(','));
+  if (state.filterStatus.length > 0) params.set('status', state.filterStatus.join(','));
   if (state.filterAssignee.length > 0) params.set('assignee', state.filterAssignee.join(','));
 
   if (!tableVisible) params.set('table', '0');
@@ -128,10 +130,12 @@ export function parseURL() {
   const kantonParam = params.get('kanton');
   const confidenceParam = params.get('confidence');
   const portfolioParam = params.get('portfolio');
+  const statusParam = params.get('status');
   const assigneeParam = params.get('assignee');
   state.filterKanton = kantonParam ? kantonParam.split(',') : [];
   state.filterConfidence = confidenceParam ? confidenceParam.split(',') : [];
   state.filterPortfolio = portfolioParam ? portfolioParam.split(',') : [];
+  state.filterStatus = statusParam ? statusParam.split(',') : [];
   state.filterAssignee = assigneeParam ? assigneeParam.split(',') : [];
 
   return params.get('table') !== '0';
@@ -175,6 +179,11 @@ export function getFilteredBuildings() {
   // Portfolio filter
   if (state.filterPortfolio.length > 0) {
     filtered = filtered.filter(b => state.filterPortfolio.includes(b.portfolio));
+  }
+
+  // Status filter
+  if (state.filterStatus.length > 0) {
+    filtered = filtered.filter(b => state.filterStatus.includes(b.kanbanStatus));
   }
 
   // Assignee filter
