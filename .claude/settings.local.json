@@ -12,7 +12,10 @@
       "Bash(curl:*)",
       "Bash(python3:*)",
       "Bash(git -C \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\geo-check\" log --oneline -10)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)"
     ]
   }
 }

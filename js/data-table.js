@@ -23,6 +23,10 @@ let tableSearchQuery = '';
 let currentPage = 1;
 let pageSize = 100;
 
+// Sort state
+let sortColumn = null;
+let sortDirection = 'asc'; // 'asc' or 'desc'
+
 // Selection state
 let selectedIds = new Set();
 
@@ -84,6 +88,127 @@ function getSearchFilteredBuildings() {
   }
 
   return buildings;
+}
+
+// ========================================
+// Sorting
+// ========================================
+function getSortedBuildings(buildings) {
+  if (!sortColumn) return buildings;
+
+  const sorted = [...buildings];
+
+  // Priority order mapping (high = 1, medium = 2, low = 3)
+  const priorityOrder = { high: 1, medium: 2, low: 3 };
+
+  // Status order mapping
+  const statusOrder = { backlog: 1, inprogress: 2, clarification: 3, done: 4 };
+
+  sorted.sort((a, b) => {
+    let valA, valB;
+
+    switch (sortColumn) {
+      case 'priority':
+        valA = priorityOrder[a.priority] || 4;
+        valB = priorityOrder[b.priority] || 4;
+        break;
+      case 'status':
+        valA = statusOrder[a.kanbanStatus] || 0;
+        valB = statusOrder[b.kanbanStatus] || 0;
+        break;
+      case 'confidence':
+        valA = a.confidence?.total ?? 0;
+        valB = b.confidence?.total ?? 0;
+        break;
+      case 'updated':
+        valA = a.lastUpdate ? new Date(a.lastUpdate).getTime() : 0;
+        valB = b.lastUpdate ? new Date(b.lastUpdate).getTime() : 0;
+        break;
+      case 'id':
+        valA = (a.id || '').toLowerCase();
+        valB = (b.id || '').toLowerCase();
+        break;
+      case 'name':
+        valA = (a.name || '').toLowerCase();
+        valB = (b.name || '').toLowerCase();
+        break;
+      case 'kanton':
+        valA = (a.kanton || '').toLowerCase();
+        valB = (b.kanton || '').toLowerCase();
+        break;
+      case 'portfolio':
+        valA = (a.portfolio || '').toLowerCase();
+        valB = (b.portfolio || '').toLowerCase();
+        break;
+      case 'assignee':
+        valA = (a.assignee || '').toLowerCase();
+        valB = (b.assignee || '').toLowerCase();
+        break;
+      default:
+        return 0;
+    }
+
+    // Compare values
+    let result;
+    if (typeof valA === 'number' && typeof valB === 'number') {
+      result = valA - valB;
+    } else {
+      result = valA < valB ? -1 : valA > valB ? 1 : 0;
+    }
+
+    return sortDirection === 'desc' ? -result : result;
+  });
+
+  return sorted;
+}
+
+function handleSort(column) {
+  if (sortColumn === column) {
+    // Toggle direction or clear sort
+    if (sortDirection === 'asc') {
+      sortDirection = 'desc';
+    } else {
+      // Clear sort on third click
+      sortColumn = null;
+      sortDirection = 'asc';
+    }
+  } else {
+    // New column, start with ascending
+    sortColumn = column;
+    sortDirection = 'asc';
+  }
+  currentPage = 1; // Reset to first page
+  renderTableView();
+}
+
+function updateSortIndicators() {
+  const headers = document.querySelectorAll('.buildings-table thead th[data-col]');
+  headers.forEach(th => {
+    const col = th.dataset.col;
+    // Remove existing sort classes and indicators
+    th.classList.remove('sort-asc', 'sort-desc', 'sortable');
+    th.classList.add('sortable');
+
+    if (col === sortColumn) {
+      th.classList.add(sortDirection === 'asc' ? 'sort-asc' : 'sort-desc');
+    }
+  });
+}
+
+function setupTableSorting() {
+  const thead = document.querySelector('.buildings-table thead');
+  if (!thead) return;
+
+  thead.addEventListener('click', (e) => {
+    const th = e.target.closest('th[data-col]');
+    if (!th) return;
+
+    const col = th.dataset.col;
+    // Skip non-sortable columns (errors has multiple values)
+    if (col === 'errors') return;
+
+    handleSort(col);
+  });
 }
 
 // ========================================
@@ -243,7 +368,11 @@ export function renderTableView() {
   const tbody = document.getElementById('table-body');
   const totalBuildings = getFilteredBuildings();
   const filteredBuildings = getSearchFilteredBuildings();
-  const paginatedBuildings = getPaginatedBuildings(filteredBuildings);
+  const sortedBuildings = getSortedBuildings(filteredBuildings);
+  const paginatedBuildings = getPaginatedBuildings(sortedBuildings);
+
+  // Update header sort indicators
+  updateSortIndicators();
 
   // Ensure current page is valid
   const totalPages = getTotalPages(filteredBuildings.length);
@@ -458,6 +587,9 @@ function downloadFile(content, filename, mimeType) {
 export function setupTableViewListeners() {
   document.getElementById('table-toggle-btn').addEventListener('click', toggleTableView);
   document.getElementById('table-close-btn').addEventListener('click', closeTableView);
+
+  // Table sorting
+  setupTableSorting();
 
   // Search input
   const searchInput = document.getElementById('table-search-input');

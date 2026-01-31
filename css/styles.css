@@ -4062,6 +4062,66 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   letter-spacing: 0.5px;
 }
 
+/* Sortable table headers */
+.buildings-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.buildings-table th.sortable:hover {
+  background: var(--interactive-hover);
+  color: var(--text-primary);
+}
+
+.buildings-table th.sortable::after {
+  content: '';
+  display: inline-block;
+  width: 0;
+  height: 0;
+  margin-left: 6px;
+  vertical-align: middle;
+  opacity: 0.3;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 5px solid currentColor;
+}
+
+.buildings-table th.sortable:hover::after {
+  opacity: 0.5;
+}
+
+.buildings-table th.sort-asc {
+  color: var(--text-primary);
+  background: var(--bg-active);
+}
+
+.buildings-table th.sort-asc::after {
+  opacity: 1;
+  border-bottom: 5px solid currentColor;
+  border-top: none;
+}
+
+.buildings-table th.sort-desc {
+  color: var(--text-primary);
+  background: var(--bg-active);
+}
+
+.buildings-table th.sort-desc::after {
+  opacity: 1;
+  border-bottom: none;
+  border-top: 5px solid currentColor;
+}
+
+/* Checkbox column should not be sortable */
+.buildings-table th.col-checkbox {
+  cursor: default;
+}
+
+.buildings-table th.col-checkbox::after {
+  display: none;
+}
+
 .buildings-table td {
   padding: var(--space-sm) var(--space-md);
   border-bottom: 1px solid var(--border-default);
