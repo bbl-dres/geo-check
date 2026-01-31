@@ -2082,11 +2082,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 @keyframes pulse-marker {
   0%, 100% {
     box-shadow: 0 0 0 4px var(--color-critical), 0 0 12px rgba(220, 38, 38, 0.5);
-    transform: scale(1);
   }
   50% {
     box-shadow: 0 0 0 8px rgba(220, 38, 38, 0.3), 0 0 20px rgba(220, 38, 38, 0.4);
-    transform: scale(1.05);
   }
 }
 
@@ -3458,10 +3456,13 @@ a.leaflet-control-home:hover {
   left: 50%;
   width: 12px;
   height: 12px;
+  margin-left: -6px;
+  margin-top: -6px;
   border-radius: var(--radius-full);
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transform: translate(-50%, -50%) scale(var(--marker-scale, 1));
+  transform: scale(var(--marker-scale, 1));
+  transform-origin: center center;
   transition: transform 0.15s ease-out;
 }
 
@@ -3472,6 +3473,8 @@ a.leaflet-control-home:hover {
 .custom-marker.selected {
   width: 16px;
   height: 16px;
+  margin-left: -8px;
+  margin-top: -8px;
   border-width: 3px;
 }
 
