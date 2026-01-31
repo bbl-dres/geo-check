@@ -18,6 +18,9 @@ let currentBasemap = 'grey';
 // Overlay layers state
 const activeOverlayLayers = new Set();
 
+// Markers visibility state
+let markersVisible = true;
+
 // Context menu state
 let contextMenuLatLng = null;
 
@@ -301,7 +304,8 @@ export function updateMapMarkers() {
 
   Object.entries(markers).forEach(([id, marker]) => {
     const el = marker.getElement();
-    if (filteredIds.has(id)) {
+    // Only show if markers are visible globally AND the marker passes filter
+    if (markersVisible && filteredIds.has(id)) {
       el.style.display = '';
     } else {
       el.style.display = 'none';
@@ -344,6 +348,23 @@ export function deselectAllMarkers() {
     }
     el.style.zIndex = '';
   });
+}
+
+export function setMarkersVisible(visible) {
+  markersVisible = visible;
+  Object.values(markers).forEach(marker => {
+    const el = marker.getElement();
+    if (visible) {
+      // Re-apply filter visibility
+      updateMapMarkers();
+    } else {
+      el.style.display = 'none';
+    }
+  });
+}
+
+export function getMarkersVisible() {
+  return markersVisible;
 }
 
 // ========================================
@@ -435,6 +456,13 @@ export function setupLayerWidget() {
   checkboxes.forEach(checkbox => {
     checkbox.addEventListener('change', () => {
       const layerId = checkbox.dataset.layer;
+
+      // Handle buildings layer specially (it's the markers, not a WMS layer)
+      if (layerId === 'buildings') {
+        setMarkersVisible(checkbox.checked);
+        return;
+      }
+
       if (checkbox.checked) {
         addOverlayLayer(layerId);
       } else {
@@ -687,6 +715,51 @@ export function setupLayerIdentify() {
 }
 
 // ========================================
+// Buildings Layer Legend
+// ========================================
+function getBuildingsLayerLegend() {
+  return `
+    <div class="buildings-legend">
+      <p class="legend-description">Gebäude aus SAP RE-FX mit Datenqualitätsbewertung basierend auf dem Abgleich mit GWR und GEOREF.</p>
+      <div class="legend-section">
+        <div class="legend-title">Konfidenz</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-marker critical"></span>
+            <span class="legend-label">Kritisch (&lt; 50%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-marker warning"></span>
+            <span class="legend-label">Warnung (50–79%)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-marker ok"></span>
+            <span class="legend-label">OK (≥ 80%)</span>
+          </div>
+        </div>
+      </div>
+      <div class="legend-section">
+        <div class="legend-title">Interaktion</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <span class="legend-marker selected"></span>
+            <span class="legend-label">Ausgewählt</span>
+          </div>
+        </div>
+      </div>
+      <div class="legend-section">
+        <div class="legend-title">Datenquellen</div>
+        <ul class="legend-sources">
+          <li><strong>SAP RE-FX</strong> – Immobilienstammdaten</li>
+          <li><strong>GWR</strong> – Eidg. Gebäude- und Wohnungsregister</li>
+          <li><strong>GEOREF</strong> – Georeferenzierung</li>
+        </ul>
+      </div>
+    </div>
+  `;
+}
+
+// ========================================
 // Layer Info Button Handler
 // ========================================
 export function setupLayerInfoButtons() {
@@ -703,6 +776,14 @@ export function setupLayerInfoButtons() {
       const modalTitle = document.getElementById('layer-info-modal-title');
 
       if (!modal || !modalBody) return;
+
+      // Handle buildings layer with custom legend
+      if (layerId === 'buildings') {
+        modal.classList.add('visible');
+        modalTitle.textContent = 'Gebäude';
+        modalBody.innerHTML = getBuildingsLayerLegend();
+        return;
+      }
 
       // Show modal with loading state
       modal.classList.add('visible');

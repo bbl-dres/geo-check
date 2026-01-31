@@ -36,12 +36,14 @@ const priorityOptions = [
 let onStatusChange = null;
 let onAssigneeChange = null;
 let onPriorityChange = null;
+let onDueDateChange = null;
 let onDataChange = null;
 
 export function setCallbacks(callbacks) {
   onStatusChange = callbacks.onStatusChange;
   onAssigneeChange = callbacks.onAssigneeChange;
   onPriorityChange = callbacks.onPriorityChange;
+  onDueDateChange = callbacks.onDueDateChange;
   onDataChange = callbacks.onDataChange;
 }
 
@@ -148,6 +150,9 @@ export function renderDetailPanel(building) {
 
   // Assignee dropdown
   renderAssigneeDisplay(building);
+
+  // Due date display
+  renderDueDateDisplay(building);
 
   // Events log
   renderEventsLog(building.id);
@@ -593,6 +598,112 @@ function assignBuilding(buildingId, assigneeName) {
     renderAssigneeDisplay(building);
 
     if (onAssigneeChange) onAssigneeChange();
+  }
+}
+
+// ========================================
+// Due Date Display
+// ========================================
+function renderDueDateDisplay(building) {
+  const container = document.getElementById('duedate-display');
+  if (!container) return;
+
+  const currentDueDate = building.dueDate;
+  const hasDate = !!currentDueDate;
+
+  // Calculate due date status
+  let statusClass = '';
+  if (hasDate) {
+    const dueDate = new Date(currentDueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dateOnly = new Date(dueDate);
+    dateOnly.setHours(0, 0, 0, 0);
+
+    const diffDays = Math.ceil((dateOnly - today) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 0) {
+      statusClass = 'overdue';
+    } else if (diffDays <= 7) {
+      statusClass = 'soon';
+    }
+  }
+
+  // Format date for display
+  const formattedDate = hasDate ? formatDisplayDate(currentDueDate) : '';
+
+  // Format date for input value (YYYY-MM-DD)
+  const inputValue = hasDate ? currentDueDate : '';
+
+  container.innerHTML = `
+    <div class="duedate-container ${hasDate ? statusClass : 'placeholder'}">
+      ${hasDate ? `
+        <span class="duedate-value">${formattedDate}</span>
+      ` : `
+        <span class="duedate-placeholder">Datum setzen...</span>
+      `}
+      <input type="date" class="duedate-input" value="${inputValue}">
+      <i data-lucide="chevron-down" class="icon-sm duedate-chevron"></i>
+    </div>
+  `;
+
+  // Setup event handlers
+  const dateInput = container.querySelector('.duedate-input');
+  const duedateContainer = container.querySelector('.duedate-container');
+
+  if (dateInput) {
+    dateInput.addEventListener('change', (e) => {
+      const newDate = e.target.value || null;
+      updateBuildingDueDate(building.id, newDate);
+    });
+  }
+
+  // Click on container opens the date picker
+  if (duedateContainer && dateInput) {
+    duedateContainer.addEventListener('click', () => {
+      dateInput.showPicker();
+    });
+  }
+
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+function formatDisplayDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  if (dateOnly.getTime() === today.getTime()) {
+    return 'Heute';
+  }
+  if (dateOnly.getTime() === tomorrow.getTime()) {
+    return 'Morgen';
+  }
+
+  // Format as "15. Feb 2026" for Swiss German locale
+  return date.toLocaleDateString('de-CH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
+  });
+}
+
+function updateBuildingDueDate(buildingId, newDueDate) {
+  const building = buildings.find(b => b.id === buildingId);
+  if (building) {
+    building.dueDate = newDueDate;
+    building.lastUpdate = new Date().toISOString();
+    building.lastUpdateBy = 'M. Keller';
+
+    renderDueDateDisplay(building);
+
+    if (onDueDateChange) onDueDateChange();
   }
 }
 

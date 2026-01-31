@@ -1190,6 +1190,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-primary);
 }
 
+.layer-divider {
+  height: 1px;
+  background: var(--border-default);
+  margin: var(--space-xs) 0;
+}
+
 .layer-widget-footer {
   padding: var(--space-xs) var(--space-md);
   border-top: 1px solid var(--border-default);
@@ -1339,6 +1345,95 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   justify-content: center;
   padding: var(--space-3xl);
   color: var(--text-muted);
+}
+
+/* Buildings Layer Legend */
+.buildings-legend {
+  font-family: var(--font-family);
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+.buildings-legend .legend-description {
+  margin-bottom: var(--space-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.buildings-legend .legend-section {
+  margin-bottom: var(--space-lg);
+}
+
+.buildings-legend .legend-section:last-child {
+  margin-bottom: 0;
+}
+
+.buildings-legend .legend-title {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+  font-size: var(--font-sm);
+}
+
+.buildings-legend .legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.buildings-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.buildings-legend .legend-marker {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.buildings-legend .legend-marker.critical {
+  background: var(--color-critical);
+}
+
+.buildings-legend .legend-marker.warning {
+  background: var(--color-warning);
+}
+
+.buildings-legend .legend-marker.ok {
+  background: var(--color-success);
+}
+
+.buildings-legend .legend-marker.selected {
+  background: var(--federal-blue);
+  width: 24px;
+  height: 24px;
+  box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.3);
+}
+
+.buildings-legend .legend-label {
+  color: var(--text-secondary);
+}
+
+.buildings-legend .legend-sources {
+  margin: 0;
+  padding-left: var(--space-lg);
+  list-style-type: disc;
+}
+
+.buildings-legend .legend-sources li {
+  margin-bottom: var(--space-xs);
+  line-height: var(--leading-normal);
+}
+
+.buildings-legend .legend-sources li:last-child {
+  margin-bottom: 0;
+}
+
+.buildings-legend .legend-sources strong {
+  color: var(--text-primary);
+  font-weight: var(--font-medium);
 }
 
 /* Identify Popup */
@@ -1689,7 +1784,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .status-row .priority-display,
 .status-row .status-display,
-.status-row .assignee-display {
+.status-row .assignee-display,
+.status-row .duedate-display {
   min-width: 0;
 }
 
@@ -2075,6 +2171,97 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .assignee-option.unassign .assignee-option-name {
   color: var(--color-critical);
+}
+
+/* Due Date Display */
+.duedate-display {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.duedate-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--bg-subtle);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.duedate-container:hover {
+  background: var(--bg-muted);
+}
+
+.duedate-container:focus-within {
+  border-color: var(--federal-blue);
+  background: var(--bg-white);
+}
+
+/* Placeholder state (no date set) */
+.duedate-container.placeholder {
+  background: var(--bg-muted);
+  border: 1px dashed var(--border-default);
+}
+
+.duedate-container.placeholder:hover {
+  border-color: var(--border-strong);
+}
+
+.duedate-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: var(--font-sm);
+  font-family: inherit;
+  color: transparent;
+  cursor: pointer;
+  opacity: 0;
+  z-index: 2;
+}
+
+.duedate-input:focus {
+  outline: none;
+}
+
+.duedate-placeholder {
+  flex: 1;
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+  pointer-events: none;
+}
+
+.duedate-value {
+  flex: 1;
+  font-weight: var(--font-medium);
+  pointer-events: none;
+}
+
+.duedate-chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+  pointer-events: none;
+}
+
+/* Due date status colors */
+.duedate-container.overdue .duedate-value {
+  color: var(--color-critical);
+}
+
+.duedate-container.soon .duedate-value {
+  color: var(--color-warning);
 }
 
 /* Events Log */
@@ -2685,6 +2872,26 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .kanban-card-due.placeholder {
   color: var(--text-tertiary);
+}
+
+/* Missing assignee placeholder */
+.kanban-card-assign-placeholder {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-default);
+}
+
+/* Missing due date placeholder */
+.kanban-card-due-placeholder {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  background: var(--bg-muted);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-default);
 }
 
 .kanban-more {
@@ -3763,13 +3970,54 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   pointer-events: none;
 }
 
-/* Hide Mapbox logo and attribution for cleaner look */
+/* Mapbox logo and attribution - styled for bottom right */
+.mapboxgl-ctrl-bottom-right {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: var(--space-xs);
+}
+
 .mapboxgl-ctrl-logo {
-  display: none !important;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.mapboxgl-ctrl-logo:hover {
+  opacity: 1;
 }
 
 .mapboxgl-ctrl-attrib {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(4px);
+  font-size: 10px !important;
+  padding: 2px 6px !important;
+  border-radius: var(--radius-sm);
+  margin: 0 var(--space-xs) var(--space-xs) 0 !important;
+}
+
+.mapboxgl-ctrl-attrib a {
+  color: var(--text-secondary) !important;
+  text-decoration: none;
+}
+
+.mapboxgl-ctrl-attrib a:hover {
+  color: var(--text-primary) !important;
+  text-decoration: underline;
+}
+
+.mapboxgl-ctrl-attrib-inner {
+  color: var(--text-muted);
+}
+
+/* Hide the expand/collapse button for cleaner look */
+.mapboxgl-ctrl-attrib-button {
   display: none !important;
+}
+
+/* Always show attribution text */
+.mapboxgl-ctrl-attrib.mapboxgl-compact .mapboxgl-ctrl-attrib-inner {
+  display: block !important;
 }
 
 /* Mapbox marker wrapper - fixed size for stable anchoring */

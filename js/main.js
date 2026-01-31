@@ -605,6 +605,16 @@ function setupModuleCallbacks() {
       if (tableVisible) renderTableView();
       updateCounts();
     },
+    onPriorityChange: () => {
+      renderKanbanBoard();
+      if (tableVisible) renderTableView();
+      updateCounts();
+    },
+    onDueDateChange: () => {
+      renderKanbanBoard();
+      if (tableVisible) renderTableView();
+      updateStatistik();
+    },
     onDataChange: () => {
       if (tableVisible) renderTableView();
       updateStatistik();

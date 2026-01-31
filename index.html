@@ -230,6 +230,14 @@
                 </div>
                 <div class="layer-widget-content">
                   <label class="layer-item">
+                    <input type="checkbox" id="layer-buildings" data-layer="buildings" checked>
+                    <span class="layer-name">Gebäude</span>
+                    <button class="layer-info-btn" data-layer="buildings" title="Layer-Info">
+                      <i data-lucide="info" class="icon-sm"></i>
+                    </button>
+                  </label>
+                  <div class="layer-divider"></div>
+                  <label class="layer-item">
                     <input type="checkbox" id="layer-oereb" data-layer="ch.swisstopo-vd.stand-oerebkataster">
                     <span class="layer-name">ÖREB Verfügbarkeit</span>
                     <button class="layer-info-btn" data-layer="ch.swisstopo-vd.stand-oerebkataster" title="Layer-Info">
@@ -709,6 +717,12 @@
                 <div class="status-row">
                   <span class="status-label">Zugewiesen</span>
                   <div class="assignee-display" id="assignee-display">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+                <div class="status-row">
+                  <span class="status-label">Fälligkeit</span>
+                  <div class="duedate-display" id="duedate-display">
                     <!-- Populated by JS -->
                   </div>
                 </div>

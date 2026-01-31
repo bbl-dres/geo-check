@@ -48,15 +48,15 @@ export function renderKanbanBoard() {
       // Priority icon with arrow
       const priorityIcon = getPriorityIcon(building.priority);
 
-      // Assignee avatar
+      // Assignee avatar or placeholder
       const assigneeHtml = building.assignee
         ? `<div class="kanban-avatar">${getInitials(building.assignee)}</div>`
-        : `<div class="kanban-avatar placeholder"><i data-lucide="user" class="icon"></i></div>`;
+        : `<span class="kanban-card-assign-placeholder">Zuweisen...</span>`;
 
-      // Due date
+      // Due date or placeholder
       const dueDateHtml = building.dueDate
         ? `<span class="kanban-card-due ${getDueDateClass(building.dueDate)}">${formatDueDate(building.dueDate)}</span>`
-        : `<span class="kanban-card-due placeholder">—</span>`;
+        : `<span class="kanban-card-due-placeholder">Fällig...</span>`;
 
       return `
         <div class="kanban-card" draggable="true" data-building-id="${building.id}">
