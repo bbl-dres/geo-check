@@ -630,6 +630,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: none;
   flex: 1;
   min-height: 0;
+  min-width: 0;
   overflow: hidden;
 }
 
@@ -2473,9 +2474,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-width: var(--max-content-width);
-  margin: 0 auto;
-  width: 100%;
+  min-width: 0;
 }
 
 .kanban-container {
@@ -2484,11 +2483,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   gap: var(--space-md);
   padding: var(--space-lg) var(--space-xl);
   overflow-x: auto;
+  min-width: 0;
 }
 
 .kanban-column {
-  flex: 1;
-  min-width: 280px;
+  flex: 1 1 280px;
+  min-width: 220px;
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
   display: flex;
@@ -4732,16 +4732,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     flex: 1 1 100%;
   }
 
-  /* Detail panel: slide-over overlay */
+  /* Detail panel: keep in flex flow, just reduce width */
   .detail-panel {
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    z-index: 1001;
-    box-shadow: var(--shadow-lg);
+    width: 320px;
+    min-width: 280px;
   }
 
   /* Table panel: increase height */
@@ -4758,5 +4752,19 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .app-footer {
     flex-wrap: wrap;
     gap: var(--space-sm);
+  }
+}
+
+/* Mobile (≤600px) */
+@media (max-width: 600px) {
+  /* Detail panel: minimum width for mobile */
+  .detail-panel {
+    width: 280px;
+    min-width: 240px;
+  }
+
+  /* Kanban: tighter padding */
+  .kanban-container {
+    padding: var(--space-md);
   }
 }

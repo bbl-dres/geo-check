@@ -34,9 +34,9 @@ export function renderKanbanBoard() {
 
   Object.entries(columns).forEach(([status, items]) => {
     const container = document.getElementById(`kanban-${status}`);
-    const countEl = document.getElementById(`count-kanban-${status}`);
+    const countEl = document.getElementById(`kanban-${status}-count`);
 
-    if (countEl) countEl.textContent = items.length;
+    if (countEl) countEl.textContent = items.length.toLocaleString('de-CH');
 
     if (!container) return;
 
