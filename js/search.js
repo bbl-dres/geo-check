@@ -259,18 +259,24 @@ function selectResult(result) {
     // Remove previous search marker
     removeSearchMarker();
 
-    // Create new marker
-    searchMarker = L.marker([lat, lon], {
-      icon: L.divIcon({
-        className: 'search-marker',
-        html: '<div class="search-marker-pin"></div>',
-        iconSize: [24, 24],
-        iconAnchor: [12, 24]
-      })
-    }).addTo(map);
+    // Create marker element
+    const el = document.createElement('div');
+    el.className = 'search-marker';
+    el.innerHTML = '<div class="search-marker-pin"></div>';
 
-    // Zoom to location
-    map.setView([lat, lon], 15);
+    // Create new Mapbox marker
+    searchMarker = new mapboxgl.Marker({
+      element: el,
+      anchor: 'bottom'
+    })
+      .setLngLat([lon, lat])
+      .addTo(map);
+
+    // Fly to location
+    map.flyTo({
+      center: [lon, lat],
+      zoom: 15
+    });
 
     // Update input with selected name
     const name = (attrs.label || '').replace(/<[^>]*>/g, '');
@@ -293,8 +299,8 @@ function clearSearch() {
 }
 
 export function removeSearchMarker() {
-  if (searchMarker && map) {
-    map.removeLayer(searchMarker);
+  if (searchMarker) {
+    searchMarker.remove();
     searchMarker = null;
   }
 }

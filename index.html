@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Mapbox GL JS CSS -->
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -228,10 +228,10 @@
                 <button class="basemap-option" data-basemap="none">
                   <div class="basemap-thumb basemap-none"><span>Kein HG</span></div>
                 </button>
-                <button class="basemap-option" data-basemap="grey">
+                <button class="basemap-option active" data-basemap="grey">
                   <div class="basemap-thumb basemap-grey"><span>Grau</span></div>
                 </button>
-                <button class="basemap-option active" data-basemap="color">
+                <button class="basemap-option" data-basemap="color">
                   <div class="basemap-thumb basemap-color"><span>Farbig</span></div>
                 </button>
                 <button class="basemap-option" data-basemap="satellite">
@@ -239,8 +239,8 @@
                 </button>
               </div>
               <button class="basemap-trigger" id="basemap-trigger" title="Hintergrund wechseln">
-                <div class="basemap-thumb basemap-color" id="basemap-trigger-thumb">
-                  <span id="basemap-trigger-label">Farbig</span>
+                <div class="basemap-thumb basemap-grey" id="basemap-trigger-thumb">
+                  <span id="basemap-trigger-label">Grau</span>
                   <i data-lucide="chevron-right" class="icon-sm trigger-chevron"></i>
                 </div>
               </button>
@@ -849,6 +849,21 @@
     </div>
   </div>
 
+  <!-- Layer Info Modal -->
+  <div id="layer-info-modal" class="layer-info-modal">
+    <div class="layer-info-modal-content">
+      <div class="layer-info-modal-header">
+        <span class="layer-info-modal-title" id="layer-info-modal-title">Layer Information</span>
+        <button class="layer-info-modal-close" id="layer-info-modal-close">
+          <i data-lucide="x" class="icon-sm"></i>
+        </button>
+      </div>
+      <div class="layer-info-modal-body" id="layer-info-modal-body">
+        <div class="layer-info-loading">Laden...</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Map Context Menu (Right-Click) -->
   <div id="map-context-menu" class="map-context-menu">
     <div class="context-menu-item context-menu-coords" id="context-menu-coords" title="Klicken zum Kopieren">
@@ -883,8 +898,8 @@
     </div>
   </div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Mapbox GL JS -->
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
 
   <!-- Application JavaScript (ES Modules) -->
   <script type="module" src="js/main.js"></script>

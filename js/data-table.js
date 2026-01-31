@@ -42,9 +42,9 @@ export function toggleTableView() {
     renderTableView();
   }
 
-  // Resize map
+  // Resize map after panel toggles
   if (map) {
-    setTimeout(() => map.invalidateSize(), 10);
+    setTimeout(() => map.resize(), 50);
   }
 
   updateURL();
@@ -56,7 +56,7 @@ export function closeTableView() {
   document.getElementById('table-toggle-btn').classList.remove('active');
 
   if (map) {
-    setTimeout(() => map.invalidateSize(), 10);
+    setTimeout(() => map.resize(), 50);
   }
 
   updateURL();
@@ -584,7 +584,7 @@ export function setupTableResize() {
     const deltaY = startY - e.clientY;
     const newHeight = Math.min(Math.max(startHeight + deltaY, 100), window.innerHeight * 0.7);
     tablePanel.style.height = newHeight + 'px';
-    if (map) map.invalidateSize();
+    if (map) map.resize();
   });
 
   document.addEventListener('mouseup', () => {
@@ -610,7 +610,7 @@ export function setupTableResize() {
     const deltaY = startY - e.touches[0].clientY;
     const newHeight = Math.min(Math.max(startHeight + deltaY, 100), window.innerHeight * 0.7);
     tablePanel.style.height = newHeight + 'px';
-    if (map) map.invalidateSize();
+    if (map) map.resize();
   });
 
   document.addEventListener('touchend', () => {

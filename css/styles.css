@@ -925,15 +925,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .basemap-color { background-image: url('../assets/basemap-color.svg'); }
 .basemap-satellite { background-image: url('../assets/basemap-satellite.svg'); }
 
-/* Scale Bar */
+/* Scale Bar - Hidden (using Mapbox's built-in ScaleControl instead) */
 .scale-bar {
-  position: absolute;
-  bottom: var(--space-lg);
-  left: var(--space-lg);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  height: 16px;
+  display: none;
+}
+
+/* Mapbox Scale Control Styling */
+.mapboxgl-ctrl-scale {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid var(--text-primary);
+  border-top: none;
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  color: var(--text-primary);
+  padding: 0 var(--space-xs);
 }
 
 .scale-bar-line {
@@ -1238,13 +1243,41 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-family: var(--font-family);
   font-size: var(--font-sm);
   min-width: 200px;
+  max-width: 350px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.identify-popup strong {
+.identify-popup > strong {
   display: block;
   font-size: var(--font-base);
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
+  padding-bottom: var(--space-xs);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.identify-content {
+  font-size: var(--font-xs);
+  line-height: 1.4;
+}
+
+.identify-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-xs);
+}
+
+.identify-content td,
+.identify-content th {
+  padding: var(--space-xs) var(--space-sm);
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.identify-content th {
+  font-weight: var(--font-medium);
+  background: var(--bg-subtle);
 }
 
 .identify-table {
@@ -2070,11 +2103,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 /* Draggable Marker */
-.leaflet-marker-icon.draggable {
+.mapboxgl-marker.draggable {
   cursor: move !important;
 }
 
-.leaflet-marker-icon.draggable .custom-marker {
+.mapboxgl-marker.draggable .custom-marker {
   box-shadow: 0 0 0 4px var(--color-critical), 0 0 12px rgba(220, 38, 38, 0.5);
   animation: pulse-marker 1s ease-in-out infinite;
 }
@@ -3427,41 +3460,71 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 /* ========================================
-   Leaflet
+   Mapbox GL JS
    ======================================== */
-.leaflet-top.leaflet-right {
+.mapboxgl-ctrl-top-right {
   top: 50%;
   transform: translateY(-50%);
 }
 
-a.leaflet-control-home {
-  width: 30px;
-  height: 30px;
+.mapboxgl-ctrl-home {
+  width: 29px;
+  height: 29px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-white);
   color: var(--text-secondary);
+  border: none;
   border-top: 1px solid var(--border-default);
+  cursor: pointer;
 }
 
-a.leaflet-control-home:hover {
+.mapboxgl-ctrl-home:hover {
   background: var(--bg-subtle);
   color: var(--text-primary);
 }
 
+/* Disabled zoom buttons */
+.mapboxgl-ctrl-zoom-in.mapboxgl-ctrl-disabled,
+.mapboxgl-ctrl-zoom-out.mapboxgl-ctrl-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Hide Mapbox logo and attribution for cleaner look */
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  display: none !important;
+}
+
+/* Mapbox marker wrapper - fixed size for stable anchoring */
+.mapbox-marker-wrapper {
+  width: 24px;
+  height: 24px;
+  overflow: visible;
+  cursor: pointer;
+}
+
 .custom-marker-container {
-  position: relative;
-  width: 16px;
-  height: 16px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .custom-marker {
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   border-radius: var(--radius-full);
   border: 2px solid white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.2);
@@ -3472,16 +3535,16 @@ a.leaflet-control-home:hover {
 .custom-marker.low { background: var(--color-success); }
 
 .custom-marker.selected {
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
   border-width: 3px;
 }
 
 .marker-label {
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% + 6px);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateZ(0);
   background: rgba(255, 255, 255, 0.95);
   color: var(--text-primary);
   font-size: var(--font-sm);
@@ -3491,10 +3554,12 @@ a.leaflet-control-home:hover {
   border: 1px solid var(--border-default);
   white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-  margin-bottom: 6px;
   pointer-events: none;
   opacity: 0;
   transition: opacity var(--transition-fast);
+  /* Prevent affecting marker position */
+  will-change: opacity;
+  backface-visibility: hidden;
 }
 
 #map.show-labels .marker-label {

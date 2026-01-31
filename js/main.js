@@ -26,6 +26,7 @@ import {
   setupBasemapSelector,
   setupLayerWidget,
   setupLayerIdentify,
+  setupLayerInfoButtons,
   setupContextMenu,
   setupMarkerClickHandlers
 } from './map.js';
@@ -202,7 +203,7 @@ function handlePopState(event) {
     if (tableVisible) renderTableView();
 
     if (state.currentTab === 'karte') {
-      setTimeout(() => map.invalidateSize(), 100);
+      setTimeout(() => map.resize(), 100);
     }
   }
 }
@@ -222,7 +223,7 @@ function switchTab(tabId, shouldUpdateURL = true) {
 
   // Resize map if switching to karte tab
   if (tabId === 'karte' && map) {
-    setTimeout(() => map.invalidateSize(), 100);
+    setTimeout(() => map.resize(), 100);
   }
 
   if (shouldUpdateURL) {
@@ -628,6 +629,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupBasemapSelector();
   setupLayerWidget();
   setupLayerIdentify();
+  setupLayerInfoButtons();
   setupContextMenu();
   setupAccordions();
   setupRunChecksButton();

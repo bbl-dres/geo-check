@@ -45,15 +45,17 @@ export function renderDetailPanel(building) {
 
   if (!building) {
     detailPanel.classList.remove('visible');
-    if (wasVisible && map) {
-      setTimeout(() => map.invalidateSize(), 10);
+    if (map) {
+      // Resize map after panel hides - use longer delay for CSS to settle
+      setTimeout(() => map.resize(), 50);
     }
     return;
   }
 
   detailPanel.classList.add('visible');
-  if (!wasVisible && map) {
-    setTimeout(() => map.invalidateSize(), 10);
+  if (map) {
+    // Resize map after panel shows
+    setTimeout(() => map.resize(), 50);
   }
 
   document.getElementById('detail-title').textContent = building.name;
@@ -218,6 +220,9 @@ function updateEditButton() {
   }
 }
 
+// Store drag handler reference for cleanup
+let currentDragHandler = null;
+
 export function enterEditMode() {
   if (!state.selectedBuildingId) return;
   const building = buildings.find(b => b.id === state.selectedBuildingId);
@@ -229,21 +234,25 @@ export function enterEditMode() {
 
   const marker = markers[building.id];
   if (marker) {
-    if (marker.dragging) {
-      marker.dragging.enable();
-    }
-    if (marker._icon) {
-      marker._icon.classList.add('draggable');
+    // Mapbox: enable dragging
+    marker.setDraggable(true);
+
+    // Add draggable class to marker element for visual feedback
+    const markerEl = marker.getElement();
+    if (markerEl) {
+      markerEl.classList.add('draggable');
     }
 
-    marker.on('drag', (e) => {
-      const latLng = e.target.getLatLng();
-      state.editedCoords = { lat: latLng.lat, lng: latLng.lng };
+    // Mapbox drag event handler
+    currentDragHandler = () => {
+      const lngLat = marker.getLngLat();
+      state.editedCoords = { lat: lngLat.lat, lng: lngLat.lng };
       const coordsDisplay = document.getElementById('edit-coords-display');
       if (coordsDisplay) {
-        coordsDisplay.textContent = `${latLng.lat.toFixed(4)}, ${latLng.lng.toFixed(4)}`;
+        coordsDisplay.textContent = `${lngLat.lat.toFixed(4)}, ${lngLat.lng.toFixed(4)}`;
       }
-    });
+    };
+    marker.on('drag', currentDragHandler);
   }
 
   renderDataComparison(building);
@@ -294,18 +303,26 @@ export function exitEditMode(save) {
       building.data = state.originalBuildingData;
     }
     if (marker) {
-      marker.setLatLng([building.lat, building.lng]);
+      // Mapbox: setLngLat uses [lng, lat] order
+      marker.setLngLat([building.lng, building.lat]);
     }
   }
 
   if (marker) {
-    if (marker.dragging) {
-      marker.dragging.disable();
+    // Mapbox: disable dragging
+    marker.setDraggable(false);
+
+    // Remove draggable class from marker element
+    const markerEl = marker.getElement();
+    if (markerEl) {
+      markerEl.classList.remove('draggable');
     }
-    if (marker._icon) {
-      marker._icon.classList.remove('draggable');
+
+    // Remove drag event handler
+    if (currentDragHandler) {
+      marker.off('drag', currentDragHandler);
+      currentDragHandler = null;
     }
-    marker.off('drag');
   }
 
   state.editMode = false;
@@ -578,7 +595,7 @@ export function setupDetailPanelResize() {
     const deltaX = startX - e.clientX;
     const newWidth = Math.min(Math.max(startWidth + deltaX, 280), 600);
     detailPanel.style.width = newWidth + 'px';
-    if (map) map.invalidateSize();
+    if (map) map.resize();
   });
 
   document.addEventListener('mouseup', () => {
@@ -604,7 +621,7 @@ export function setupDetailPanelResize() {
     const deltaX = startX - e.touches[0].clientX;
     const newWidth = Math.min(Math.max(startWidth + deltaX, 280), 600);
     detailPanel.style.width = newWidth + 'px';
-    if (map) map.invalidateSize();
+    if (map) map.resize();
   });
 
   document.addEventListener('touchend', () => {
