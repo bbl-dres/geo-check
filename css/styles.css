@@ -22,13 +22,31 @@ body {
   overflow: hidden;
 }
 
-body.settings-tab-active {
+/* Page-scroll tabs: statistik, aufgaben, settings */
+body.page-scroll-tab {
   overflow-y: auto;
 }
 
-body.settings-tab-active .main-content {
+body.page-scroll-tab .main-content {
   overflow: visible;
   min-height: auto;
+}
+
+body.page-scroll-tab .tab-content.active {
+  overflow: visible;
+}
+
+body.page-scroll-tab .statistik-content {
+  overflow: visible;
+}
+
+body.page-scroll-tab .aufgaben-content,
+body.page-scroll-tab .aufgaben-layout {
+  overflow: visible;
+}
+
+body.page-scroll-tab .kanban-container {
+  overflow: visible;
 }
 
 button {
@@ -4709,10 +4727,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* Laptop (≤900px) */
 @media (max-width: 900px) {
-  /* Detail panel: keep in flex flow, reduce width */
+  /* Switch to column layout: content above, detail panel below */
+  .content-with-panel {
+    flex-direction: column;
+  }
+
+  /* Detail panel: full width, fixed height at bottom */
   .detail-panel {
-    width: 320px;
-    min-width: 280px;
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    height: 50vh;
+    max-height: 50vh;
+    border-left: none;
+    border-top: 1px solid var(--border-default);
   }
 
   /* Kanban: stack columns vertically */
@@ -4725,6 +4753,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   .kanban-column {
     flex: none;
     min-width: 100%;
+  }
+
+  /* Map container: reduce min-width for mobile */
+  .map-container,
+  .map-panel {
+    min-width: 0;
   }
 
   /* Table panel: increase height */
@@ -4746,9 +4780,14 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 /* Mobile (≤600px) */
 @media (max-width: 600px) {
-  /* Detail panel: minimum width for mobile */
+  /* Detail panel: taller on very small screens */
   .detail-panel {
-    width: 280px;
-    min-width: 240px;
+    height: 60vh;
+    max-height: 60vh;
+  }
+
+  /* Stat cards: single column */
+  .stat-cards.stat-cards-6 {
+    grid-template-columns: 1fr;
   }
 }

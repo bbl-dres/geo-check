@@ -122,6 +122,10 @@ function applyURLState() {
     content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
   });
 
+  // Toggle page-scroll mode for non-map tabs
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+  document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(state.currentTab));
+
   // Apply filters UI
   document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
     const filterName = chip.dataset.filter;
@@ -169,6 +173,10 @@ function handlePopState(event) {
     document.querySelectorAll('.tab-content').forEach(content => {
       content.classList.toggle('active', content.id === `tab-${state.currentTab}`);
     });
+
+    // Toggle page-scroll mode for non-map tabs
+    const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+    document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(state.currentTab));
 
     // Update filter chips UI
     document.querySelectorAll('.filter-chip[data-filter]').forEach(chip => {
@@ -225,6 +233,15 @@ function switchTab(tabId, shouldUpdateURL = true) {
   document.querySelectorAll('.tab-content').forEach(content => {
     content.classList.toggle('active', content.id === `tab-${tabId}`);
   });
+
+  // Toggle page-scroll mode for non-map tabs
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+  document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(tabId));
+
+  // Reset scroll position when switching tabs
+  if (pageScrollTabs.includes(tabId)) {
+    window.scrollTo(0, 0);
+  }
 
   // Detail panel visibility: show only on karte and aufgaben tabs
   const detailPanel = document.getElementById('detail-panel');
