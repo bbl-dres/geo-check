@@ -3472,6 +3472,8 @@ a.leaflet-control-home:hover {
 
 .custom-marker-container {
   position: relative;
+  transform: scale(var(--marker-scale, 1));
+  transition: transform 0.15s ease-out;
 }
 
 .marker-label {
