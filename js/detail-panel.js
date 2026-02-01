@@ -354,7 +354,7 @@ export function renderDataComparison(building) {
             <td class="col-sap ref-locked">${sapCoords}</td>
             <td class="col-gwr ref-locked">${gwrCoords}</td>
             <td class="col-value edit-cell">
-              <span class="coords-value" id="edit-coords-display">${valueCoords}</span>
+              <span class="edit-locked" id="edit-coords-display">${valueCoords}</span>
             </td>
             <td class="col-match"></td>
           </tr>

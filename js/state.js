@@ -320,13 +320,23 @@ export function applyMultiSelectState(elementId, selectedValues) {
 // Utility Functions
 // ========================================
 export function getTagLabel(tag) {
+  if (!tag) return '—';
   const labels = {
     georef: 'GEOREF',
+    geo: 'GEOREF',
     sap: 'SAP',
     gwr: 'GWR',
-    address: 'Adresse'
+    address: 'Adresse',
+    adr: 'Adresse'
   };
-  return labels[tag] || tag.toUpperCase();
+  return labels[tag.toLowerCase()] || tag.toUpperCase();
+}
+
+export function getErrorType(checkId) {
+  if (!checkId) return null;
+  const prefix = checkId.split('-')[0].toLowerCase();
+  const typeMap = { geo: 'georef', adr: 'address', sap: 'sap', gwr: 'gwr' };
+  return typeMap[prefix] || prefix;
 }
 
 export function getDataLabel(key) {

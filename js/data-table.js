@@ -10,6 +10,7 @@ import {
   setTableVisible,
   updateURL,
   getTagLabel,
+  getErrorType,
   formatRelativeTime,
   formatDateTime
 } from './state.js';
@@ -420,7 +421,7 @@ export function renderTableView() {
           </td>
           <td data-col="errors">
             <div class="badge-group">
-              ${building.errors.map(err => `<span class="badge badge-${err.type} badge-caps badge-sm">${getTagLabel(err.type)}</span>`).join('')}
+              ${building.errors.map(err => { const type = getErrorType(err.checkId); return `<span class="badge badge-${type} badge-caps badge-sm">${getTagLabel(type)}</span>`; }).join('')}
               ${building.errors.length === 0 ? '<span class="text-muted">—</span>' : ''}
             </div>
           </td>

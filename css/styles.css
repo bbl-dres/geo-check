@@ -2613,13 +2613,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-style: italic;
 }
 
-.coords-value {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-sm);
-  color: var(--text-primary);
-  font-weight: var(--font-medium);
-}
-
 /* Draggable Marker */
 .mapboxgl-marker.draggable {
   cursor: move !important;
