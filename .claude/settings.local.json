@@ -18,7 +18,13 @@
       "Bash(taskkill:*)",
       "Bash(git checkout:*)",
       "Bash(npx http-server:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "WebFetch(domain:www.housing-stat.ch)",
+      "WebFetch(domain:www.zh.ch)",
+      "WebFetch(domain:www-a.housing-stat.ch)",
+      "WebFetch(domain:data.bs.ch)",
+      "WebFetch(domain:www.bfs.admin.ch)",
+      "WebFetch(domain:www.web.statistik.zh.ch)"
     ]
   }
 }
