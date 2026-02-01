@@ -40,6 +40,8 @@ import {
   cancelComment,
   setupDetailPanelResize,
   setupAccordions,
+  setupFieldToggle,
+  setupImageWidget,
   setCallbacks as setDetailPanelCallbacks
 } from './detail-panel.js';
 
@@ -453,7 +455,12 @@ function renderUsersTable() {
       return;
     }
 
-    tbody.innerHTML = users.map(user => `
+    tbody.innerHTML = users.map(user => {
+      const loginDate = user.lastLogin ? new Date(user.lastLogin) : null;
+      const formattedLogin = loginDate
+        ? loginDate.toLocaleString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+        : '—';
+      return `
       <tr>
         <td>
           <div class="user-cell">
@@ -462,14 +469,14 @@ function renderUsersTable() {
           </div>
         </td>
         <td>${user.role}</td>
-        <td><span class="user-status active">Aktiv</span></td>
+        <td class="user-last-login">${formattedLogin}</td>
         <td>
           <button class="action-btn-icon" title="Bearbeiten">
             <i data-lucide="pencil" class="icon-sm"></i>
           </button>
         </td>
       </tr>
-    `).join('');
+    `}).join('');
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
   });
@@ -672,6 +679,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupLayerInfoButtons();
   setupContextMenu();
   setupAccordions();
+  setupFieldToggle();
+  setupImageWidget();
   setupRunChecksButton();
 
   // Setup chart filter callback (cross-filtering updates other views)

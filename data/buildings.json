@@ -2,764 +2,2393 @@
   {
     "id": "1080/2020/AA",
     "name": "Romanshorn, Friedrichshafnerstrasse",
-    "lat": 47.5656,
-    "lng": 9.3744,
-    "kanton": "TG",
     "portfolio": "Büro",
     "priority": "medium",
     "confidence": {
       "total": 67,
-      "georef": 67,
       "sap": 100,
       "gwr": 100
     },
     "assignee": "M. Keller",
     "kanbanStatus": "inprogress",
-    "data": {
-      "address": {
-        "sap": "Friedrichshafnerstr.",
-        "gwr": "Friedrichshafnerstr.",
-        "match": true
-      },
-      "plz": {
-        "sap": "8590",
-        "gwr": "8590",
-        "match": true
-      },
-      "coords": {
-        "sap": "—",
-        "gwr": "47.5656, 9.3744",
-        "match": false
-      },
-      "egid": {
-        "sap": "—",
-        "gwr": "2340212",
-        "match": false
-      },
-      "year": {
-        "sap": "1965",
-        "gwr": "1967",
-        "match": false
-      }
-    },
+    "dueDate": "2026-02-15",
     "lastUpdate": "2026-01-27T14:30:00Z",
     "lastUpdateBy": "M. Keller",
-    "dueDate": "2026-02-15"
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "TG",
+      "gwr": "TG",
+      "value": "TG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Romanshorn",
+      "gwr": "Romanshorn",
+      "value": "Romanshorn",
+      "match": true
+    },
+    "plz": {
+      "sap": "8590",
+      "gwr": "8590",
+      "value": "8590",
+      "match": true
+    },
+    "ort": {
+      "sap": "Romanshorn",
+      "gwr": "Romanshorn",
+      "value": "Romanshorn",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Friedrichshafnerstr.",
+      "gwr": "Friedrichshafnerstrasse",
+      "value": "Friedrichshafnerstrasse",
+      "match": false
+    },
+    "hausnummer": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "",
+      "gwr": "2340212",
+      "value": "2340212",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1220",
+      "gwr": "1220",
+      "value": "1220",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8014",
+      "gwr": "8014",
+      "value": "8014",
+      "match": true
+    },
+    "lat": {
+      "sap": "",
+      "gwr": "47.5656",
+      "value": "47.5656",
+      "match": false
+    },
+    "lng": {
+      "sap": "",
+      "gwr": "9.3744",
+      "value": "9.3744",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH194381048573",
+      "value": "CH194381048573",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1250",
+      "gwr": "1275",
+      "value": "1250",
+      "match": false
+    },
+    "footprintArea": {
+      "sap": "480",
+      "gwr": "470",
+      "value": "480",
+      "match": false
+    },
+    "images": [
+      {
+        "id": "img-001",
+        "url": "https://picsum.photos/seed/building1/800/500",
+        "filename": "Fassade_Nord.jpg",
+        "uploadDate": "2026-01-12T10:30:00Z",
+        "uploadedBy": "M. Keller"
+      },
+      {
+        "id": "img-002",
+        "url": "https://picsum.photos/seed/building2/800/500",
+        "filename": "Eingang_Hauptgebaeude.jpg",
+        "uploadDate": "2026-01-12T10:32:00Z",
+        "uploadedBy": "M. Keller"
+      },
+      {
+        "id": "img-003",
+        "url": "https://picsum.photos/seed/building3/800/500",
+        "filename": "Parkplatz_Sued.jpg",
+        "uploadDate": "2026-01-15T14:20:00Z",
+        "uploadedBy": "S. Brunner"
+      }
+    ]
   },
   {
     "id": "1080/2021/AB",
     "name": "Kreuzlingen, Hauptstrasse 12",
-    "lat": 47.65,
-    "lng": 9.175,
-    "kanton": "TG",
     "portfolio": "Wohnen",
     "priority": "high",
     "confidence": {
-      "total": 42,
-      "georef": 0,
+      "total": 72,
       "sap": 85,
-      "gwr": 40
+      "gwr": 78
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": {
-        "sap": "Hauptstrasse 12",
-        "gwr": "—",
-        "match": false
-      },
-      "plz": {
-        "sap": "8280",
-        "gwr": "—",
-        "match": false
-      },
-      "coords": {
-        "sap": "—",
-        "gwr": "—",
-        "match": false
-      },
-      "egid": {
-        "sap": "—",
-        "gwr": "—",
-        "match": false
-      },
-      "year": {
-        "sap": "1989",
-        "gwr": "—",
-        "match": false
-      }
-    },
+    "dueDate": "2026-01-25",
     "lastUpdate": "2026-01-23T09:15:00Z",
     "lastUpdateBy": "System",
-    "dueDate": "2026-01-25"
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "TG",
+      "gwr": "TG",
+      "value": "TG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Kreuzlingen",
+      "gwr": "Kreuzlingen",
+      "value": "Kreuzlingen",
+      "match": true
+    },
+    "plz": {
+      "sap": "8280",
+      "gwr": "8280",
+      "value": "8280",
+      "match": true
+    },
+    "ort": {
+      "sap": "Kreuzlingen",
+      "gwr": "Kreuzlingen",
+      "value": "Kreuzlingen",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Hauptstrasse",
+      "gwr": "Hauptstr.",
+      "value": "Hauptstrasse",
+      "match": false
+    },
+    "hausnummer": {
+      "sap": "12",
+      "gwr": "12a",
+      "value": "12",
+      "match": false
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "",
+      "gwr": "1456789",
+      "value": "1456789",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1020",
+      "gwr": "1020",
+      "value": "1020",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1122",
+      "gwr": "1121",
+      "value": "1122",
+      "match": false
+    },
+    "gbaup": {
+      "sap": "8017",
+      "gwr": "8016",
+      "value": "8017",
+      "match": false
+    },
+    "lat": {
+      "sap": "47.65",
+      "gwr": "47.6512",
+      "value": "47.6512",
+      "match": true
+    },
+    "lng": {
+      "sap": "9.175",
+      "gwr": "9.1756",
+      "value": "9.1756",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH293847561029",
+      "value": "CH293847561029",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "685",
+      "gwr": "685",
+      "value": "685",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "310",
+      "gwr": "310",
+      "value": "310",
+      "match": true
+    },
+    "images": [
+      {
+        "id": "img-004",
+        "url": "https://picsum.photos/seed/building4/800/500",
+        "filename": "Wohnblock_Ansicht.jpg",
+        "uploadDate": "2026-01-20T09:15:00Z",
+        "uploadedBy": "T. Weber"
+      }
+    ]
   },
   {
     "id": "1090/3010/AC",
     "name": "St. Gallen, Bahnhofplatz 1",
-    "lat": 47.4237,
-    "lng": 9.368,
-    "kanton": "SG",
     "portfolio": "Öffentlich",
     "priority": "low",
     "confidence": {
       "total": 78,
-      "georef": 95,
       "sap": 70,
       "gwr": 70
     },
     "assignee": "S. Brunner",
     "kanbanStatus": "clarification",
-    "data": {
-      "address": {
-        "sap": "Bahnhofplatz 1",
-        "gwr": "Bahnhofplatz 1",
-        "match": true
-      },
-      "plz": {
-        "sap": "9000",
-        "gwr": "9000",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.4235, 9.3678",
-        "gwr": "47.4237, 9.3680",
-        "match": true
-      },
-      "egid": {
-        "sap": "1892345",
-        "gwr": "1892345",
-        "match": true
-      },
-      "year": {
-        "sap": "1952",
-        "gwr": "1954",
-        "match": false
-      }
-    },
+    "dueDate": "2026-02-03",
     "lastUpdate": "2026-01-28T11:45:00Z",
     "lastUpdateBy": "S. Brunner",
-    "dueDate": "2026-02-03"
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "SG",
+      "gwr": "SG",
+      "value": "SG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "St. Gallen",
+      "gwr": "St. Gallen",
+      "value": "St. Gallen",
+      "match": true
+    },
+    "plz": {
+      "sap": "9000",
+      "gwr": "9000",
+      "value": "9000",
+      "match": true
+    },
+    "ort": {
+      "sap": "St. Gallen",
+      "gwr": "St. Gallen",
+      "value": "St. Gallen",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Bahnhofplatz",
+      "gwr": "Bahnhofplatz",
+      "value": "Bahnhofplatz",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "1",
+      "gwr": "1",
+      "value": "1",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "1892345",
+      "gwr": "1892345",
+      "value": "1892345",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1241",
+      "gwr": "1241",
+      "value": "1241",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8013",
+      "gwr": "8013",
+      "value": "8013",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.4235",
+      "gwr": "47.4237",
+      "value": "47.4237",
+      "match": true
+    },
+    "lng": {
+      "sap": "9.3678",
+      "gwr": "9.3680",
+      "value": "9.368",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH847291034856",
+      "value": "CH847291034856",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "3200",
+      "gwr": "3200",
+      "value": "3200",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "1850",
+      "gwr": "1850",
+      "value": "1850",
+      "match": true
+    }
   },
   {
     "id": "1100/4050/AD",
     "name": "Zürich, Stampfenbachstrasse 85",
-    "lat": 47.3834,
-    "lng": 8.5397,
-    "kanton": "ZH",
     "portfolio": "Büro",
     "priority": "low",
     "confidence": {
       "total": 98,
-      "georef": 100,
       "sap": 95,
       "gwr": 100
     },
     "assignee": null,
     "kanbanStatus": "done",
-    "data": {
-      "address": {
-        "sap": "Stampfenbachstrasse 85",
-        "gwr": "Stampfenbachstrasse 85",
-        "match": true
-      },
-      "plz": {
-        "sap": "8006",
-        "gwr": "8006",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.3834, 8.5397",
-        "gwr": "47.3834, 8.5397",
-        "match": true
-      },
-      "egid": {
-        "sap": "3456789",
-        "gwr": "3456789",
-        "match": true
-      },
-      "year": {
-        "sap": "1978",
-        "gwr": "1978",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-30T08:00:00Z",
-    "lastUpdateBy": "T. Weber"
+    "lastUpdateBy": "T. Weber",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "ZH",
+      "gwr": "ZH",
+      "value": "ZH",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Zürich",
+      "gwr": "Zürich",
+      "value": "Zürich",
+      "match": true
+    },
+    "plz": {
+      "sap": "8006",
+      "gwr": "8006",
+      "value": "8006",
+      "match": true
+    },
+    "ort": {
+      "sap": "Zürich",
+      "gwr": "Zürich",
+      "value": "Zürich",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Stampfenbachstrasse",
+      "gwr": "Stampfenbachstrasse",
+      "value": "Stampfenbachstrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "85",
+      "gwr": "85",
+      "value": "85",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "3456789",
+      "gwr": "3456789",
+      "value": "3456789",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1220",
+      "gwr": "1220",
+      "value": "1220",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8015",
+      "gwr": "8015",
+      "value": "8015",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.3834",
+      "gwr": "47.3834",
+      "value": "47.3834",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.5397",
+      "gwr": "8.5397",
+      "value": "8.5397",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH583920174635",
+      "value": "CH583920174635",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "890",
+      "gwr": "890",
+      "value": "890",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "520",
+      "gwr": "520",
+      "value": "520",
+      "match": true
+    }
   },
   {
     "id": "1110/5020/AE",
     "name": "Bern, Bundesgasse 3",
-    "lat": 46.948,
-    "lng": 7.4474,
-    "kanton": "BE",
     "portfolio": "Öffentlich",
     "priority": "medium",
     "confidence": {
       "total": 72,
-      "georef": 85,
       "sap": 60,
       "gwr": 70
     },
     "assignee": "T. Weber",
     "kanbanStatus": "inprogress",
-    "data": {
-      "address": {
-        "sap": "Bundesgasse 3",
-        "gwr": "Bundes-Gasse 3",
-        "match": false
-      },
-      "plz": {
-        "sap": "3003",
-        "gwr": "3011",
-        "match": false
-      },
-      "coords": {
-        "sap": "46.9478, 7.4472",
-        "gwr": "46.9480, 7.4474",
-        "match": true
-      },
-      "egid": {
-        "sap": "5678901",
-        "gwr": "5678901",
-        "match": true
-      },
-      "year": {
-        "sap": "1965",
-        "gwr": "1965",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-25T16:20:00Z",
-    "lastUpdateBy": "T. Weber"
+    "lastUpdateBy": "T. Weber",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "BE",
+      "gwr": "BE",
+      "value": "BE",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Bern",
+      "gwr": "Bern",
+      "value": "Bern",
+      "match": true
+    },
+    "plz": {
+      "sap": "3003",
+      "gwr": "3011",
+      "value": "3003",
+      "match": false
+    },
+    "ort": {
+      "sap": "Bern",
+      "gwr": "Bern",
+      "value": "Bern",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Bundesgasse",
+      "gwr": "Bundes-Gasse",
+      "value": "Bundesgasse",
+      "match": false
+    },
+    "hausnummer": {
+      "sap": "3",
+      "gwr": "3",
+      "value": "3",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "5678901",
+      "gwr": "5678901",
+      "value": "5678901",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1261",
+      "gwr": "1261",
+      "value": "1261",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8014",
+      "gwr": "8014",
+      "value": "8014",
+      "match": true
+    },
+    "lat": {
+      "sap": "46.9478",
+      "gwr": "46.9480",
+      "value": "46.948",
+      "match": true
+    },
+    "lng": {
+      "sap": "7.4472",
+      "gwr": "7.4474",
+      "value": "7.4474",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH291048573619",
+      "value": "CH291048573619",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1450",
+      "gwr": "1450",
+      "value": "1450",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "780",
+      "gwr": "764",
+      "value": "780",
+      "match": false
+    }
   },
   {
     "id": "1120/6030/AF",
     "name": "Chur, Grabenstrasse 1",
-    "lat": 46.8499,
-    "lng": 9.5329,
-    "kanton": "GR",
     "portfolio": "Industrie",
     "priority": "high",
     "confidence": {
       "total": 35,
-      "georef": 20,
       "sap": 50,
       "gwr": 35
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": {
-        "sap": "Grabenstrasse 1",
-        "gwr": "Grabenstrasse 1",
-        "match": true
-      },
-      "plz": {
-        "sap": "7000",
-        "gwr": "7000",
-        "match": true
-      },
-      "coords": {
-        "sap": "46.8520, 9.5350",
-        "gwr": "46.8499, 9.5329",
-        "match": false
-      },
-      "egid": {
-        "sap": "9012345",
-        "gwr": "9012999",
-        "match": false
-      },
-      "year": {
-        "sap": "1920",
-        "gwr": "1985",
-        "match": false
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-20T10:00:00Z",
-    "lastUpdateBy": "System"
+    "lastUpdateBy": "System",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "GR",
+      "gwr": "GR",
+      "value": "GR",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Chur",
+      "gwr": "Chur",
+      "value": "Chur",
+      "match": true
+    },
+    "plz": {
+      "sap": "7000",
+      "gwr": "7000",
+      "value": "7000",
+      "match": true
+    },
+    "ort": {
+      "sap": "Chur",
+      "gwr": "Chur",
+      "value": "Chur",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Grabenstrasse",
+      "gwr": "Grabenstrasse",
+      "value": "Grabenstrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "1",
+      "gwr": "1",
+      "value": "1",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "9012345",
+      "gwr": "9012999",
+      "value": "9012999",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1251",
+      "gwr": "1251",
+      "value": "1251",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8011",
+      "gwr": "8017",
+      "value": "8017",
+      "match": false
+    },
+    "lat": {
+      "sap": "46.8520",
+      "gwr": "46.8499",
+      "value": "46.8499",
+      "match": false
+    },
+    "lng": {
+      "sap": "9.5350",
+      "gwr": "9.5329",
+      "value": "9.5329",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH738291045867",
+      "value": "CH738291045867",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "2100",
+      "gwr": "2142",
+      "value": "2100",
+      "match": false
+    },
+    "footprintArea": {
+      "sap": "950",
+      "gwr": "950",
+      "value": "950",
+      "match": true
+    }
   },
   {
     "id": "1100/4051/AG",
     "name": "Winterthur, Technikumstrasse 8",
-    "lat": 47.4979,
-    "lng": 8.7246,
-    "kanton": "ZH",
     "portfolio": "Bildung",
     "priority": "medium",
     "confidence": {
       "total": 65,
-      "georef": 80,
       "sap": 55,
       "gwr": 60
     },
     "assignee": "A. Meier",
     "kanbanStatus": "inprogress",
-    "data": {
-      "address": {
-        "sap": "Technikumstrasse 8",
-        "gwr": "Technikumstrasse 8",
-        "match": true
-      },
-      "plz": {
-        "sap": "8400",
-        "gwr": "8400",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.4977, 8.7244",
-        "gwr": "47.4979, 8.7246",
-        "match": true
-      },
-      "egid": {
-        "sap": "2345678",
-        "gwr": "2345678",
-        "match": true
-      },
-      "year": {
-        "sap": "—",
-        "gwr": "2001",
-        "match": false
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-26T13:10:00Z",
-    "lastUpdateBy": "A. Meier"
+    "lastUpdateBy": "A. Meier",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "ZH",
+      "gwr": "ZH",
+      "value": "ZH",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Winterthur",
+      "gwr": "Winterthur",
+      "value": "Winterthur",
+      "match": true
+    },
+    "plz": {
+      "sap": "8400",
+      "gwr": "8400",
+      "value": "8400",
+      "match": true
+    },
+    "ort": {
+      "sap": "Winterthur",
+      "gwr": "Winterthur",
+      "value": "Winterthur",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Technikumstrasse",
+      "gwr": "Technikumstrasse",
+      "value": "Technikumstrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "8",
+      "gwr": "8",
+      "value": "8",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "2345678",
+      "gwr": "2345678",
+      "value": "2345678",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1263",
+      "gwr": "1263",
+      "value": "1263",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "",
+      "gwr": "8020",
+      "value": "8020",
+      "match": false
+    },
+    "lat": {
+      "sap": "47.4977",
+      "gwr": "47.4979",
+      "value": "47.4979",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.7244",
+      "gwr": "8.7246",
+      "value": "8.7246",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH482910384756",
+      "value": "CH482910384756",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "5600",
+      "gwr": "5600",
+      "value": "5600",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "2800",
+      "gwr": "2800",
+      "value": "2800",
+      "match": true
+    }
   },
   {
     "id": "1080/2022/AH",
     "name": "Frauenfeld, Schlossmühlestrasse 15",
-    "lat": 47.5533,
-    "lng": 8.8987,
-    "kanton": "TG",
     "portfolio": "Wohnen",
     "priority": "low",
     "confidence": {
       "total": 82,
-      "georef": 90,
       "sap": 75,
       "gwr": 80
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": {
-        "sap": "Schlossmühlestrasse 15",
-        "gwr": "Schlossmühlestrasse 15",
-        "match": true
-      },
-      "plz": {
-        "sap": "8510",
-        "gwr": "8510",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.5531, 8.8985",
-        "gwr": "47.5533, 8.8987",
-        "match": true
-      },
-      "egid": {
-        "sap": "4567890",
-        "gwr": "4567890",
-        "match": true
-      },
-      "year": {
-        "sap": "1995",
-        "gwr": "1995",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-29T17:45:00Z",
-    "lastUpdateBy": "M. Keller"
+    "lastUpdateBy": "M. Keller",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "TG",
+      "gwr": "TG",
+      "value": "TG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Frauenfeld",
+      "gwr": "Frauenfeld",
+      "value": "Frauenfeld",
+      "match": true
+    },
+    "plz": {
+      "sap": "8510",
+      "gwr": "8510",
+      "value": "8510",
+      "match": true
+    },
+    "ort": {
+      "sap": "Frauenfeld",
+      "gwr": "Frauenfeld",
+      "value": "Frauenfeld",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Schlossmühlestrasse",
+      "gwr": "Schlossmühlestrasse",
+      "value": "Schlossmühlestrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "15",
+      "gwr": "15",
+      "value": "15",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "4567890",
+      "gwr": "4567890",
+      "value": "4567890",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1020",
+      "gwr": "1020",
+      "value": "1020",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1122",
+      "gwr": "1122",
+      "value": "1122",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8018",
+      "gwr": "8018",
+      "value": "8018",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.5531",
+      "gwr": "47.5533",
+      "value": "47.5533",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.8985",
+      "gwr": "8.8987",
+      "value": "8.8987",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH192837465019",
+      "value": "CH192837465019",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "720",
+      "gwr": "720",
+      "value": "720",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "380",
+      "gwr": "380",
+      "value": "380",
+      "match": true
+    }
   },
   {
     "id": "1130/7010/AI",
     "name": "Basel, Elisabethenstrasse 51",
-    "lat": 47.548,
-    "lng": 7.5896,
-    "kanton": "BS",
     "portfolio": "Büro",
     "priority": "low",
     "confidence": {
       "total": 95,
-      "georef": 98,
       "sap": 92,
       "gwr": 95
     },
     "assignee": null,
     "kanbanStatus": "done",
-    "data": {
-      "address": {
-        "sap": "Elisabethenstrasse 51",
-        "gwr": "Elisabethenstrasse 51",
-        "match": true
-      },
-      "plz": {
-        "sap": "4051",
-        "gwr": "4051",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.5480, 7.5896",
-        "gwr": "47.5480, 7.5896",
-        "match": true
-      },
-      "egid": {
-        "sap": "6789012",
-        "gwr": "6789012",
-        "match": true
-      },
-      "year": {
-        "sap": "2010",
-        "gwr": "2010",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-30T09:30:00Z",
-    "lastUpdateBy": "S. Brunner"
+    "lastUpdateBy": "S. Brunner",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "BS",
+      "gwr": "BS",
+      "value": "BS",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Basel",
+      "gwr": "Basel",
+      "value": "Basel",
+      "match": true
+    },
+    "plz": {
+      "sap": "4051",
+      "gwr": "4051",
+      "value": "4051",
+      "match": true
+    },
+    "ort": {
+      "sap": "Basel",
+      "gwr": "Basel",
+      "value": "Basel",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Elisabethenstrasse",
+      "gwr": "Elisabethenstrasse",
+      "value": "Elisabethenstrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "51",
+      "gwr": "51",
+      "value": "51",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "6789012",
+      "gwr": "6789012",
+      "value": "6789012",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1220",
+      "gwr": "1220",
+      "value": "1220",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8021",
+      "gwr": "8021",
+      "value": "8021",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.5480",
+      "gwr": "47.5480",
+      "value": "47.548",
+      "match": true
+    },
+    "lng": {
+      "sap": "7.5896",
+      "gwr": "7.5896",
+      "value": "7.5896",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH847291056382",
+      "value": "CH847291056382",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1100",
+      "gwr": "1100",
+      "value": "1100",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "650",
+      "gwr": "637",
+      "value": "650",
+      "match": false
+    }
   },
   {
     "id": "1140/8020/AJ",
     "name": "Luzern, Hirschengraben 15",
-    "lat": 47.0502,
-    "lng": 8.3093,
-    "kanton": "LU",
     "portfolio": "Wohnen",
     "priority": "medium",
     "confidence": {
       "total": 70,
-      "georef": 75,
       "sap": 68,
       "gwr": 67
     },
     "assignee": "M. Keller",
     "kanbanStatus": "clarification",
-    "data": {
-      "address": {
-        "sap": "Hirschengraben 15",
-        "gwr": "Hirschengraben 15a",
-        "match": false
-      },
-      "plz": {
-        "sap": "6003",
-        "gwr": "6003",
-        "match": true
-      },
-      "coords": {
-        "sap": "47.0500, 8.3091",
-        "gwr": "47.0502, 8.3093",
-        "match": true
-      },
-      "egid": {
-        "sap": "7890123",
-        "gwr": "7890123",
-        "match": true
-      },
-      "year": {
-        "sap": "1975",
-        "gwr": "1975",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-28T15:00:00Z",
-    "lastUpdateBy": "M. Keller"
+    "lastUpdateBy": "M. Keller",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "LU",
+      "gwr": "LU",
+      "value": "LU",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Luzern",
+      "gwr": "Luzern",
+      "value": "Luzern",
+      "match": true
+    },
+    "plz": {
+      "sap": "6003",
+      "gwr": "6003",
+      "value": "6003",
+      "match": true
+    },
+    "ort": {
+      "sap": "Luzern",
+      "gwr": "Luzern",
+      "value": "Luzern",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Hirschengraben",
+      "gwr": "Hirschengraben",
+      "value": "Hirschengraben",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "15",
+      "gwr": "15a",
+      "value": "15",
+      "match": false
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "7890123",
+      "gwr": "7890123",
+      "value": "7890123",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1020",
+      "gwr": "1020",
+      "value": "1020",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1122",
+      "gwr": "1122",
+      "value": "1122",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8015",
+      "gwr": "8015",
+      "value": "8015",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.0500",
+      "gwr": "47.0502",
+      "value": "47.0502",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.3091",
+      "gwr": "8.3093",
+      "value": "8.3093",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH582910473856",
+      "value": "CH582910473856",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "680",
+      "gwr": "680",
+      "value": "680",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "420",
+      "gwr": "420",
+      "value": "420",
+      "match": true
+    }
   },
   {
     "id": "1150/9030/AK",
     "name": "Genf, Rue de Lausanne 65",
-    "lat": 46.2138,
-    "lng": 6.149,
-    "kanton": "GE",
     "portfolio": "Industrie",
     "priority": "high",
     "confidence": {
       "total": 28,
-      "georef": 10,
       "sap": 45,
       "gwr": 30
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": {
-        "sap": "Rue de Lausanne 65",
-        "gwr": "Rue de Lausanne 65",
-        "match": true
-      },
-      "plz": {
-        "sap": "1202",
-        "gwr": "1202",
-        "match": true
-      },
-      "coords": {
-        "sap": "46.2100, 6.1450",
-        "gwr": "46.2138, 6.1490",
-        "match": false
-      },
-      "egid": {
-        "sap": "—",
-        "gwr": "8901234",
-        "match": false
-      },
-      "year": {
-        "sap": "1960",
-        "gwr": "1962",
-        "match": false
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-16T08:30:00Z",
-    "lastUpdateBy": "System"
+    "lastUpdateBy": "System",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "GE",
+      "gwr": "GE",
+      "value": "GE",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Genève",
+      "gwr": "Genève",
+      "value": "Genève",
+      "match": true
+    },
+    "plz": {
+      "sap": "1202",
+      "gwr": "1202",
+      "value": "1202",
+      "match": true
+    },
+    "ort": {
+      "sap": "Genève",
+      "gwr": "Genève",
+      "value": "Genève",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Rue de Lausanne",
+      "gwr": "Rue de Lausanne",
+      "value": "Rue de Lausanne",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "65",
+      "gwr": "65",
+      "value": "65",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "",
+      "gwr": "8901234",
+      "value": "8901234",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1251",
+      "gwr": "1251",
+      "value": "1251",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8014",
+      "gwr": "8014",
+      "value": "8014",
+      "match": true
+    },
+    "lat": {
+      "sap": "46.2100",
+      "gwr": "46.2138",
+      "value": "46.2138",
+      "match": false
+    },
+    "lng": {
+      "sap": "6.1450",
+      "gwr": "6.1490",
+      "value": "6.149",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH293847561029",
+      "value": "CH293847561029",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1800",
+      "gwr": "1836",
+      "value": "1800",
+      "match": false
+    },
+    "footprintArea": {
+      "sap": "920",
+      "gwr": "920",
+      "value": "920",
+      "match": true
+    }
   },
   {
     "id": "1160/1040/AL",
     "name": "Lugano, Via Nassa 29",
-    "lat": 46.005,
-    "lng": 8.952,
-    "kanton": "TI",
     "portfolio": "Öffentlich",
     "priority": "low",
     "confidence": {
       "total": 85,
-      "georef": 92,
       "sap": 80,
       "gwr": 82
     },
     "assignee": "S. Brunner",
     "kanbanStatus": "inprogress",
-    "data": {
-      "address": {
-        "sap": "Via Nassa 29",
-        "gwr": "Via Nassa 29",
-        "match": true
-      },
-      "plz": {
-        "sap": "6900",
-        "gwr": "6900",
-        "match": true
-      },
-      "coords": {
-        "sap": "46.0048, 8.9518",
-        "gwr": "46.0050, 8.9520",
-        "match": true
-      },
-      "egid": {
-        "sap": "9012345",
-        "gwr": "9012345",
-        "match": true
-      },
-      "year": {
-        "sap": "1988",
-        "gwr": "1988",
-        "match": true
-      }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-24T12:15:00Z",
-    "lastUpdateBy": "S. Brunner"
+    "lastUpdateBy": "S. Brunner",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "TI",
+      "gwr": "TI",
+      "value": "TI",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Lugano",
+      "gwr": "Lugano",
+      "value": "Lugano",
+      "match": true
+    },
+    "plz": {
+      "sap": "6900",
+      "gwr": "6900",
+      "value": "6900",
+      "match": true
+    },
+    "ort": {
+      "sap": "Lugano",
+      "gwr": "Lugano",
+      "value": "Lugano",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Via Nassa",
+      "gwr": "Via Nassa",
+      "value": "Via Nassa",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "29",
+      "gwr": "29",
+      "value": "29",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "9012345",
+      "gwr": "9012345",
+      "value": "9012345",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1261",
+      "gwr": "1261",
+      "value": "1261",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8017",
+      "gwr": "8017",
+      "value": "8017",
+      "match": true
+    },
+    "lat": {
+      "sap": "46.0048",
+      "gwr": "46.0050",
+      "value": "46.005",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.9518",
+      "gwr": "8.9520",
+      "value": "8.952",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH184729301856",
+      "value": "CH184729301856",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "950",
+      "gwr": "950",
+      "value": "950",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "580",
+      "gwr": "580",
+      "value": "580",
+      "match": true
+    }
   },
   {
     "id": "1170/2050/AM",
     "name": "Aarau, Bahnhofstrasse 20",
-    "lat": 47.3925,
-    "lng": 8.0444,
-    "kanton": "AG",
     "portfolio": "Büro",
     "priority": "high",
     "confidence": {
       "total": 45,
-      "georef": 30,
       "sap": 55,
       "gwr": 50
     },
     "assignee": "A. Meier",
     "kanbanStatus": "clarification",
-    "data": {
-      "address": { "sap": "Bahnhofstrasse 20", "gwr": "Bahnhofstr. 20", "match": false },
-      "plz": { "sap": "5000", "gwr": "5000", "match": true },
-      "coords": { "sap": "47.3920, 8.0440", "gwr": "47.3925, 8.0444", "match": true },
-      "egid": { "sap": "1234567", "gwr": "1234567", "match": true },
-      "year": { "sap": "1985", "gwr": "1987", "match": false }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-29T10:00:00Z",
-    "lastUpdateBy": "A. Meier"
+    "lastUpdateBy": "A. Meier",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "AG",
+      "gwr": "AG",
+      "value": "AG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Aarau",
+      "gwr": "Aarau",
+      "value": "Aarau",
+      "match": true
+    },
+    "plz": {
+      "sap": "5000",
+      "gwr": "5000",
+      "value": "5000",
+      "match": true
+    },
+    "ort": {
+      "sap": "Aarau",
+      "gwr": "Aarau",
+      "value": "Aarau",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Bahnhofstrasse",
+      "gwr": "Bahnhofstr.",
+      "value": "Bahnhofstrasse",
+      "match": false
+    },
+    "hausnummer": {
+      "sap": "20",
+      "gwr": "20",
+      "value": "20",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "1234567",
+      "gwr": "1234567",
+      "value": "1234567",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1220",
+      "gwr": "1220",
+      "value": "1220",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8016",
+      "gwr": "8017",
+      "value": "8017",
+      "match": false
+    },
+    "lat": {
+      "sap": "47.3920",
+      "gwr": "47.3925",
+      "value": "47.3925",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.0440",
+      "gwr": "8.0444",
+      "value": "8.0444",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH738492015738",
+      "value": "CH738492015738",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1350",
+      "gwr": "1350",
+      "value": "1350",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "720",
+      "gwr": "706",
+      "value": "720",
+      "match": false
+    }
   },
   {
     "id": "1180/3060/AN",
     "name": "Solothurn, Hauptgasse 5",
-    "lat": 47.2088,
-    "lng": 7.5378,
-    "kanton": "SO",
     "portfolio": "Öffentlich",
     "priority": "medium",
     "confidence": {
       "total": 92,
-      "georef": 95,
       "sap": 90,
       "gwr": 90
     },
     "assignee": "T. Weber",
     "kanbanStatus": "done",
-    "data": {
-      "address": { "sap": "Hauptgasse 5", "gwr": "Hauptgasse 5", "match": true },
-      "plz": { "sap": "4500", "gwr": "4500", "match": true },
-      "coords": { "sap": "47.2088, 7.5378", "gwr": "47.2088, 7.5378", "match": true },
-      "egid": { "sap": "2345678", "gwr": "2345678", "match": true },
-      "year": { "sap": "1972", "gwr": "1972", "match": true }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-28T16:30:00Z",
-    "lastUpdateBy": "T. Weber"
+    "lastUpdateBy": "T. Weber",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "SO",
+      "gwr": "SO",
+      "value": "SO",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Solothurn",
+      "gwr": "Solothurn",
+      "value": "Solothurn",
+      "match": true
+    },
+    "plz": {
+      "sap": "4500",
+      "gwr": "4500",
+      "value": "4500",
+      "match": true
+    },
+    "ort": {
+      "sap": "Solothurn",
+      "gwr": "Solothurn",
+      "value": "Solothurn",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Hauptgasse",
+      "gwr": "Hauptgasse",
+      "value": "Hauptgasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "5",
+      "gwr": "5",
+      "value": "5",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "2345678",
+      "gwr": "2345678",
+      "value": "2345678",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1272",
+      "gwr": "1272",
+      "value": "1272",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8015",
+      "gwr": "8015",
+      "value": "8015",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.2088",
+      "gwr": "47.2088",
+      "value": "47.2088",
+      "match": true
+    },
+    "lng": {
+      "sap": "7.5378",
+      "gwr": "7.5378",
+      "value": "7.5378",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH849201573846",
+      "value": "CH849201573846",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "480",
+      "gwr": "480",
+      "value": "480",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "320",
+      "gwr": "320",
+      "value": "320",
+      "match": true
+    }
   },
   {
     "id": "1190/4070/AO",
     "name": "Thun, Bälliz 42",
-    "lat": 46.758,
-    "lng": 7.629,
-    "kanton": "BE",
     "portfolio": "Wohnen",
     "priority": "low",
     "confidence": {
       "total": 88,
-      "georef": 90,
       "sap": 85,
       "gwr": 88
     },
     "assignee": null,
     "kanbanStatus": "done",
-    "data": {
-      "address": { "sap": "Bälliz 42", "gwr": "Bälliz 42", "match": true },
-      "plz": { "sap": "3600", "gwr": "3600", "match": true },
-      "coords": { "sap": "46.758, 7.629", "gwr": "46.758, 7.629", "match": true },
-      "egid": { "sap": "3456789", "gwr": "3456789", "match": true },
-      "year": { "sap": "1998", "gwr": "1998", "match": true }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-27T09:15:00Z",
-    "lastUpdateBy": "M. Keller"
+    "lastUpdateBy": "M. Keller",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "BE",
+      "gwr": "BE",
+      "value": "BE",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Thun",
+      "gwr": "Thun",
+      "value": "Thun",
+      "match": true
+    },
+    "plz": {
+      "sap": "3600",
+      "gwr": "3600",
+      "value": "3600",
+      "match": true
+    },
+    "ort": {
+      "sap": "Thun",
+      "gwr": "Thun",
+      "value": "Thun",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Bälliz",
+      "gwr": "Bälliz",
+      "value": "Bälliz",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "42",
+      "gwr": "42",
+      "value": "42",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "3456789",
+      "gwr": "3456789",
+      "value": "3456789",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1020",
+      "gwr": "1020",
+      "value": "1020",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1122",
+      "gwr": "1122",
+      "value": "1122",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8019",
+      "gwr": "8019",
+      "value": "8019",
+      "match": true
+    },
+    "lat": {
+      "sap": "46.758",
+      "gwr": "46.758",
+      "value": "46.758",
+      "match": true
+    },
+    "lng": {
+      "sap": "7.629",
+      "gwr": "7.629",
+      "value": "7.629",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH582910384756",
+      "value": "CH582910384756",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "560",
+      "gwr": "560",
+      "value": "560",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "380",
+      "gwr": "380",
+      "value": "380",
+      "match": true
+    }
   },
   {
     "id": "1200/5080/AP",
     "name": "Biel, Nidaugasse 14",
-    "lat": 47.1368,
-    "lng": 7.2467,
-    "kanton": "BE",
     "portfolio": "Industrie",
     "priority": "high",
     "confidence": {
       "total": 38,
-      "georef": 25,
       "sap": 45,
       "gwr": 45
     },
     "assignee": "S. Brunner",
     "kanbanStatus": "inprogress",
-    "data": {
-      "address": { "sap": "Nidaugasse 14", "gwr": "Nidaugasse 14", "match": true },
-      "plz": { "sap": "2502", "gwr": "2501", "match": false },
-      "coords": { "sap": "—", "gwr": "47.1368, 7.2467", "match": false },
-      "egid": { "sap": "—", "gwr": "4567890", "match": false },
-      "year": { "sap": "1955", "gwr": "1958", "match": false }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-30T11:00:00Z",
-    "lastUpdateBy": "S. Brunner"
+    "lastUpdateBy": "S. Brunner",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "BE",
+      "gwr": "BE",
+      "value": "BE",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Biel/Bienne",
+      "gwr": "Biel/Bienne",
+      "value": "Biel/Bienne",
+      "match": true
+    },
+    "plz": {
+      "sap": "2502",
+      "gwr": "2501",
+      "value": "2502",
+      "match": false
+    },
+    "ort": {
+      "sap": "Biel/Bienne",
+      "gwr": "Biel/Bienne",
+      "value": "Biel/Bienne",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Nidaugasse",
+      "gwr": "Nidaugasse",
+      "value": "Nidaugasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "14",
+      "gwr": "14",
+      "value": "14",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "",
+      "gwr": "4567890",
+      "value": "4567890",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1251",
+      "gwr": "1252",
+      "value": "1252",
+      "match": false
+    },
+    "gbaup": {
+      "sap": "8013",
+      "gwr": "8013",
+      "value": "8013",
+      "match": true
+    },
+    "lat": {
+      "sap": "",
+      "gwr": "47.1368",
+      "value": "47.1368",
+      "match": false
+    },
+    "lng": {
+      "sap": "",
+      "gwr": "7.2467",
+      "value": "7.2467",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH293018475639",
+      "value": "CH293018475639",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "1680",
+      "gwr": "1714",
+      "value": "1680",
+      "match": false
+    },
+    "footprintArea": {
+      "sap": "890",
+      "gwr": "890",
+      "value": "890",
+      "match": true
+    }
   },
   {
     "id": "1210/6090/AQ",
     "name": "Schaffhausen, Vordergasse 61",
-    "lat": 47.6961,
-    "lng": 8.635,
-    "kanton": "SH",
     "portfolio": "Büro",
     "priority": "medium",
     "confidence": {
       "total": 75,
-      "georef": 80,
       "sap": 70,
       "gwr": 75
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": { "sap": "Vordergasse 61", "gwr": "Vordergasse 61", "match": true },
-      "plz": { "sap": "8200", "gwr": "8200", "match": true },
-      "coords": { "sap": "47.6959, 8.6348", "gwr": "47.6961, 8.6350", "match": true },
-      "egid": { "sap": "5678901", "gwr": "5678901", "match": true },
-      "year": { "sap": "—", "gwr": "1965", "match": false }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-22T14:45:00Z",
-    "lastUpdateBy": "System"
+    "lastUpdateBy": "System",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "SH",
+      "gwr": "SH",
+      "value": "SH",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Schaffhausen",
+      "gwr": "Schaffhausen",
+      "value": "Schaffhausen",
+      "match": true
+    },
+    "plz": {
+      "sap": "8200",
+      "gwr": "8200",
+      "value": "8200",
+      "match": true
+    },
+    "ort": {
+      "sap": "Schaffhausen",
+      "gwr": "Schaffhausen",
+      "value": "Schaffhausen",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Vordergasse",
+      "gwr": "Vordergasse",
+      "value": "Vordergasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "61",
+      "gwr": "61",
+      "value": "61",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "5678901",
+      "gwr": "5678901",
+      "value": "5678901",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1220",
+      "gwr": "1220",
+      "value": "1220",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "",
+      "gwr": "8014",
+      "value": "8014",
+      "match": false
+    },
+    "lat": {
+      "sap": "47.6959",
+      "gwr": "47.6961",
+      "value": "47.6961",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.6348",
+      "gwr": "8.6350",
+      "value": "8.635",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH847291056382",
+      "value": "CH847291056382",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "420",
+      "gwr": "420",
+      "value": "420",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "280",
+      "gwr": "274",
+      "value": "280",
+      "match": false
+    }
   },
   {
     "id": "1220/7100/AR",
     "name": "Zug, Baarerstrasse 8",
-    "lat": 47.1724,
-    "lng": 8.5179,
-    "kanton": "ZG",
     "portfolio": "Öffentlich",
     "priority": "low",
     "confidence": {
       "total": 96,
-      "georef": 98,
       "sap": 95,
       "gwr": 95
     },
     "assignee": "M. Keller",
     "kanbanStatus": "done",
-    "data": {
-      "address": { "sap": "Baarerstrasse 8", "gwr": "Baarerstrasse 8", "match": true },
-      "plz": { "sap": "6300", "gwr": "6300", "match": true },
-      "coords": { "sap": "47.1724, 8.5179", "gwr": "47.1724, 8.5179", "match": true },
-      "egid": { "sap": "6789012", "gwr": "6789012", "match": true },
-      "year": { "sap": "2015", "gwr": "2015", "match": true }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-30T08:30:00Z",
-    "lastUpdateBy": "M. Keller"
+    "lastUpdateBy": "M. Keller",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "ZG",
+      "gwr": "ZG",
+      "value": "ZG",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Zug",
+      "gwr": "Zug",
+      "value": "Zug",
+      "match": true
+    },
+    "plz": {
+      "sap": "6300",
+      "gwr": "6300",
+      "value": "6300",
+      "match": true
+    },
+    "ort": {
+      "sap": "Zug",
+      "gwr": "Zug",
+      "value": "Zug",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Baarerstrasse",
+      "gwr": "Baarerstrasse",
+      "value": "Baarerstrasse",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "8",
+      "gwr": "8",
+      "value": "8",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "6789012",
+      "gwr": "6789012",
+      "value": "6789012",
+      "match": true
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1261",
+      "gwr": "1261",
+      "value": "1261",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8022",
+      "gwr": "8022",
+      "value": "8022",
+      "match": true
+    },
+    "lat": {
+      "sap": "47.1724",
+      "gwr": "47.1724",
+      "value": "47.1724",
+      "match": true
+    },
+    "lng": {
+      "sap": "8.5179",
+      "gwr": "8.5179",
+      "value": "8.5179",
+      "match": true
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH192837465019",
+      "value": "CH192837465019",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "780",
+      "gwr": "780",
+      "value": "780",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "520",
+      "gwr": "520",
+      "value": "520",
+      "match": true
+    }
   },
   {
     "id": "1230/8110/AS",
     "name": "Neuchâtel, Rue du Seyon 12",
-    "lat": 46.992,
-    "lng": 6.931,
-    "kanton": "NE",
     "portfolio": "Bildung",
     "priority": "medium",
     "confidence": {
       "total": 58,
-      "georef": 55,
       "sap": 60,
       "gwr": 60
     },
     "assignee": "T. Weber",
     "kanbanStatus": "clarification",
-    "data": {
-      "address": { "sap": "Rue du Seyon 12", "gwr": "Rue du Seyon 12", "match": true },
-      "plz": { "sap": "2000", "gwr": "2000", "match": true },
-      "coords": { "sap": "46.990, 6.929", "gwr": "46.992, 6.931", "match": false },
-      "egid": { "sap": "7890123", "gwr": "7890124", "match": false },
-      "year": { "sap": "1980", "gwr": "1982", "match": false }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-29T15:20:00Z",
-    "lastUpdateBy": "T. Weber"
+    "lastUpdateBy": "T. Weber",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "NE",
+      "gwr": "NE",
+      "value": "NE",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Neuchâtel",
+      "gwr": "Neuchâtel",
+      "value": "Neuchâtel",
+      "match": true
+    },
+    "plz": {
+      "sap": "2000",
+      "gwr": "2000",
+      "value": "2000",
+      "match": true
+    },
+    "ort": {
+      "sap": "Neuchâtel",
+      "gwr": "Neuchâtel",
+      "value": "Neuchâtel",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Rue du Seyon",
+      "gwr": "Rue du Seyon",
+      "value": "Rue du Seyon",
+      "match": true
+    },
+    "hausnummer": {
+      "sap": "12",
+      "gwr": "12",
+      "value": "12",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "7890123",
+      "gwr": "7890124",
+      "value": "7890124",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1060",
+      "gwr": "1060",
+      "value": "1060",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1263",
+      "gwr": "1263",
+      "value": "1263",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8016",
+      "gwr": "8016",
+      "value": "8016",
+      "match": true
+    },
+    "lat": {
+      "sap": "46.990",
+      "gwr": "46.992",
+      "value": "46.992",
+      "match": false
+    },
+    "lng": {
+      "sap": "6.929",
+      "gwr": "6.931",
+      "value": "6.931",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH738291045867",
+      "value": "CH738291045867",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "2200",
+      "gwr": "2200",
+      "value": "2200",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "1100",
+      "gwr": "1100",
+      "value": "1100",
+      "match": true
+    }
   },
   {
     "id": "1240/9120/AT",
     "name": "Sion, Avenue de la Gare 3",
-    "lat": 46.2333,
-    "lng": 7.3592,
-    "kanton": "VS",
     "portfolio": "Wohnen",
     "priority": "high",
     "confidence": {
       "total": 32,
-      "georef": 15,
       "sap": 40,
       "gwr": 40
     },
     "assignee": null,
     "kanbanStatus": "backlog",
-    "data": {
-      "address": { "sap": "Avenue de la Gare 3", "gwr": "Av. de la Gare 3", "match": false },
-      "plz": { "sap": "1950", "gwr": "1950", "match": true },
-      "coords": { "sap": "—", "gwr": "46.2333, 7.3592", "match": false },
-      "egid": { "sap": "—", "gwr": "8901234", "match": false },
-      "year": { "sap": "1970", "gwr": "1972", "match": false }
-    },
+    "dueDate": null,
     "lastUpdate": "2026-01-18T10:00:00Z",
-    "lastUpdateBy": "System"
+    "lastUpdateBy": "System",
+    "country": {
+      "sap": "CH",
+      "gwr": "CH",
+      "value": "CH",
+      "match": true
+    },
+    "kanton": {
+      "sap": "VS",
+      "gwr": "VS",
+      "value": "VS",
+      "match": true
+    },
+    "gemeinde": {
+      "sap": "Sion",
+      "gwr": "Sion",
+      "value": "Sion",
+      "match": true
+    },
+    "plz": {
+      "sap": "1950",
+      "gwr": "1950",
+      "value": "1950",
+      "match": true
+    },
+    "ort": {
+      "sap": "Sion",
+      "gwr": "Sion",
+      "value": "Sion",
+      "match": true
+    },
+    "strasse": {
+      "sap": "Avenue de la Gare",
+      "gwr": "Av. de la Gare",
+      "value": "Avenue de la Gare",
+      "match": false
+    },
+    "hausnummer": {
+      "sap": "3",
+      "gwr": "3",
+      "value": "3",
+      "match": true
+    },
+    "zusatz": {
+      "sap": "",
+      "gwr": "",
+      "value": "",
+      "match": true
+    },
+    "egid": {
+      "sap": "",
+      "gwr": "8901234",
+      "value": "8901234",
+      "match": false
+    },
+    "gkat": {
+      "sap": "1020",
+      "gwr": "1020",
+      "value": "1020",
+      "match": true
+    },
+    "gklas": {
+      "sap": "1122",
+      "gwr": "1122",
+      "value": "1122",
+      "match": true
+    },
+    "gbaup": {
+      "sap": "8015",
+      "gwr": "8015",
+      "value": "8015",
+      "match": true
+    },
+    "lat": {
+      "sap": "",
+      "gwr": "46.2333",
+      "value": "46.2333",
+      "match": false
+    },
+    "lng": {
+      "sap": "",
+      "gwr": "7.3592",
+      "value": "7.3592",
+      "match": false
+    },
+    "egrid": {
+      "sap": "",
+      "gwr": "CH482910573846",
+      "value": "CH482910573846",
+      "match": false
+    },
+    "parcelArea": {
+      "sap": "920",
+      "gwr": "920",
+      "value": "920",
+      "match": true
+    },
+    "footprintArea": {
+      "sap": "540",
+      "gwr": "540",
+      "value": "540",
+      "match": true
+    }
   }
 ]

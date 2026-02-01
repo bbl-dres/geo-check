@@ -198,30 +198,40 @@ export function renderDetailPanel(building) {
     document.getElementById(`val-${key}`).textContent = val + '%';
   });
 
-  // Errors
-  document.getElementById('error-cards').innerHTML = building.errors.length > 0
-    ? building.errors.map(error => `
-        <div class="error-card ${error.severity}">
-          <div class="error-card-header">
-            <span class="badge badge-${error.type} badge-caps badge-sm">${getTagLabel(error.type)}</span>
-            <span class="error-card-title">${error.title}</span>
-          </div>
-          <div class="error-card-desc">${error.description}</div>
-        </div>
-      `).join('')
-    : '<p class="empty-text">Keine Fehler gefunden.</p>';
-
-  // Update error count badge
+  // Errors - render as table
+  const errorTable = document.getElementById('error-table');
+  const errorTbody = document.getElementById('error-tbody');
+  const errorEmptyState = document.getElementById('error-empty-state');
   const errorCountEl = document.getElementById('error-count');
   const fehlerAccordion = document.querySelector('[data-accordion="fehler"]');
+
   if (building.errors.length > 0) {
+    errorTable.style.display = '';
+    errorEmptyState.style.display = 'none';
+    errorTbody.innerHTML = building.errors.map(error => {
+      const levelLabel = error.level === 'error' ? 'Fehler' : error.level === 'warning' ? 'Warnung' : 'Info';
+      return `
+        <tr>
+          <td>${error.checkId}</td>
+          <td>${error.description}</td>
+          <td class="level-${error.level}">${levelLabel}</td>
+        </tr>
+      `;
+    }).join('');
     errorCountEl.textContent = building.errors.length;
     errorCountEl.style.display = '';
     fehlerAccordion.classList.add('open');
   } else {
+    errorTable.style.display = 'none';
+    errorEmptyState.style.display = '';
+    errorTbody.innerHTML = '';
     errorCountEl.style.display = 'none';
     fehlerAccordion.classList.remove('open');
   }
+
+  // Image widget
+  currentImageIndex = 0; // Reset when switching buildings
+  renderImageWidget(building);
 
   // Data comparison
   renderDataComparison(building);
@@ -273,53 +283,132 @@ export function renderDetailPanel(building) {
 // ========================================
 // Data Comparison Table
 // ========================================
+
+// Fields that follow the three-value comparison pattern (sap, gwr, value)
+// Primary fields: essential for address verification, always visible
+// 'coords' is a virtual field that combines lat/lng into one row
+// NOTE: EGID is first - user testing question: can we fetch all data from GWR API using EGID?
+const PRIMARY_FIELDS = [
+  'egid',  // First position - key field for GWR lookup
+  'plz', 'ort', 'strasse', 'hausnummer',
+  'coords'
+];
+
+// Secondary fields: supplementary context, hidden by default
+const SECONDARY_FIELDS = [
+  'country', 'kanton', 'gemeinde', 'zusatz',
+  'egrid', 'parcelArea', 'footprintArea',
+  'gkat', 'gklas', 'gbaup'
+];
+
+// Combined for iteration (primary first, then secondary)
+const COMPARED_FIELDS = [...PRIMARY_FIELDS, ...SECONDARY_FIELDS];
+
+// Fields that are editable in edit mode
+// USER TESTING: Currently only EGID is editable - idea is to fetch all data from GWR API
+// If users don't like this, we can expand EDITABLE_FIELDS to include more fields
+const EDITABLE_FIELDS = ['egid'];
+
+// All real data fields (for edit mode saving)
+const ALL_DATA_FIELDS = [
+  'plz', 'ort', 'strasse', 'hausnummer', 'egid',
+  'country', 'kanton', 'gemeinde', 'zusatz',
+  'egrid', 'parcelArea', 'footprintArea',
+  'gkat', 'gklas', 'gbaup', 'lat', 'lng'
+];
+
+// Track whether secondary fields are visible
+let showSecondaryFields = false;
+
+// Helper to format coordinates as "lat, lng"
+function formatCoords(lat, lng) {
+  const latStr = lat ? parseFloat(lat).toFixed(4) : '';
+  const lngStr = lng ? parseFloat(lng).toFixed(4) : '';
+  if (!latStr && !lngStr) return '';
+  return `${latStr}, ${lngStr}`;
+}
+
 export function renderDataComparison(building) {
   const container = document.getElementById('data-comparison');
   const isEditMode = state.editMode;
 
-  const currentLat = state.editedCoords ? state.editedCoords.lat : building.lat;
-  const currentLng = state.editedCoords ? state.editedCoords.lng : building.lng;
-  const sapCoords = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+  // Get current lat/lng (from edit state or building value)
+  const currentLat = state.editedCoords ? state.editedCoords.lat : parseFloat(building.lat.value);
+  const currentLng = state.editedCoords ? state.editedCoords.lng : parseFloat(building.lng.value);
 
-  container.innerHTML = Object.entries(building.data).map(([key, val]) => {
-    const isCoords = key === 'coords';
-    const sapValue = isCoords ? sapCoords : val.sap;
-    const gwrValue = val.gwr;
-    const isMatch = val.match;
-    const matchIcon = isMatch
-      ? '<i data-lucide="check" class="match-icon match"></i>'
-      : '<i data-lucide="x" class="match-icon mismatch"></i>';
+  container.innerHTML = COMPARED_FIELDS.map(key => {
+    // Special handling for combined coordinates row
+    if (key === 'coords') {
+      const sapCoords = formatCoords(building.lat.sap, building.lng.sap);
+      const gwrCoords = formatCoords(building.lat.gwr, building.lng.gwr);
+      const valueCoords = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
+      const isMatch = building.lat.match && building.lng.match;
+      const matchIcon = isMatch
+        ? '<i data-lucide="check" class="match-icon match"></i>'
+        : '<i data-lucide="x" class="match-icon mismatch"></i>';
 
-    if (isEditMode) {
-      if (isCoords) {
+      if (isEditMode) {
         return `
           <tr class="data-row edit-row">
-            <td class="col-attr">${getDataLabel(key)}</td>
-            <td class="col-sap edit-cell">
-              <span class="coords-value" id="edit-coords-display">${sapValue}</span>
+            <td class="col-attr">Koordinaten</td>
+            <td class="col-sap ref-locked">${sapCoords}</td>
+            <td class="col-gwr ref-locked">${gwrCoords}</td>
+            <td class="col-value edit-cell">
+              <span class="coords-value" id="edit-coords-display">${valueCoords}</span>
             </td>
-            <td class="col-gwr gwr-locked">${gwrValue}</td>
             <td class="col-match"></td>
           </tr>
         `;
       } else {
         return `
-          <tr class="data-row edit-row">
-            <td class="col-attr">${getDataLabel(key)}</td>
-            <td class="col-sap edit-cell">
-              <input type="text" class="edit-input" data-field="${key}" value="${sapValue === '—' || sapValue === 'Fehlt' ? '' : sapValue}" placeholder="${gwrValue !== '—' ? gwrValue : ''}">
-            </td>
-            <td class="col-gwr gwr-locked">${gwrValue}</td>
-            <td class="col-match"></td>
+          <tr class="data-row">
+            <td class="col-attr">Koordinaten</td>
+            <td class="col-sap">${sapCoords}</td>
+            <td class="col-gwr">${gwrCoords}</td>
+            <td class="col-value">${valueCoords}</td>
+            <td class="col-match">${matchIcon}</td>
           </tr>
         `;
       }
+    }
+
+    const field = building[key];
+    if (!field) return '';
+
+    const isSecondary = SECONDARY_FIELDS.includes(key);
+    const hiddenClass = isSecondary && !showSecondaryFields ? ' hidden' : '';
+
+    const sapValue = field.sap || '';
+    const gwrValue = field.gwr || '';
+    const canonicalValue = field.value || '';
+
+    const isMatch = field.match;
+    const matchIcon = isMatch
+      ? '<i data-lucide="check" class="match-icon match"></i>'
+      : '<i data-lucide="x" class="match-icon mismatch"></i>';
+
+    if (isEditMode) {
+      const isEditable = EDITABLE_FIELDS.includes(key);
+      const valueCell = isEditable
+        ? `<input type="text" class="edit-input" data-field="${key}" value="${canonicalValue}" placeholder="">`
+        : `<span class="edit-locked">${canonicalValue}</span>`;
+
+      return `
+        <tr class="data-row edit-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}${isEditable ? ' editable' : ''}">
+          <td class="col-attr">${getDataLabel(key)}</td>
+          <td class="col-sap ref-locked">${sapValue}</td>
+          <td class="col-gwr ref-locked">${gwrValue}</td>
+          <td class="col-value edit-cell">${valueCell}</td>
+          <td class="col-match"></td>
+        </tr>
+      `;
     } else {
       return `
-        <tr class="data-row">
+        <tr class="data-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}">
           <td class="col-attr">${getDataLabel(key)}</td>
           <td class="col-sap">${sapValue}</td>
           <td class="col-gwr">${gwrValue}</td>
+          <td class="col-value">${canonicalValue}</td>
           <td class="col-match">${matchIcon}</td>
         </tr>
       `;
@@ -330,6 +419,34 @@ export function renderDataComparison(building) {
 }
 
 // ========================================
+// Toggle Secondary Fields
+// ========================================
+export function toggleSecondaryFields() {
+  showSecondaryFields = !showSecondaryFields;
+
+  // Update button text
+  const toggleBtn = document.getElementById('btn-toggle-fields');
+  if (toggleBtn) {
+    const icon = showSecondaryFields ? 'chevron-up' : 'chevron-down';
+    const text = showSecondaryFields ? 'Weniger Attribute' : 'Mehr Attribute';
+    toggleBtn.innerHTML = `<i data-lucide="${icon}" class="icon-sm"></i> ${text}`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  // Toggle visibility of secondary field rows
+  const secondaryRows = document.querySelectorAll('.secondary-field');
+  secondaryRows.forEach(row => {
+    row.classList.toggle('hidden', !showSecondaryFields);
+  });
+}
+
+export function setupFieldToggle() {
+  const toggleBtn = document.getElementById('btn-toggle-fields');
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', toggleSecondaryFields);
+  }
+}
+
 // Edit Mode
 // ========================================
 function updateEditButton() {
@@ -357,8 +474,18 @@ export function enterEditMode() {
   const building = buildings.find(b => b.id === state.selectedBuildingId);
   if (!building) return;
 
-  state.originalBuildingData = JSON.parse(JSON.stringify(building.data));
-  state.editedCoords = { lat: building.lat, lng: building.lng };
+  // Store original values for all data fields (flat structure)
+  state.originalBuildingData = {};
+  ALL_DATA_FIELDS.forEach(field => {
+    if (building[field]) {
+      state.originalBuildingData[field] = JSON.parse(JSON.stringify(building[field]));
+    }
+  });
+
+  state.editedCoords = {
+    lat: parseFloat(building.lat.value),
+    lng: parseFloat(building.lng.value)
+  };
   state.editMode = true;
 
   const marker = markers[building.id];
@@ -376,6 +503,7 @@ export function enterEditMode() {
     currentDragHandler = () => {
       const lngLat = marker.getLngLat();
       state.editedCoords = { lat: lngLat.lat, lng: lngLat.lng };
+      // Update combined coords display
       const coordsDisplay = document.getElementById('edit-coords-display');
       if (coordsDisplay) {
         coordsDisplay.textContent = `${lngLat.lat.toFixed(4)}, ${lngLat.lng.toFixed(4)}`;
@@ -400,40 +528,63 @@ export function exitEditMode(save) {
   const marker = markers[building.id];
 
   if (save) {
+    // Save edited values to the canonical 'value' field (flat structure)
     document.querySelectorAll('.edit-input').forEach(input => {
       const field = input.dataset.field;
-      const newValue = input.value.trim() || '—';
-      if (building.data[field]) {
-        building.data[field].sap = newValue;
-        building.data[field].match = newValue === building.data[field].gwr;
+      const newValue = input.value.trim();
+      if (building[field]) {
+        building[field].value = newValue;
+        // Match is true when sap, gwr, and value all match
+        const sap = building[field].sap;
+        const gwr = building[field].gwr;
+        building[field].match = (sap === gwr) && (gwr === newValue);
       }
     });
 
+    // Save coordinates (lat/lng are separate fields now)
     if (state.editedCoords) {
-      building.lat = state.editedCoords.lat;
-      building.lng = state.editedCoords.lng;
-      if (building.data.coords) {
-        building.data.coords.sap = `${state.editedCoords.lat.toFixed(4)}, ${state.editedCoords.lng.toFixed(4)}`;
-        const gwrCoords = building.data.coords.gwr;
-        if (gwrCoords && gwrCoords !== '—') {
-          const [gwrLat, gwrLng] = gwrCoords.split(',').map(s => parseFloat(s.trim()));
-          const tolerance = 0.001;
-          building.data.coords.match =
-            Math.abs(state.editedCoords.lat - gwrLat) < tolerance &&
-            Math.abs(state.editedCoords.lng - gwrLng) < tolerance;
-        }
-      }
+      const newLatValue = state.editedCoords.lat.toFixed(4);
+      const newLngValue = state.editedCoords.lng.toFixed(4);
+
+      building.lat.value = newLatValue;
+      building.lng.value = newLngValue;
+
+      // Update match for lat/lng (hardcoded for demo, backend will calculate)
+      // Match if close enough to both sap and gwr
+      const tolerance = 0.001;
+      const latVal = state.editedCoords.lat;
+      const lngVal = state.editedCoords.lng;
+
+      const sapLat = building.lat.sap ? parseFloat(building.lat.sap) : null;
+      const sapLng = building.lng.sap ? parseFloat(building.lng.sap) : null;
+      const gwrLat = building.lat.gwr ? parseFloat(building.lat.gwr) : null;
+      const gwrLng = building.lng.gwr ? parseFloat(building.lng.gwr) : null;
+
+      const latSapMatch = sapLat !== null && Math.abs(latVal - sapLat) < tolerance;
+      const latGwrMatch = gwrLat !== null && Math.abs(latVal - gwrLat) < tolerance;
+      const lngSapMatch = sapLng !== null && Math.abs(lngVal - sapLng) < tolerance;
+      const lngGwrMatch = gwrLng !== null && Math.abs(lngVal - gwrLng) < tolerance;
+
+      building.lat.match = latSapMatch && latGwrMatch;
+      building.lng.match = lngSapMatch && lngGwrMatch;
     }
 
     building.lastUpdate = new Date().toISOString();
     building.lastUpdateBy = currentUser;
   } else {
+    // Restore original values (flat structure)
     if (state.originalBuildingData) {
-      building.data = state.originalBuildingData;
+      ALL_DATA_FIELDS.forEach(field => {
+        if (state.originalBuildingData[field]) {
+          building[field] = state.originalBuildingData[field];
+        }
+      });
     }
     if (marker) {
       // Mapbox: setLngLat uses [lng, lat] order
-      marker.setLngLat([building.lng, building.lat]);
+      const lng = parseFloat(building.lng.value);
+      const lat = parseFloat(building.lat.value);
+      marker.setLngLat([lng, lat]);
     }
   }
 
@@ -802,5 +953,249 @@ export function setupAccordions() {
       const accordion = header.closest('.accordion');
       accordion.classList.toggle('open');
     });
+  });
+}
+
+// ========================================
+// Image Widget
+// ========================================
+let currentImageIndex = 0;
+
+export function renderImageWidget(building) {
+  const images = building.images || [];
+  const emptyState = document.getElementById('image-empty-state');
+  const carousel = document.getElementById('image-carousel');
+  const imagesCountEl = document.getElementById('images-count');
+
+  // Update count badge (show only when there are images)
+  if (images.length > 0) {
+    imagesCountEl.textContent = images.length;
+    imagesCountEl.style.display = '';
+  } else {
+    imagesCountEl.style.display = 'none';
+  }
+  // Section is always visible (open by default in HTML)
+
+  // Show/hide states
+  if (images.length === 0) {
+    emptyState.style.display = '';
+    carousel.style.display = 'none';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  carousel.style.display = '';
+
+  // Reset index if out of bounds
+  if (currentImageIndex >= images.length) {
+    currentImageIndex = 0;
+  }
+
+  // Render current image
+  const currentImage = images[currentImageIndex];
+  const carouselImage = document.getElementById('carousel-image');
+  carouselImage.src = currentImage.url;
+  carouselImage.alt = currentImage.filename || 'Gebäudebild';
+
+  // Update filename overlay
+  document.getElementById('carousel-filename').textContent = currentImage.filename || 'Bild';
+
+  // Render dots
+  const dotsContainer = document.getElementById('carousel-dots');
+  dotsContainer.innerHTML = '';
+
+  // Only show dots if more than one image
+  if (images.length > 1) {
+    dotsContainer.style.display = '';
+    images.forEach((_, index) => {
+      const dot = document.createElement('button');
+      dot.className = `carousel-dot${index === currentImageIndex ? ' active' : ''}`;
+      dot.type = 'button';
+      dot.title = `Bild ${index + 1}`;
+      dot.addEventListener('click', () => {
+        currentImageIndex = index;
+        renderImageWidget(building);
+      });
+      dotsContainer.appendChild(dot);
+    });
+  } else {
+    dotsContainer.style.display = 'none';
+  }
+
+  // Show/hide nav buttons (only for multiple images)
+  document.getElementById('carousel-prev').style.visibility = images.length > 1 ? 'visible' : 'hidden';
+  document.getElementById('carousel-next').style.visibility = images.length > 1 ? 'visible' : 'hidden';
+}
+
+function navigateCarousel(direction) {
+  if (!state.selectedBuildingId) return;
+  const building = buildings.find(b => b.id === state.selectedBuildingId);
+  if (!building || !building.images || building.images.length === 0) return;
+
+  const images = building.images;
+  if (direction === 'prev') {
+    currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+  } else {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+  }
+  renderImageWidget(building);
+}
+
+function handleImageUpload(files) {
+  if (!state.selectedBuildingId || !files || files.length === 0) return;
+  const building = buildings.find(b => b.id === state.selectedBuildingId);
+  if (!building) return;
+
+  if (!building.images) {
+    building.images = [];
+  }
+
+  // Process each file (mock - in real app would upload to server)
+  Array.from(files).forEach(file => {
+    // Validate file size
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Datei zu gross (max. 10MB)');
+      return;
+    }
+
+    // Create object URL for preview (in real app, use server URL)
+    const url = URL.createObjectURL(file);
+    building.images.push({
+      id: Date.now() + Math.random(),
+      url: url,
+      filename: file.name,
+      uploadDate: new Date().toISOString(),
+      uploadedBy: currentUser
+    });
+  });
+
+  // Update timestamps
+  building.lastUpdate = new Date().toISOString();
+  building.lastUpdateBy = currentUser;
+
+  // Jump to last uploaded image
+  currentImageIndex = building.images.length - 1;
+  renderImageWidget(building);
+}
+
+function deleteCurrentImage() {
+  if (!state.selectedBuildingId) return;
+  const building = buildings.find(b => b.id === state.selectedBuildingId);
+  if (!building || !building.images || building.images.length === 0) return;
+
+  // Confirm deletion
+  if (!confirm('Bild wirklich löschen?')) return;
+
+  // Remove current image
+  const removed = building.images.splice(currentImageIndex, 1)[0];
+
+  // Revoke object URL if it was a blob
+  if (removed && removed.url && removed.url.startsWith('blob:')) {
+    URL.revokeObjectURL(removed.url);
+  }
+
+  // Update timestamps
+  building.lastUpdate = new Date().toISOString();
+  building.lastUpdateBy = currentUser;
+
+  // Adjust index
+  if (currentImageIndex >= building.images.length && building.images.length > 0) {
+    currentImageIndex = building.images.length - 1;
+  }
+
+  renderImageWidget(building);
+}
+
+function openFullscreen() {
+  if (!state.selectedBuildingId) return;
+  const building = buildings.find(b => b.id === state.selectedBuildingId);
+  if (!building || !building.images || building.images.length === 0) return;
+
+  const currentImage = building.images[currentImageIndex];
+  if (!currentImage) return;
+
+  // Create fullscreen modal if it doesn't exist
+  let modal = document.getElementById('image-fullscreen-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'image-fullscreen-modal';
+    modal.className = 'image-fullscreen-modal';
+    modal.innerHTML = `
+      <button class="image-fullscreen-close" type="button">
+        <i data-lucide="x" class="icon"></i>
+      </button>
+      <img src="" alt="Vollbild">
+    `;
+    document.body.appendChild(modal);
+
+    // Close on click outside or on close button
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal || e.target.closest('.image-fullscreen-close')) {
+        modal.classList.remove('visible');
+      }
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('visible')) {
+        modal.classList.remove('visible');
+      }
+    });
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+
+  modal.querySelector('img').src = currentImage.url;
+  modal.classList.add('visible');
+}
+
+function downloadCurrentImage() {
+  if (!state.selectedBuildingId) return;
+  const building = buildings.find(b => b.id === state.selectedBuildingId);
+  if (!building || !building.images || building.images.length === 0) return;
+
+  const currentImage = building.images[currentImageIndex];
+  if (!currentImage) return;
+
+  // Create a temporary link to trigger download
+  const link = document.createElement('a');
+  link.href = currentImage.url;
+  link.download = currentImage.filename || 'download';
+  link.target = '_blank';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+export function setupImageWidget() {
+  // Navigation buttons
+  document.getElementById('carousel-prev')?.addEventListener('click', () => navigateCarousel('prev'));
+  document.getElementById('carousel-next')?.addEventListener('click', () => navigateCarousel('next'));
+
+  // Delete button
+  document.getElementById('carousel-delete')?.addEventListener('click', deleteCurrentImage);
+
+  // Download button
+  document.getElementById('carousel-download')?.addEventListener('click', downloadCurrentImage);
+
+  // Fullscreen button
+  document.getElementById('carousel-fullscreen')?.addEventListener('click', openFullscreen);
+
+  // Upload from empty state
+  document.getElementById('image-upload-input')?.addEventListener('change', (e) => {
+    handleImageUpload(e.target.files);
+    e.target.value = ''; // Reset to allow same file
+  });
+
+  // Upload from add button in carousel actions
+  document.getElementById('carousel-add-input')?.addEventListener('change', (e) => {
+    handleImageUpload(e.target.files);
+    e.target.value = '';
+  });
+
+  // Keyboard navigation when carousel is focused
+  document.getElementById('image-carousel')?.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') navigateCarousel('prev');
+    if (e.key === 'ArrowRight') navigateCarousel('next');
   });
 }

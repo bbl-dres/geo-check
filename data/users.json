@@ -1,6 +1,6 @@
 [
-  { "id": 1, "name": "M. Keller", "initials": "MK", "role": "Admin", "openTasks": 3 },
-  { "id": 2, "name": "S. Brunner", "initials": "SB", "role": "Bearbeiter", "openTasks": 2 },
-  { "id": 3, "name": "T. Weber", "initials": "TW", "role": "Bearbeiter", "openTasks": 1 },
-  { "id": 4, "name": "A. Meier", "initials": "AM", "role": "Leser", "openTasks": 4 }
+  { "id": 1, "name": "M. Keller", "initials": "MK", "role": "Admin", "openTasks": 3, "lastLogin": "2026-01-31T08:42:00Z" },
+  { "id": 2, "name": "S. Brunner", "initials": "SB", "role": "Bearbeiter", "openTasks": 2, "lastLogin": "2026-01-30T16:15:00Z" },
+  { "id": 3, "name": "T. Weber", "initials": "TW", "role": "Bearbeiter", "openTasks": 1, "lastLogin": "2026-01-29T11:30:00Z" },
+  { "id": 4, "name": "A. Meier", "initials": "AM", "role": "Leser", "openTasks": 4, "lastLogin": "2026-01-28T09:05:00Z" }
 ]

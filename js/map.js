@@ -282,7 +282,7 @@ export function createMarker(building) {
     element: el,
     anchor: 'center'
   })
-    .setLngLat([building.lng, building.lat])
+    .setLngLat([parseFloat(building.lng.value), parseFloat(building.lat.value)])
     .addTo(map);
 
   return marker;
@@ -293,7 +293,7 @@ export function zoomToVisibleMarkers() {
   if (filtered.length === 0) return;
 
   const bounds = new mapboxgl.LngLatBounds();
-  filtered.forEach(b => bounds.extend([b.lng, b.lat]));
+  filtered.forEach(b => bounds.extend([parseFloat(b.lng.value), parseFloat(b.lat.value)]));
 
   map.fitBounds(bounds, { padding: 50 });
 }
@@ -334,7 +334,7 @@ export function selectMarker(buildingId) {
 
   // Fly to marker
   map.flyTo({
-    center: [building.lng, building.lat],
+    center: [parseFloat(building.lng.value), parseFloat(building.lat.value)],
     zoom: Math.max(map.getZoom(), 16)
   });
 }
@@ -926,9 +926,11 @@ export function setupContextMenu() {
     let minDist = Infinity;
 
     filtered.forEach(b => {
+      const bLat = parseFloat(b.lat.value);
+      const bLng = parseFloat(b.lng.value);
       const dist = Math.sqrt(
-        Math.pow(b.lat - contextMenuLatLng.lat, 2) +
-        Math.pow(b.lng - contextMenuLatLng.lng, 2)
+        Math.pow(bLat - contextMenuLatLng.lat, 2) +
+        Math.pow(bLng - contextMenuLatLng.lng, 2)
       );
       if (dist < minDist) {
         minDist = dist;

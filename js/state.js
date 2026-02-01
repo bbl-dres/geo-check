@@ -163,7 +163,7 @@ export function getFilteredBuildings() {
 
   // Kanton filter
   if (state.filterKanton.length > 0) {
-    filtered = filtered.filter(b => state.filterKanton.includes(b.kanton));
+    filtered = filtered.filter(b => state.filterKanton.includes(b.kanton.value));
   }
 
   // Confidence filter
@@ -206,8 +206,9 @@ export function getFilteredBuildings() {
     filtered = filtered.filter(b =>
       (b.name?.toLowerCase() || '').includes(q) ||
       (b.id?.toLowerCase() || '').includes(q) ||
-      (b.address?.toLowerCase() || '').includes(q) ||
-      (b.kanton?.toLowerCase() || '').includes(q)
+      (b.strasse?.value?.toLowerCase() || '').includes(q) ||
+      (b.ort?.value?.toLowerCase() || '').includes(q) ||
+      (b.kanton?.value?.toLowerCase() || '').includes(q)
     );
   }
 
@@ -330,13 +331,28 @@ export function getTagLabel(tag) {
 
 export function getDataLabel(key) {
   const labels = {
-    egid: 'EGID',
-    address: 'Adresse',
+    // Address components
+    country: 'Land',
+    kanton: 'Kanton',
+    gemeinde: 'Gemeinde',
     plz: 'PLZ',
     ort: 'Ort',
-    coords: 'Koordinaten',
-    buildingClass: 'Gebäudeklasse',
-    area: 'Fläche'
+    strasse: 'Strasse',
+    hausnummer: 'Hausnr.',
+    zusatz: 'Zusatz',
+    // Identifiers
+    egid: 'EGID',
+    egrid: 'E-GRID',
+    // Area (abbreviated to avoid line breaks)
+    parcelArea: 'Grundstückfl.',
+    footprintArea: 'Gebäudefl.',
+    // Building classification
+    gkat: 'Gebäudekat.',
+    gklas: 'Gebäudekl.',
+    gbaup: 'Bauperiode',
+    // Coordinates
+    lat: 'Breitengrad',
+    lng: 'Längengrad'
   };
   return labels[key] || key;
 }

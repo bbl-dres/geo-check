@@ -78,7 +78,7 @@ function getSearchFilteredBuildings() {
       const searchFields = [
         b.id,
         b.name,
-        b.kanton,
+        b.kanton?.value,
         getStatusLabel(b.kanbanStatus),
         b.assignee || ''
       ].map(f => (f || '').toLowerCase());
@@ -133,8 +133,8 @@ function getSortedBuildings(buildings) {
         valB = (b.name || '').toLowerCase();
         break;
       case 'kanton':
-        valA = (a.kanton || '').toLowerCase();
-        valB = (b.kanton || '').toLowerCase();
+        valA = (a.kanton?.value || '').toLowerCase();
+        valB = (b.kanton?.value || '').toLowerCase();
         break;
       case 'portfolio':
         valA = (a.portfolio || '').toLowerCase();
@@ -408,7 +408,7 @@ export function renderTableView() {
             </div>
           </td>
           <td data-col="name">${building.name}</td>
-          <td data-col="kanton">${building.kanton}</td>
+          <td data-col="kanton">${building.kanton.value}</td>
           <td data-col="portfolio">${building.portfolio || '<span class="text-muted">—</span>'}</td>
           <td data-col="status">
             <span class="status-badge status-${building.kanbanStatus || 'backlog'}">${statusLabel}</span>
@@ -524,7 +524,7 @@ function exportCSV(buildings) {
   const rows = buildings.map(b => [
     b.id,
     `"${(b.name || '').replace(/"/g, '""')}"`,
-    b.kanton,
+    b.kanton?.value || '',
     getStatusLabel(b.kanbanStatus),
     b.confidence.total,
     b.priority || 'medium',
@@ -549,7 +549,7 @@ function exportGeoJSON(buildings) {
     properties: {
       id: b.id,
       name: b.name,
-      kanton: b.kanton,
+      kanton: b.kanton?.value || '',
       status: b.kanbanStatus,
       confidence: b.confidence.total,
       priority: b.priority,
@@ -557,7 +557,7 @@ function exportGeoJSON(buildings) {
     },
     geometry: {
       type: 'Point',
-      coordinates: [b.lng, b.lat] // GeoJSON uses [lon, lat]
+      coordinates: [parseFloat(b.lng.value), parseFloat(b.lat.value)] // GeoJSON uses [lon, lat]
     }
   }));
 

@@ -66,7 +66,7 @@ export function renderKanbanBoard() {
           </div>
           <div class="kanban-card-title">${building.name}</div>
           <div class="kanban-card-meta">
-            <span class="kanban-card-location">${building.kanton}</span>
+            <span class="kanban-card-location">${building.kanton.value}</span>
             <span class="kanban-card-confidence ${confidenceClass}">${building.confidence.total}%</span>
           </div>
           <div class="kanban-card-footer">

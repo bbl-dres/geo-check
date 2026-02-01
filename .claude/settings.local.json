@@ -24,7 +24,9 @@
       "WebFetch(domain:www-a.housing-stat.ch)",
       "WebFetch(domain:data.bs.ch)",
       "WebFetch(domain:www.bfs.admin.ch)",
-      "WebFetch(domain:www.web.statistik.zh.ch)"
+      "WebFetch(domain:www.web.statistik.zh.ch)",
+      "Bash(node transform.js:*)",
+      "Bash(del transform.js)"
     ]
   }
 }

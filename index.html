@@ -38,7 +38,7 @@
       <button class="nav-tab active" data-tab="karte">Karte</button>
       <button class="nav-tab" data-tab="aufgaben">Aufgaben</button>
       <button class="nav-tab" data-tab="statistik">Statistik</button>
-      <button class="nav-tab" data-tab="settings">Einstellungen & Export</button>
+      <button class="nav-tab" data-tab="settings">Einstellungen & Workflows</button>
     </nav>
 
     <div class="header-actions">
@@ -562,7 +562,7 @@
       </div>
     </div>
 
-    <!-- Einstellungen & Export Tab -->
+    <!-- Einstellungen & Workflows Tab -->
     <div class="tab-content" id="tab-settings">
       <div class="settings-content">
         <!-- User Management Section -->
@@ -579,7 +579,7 @@
               <tr>
                 <th>Benutzer</th>
                 <th>Rolle</th>
-                <th>Status</th>
+                <th>Letzter Login</th>
                 <th>Aktionen</th>
               </tr>
             </thead>
@@ -589,28 +589,75 @@
           </table>
         </div>
 
-        <!-- Export Section -->
+        <!-- Workflows Section -->
         <div class="settings-section">
-          <h2 class="settings-section-title section-title-icon"><i data-lucide="download" class="icon-lg"></i> Export</h2>
-          <div class="export-list">
-            <button class="export-row">
-              <i data-lucide="download" class="icon-sm"></i>
-              <span class="export-name">Prüfplan</span>
-              <span class="export-date">Geändert: 28.01.2026, 14:32</span>
-              <span class="export-format">PDF</span>
-            </button>
-            <button class="export-row">
-              <i data-lucide="download" class="icon-sm"></i>
-              <span class="export-name">Fehlerbericht</span>
-              <span class="export-date">Geändert: 27.01.2026, 09:15</span>
-              <span class="export-format">XLSX</span>
-            </button>
-            <button class="export-row">
-              <i data-lucide="download" class="icon-sm"></i>
-              <span class="export-name">Ereignisse</span>
-              <span class="export-date">Geändert: 26.01.2026, 16:48</span>
-              <span class="export-format">CSV</span>
-            </button>
+          <h2 class="settings-section-title section-title-icon"><i data-lucide="workflow" class="icon-lg"></i> Workflows</h2>
+          <p class="section-description">Automatisierte Prozesse zur Datenverarbeitung, -prüfung und Export.</p>
+          <div class="workflow-list">
+            <div class="workflow-item">
+              <div class="workflow-info">
+                <div class="workflow-icon"><i data-lucide="play-circle" class="icon-md"></i></div>
+                <div class="workflow-details">
+                  <span class="workflow-name">Alle Prüfungen ausführen</span>
+                  <span class="workflow-description">Führt alle aktiven Prüfregeln auf dem gesamten Gebäudebestand aus.</span>
+                </div>
+              </div>
+              <div class="workflow-meta">
+                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-checks-time">28.01.2026, 14:32</span></span>
+                <button class="btn btn-ghost btn-sm workflow-run-btn" id="run-all-checks">
+                  <i data-lucide="play" class="icon-sm"></i>
+                  Ausführen
+                </button>
+              </div>
+            </div>
+            <div class="workflow-item">
+              <div class="workflow-info">
+                <div class="workflow-icon"><i data-lucide="database" class="icon-md"></i></div>
+                <div class="workflow-details">
+                  <span class="workflow-name">GWR-Daten anreichern</span>
+                  <span class="workflow-description">Ergänzt fehlende Daten aus dem Gebäude- und Wohnungsregister (GWR).</span>
+                </div>
+              </div>
+              <div class="workflow-meta">
+                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-gwr-time">26.01.2026, 09:15</span></span>
+                <button class="btn btn-ghost btn-sm workflow-run-btn" id="run-gwr-enrich">
+                  <i data-lucide="play" class="icon-sm"></i>
+                  Ausführen
+                </button>
+              </div>
+            </div>
+            <div class="workflow-item">
+              <div class="workflow-info">
+                <div class="workflow-icon"><i data-lucide="file-spreadsheet" class="icon-md"></i></div>
+                <div class="workflow-details">
+                  <span class="workflow-name">Fehlerbericht exportieren</span>
+                  <span class="workflow-description">Exportiert alle aktuellen Validierungsfehler als XLSX-Datei.</span>
+                </div>
+              </div>
+              <div class="workflow-meta">
+                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-errors-time">27.01.2026, 09:15</span></span>
+                <button class="btn btn-ghost btn-sm workflow-run-btn" id="export-errors">
+                  <i data-lucide="download" class="icon-sm"></i>
+                  Exportieren
+                </button>
+              </div>
+            </div>
+            <div class="workflow-item">
+              <div class="workflow-info">
+                <div class="workflow-icon"><i data-lucide="history" class="icon-md"></i></div>
+                <div class="workflow-details">
+                  <span class="workflow-name">Ereignisse exportieren</span>
+                  <span class="workflow-description">Exportiert das Aktivitätsprotokoll als CSV-Datei.</span>
+                </div>
+              </div>
+              <div class="workflow-meta">
+                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-events-time">26.01.2026, 16:48</span></span>
+                <button class="btn btn-ghost btn-sm workflow-run-btn" id="export-events">
+                  <i data-lucide="download" class="icon-sm"></i>
+                  Exportieren
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -618,12 +665,12 @@
         <div class="settings-section">
           <div class="section-header-with-action">
             <h2 class="settings-section-title section-title-icon"><i data-lucide="shield-check" class="icon-lg"></i> Prüfregeln</h2>
-            <button class="btn btn-primary btn-sm" id="run-all-checks">
-              <i data-lucide="play" class="icon-sm"></i>
-              Prüfung starten
+            <button class="btn btn-ghost btn-sm" id="download-pruefplan">
+              <i data-lucide="download" class="icon-sm"></i>
+              Prüfplan (PDF)
             </button>
           </div>
-          <p class="section-description">Diese Regeln werden automatisch auf alle Gebäude angewendet. <span class="section-meta-inline">Letzte Prüfung: <span id="last-check-time">—</span></span></p>
+          <p class="section-description">Diese Regeln werden automatisch auf alle Gebäude angewendet.</p>
           <div class="rules-container" id="rules-container">
             <div class="rules-loading">Regeln werden geladen...</div>
           </div>
@@ -647,9 +694,66 @@
             <p class="detail-subtitle" id="detail-sap-id">SAP ID</p>
           </div>
 
+          <div class="detail-section accordion open" data-accordion="images">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Anhang und Bilder</span>
+              <span class="accordion-count" id="images-count"></span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <div class="image-widget" id="image-widget">
+                <!-- Empty state (shown when no images) -->
+                <div class="image-empty-state" id="image-empty-state">
+                  <div class="image-empty-icon"><i data-lucide="image" class="icon-lg"></i></div>
+                  <p class="image-empty-text">Keine Bilder vorhanden</p>
+                  <label class="btn btn-primary btn-sm image-upload-btn">
+                    <i data-lucide="plus" class="icon-sm"></i>
+                    Datei hochladen
+                    <input type="file" id="image-upload-input" multiple hidden>
+                  </label>
+                </div>
+                <!-- Carousel (shown when images exist) -->
+                <div class="image-carousel" id="image-carousel" style="display: none;">
+                  <div class="carousel-main">
+                    <img class="carousel-image" id="carousel-image" src="" alt="Gebäudebild">
+                    <!-- Top-left: Filename overlay -->
+                    <div class="carousel-filename-overlay" id="carousel-filename"></div>
+                    <!-- Top-right: Actions (Add, Download, Fullscreen, Delete) -->
+                    <div class="carousel-actions">
+                      <label class="carousel-action-btn add" title="Datei hinzufügen">
+                        <i data-lucide="plus" class="icon-sm"></i>
+                        <input type="file" id="carousel-add-input" multiple hidden>
+                      </label>
+                      <button class="carousel-action-btn" id="carousel-download" type="button" title="Herunterladen">
+                        <i data-lucide="download" class="icon-sm"></i>
+                      </button>
+                      <button class="carousel-action-btn" id="carousel-fullscreen" type="button" title="Vollbild">
+                        <i data-lucide="maximize-2" class="icon-sm"></i>
+                      </button>
+                      <button class="carousel-action-btn delete" id="carousel-delete" type="button" title="Löschen">
+                        <i data-lucide="trash-2" class="icon-sm"></i>
+                      </button>
+                    </div>
+                    <!-- Navigation arrows -->
+                    <button class="carousel-nav prev" id="carousel-prev" type="button">
+                      <i data-lucide="chevron-left" class="icon-sm"></i>
+                    </button>
+                    <button class="carousel-nav next" id="carousel-next" type="button">
+                      <i data-lucide="chevron-right" class="icon-sm"></i>
+                    </button>
+                    <!-- Center-bottom: Dot carousel -->
+                    <div class="carousel-dots" id="carousel-dots">
+                      <!-- Dots populated by JS -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="detail-section accordion open" data-accordion="konfidenz">
             <button class="accordion-header" type="button">
-              <span class="accordion-title">Konfidenz</span>
+              <span class="accordion-title">Konfidenz <span class="accordion-note">(eventuell löschen)</span></span>
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">
@@ -689,15 +793,28 @@
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">
-              <div id="error-cards">
-                <!-- Populated by JS -->
+              <table class="error-table" id="error-table">
+                <thead>
+                  <tr>
+                    <th class="col-check-id">ID</th>
+                    <th class="col-desc">Beschreibung</th>
+                    <th class="col-level">Level</th>
+                  </tr>
+                </thead>
+                <tbody id="error-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+              <div class="error-empty-state" id="error-empty-state" style="display: none;">
+                <i data-lucide="check-circle" class="icon-lg"></i>
+                <span>Keine Fehler gefunden</span>
               </div>
             </div>
           </div>
 
           <div class="detail-section accordion open" data-accordion="status">
             <button class="accordion-header" type="button">
-              <span class="accordion-title">Status & Zugewiesen</span>
+              <span class="accordion-title">Zuständigkeiten</span>
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">
@@ -732,7 +849,7 @@
 
           <div class="detail-section accordion open" data-accordion="datenvergleich">
             <button class="accordion-header" type="button">
-              <span class="accordion-title">Datenvergleich</span>
+              <span class="accordion-title">Korrektur</span>
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">
@@ -740,8 +857,9 @@
                 <thead>
                   <tr>
                     <th class="col-attr">Attribut</th>
-                    <th class="col-sap">SAP RE-FX</th>
+                    <th class="col-sap">SAP</th>
                     <th class="col-gwr">GWR</th>
+                    <th class="col-value">Korrektur</th>
                     <th class="col-match"></th>
                   </tr>
                 </thead>
@@ -750,6 +868,9 @@
                 </tbody>
               </table>
               <div class="data-actions">
+                <button class="btn btn-ghost btn-sm" id="btn-toggle-fields" type="button">
+                  <i data-lucide="chevron-down" class="icon-sm"></i> Mehr Attribute
+                </button>
                 <button class="data-correct-btn" id="btn-correct" type="button">Daten bearbeiten</button>
                 <div class="edit-actions" id="edit-actions" style="display: none;">
                   <button class="edit-cancel-btn" id="btn-edit-cancel" type="button">Abbrechen</button>

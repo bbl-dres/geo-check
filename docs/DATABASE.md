@@ -1,134 +1,139 @@
 # DATABASE.md - Geo-Check Data Model
 
-This document describes the conceptual data model for the Geo-Check application, including entity definitions, relationships, and code lists from the Swiss Federal Register of Buildings and Dwellings (GWR).
+This document defines the conceptual data model for the Geo-Check application. It serves as the authoritative reference for data structures, field definitions, and code lists.
 
 ---
 
-## 1. Conceptual Model Overview
+## 1. Architecture Overview
 
-Geo-Check manages Swiss federal building data by comparing records from three authoritative sources:
+Geo-Check manages Swiss federal building data by comparing records from multiple authoritative sources and maintaining a canonical verified value.
 
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                           BUILDING RECORD                               │
-├─────────────────────────────────────────────────────────────────────────┤
-│  ┌───────────┐    ┌───────────┐    ┌───────────┐                       │
-│  │  GEOREF   │    │  SAP RE-FX│    │    GWR    │                       │
-│  │ (Federal  │    │ (Property │    │ (Building │                       │
-│  │  Geodata) │    │  Mgmt)    │    │  Register)│                       │
-│  └─────┬─────┘    └─────┬─────┘    └─────┬─────┘                       │
-│        │                │                │                              │
-│        └────────────────┼────────────────┘                              │
-│                         ▼                                               │
-│              ┌─────────────────────┐                                    │
-│              │   DATA COMPARISON   │                                    │
-│              │   & VALIDATION      │                                    │
-│              └──────────┬──────────┘                                    │
-│                         ▼                                               │
-│              ┌─────────────────────┐                                    │
-│              │  CONFIDENCE SCORE   │                                    │
-│              │  (0-100%)           │                                    │
-│              └─────────────────────┘                                    │
-└─────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph sources["Reference Sources (Read-Only)"]
+        SAP["SAP RE-FX<br/><small>Property Management</small>"]
+        GWR["GWR<br/><small>Building Register</small>"]
+        CADASTRE["Cadastre<br/><small>Parcel Data</small>"]
+    end
+
+    subgraph processing["Geo-Check Processing"]
+        COMPARE["Data Comparison<br/>& Validation"]
+        CONFIDENCE["Confidence Score<br/><small>0-100%</small>"]
+        EDIT["Manual Verification<br/>& Correction"]
+    end
+
+    subgraph output["Canonical Data"]
+        VALUE["Verified Value<br/><small>Editable</small>"]
+    end
+
+    SAP --> COMPARE
+    GWR --> COMPARE
+    CADASTRE --> COMPARE
+    COMPARE --> CONFIDENCE
+    CONFIDENCE --> EDIT
+    EDIT --> VALUE
 ```
 
 ### Data Sources
 
-| Source | Full Name | Purpose |
-|--------|-----------|---------|
-| **GEOREF** | Federal Geodata Reference | Official coordinates and geographic boundaries |
-| **SAP RE-FX** | SAP Real Estate Management | Federal property management system |
-| **GWR** | Gebäude- und Wohnungsregister | Swiss Federal Register of Buildings and Dwellings |
+| Source | Purpose | Editable |
+|--------|---------|----------|
+| **SAP RE-FX** | Federal property management system | No (reference) |
+| **GWR** | Swiss Federal Register of Buildings and Dwellings | No (reference) |
+| **Cadastre** | Official parcel and building geometry data | No (reference) |
+| **Value** | Canonical verified value maintained by BBL | Yes |
+
+### Three-Value Pattern
+
+Each comparable field follows this structure:
+
+```json
+{
+  "fieldName": {
+    "sap": "...",      // SAP RE-FX value (read-only reference)
+    "gwr": "...",      // GWR value (read-only reference)
+    "value": "...",    // Canonical verified value (editable)
+    "match": false     // Whether all three values match
+  }
+}
+```
 
 ---
 
-## 2. Entity Definitions
-
-### 2.1 Building (Gebäude)
+## 2. Building Entity
 
 The primary entity representing a federal building record.
 
-#### Current Structure
-
-```json
-{
-  "id": "1080/2020/AA",
-  "name": "Romanshorn, Friedrichshafnerstrasse",
-  "lat": 47.5656,
-  "lng": 9.3744,
-  "kanton": "TG",
-  "portfolio": "Büro",
-  "priority": "medium",
-  "confidence": { ... },
-  "assignee": "M. Keller",
-  "kanbanStatus": "inprogress",
-  "data": { ... },
-  "lastUpdate": "2026-01-27T14:30:00Z",
-  "lastUpdateBy": "M. Keller",
-  "dueDate": "2026-02-15"
-}
-```
-
-#### Proposed Structure (with Address Components)
-
-```json
-{
-  "id": "1080/2020/AA",
-  "name": "Romanshorn, Friedrichshafnerstrasse",
-  "lat": 47.5656,
-  "lng": 9.3744,
-  "kanton": "TG",
-  "portfolio": "Büro",
-  "priority": "medium",
-  "confidence": { ... },
-  "assignee": "M. Keller",
-  "kanbanStatus": "inprogress",
-  "data": {
-    "country": { "sap": "CH", "gwr": "CH", "match": true },
-    "kanton": { "sap": "TG", "gwr": "TG", "match": true },
-    "gemeinde": { "sap": "Romanshorn", "gwr": "Romanshorn", "match": true },
-    "plz": { "sap": "8590", "gwr": "8590", "match": true },
-    "ort": { "sap": "Romanshorn", "gwr": "Romanshorn", "match": true },
-    "strasse": { "sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "match": false },
-    "hausnummer": { "sap": "12", "gwr": "12", "match": true },
-    "zusatz": { "sap": "", "gwr": "", "match": true },
-    "gkat": { "sap": "1060", "gwr": "1060", "match": true },
-    "gklas": { "sap": "1220", "gwr": "1220", "match": true },
-    "coords": { "sap": "47.5656, 9.3744", "gwr": "47.5656, 9.3744", "match": true },
-    "egid": { "sap": "2340212", "gwr": "2340212", "match": true },
-    "year": { "sap": "1965", "gwr": "1967", "match": false }
-  },
-  "lastUpdate": "2026-01-27T14:30:00Z",
-  "lastUpdateBy": "M. Keller",
-  "dueDate": "2026-02-15"
-}
-```
-
-### 2.2 Building Attributes
+### 2.1 Top-Level Attributes
 
 | Attribute | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `id` | string | Yes | SAP property ID (format: `XXXX/YYYY/ZZ`) |
+| `egid` | string | No | GWR building identifier (EGID) |
+| `egrid` | string | No | Land register parcel identifier (E-GRID) |
 | `name` | string | Yes | Display name (City, Street) |
-| `lat` | number | Yes | WGS84 latitude |
-| `lng` | number | Yes | WGS84 longitude |
-| `kanton` | string | Yes | 2-letter canton code |
-| `portfolio` | string | Yes | Building usage category (internal) |
-| `priority` | string | Yes | Task priority: `low`, `medium`, `high` |
+| `lat` | number | Yes | WGS84 latitude (canonical) |
+| `lng` | number | Yes | WGS84 longitude (canonical) |
+| `parcelArea` | number | No | Parcel area in m² (from cadastre) |
+| `footprintArea` | number | No | Building footprint area in m² (from cadastre) |
 | `confidence` | object | Yes | Confidence scores per source |
-| `assignee` | string | No | Assigned team member name |
+| `assignee` | string | No | Assigned team member |
 | `kanbanStatus` | string | Yes | Workflow status |
-| `data` | object | Yes | Source comparison data |
+| `priority` | string | Yes | Task priority |
+| `dueDate` | string | No | ISO 8601 date |
 | `lastUpdate` | string | Yes | ISO 8601 timestamp |
 | `lastUpdateBy` | string | Yes | Last editor name |
-| `dueDate` | string | No | ISO 8601 date |
+| `data` | object | Yes | Compared field values |
+
+### 2.2 Complete Structure
+
+```json
+{
+  "id": "1080/2020/AA",
+  "egid": "2340212",
+  "egrid": "CH943571236489",
+  "name": "Romanshorn, Friedrichshafnerstrasse 12",
+
+  "lat": 47.5656,
+  "lng": 9.3744,
+  "parcelArea": 1250,
+  "footprintArea": 480,
+
+  "confidence": {
+    "total": 67,
+    "sap": 100,
+    "gwr": 100
+  },
+
+  "assignee": "M. Keller",
+  "kanbanStatus": "inprogress",
+  "priority": "medium",
+  "dueDate": "2026-02-15",
+  "lastUpdate": "2026-01-27T14:30:00Z",
+  "lastUpdateBy": "M. Keller",
+
+  "data": {
+    "country":    { "sap": "CH", "gwr": "CH", "value": "CH", "match": true },
+    "kanton":     { "sap": "TG", "gwr": "TG", "value": "TG", "match": true },
+    "gemeinde":   { "sap": "Romanshorn", "gwr": "Romanshorn", "value": "Romanshorn", "match": true },
+    "plz":        { "sap": "8590", "gwr": "8590", "value": "8590", "match": true },
+    "ort":        { "sap": "Romanshorn", "gwr": "Romanshorn", "value": "Romanshorn", "match": true },
+    "strasse":    { "sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "value": "Friedrichshafnerstrasse", "match": false },
+    "hausnummer": { "sap": "12", "gwr": "12", "value": "12", "match": true },
+    "zusatz":     { "sap": "", "gwr": "", "value": "", "match": true },
+    "gkat":       { "sap": "1060", "gwr": "1060", "value": "1060", "match": true },
+    "gklas":      { "sap": "1220", "gwr": "1220", "value": "1220", "match": true },
+    "gbaup":      { "sap": "8014", "gwr": "8014", "value": "8014", "match": true },
+    "coords":     { "sap": "47.5650, 9.3740", "gwr": "47.5656, 9.3744", "value": "47.5656, 9.3744", "match": false }
+  }
+}
+```
 
 ### 2.3 Confidence Object
 
 ```json
 {
   "total": 67,
-  "georef": 67,
   "sap": 100,
   "gwr": 100
 }
@@ -137,55 +142,60 @@ The primary entity representing a federal building record.
 | Field | Range | Description |
 |-------|-------|-------------|
 | `total` | 0-100 | Weighted overall confidence |
-| `georef` | 0-100 | GEOREF data completeness |
-| `sap` | 0-100 | SAP RE-FX data completeness |
-| `gwr` | 0-100 | GWR data completeness |
+| `sap` | 0-100 | SAP RE-FX data completeness/match rate |
+| `gwr` | 0-100 | GWR data completeness/match rate |
 
 **Confidence Thresholds:**
-- Critical: < 50% (red)
-- Warning: 50-80% (orange)
-- OK: >= 80% (green)
+
+| Level | Range | Color |
+|-------|-------|-------|
+| Critical | < 50% | Red |
+| Warning | 50-80% | Orange |
+| OK | >= 80% | Green |
 
 ---
 
 ## 3. Address Components
 
-### 3.1 Overview
+### 3.1 Hierarchy
 
 Swiss addresses follow a hierarchical structure. For federal buildings, we track both the official municipality (Gemeinde) and the postal locality (Ort), as these can differ.
 
-```
-┌─────────────────────────────────────────┐
-│ Country (Land)           CH             │
-├─────────────────────────────────────────┤
-│ Canton (Kanton)          TG             │
-├─────────────────────────────────────────┤
-│ Municipality (Gemeinde)  Romanshorn     │
-├─────────────────────────────────────────┤
-│ Postal Code (PLZ)        8590           │
-├─────────────────────────────────────────┤
-│ Locality (Ort)           Romanshorn     │
-├─────────────────────────────────────────┤
-│ Street (Strasse)         Hauptstrasse   │
-├─────────────────────────────────────────┤
-│ House Number (Hausnummer) 12            │
-├─────────────────────────────────────────┤
-│ Supplement (Zusatz)      Eingang B      │
-└─────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph address["Swiss Address Hierarchy"]
+        direction TB
+        COUNTRY["Country (Land) · CH"]
+        KANTON["Canton (Kanton) · TG"]
+        GEMEINDE["Municipality (Gemeinde) · Romanshorn"]
+        PLZ["Postal Code (PLZ) · 8590"]
+        ORT["Locality (Ort) · Romanshorn"]
+        STRASSE["Street (Strasse) · Hauptstrasse"]
+        HAUSNR["House Number (Hausnummer) · 12"]
+        ZUSATZ["Supplement (Zusatz) · Eingang B"]
+    end
+
+    COUNTRY --> KANTON --> GEMEINDE --> PLZ --> ORT --> STRASSE --> HAUSNR --> ZUSATZ
 ```
 
-### 3.2 Address Fields
+### 3.2 Field Definitions
 
-| Field | German | Example | Description |
-|-------|--------|---------|-------------|
-| `country` | Land | "CH" | ISO 3166-1 alpha-2 country code. Required because some federal buildings near borders may geocode outside Switzerland. |
-| `kanton` | Kanton | "TG" | 2-letter canton abbreviation |
-| `gemeinde` | Gemeinde | "Romanshorn" | Official municipality name (BFS Gemeindenummer) |
-| `plz` | PLZ | "8590" | 4-digit Swiss postal code |
-| `ort` | Ort | "Romanshorn" | Postal locality name (can differ from Gemeinde) |
-| `strasse` | Strasse | "Hauptstrasse" | Street name without house number |
-| `hausnummer` | Hausnummer | "12" | House/building number (may include letters: "12a") |
-| `zusatz` | Zusatz | "Eingang B" | Address supplement (entrance, floor, c/o, etc.) |
+Fields are categorized by importance for daily verification tasks:
+
+| Field | German | Example | Priority | Description |
+|-------|--------|---------|----------|-------------|
+| `plz` | PLZ | "8590" | **Primary** | 4-digit Swiss postal code |
+| `ort` | Ort | "Romanshorn" | **Primary** | Postal locality name (can differ from Gemeinde) |
+| `strasse` | Strasse | "Hauptstrasse" | **Primary** | Street name without house number |
+| `hausnummer` | Hausnr. | "12" | **Primary** | House/building number (may include letters: "12a") |
+| `country` | Land | "CH" | Secondary | ISO 3166-1 alpha-2 country code. Required for border cases. |
+| `kanton` | Kanton | "TG" | Secondary | 2-letter canton abbreviation |
+| `gemeinde` | Gemeinde | "Romanshorn" | Secondary | Official municipality name (BFS Gemeindenummer) |
+| `zusatz` | Zusatz | "Eingang B" | Secondary | Address supplement (entrance, floor, c/o, etc.) |
+
+**Priority Levels:**
+- **Primary**: Essential for address verification, always visible
+- **Secondary**: Supplementary context, hidden by default (expandable)
 
 ### 3.3 Gemeinde vs. Ort
 
@@ -199,23 +209,39 @@ In Switzerland, the official municipality (Gemeinde) and postal locality (Ort) c
 
 ---
 
-## 4. Building Usage (Nutzung)
+## 4. Parcel & Building Geometry
 
-### 4.1 Internal Portfolio Categories
+### 4.1 Identifiers
 
-The application uses simplified portfolio categories for filtering:
+| Field | Description | Example | Priority |
+|-------|-------------|---------|----------|
+| `egid` | Eidgenössischer Gebäudeidentifikator (GWR building ID) | "2340212" | **Primary** |
+| `egrid` | Eidgenössischer Grundstücksidentifikator (E-GRID parcel ID) | "CH943571236489" | Secondary |
+| `lat` | WGS84 latitude | "47.5656" | **Primary** |
+| `lng` | WGS84 longitude | "9.3744" | **Primary** |
 
-| Portfolio | German | Description |
-|-----------|--------|-------------|
-| `Büro` | Büro | Office buildings |
-| `Wohnen` | Wohnen | Residential buildings |
-| `Öffentlich` | Öffentlich | Public/government buildings |
-| `Industrie` | Industrie | Industrial buildings |
-| `Bildung` | Bildung | Educational buildings |
+**EGRID Format:** `CH` + 12 digits (unique across Switzerland)
 
-### 4.2 GWR Building Category (GKAT)
+### 4.2 Area Fields
 
-High-level building classification in GWR:
+| Field | Unit | Source | Description |
+|-------|------|--------|-------------|
+| `parcelArea` | m² | Cadastre | Total parcel (Grundstück) area |
+| `footprintArea` | m² | Cadastre | Building footprint (Gebäudegrundfläche) |
+
+These areas help validate address correctness:
+- Large discrepancy between SAP/GWR building size and footprint suggests wrong building
+- Parcel area helps identify if coordinates fall within expected boundaries
+
+---
+
+## 5. Building Classification
+
+All building classification fields are **Secondary** priority (hidden by default).
+
+### 5.1 Category (GKAT)
+
+High-level building classification:
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -228,7 +254,7 @@ High-level building classification in GWR:
 | 1060 | Ohne Wohnnutzung | Gebäude ohne Wohnnutzung |
 | 1080 | Sonderbau | Sonderbau |
 
-### 4.3 GWR Building Class (GKLAS)
+### 5.2 Class (GKLAS)
 
 Detailed building classification (EUROSTAT-based):
 
@@ -261,30 +287,20 @@ Detailed building classification (EUROSTAT-based):
 | 1277 | Pflanzenbau | Gebäude für den Pflanzenbau |
 | 1278 | Andere landw. Gebäude | Andere landwirtschaftliche Gebäude |
 
-### 4.4 Portfolio to GKLAS Mapping
-
-| Portfolio | Typical GKLAS Codes |
-|-----------|---------------------|
-| Büro | 1220 |
-| Wohnen | 1110, 1121, 1122, 1130 |
-| Öffentlich | 1261, 1262, 1263, 1264, 1272 |
-| Industrie | 1251, 1252, 1241, 1242 |
-| Bildung | 1263 |
-
 ---
 
-## 5. Workflow & Task Management
+## 6. Workflow & Status
 
-### 5.1 Kanban Status
+### 6.1 Kanban Status
 
 | Status | German | Description |
 |--------|--------|-------------|
 | `backlog` | Backlog | Not yet started |
 | `inprogress` | In Bearbeitung | Currently being worked on |
-| `clarification` | Abklärung | Requires clarification or external input |
+| `clarification` | Abklärung | Requires external input |
 | `done` | Erledigt | Completed |
 
-### 5.2 Priority Levels
+### 6.2 Priority
 
 | Priority | German | Criteria |
 |----------|--------|----------|
@@ -294,17 +310,16 @@ Detailed building classification (EUROSTAT-based):
 
 ---
 
-## 6. Related Entities
+## 7. Related Entities
 
-### 6.1 User (Benutzer)
+### 7.1 User
 
 ```json
 {
   "id": 1,
   "name": "M. Keller",
   "initials": "MK",
-  "role": "Admin",
-  "openTasks": 3
+  "role": "Admin"
 }
 ```
 
@@ -314,11 +329,11 @@ Detailed building classification (EUROSTAT-based):
 | `Bearbeiter` | Can edit buildings, manage tasks |
 | `Leser` | Read-only access |
 
-### 6.2 Error (Fehler)
+### 7.2 Error
 
 ```json
 {
-  "type": "georef",
+  "type": "coords",
   "title": "Koordinatenabweichung",
   "description": "SAP - GWR: 47m Differenz",
   "severity": "warning"
@@ -331,28 +346,28 @@ Detailed building classification (EUROSTAT-based):
 | `warning` | Notable discrepancy |
 | `minor` | Small difference |
 
-### 6.3 Comment (Kommentar)
+### 7.3 Comment
 
 ```json
 {
   "author": "M. Keller",
-  "date": "12.01.2026",
+  "date": "2026-01-12T14:32:00Z",
   "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
   "system": false
 }
 ```
 
-### 6.4 Event (Ereignis)
+### 7.4 Event
 
 ```json
 {
   "id": 1,
   "buildingId": "1080/2020/AA",
-  "type": "comment",
-  "action": "Kommentar hinzugefügt",
+  "type": "status_change",
+  "action": "Status geändert",
   "user": "M. Keller",
-  "timestamp": "2026-01-12T14:32:00",
-  "details": "..."
+  "timestamp": "2026-01-12T14:32:00Z",
+  "details": "backlog → inprogress"
 }
 ```
 
@@ -362,12 +377,13 @@ Detailed building classification (EUROSTAT-based):
 | `assignment` | Assignee changed |
 | `detection` | Error detected |
 | `status_change` | Status updated |
+| `value_change` | Canonical value edited |
 
 ---
 
-## 7. Code Lists (GWR)
+## 8. Code Lists
 
-### 7.1 Building Status (GSTAT)
+### 8.1 Building Status (GSTAT)
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -379,7 +395,7 @@ Detailed building classification (EUROSTAT-based):
 | 1007 | abgebrochen | Gebäude abgebrochen |
 | 1008 | nicht realisiert | Gebäude nicht realisiert |
 
-### 7.2 Construction Period (GBAUP)
+### 8.2 Construction Period (GBAUP)
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -397,7 +413,7 @@ Detailed building classification (EUROSTAT-based):
 | 8022 | 2011-2015 | Periode von 2011 bis 2015 |
 | 8023 | Nach 2015 | Periode nach 2015 |
 
-### 7.3 Energy Source for Heating (GENH1)
+### 8.3 Energy Source for Heating (GENH1)
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -422,7 +438,7 @@ Detailed building classification (EUROSTAT-based):
 | 7598 | Unbestimmt | Unbestimmt |
 | 7599 | Andere | Andere |
 
-### 7.4 Heat Generator (GWAERZH1)
+### 8.4 Heat Generator (GWAERZH1)
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -447,7 +463,7 @@ Detailed building classification (EUROSTAT-based):
 | 7461 | Wärmetauscher mehr. Geb. | Wärmetauscher (inkl. Fernwärme) für mehrere Gebäude |
 | 7499 | Andere | Andere |
 
-### 7.5 Heating Type (GHEIZ)
+### 8.5 Heating Type (GHEIZ)
 
 | Code | Short | Description |
 |------|-------|-------------|
@@ -459,81 +475,82 @@ Detailed building classification (EUROSTAT-based):
 | 7105 | Fernwärmeversorgung | Öffentliche Fernwärmeversorgung |
 | 7109 | Andere Heizungsart | Andere Heizungsart |
 
----
+### 8.6 Swiss Cantons
 
-## 8. Swiss Canton Codes
-
-| Code | Name | Name (German) |
-|------|------|---------------|
-| AG | Aargau | Aargau |
-| AI | Appenzell Innerrhoden | Appenzell Innerrhoden |
-| AR | Appenzell Ausserrhoden | Appenzell Ausserrhoden |
-| BE | Bern | Bern |
-| BL | Basel-Landschaft | Basel-Landschaft |
-| BS | Basel-Stadt | Basel-Stadt |
-| FR | Fribourg | Freiburg |
-| GE | Geneva | Genf |
-| GL | Glarus | Glarus |
-| GR | Graubünden | Graubünden |
-| JU | Jura | Jura |
-| LU | Lucerne | Luzern |
-| NE | Neuchâtel | Neuenburg |
-| NW | Nidwalden | Nidwalden |
-| OW | Obwalden | Obwalden |
-| SG | St. Gallen | St. Gallen |
-| SH | Schaffhausen | Schaffhausen |
-| SO | Solothurn | Solothurn |
-| SZ | Schwyz | Schwyz |
-| TG | Thurgau | Thurgau |
-| TI | Ticino | Tessin |
-| UR | Uri | Uri |
-| VD | Vaud | Waadt |
-| VS | Valais | Wallis |
-| ZG | Zug | Zug |
-| ZH | Zürich | Zürich |
+| Code | Name (DE) | Name (FR) | Name (IT) |
+|------|-----------|-----------|-----------|
+| AG | Aargau | Argovie | Argovia |
+| AI | Appenzell Innerrhoden | Appenzell Rhodes-Intérieures | Appenzello Interno |
+| AR | Appenzell Ausserrhoden | Appenzell Rhodes-Extérieures | Appenzello Esterno |
+| BE | Bern | Berne | Berna |
+| BL | Basel-Landschaft | Bâle-Campagne | Basilea Campagna |
+| BS | Basel-Stadt | Bâle-Ville | Basilea Città |
+| FR | Freiburg | Fribourg | Friburgo |
+| GE | Genf | Genève | Ginevra |
+| GL | Glarus | Glaris | Glarona |
+| GR | Graubünden | Grisons | Grigioni |
+| JU | Jura | Jura | Giura |
+| LU | Luzern | Lucerne | Lucerna |
+| NE | Neuenburg | Neuchâtel | Neuchâtel |
+| NW | Nidwalden | Nidwald | Nidvaldo |
+| OW | Obwalden | Obwald | Obvaldo |
+| SG | St. Gallen | Saint-Gall | San Gallo |
+| SH | Schaffhausen | Schaffhouse | Sciaffusa |
+| SO | Solothurn | Soleure | Soletta |
+| SZ | Schwyz | Schwyz | Svitto |
+| TG | Thurgau | Thurgovie | Turgovia |
+| TI | Tessin | Tessin | Ticino |
+| UR | Uri | Uri | Uri |
+| VD | Waadt | Vaud | Vaud |
+| VS | Wallis | Valais | Vallese |
+| ZG | Zug | Zoug | Zugo |
+| ZH | Zürich | Zurich | Zurigo |
 
 ---
 
-## 9. Data Comparison Logic
+## 9. Match Logic
 
-### 9.1 Match Determination
+### 9.1 Field Comparison
 
-Each field in `data` contains SAP and GWR values with a `match` boolean:
+The `match` flag is `true` when all three values (SAP, GWR, canonical) are equivalent:
 
-```json
-{
-  "strasse": {
-    "sap": "Hauptstrasse",
-    "gwr": "Hauptstr.",
-    "match": false
-  }
-}
+```javascript
+match = normalize(sap) === normalize(gwr) && normalize(gwr) === normalize(value)
 ```
 
-**Match Rules:**
-- Exact string match (case-insensitive)
-- Coordinate match: within 5m tolerance
-- PLZ match: exact 4-digit match
-- Empty values ("—" or "") never match non-empty values
+**Normalization Rules:**
+- Case-insensitive string comparison
+- Whitespace trimming
+- Street abbreviation expansion (Str. → Strasse)
+- Empty values (`""`, `"—"`, `null`) treated as missing
 
-### 9.2 Confidence Calculation
+### 9.2 Coordinate Matching
+
+Coordinates match if within tolerance:
+
+| Tolerance | Use Case |
+|-----------|----------|
+| 5m | Urban areas |
+| 10m | Rural areas |
+
+### 9.3 Confidence Calculation
 
 ```
-total = (georef_weight × georef_score +
-         sap_weight × sap_score +
-         gwr_weight × gwr_score) / total_weight
+total = Σ(field_weight × field_match) / Σ(field_weight)
 ```
 
-Source weights are configurable in validation rules.
+Fields with missing values in all sources are excluded from calculation.
 
 ---
 
 ## 10. References
 
-- [GWR Merkmalskatalog 4.2](https://www.housing-stat.ch/de/help/42.html) - Official attribute catalog
+- [GWR Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final) - Official attribute catalog
+- [E-GRID Specification](https://www.cadastre.ch/de/manual-av/service/egrid.html) - Parcel identifier format
 - [Swisstopo API](https://api3.geo.admin.ch/) - Swiss geographic services
 - [BFS Gemeinderegister](https://www.bfs.admin.ch/bfs/de/home/grundlagen/agvch.html) - Municipality register
 
 ---
 
+*Document version: 2.0*
 *Last updated: 2026-02-01*
