@@ -83,16 +83,17 @@ erDiagram
         string name "Display name"
         string portfolio "Büro, Wohnen, etc."
         string priority "low, medium, high"
-        object confidence "Scores per source"
-        string assignee FK "User name"
+        jsonb confidence "Scores per source"
+        int assigneeId FK "User reference"
+        string assignee "User name (denorm)"
         string kanbanStatus "Workflow status"
-        string dueDate "ISO date"
+        date dueDate "ISO date"
         boolean inGwr "GWR registered"
         string gwrEgid "GWR building ID"
         float mapLat "Display latitude"
         float mapLng "Display longitude"
-        object data "Compared fields"
-        array images "Attached photos"
+        jsonb comparison_fields "Three-Value Pattern fields"
+        jsonb images "Attached photos"
     }
 
     USER {
@@ -107,26 +108,33 @@ erDiagram
     EVENT {
         int id PK
         string buildingId FK
+        int userId FK "User reference"
+        string user "Actor name (denorm)"
         string type "Event category"
         string action "German label"
-        string user "Actor name"
         datetime timestamp
         string details "Description"
     }
 
     COMMENT {
+        string id PK "cmt-{buildingId}-{seq}"
         string buildingId FK
         string author "User name"
-        string date "dd.mm.yyyy"
+        int authorId FK "User reference"
+        datetime timestamp "ISO 8601"
         string text "Content"
         boolean system "Auto-generated"
     }
 
     ERROR {
+        string id PK "err-{buildingId}-{seq}"
         string buildingId FK
         string checkId "Rule reference"
         string description "Error message"
         string level "error, warning, info"
+        string field "Affected field"
+        datetime detectedAt
+        datetime resolvedAt "null if open"
     }
 
     IMAGE {
@@ -135,7 +143,8 @@ erDiagram
         string url "Image URL"
         string filename "Original name"
         datetime uploadDate
-        string uploadedBy "User name"
+        int uploadedById FK "User reference"
+        string uploadedBy "User name (denorm)"
     }
 
     RULESET {
@@ -173,6 +182,26 @@ erDiagram
 | RuleSet → Rule | 1:N | A rule set contains multiple validation rules |
 | Rule → Error | 1:N | A rule can produce errors on multiple buildings |
 
+### Referential Integrity Pattern
+
+User references use a **dual-field pattern** for flexibility and display performance:
+
+| Entity | ID Field | Display Field | Purpose |
+|--------|----------|---------------|---------|
+| Building | `assigneeId` | `assignee` | Task assignment |
+| Event | `userId` | `user` | Activity tracking |
+| Comment | `authorId` | `author` | Audit trail |
+| Image | `uploadedById` | `uploadedBy` | Upload tracking |
+
+**Rationale:**
+- `*Id` fields (integer) provide referential integrity to `User.id`
+- Display fields (string) are denormalized for read performance
+- Display fields should be updated when user names change (application logic)
+- For JSON storage without FK enforcement, display fields serve as fallback
+
+**Current Implementation Note:**
+The current JSON-based storage uses display names only. When migrating to a relational database, add the `*Id` fields and enforce foreign key constraints.
+
 ---
 
 ## 2. Building Entity
@@ -206,20 +235,26 @@ The primary entity representing a federal building record.
 | `country` | ISO country code (CH) |
 | `kanton` | 2-letter canton code |
 | `gemeinde` | Municipality name |
+| `bfsNr` | BFS municipality number (4-digit) |
 | `plz` | 4-digit postal code |
 | `ort` | Postal locality |
 | `strasse` | Street name |
 | `hausnummer` | House number |
 | `zusatz` | Address supplement |
 | `egid` | GWR building identifier |
-| `gkat` | Building category code |
-| `gklas` | Building class code |
-| `gbaup` | Construction period code |
+| `gkat` | Building category code (GKAT) |
+| `gklas` | Building class code (GKLAS) |
+| `gstat` | Building status code (GSTAT) |
+| `gbaup` | Construction period code (GBAUP) |
+| `gbauj` | Exact construction year (if known) |
+| `gastw` | Number of floors above ground |
+| `ganzwhg` | Number of dwellings |
+| `garea` | Building area from GWR in m² |
 | `lat` | WGS84 latitude |
 | `lng` | WGS84 longitude |
 | `egrid` | E-GRID parcel identifier |
-| `parcelArea` | Parcel area in m² |
-| `footprintArea` | Building footprint in m² |
+| `parcelArea` | Parcel area in m² (from cadastre) |
+| `footprintArea` | Building footprint in m² (from cadastre) |
 
 ### 2.2 Complete Structure
 
@@ -243,25 +278,31 @@ The primary entity representing a federal building record.
   "lastUpdateBy": "M. Keller",
 
   "inGwr": true,
-  "gwrEgid": "2340212",
+  "gwrEgid": "302045678",
   "mapLat": 47.5656,
   "mapLng": 9.3744,
 
   "country":      { "sap": "CH", "gwr": "CH", "korrektur": "", "match": true },
   "kanton":       { "sap": "TG", "gwr": "TG", "korrektur": "", "match": true },
   "gemeinde":     { "sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true },
+  "bfsNr":        { "sap": "4436", "gwr": "4436", "korrektur": "", "match": true },
   "plz":          { "sap": "8590", "gwr": "8590", "korrektur": "", "match": true },
   "ort":          { "sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true },
   "strasse":      { "sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "korrektur": "", "match": false },
   "hausnummer":   { "sap": "", "gwr": "", "korrektur": "", "match": true },
   "zusatz":       { "sap": "", "gwr": "", "korrektur": "", "match": true },
-  "egid":         { "sap": "", "gwr": "2340212", "korrektur": "", "match": false },
+  "egid":         { "sap": "", "gwr": "302045678", "korrektur": "", "match": false },
   "gkat":         { "sap": "1060", "gwr": "1060", "korrektur": "", "match": true },
   "gklas":        { "sap": "1220", "gwr": "1220", "korrektur": "", "match": true },
+  "gstat":        { "sap": "1004", "gwr": "1004", "korrektur": "", "match": true },
   "gbaup":        { "sap": "8014", "gwr": "8014", "korrektur": "", "match": true },
+  "gbauj":        { "sap": "", "gwr": "1965", "korrektur": "", "match": false },
+  "gastw":        { "sap": "3", "gwr": "3", "korrektur": "", "match": true },
+  "ganzwhg":      { "sap": "0", "gwr": "0", "korrektur": "", "match": true },
+  "garea":        { "sap": "", "gwr": "485", "korrektur": "", "match": false },
   "lat":          { "sap": "", "gwr": "47.5656", "korrektur": "", "match": false },
   "lng":          { "sap": "", "gwr": "9.3744", "korrektur": "", "match": false },
-  "egrid":        { "sap": "", "gwr": "CH194381048573", "korrektur": "", "match": false },
+  "egrid":        { "sap": "", "gwr": "CH336583840978", "korrektur": "", "match": false },
   "parcelArea":   { "sap": "1250", "gwr": "1275", "korrektur": "", "match": false },
   "footprintArea": { "sap": "480", "gwr": "470", "korrektur": "", "match": false },
 
@@ -340,8 +381,14 @@ Fields are categorized by importance for daily verification tasks:
 | `hausnummer` | Hausnr. | "12" | **Primary** | House/building number (may include letters: "12a") |
 | `country` | Land | "CH" | Secondary | ISO 3166-1 alpha-2 country code. Required for border cases. |
 | `kanton` | Kanton | "TG" | Secondary | 2-letter canton abbreviation |
-| `gemeinde` | Gemeinde | "Romanshorn" | Secondary | Official municipality name (BFS Gemeindenummer) |
+| `gemeinde` | Gemeinde | "Romanshorn" | Secondary | Official municipality name |
+| `bfsNr` | BFS-Nr. | "4436" | Secondary | Official 4-digit BFS municipality number (Gemeindenummer) |
 | `zusatz` | Zusatz | "Eingang B" | Secondary | Address supplement (entrance, floor, c/o, etc.) |
+
+**BFS Municipality Number:**
+- 4-digit code uniquely identifying each Swiss municipality
+- Essential for unambiguous identification (municipality names can be duplicated)
+- Source: [BFS Gemeinderegister](https://www.bfs.admin.ch/bfs/de/home/grundlagen/agvch.html)
 
 **Priority Levels:**
 - **Primary**: Essential for address verification, always visible
@@ -366,13 +413,59 @@ In Switzerland, the official municipality (Gemeinde) and postal locality (Ort) c
 | Field | Description | Example | Priority |
 |-------|-------------|---------|----------|
 | `egid` | Eidgenössischer Gebäudeidentifikator (GWR building ID) | "2340212" | **Primary** |
-| `egrid` | Eidgenössischer Grundstücksidentifikator (E-GRID parcel ID) | "CH943571236489" | Secondary |
+| `egrid` | Eidgenössischer Grundstücksidentifikator (E-GRID parcel ID) | "CH336583840978" | Secondary |
 | `lat` | WGS84 latitude | "47.5656" | **Primary** |
 | `lng` | WGS84 longitude | "9.3744" | **Primary** |
 
-**EGRID Format:** `CH` + 12 digits (unique across Switzerland)
+**EGID Format:**
+- 1 to 9 digits, no leading zeros
+- Range: 1 to 999999999
+- Regex: `^[1-9][0-9]{0,8}$`
+- Unique per building across Switzerland
 
-### 4.2 Area Fields
+**E-GRID Format:**
+- 14 characters total: `CH` + 12 alphanumeric characters
+- Structure: `CH` + canton-specific identifier
+- Regex: `^CH[A-Z0-9]{12}$`
+- Example: `CH336583840978` (parcel in TG)
+- Unique per parcel across Switzerland
+
+### 4.2 Coordinate Handling
+
+**Coordinate Reference Systems:**
+
+| System | EPSG | Usage |
+|--------|------|-------|
+| WGS84 | 4326 | Storage and display (lat/lng in JSON) |
+| LV95 | 2056 | Swiss cadastre native format (requires transformation) |
+
+**Dual Coordinate Fields:**
+
+The building entity stores coordinates in two places for different purposes:
+
+| Field | Purpose | Source |
+|-------|---------|--------|
+| `lat`/`lng` (Three-Value Pattern) | Data comparison between SAP and GWR | Raw values from each system |
+| `mapLat`/`mapLng` (top-level) | Canonical display coordinates for map | Derived (see below) |
+
+**Coordinate Derivation Logic:**
+
+`mapLat`/`mapLng` are the **final source of truth** for map display, derived through this priority:
+
+```
+1. If korrektur is set in lat/lng     → use korrektur (user-verified position)
+2. Else if GWR coordinates exist      → use GWR (preferred authoritative source)
+3. Else if SAP coordinates exist      → use SAP (fallback)
+4. Else                               → building cannot be displayed on map
+```
+
+**Why separate fields?**
+- GWR coordinates are not always correct or available
+- Some federal buildings are not registered in GWR
+- Users may need to manually correct positions after field verification
+- The Three-Value Pattern preserves original values for audit trail
+
+### 4.3 Area Fields
 
 | Field | Unit | Source | Description |
 |-------|------|--------|-------------|
@@ -498,9 +591,13 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 {
   "1080/2020/AA": [
     {
+      "id": "err-1080-001",
       "checkId": "GEO-012",
       "description": "SAP - GWR: 47m Differenz",
-      "level": "warning"
+      "level": "warning",
+      "field": "lat",
+      "detectedAt": "2026-01-15T09:30:00Z",
+      "resolvedAt": null
     }
   ]
 }
@@ -508,9 +605,13 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
+| `id` | string | Unique error identifier (format: `err-{buildingId}-{seq}`) |
 | `checkId` | string | Validation rule reference (e.g., GEO-012) |
 | `description` | string | Human-readable error description |
 | `level` | string | Severity level |
+| `field` | string | Field that triggered the error (optional) |
+| `detectedAt` | string | ISO 8601 timestamp when error was detected |
+| `resolvedAt` | string | ISO 8601 timestamp when resolved (null if open) |
 
 | Level | German | Description |
 |-------|--------|-------------|
@@ -526,8 +627,10 @@ Comments are stored in `comments.json` as an object keyed by building ID.
 {
   "1080/2020/AA": [
     {
+      "id": "cmt-1080-001",
       "author": "M. Keller",
-      "date": "12.01.2026",
+      "authorId": 1,
+      "timestamp": "2026-01-12T14:32:00Z",
       "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
       "system": false
     }
@@ -537,10 +640,14 @@ Comments are stored in `comments.json` as an object keyed by building ID.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `author` | string | User name or "System" |
-| `date` | string | Swiss format date (dd.mm.yyyy) |
+| `id` | string | Unique comment identifier (format: `cmt-{buildingId}-{seq}`) |
+| `author` | string | User display name or "System" |
+| `authorId` | number | User ID reference (null for system comments) |
+| `timestamp` | string | ISO 8601 timestamp |
 | `text` | string | Comment content |
 | `system` | boolean | Auto-generated vs user comment |
+
+**Display Format:** Timestamps are displayed in Swiss format (`dd.mm.yyyy HH:mm`) in the UI but stored as ISO 8601.
 
 ### 7.4 Event
 
@@ -643,15 +750,17 @@ Validation rules are organized in rule sets defined in `rules.json`.
 
 ### 8.1 Building Status (GSTAT)
 
-| Code | Short | Description |
-|------|-------|-------------|
-| 1001 | projektiert | Gebäude projektiert |
-| 1002 | bewilligt | Gebäude bewilligt |
-| 1003 | im Bau | Gebäude im Bau |
-| 1004 | bestehend | Gebäude bestehend |
-| 1005 | nicht nutzbar | Gebäude nicht nutzbar |
-| 1007 | abgebrochen | Gebäude abgebrochen |
-| 1008 | nicht realisiert | Gebäude nicht realisiert |
+| Code | Key | German | Description |
+|------|-----|--------|-------------|
+| 1001 | `projektiert` | Projektiert | Gebäude projektiert |
+| 1002 | `bewilligt` | Bewilligt | Gebäude bewilligt |
+| 1003 | `im_bau` | Im Bau | Gebäude im Bau |
+| 1004 | `bestehend` | Bestehend | Gebäude bestehend |
+| 1005 | `nicht_nutzbar` | Nicht nutzbar | Gebäude nicht nutzbar |
+| 1007 | `abgebrochen` | Abgebrochen | Gebäude abgebrochen |
+| 1008 | `nicht_realisiert` | Nicht realisiert | Gebäude nicht realisiert |
+
+**Note:** The `Key` column shows the normalized string value used in validation rules. The numeric `Code` is the official GWR code.
 
 ### 8.2 Construction Period (GBAUP)
 
@@ -669,7 +778,9 @@ Validation rules are organized in rule sets defined in `rules.json`.
 | 8020 | 2001-2005 | Periode von 2001 bis 2005 |
 | 8021 | 2006-2010 | Periode von 2006 bis 2010 |
 | 8022 | 2011-2015 | Periode von 2011 bis 2015 |
-| 8023 | Nach 2015 | Periode nach 2015 |
+| 8023 | 2016-2020 | Periode von 2016 bis 2020 |
+| 8024 | 2021-2025 | Periode von 2021 bis 2025 |
+| 8025 | Nach 2025 | Periode nach 2025 |
 
 ### 8.3 Energy Source for Heating (GENH1)
 
@@ -770,10 +881,14 @@ Validation rules are organized in rule sets defined in `rules.json`.
 
 ### 9.1 Field Comparison
 
-The `match` flag is `true` when all three values (SAP, GWR, canonical) are equivalent:
+The `match` flag indicates whether SAP and GWR values are equivalent:
 
 ```javascript
-match = normalize(sap) === normalize(gwr) && normalize(gwr) === normalize(value)
+// Basic match: SAP equals GWR
+match = normalize(sap) === normalize(gwr)
+
+// Canonical value derivation (for display/export)
+canonical = korrektur || gwr || sap || null
 ```
 
 **Normalization Rules:**
@@ -810,5 +925,5 @@ Fields with missing values in all sources are excluded from calculation.
 
 ---
 
-*Document version: 2.1*
+*Document version: 2.3*
 *Last updated: 2026-02-02*
