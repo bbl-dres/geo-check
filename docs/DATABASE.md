@@ -92,6 +92,7 @@ erDiagram
         string gwrEgid "GWR building ID"
         float mapLat "Display latitude"
         float mapLng "Display longitude"
+        string kanton "Canton code (denorm)"
         jsonb comparison_fields "Three-Value Pattern fields"
         jsonb images "Attached photos"
     }
@@ -226,6 +227,7 @@ The primary entity representing a federal building record.
 | `gwrEgid` | string | No | GWR building identifier (EGID) for linking |
 | `mapLat` | number | Yes | WGS84 latitude for map display |
 | `mapLng` | number | Yes | WGS84 longitude for map display |
+| `kanton` | string | No | 2-letter canton code (denormalized for filter performance) |
 | `images` | array | No | Attached building photographs |
 
 **Comparison Fields** (follow Three-Value Pattern):
@@ -267,6 +269,7 @@ The primary entity representing a federal building record.
 
   "confidence": {
     "total": 67,
+    "georef": 67,
     "sap": 100,
     "gwr": 100
   },
@@ -325,6 +328,7 @@ The primary entity representing a federal building record.
 ```json
 {
   "total": 67,
+  "georef": 67,
   "sap": 100,
   "gwr": 100
 }
@@ -333,6 +337,7 @@ The primary entity representing a federal building record.
 | Field | Range | Description |
 |-------|-------|-------------|
 | `total` | 0-100 | Weighted overall confidence |
+| `georef` | 0-100 | GEOREF geometric data quality score |
 | `sap` | 0-100 | SAP RE-FX data completeness/match rate |
 | `gwr` | 0-100 | GWR data completeness/match rate |
 
@@ -916,7 +921,69 @@ Fields with missing values in all sources are excluded from calculation.
 
 ---
 
-## 10. References
+## 10. Supabase Configuration
+
+When deployed to Supabase, the following additional features are configured:
+
+### 10.1 Authentication
+
+User authentication is handled by Supabase Auth. The `users` table links to `auth.users` via the `auth_user_id` column.
+
+| Role | Permissions |
+|------|-------------|
+| `Admin` | Full access: manage users, rules, all buildings |
+| `Bearbeiter` | Edit buildings, add comments, manage assigned tasks |
+| `Leser` | Read-only access to all data |
+
+### 10.2 Row Level Security (RLS)
+
+All tables have RLS enabled with policies based on user role:
+
+| Table | SELECT | INSERT | UPDATE | DELETE |
+|-------|--------|--------|--------|--------|
+| `users` | All authenticated | Admin only | Admin only | Admin only |
+| `buildings` | All authenticated | Bearbeiter+ | Bearbeiter+ | Admin only |
+| `comments` | All authenticated | Bearbeiter+ | — | Admin only |
+| `events` | All authenticated | Bearbeiter+ / System | — | — |
+| `errors` | All authenticated | System | Bearbeiter+ | Admin only |
+| `rules` | All authenticated | Admin only | Admin only | Admin only |
+
+### 10.3 Storage
+
+Building images are stored in the `building-images` bucket:
+
+| Setting | Value |
+|---------|-------|
+| Bucket name | `building-images` |
+| Public access | Yes (read) |
+| Max file size | 5 MB |
+| Allowed types | JPEG, PNG, WebP |
+
+### 10.4 Realtime
+
+The following tables have realtime subscriptions enabled for collaborative editing:
+
+- `buildings` — Live status/assignment updates
+- `comments` — New comments appear instantly
+- `events` — Activity feed updates
+- `errors` — Validation status changes
+
+### 10.5 Denormalized Columns
+
+For query performance, some fields are denormalized and auto-derived via triggers:
+
+| Column | Source | Trigger |
+|--------|--------|---------|
+| `buildings.kanton` | `comparison_data->'kanton'` | `tr_buildings_derive_kanton` |
+| `buildings.map_lat` | `comparison_data->'lat'` | `tr_buildings_derive_coords` |
+| `buildings.map_lng` | `comparison_data->'lng'` | `tr_buildings_derive_coords` |
+| `buildings.assignee` | `users.name` | `tr_users_name_sync` |
+
+**Derivation priority:** `korrektur` > `gwr` > `sap`
+
+---
+
+## 11. References
 
 - [GWR Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final) - Official attribute catalog
 - [E-GRID Specification](https://www.cadastre.ch/de/manual-av/service/egrid.html) - Parcel identifier format
@@ -925,5 +992,5 @@ Fields with missing values in all sources are excluded from calculation.
 
 ---
 
-*Document version: 2.3*
+*Document version: 2.4*
 *Last updated: 2026-02-02*

@@ -4,7 +4,7 @@
 -- PostgreSQL schema for Supabase migration
 -- Uses JSONB fields for flexible data structures (Three-Value Pattern)
 --
--- Version: 1.0
+-- Version: 1.1
 -- Last updated: 2026-02-02
 -- Compatible with: Supabase (PostgreSQL 15+)
 -- ============================================================================
@@ -91,12 +91,15 @@ CREATE TABLE buildings (
     in_gwr          BOOLEAN NOT NULL DEFAULT FALSE,
     gwr_egid        VARCHAR(9),  -- 1-9 digits, validated by CHECK
 
+    -- Denormalized filter columns (derived from comparison_data for query performance)
+    kanton          CHAR(2),  -- 2-letter canton code, indexed for filtering
+
     -- Canonical map coordinates (derived from comparison fields)
     map_lat         DOUBLE PRECISION,
     map_lng         DOUBLE PRECISION,
 
-    -- Confidence scores (JSONB: {total, sap, gwr})
-    confidence      JSONB NOT NULL DEFAULT '{"total": 0, "sap": 0, "gwr": 0}',
+    -- Confidence scores (JSONB: {total, georef, sap, gwr})
+    confidence      JSONB NOT NULL DEFAULT '{"total": 0, "georef": 0, "sap": 0, "gwr": 0}',
 
     -- Comparison fields using Three-Value Pattern
     -- Each field: {sap, gwr, korrektur, match}
@@ -117,6 +120,7 @@ CREATE TABLE buildings (
     CONSTRAINT valid_lng CHECK (map_lng IS NULL OR (map_lng >= 5.95 AND map_lng <= 10.49)),
     CONSTRAINT valid_confidence CHECK (
         (confidence->>'total')::int BETWEEN 0 AND 100 AND
+        (confidence->>'georef')::int BETWEEN 0 AND 100 AND
         (confidence->>'sap')::int BETWEEN 0 AND 100 AND
         (confidence->>'gwr')::int BETWEEN 0 AND 100
     )
@@ -130,9 +134,14 @@ CREATE INDEX idx_buildings_portfolio ON buildings(portfolio);
 CREATE INDEX idx_buildings_confidence ON buildings((confidence->>'total')::int);
 CREATE INDEX idx_buildings_gwr_egid ON buildings(gwr_egid) WHERE gwr_egid IS NOT NULL;
 CREATE INDEX idx_buildings_coords ON buildings(map_lat, map_lng) WHERE map_lat IS NOT NULL;
+CREATE INDEX idx_buildings_kanton ON buildings(kanton) WHERE kanton IS NOT NULL;
+CREATE INDEX idx_buildings_due_date ON buildings(due_date) WHERE due_date IS NOT NULL;
 
 -- GIN index for JSONB queries
 CREATE INDEX idx_buildings_comparison_gin ON buildings USING GIN (comparison_data);
+
+-- Full-text search index for building name
+CREATE INDEX idx_buildings_name_search ON buildings USING GIN (to_tsvector('german', name));
 
 COMMENT ON TABLE buildings IS 'Federal building records with multi-source data comparison';
 COMMENT ON COLUMN buildings.id IS 'SAP property ID (format: XXXX/YYYY/ZZ)';
@@ -365,6 +374,31 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ----------------------------------------------------------------------------
+-- Derive kanton from comparison data (for filtering performance)
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION derive_kanton()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_kanton CHAR(2);
+    v_kanton_data JSONB;
+BEGIN
+    v_kanton_data := NEW.comparison_data->'kanton';
+
+    -- Priority: korrektur > gwr > sap
+    IF v_kanton_data IS NOT NULL THEN
+        v_kanton := COALESCE(
+            NULLIF(v_kanton_data->>'korrektur', ''),
+            NULLIF(v_kanton_data->>'gwr', ''),
+            NULLIF(v_kanton_data->>'sap', '')
+        );
+    END IF;
+
+    NEW.kanton := v_kanton;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ----------------------------------------------------------------------------
 -- Derive map coordinates from comparison data
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION derive_map_coordinates()
@@ -420,10 +454,14 @@ CREATE TRIGGER tr_users_name_sync
     AFTER UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION sync_assignee_name();
 
--- Auto-derive map coordinates
+-- Auto-derive map coordinates and kanton from comparison_data
 CREATE TRIGGER tr_buildings_derive_coords
     BEFORE INSERT OR UPDATE OF comparison_data ON buildings
     FOR EACH ROW EXECUTE FUNCTION derive_map_coordinates();
+
+CREATE TRIGGER tr_buildings_derive_kanton
+    BEFORE INSERT OR UPDATE OF comparison_data ON buildings
+    FOR EACH ROW EXECUTE FUNCTION derive_kanton();
 
 -- ============================================================================
 -- ROW LEVEL SECURITY (RLS)
@@ -551,7 +589,23 @@ CREATE POLICY "All authenticated users can view events"
     TO authenticated
     USING (TRUE);
 
--- Events are inserted by triggers/functions, not directly by users
+-- Events INSERT policy for application-level audit logging
+-- Uses service role for system-generated events, authenticated for user actions
+CREATE POLICY "Bearbeiter and Admin can create events"
+    ON events FOR INSERT
+    TO authenticated
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM users u
+            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
+        )
+    );
+
+-- Service role bypass for system-generated events (triggers)
+CREATE POLICY "Service role can insert events"
+    ON events FOR INSERT
+    TO service_role
+    WITH CHECK (TRUE);
 
 -- ============================================================================
 -- SEED DATA: Code Lists (as reference tables or check constraints)
@@ -633,6 +687,66 @@ INSERT INTO ref_gbaup (code, name_de) VALUES
 (8025, 'Nach 2025');
 
 -- ============================================================================
+-- SUPABASE STORAGE
+-- ============================================================================
+-- Configure storage bucket for building images
+-- Run via Supabase dashboard SQL editor or use supabase CLI
+
+-- Create storage bucket for building images
+INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+VALUES (
+    'building-images',
+    'building-images',
+    true,  -- Public read access
+    5242880,  -- 5MB max file size
+    ARRAY['image/jpeg', 'image/png', 'image/webp']
+)
+ON CONFLICT (id) DO NOTHING;
+
+-- Storage policies
+CREATE POLICY "Public read access for building images"
+    ON storage.objects FOR SELECT
+    TO public
+    USING (bucket_id = 'building-images');
+
+CREATE POLICY "Authenticated users can upload building images"
+    ON storage.objects FOR INSERT
+    TO authenticated
+    WITH CHECK (
+        bucket_id = 'building-images' AND
+        EXISTS (
+            SELECT 1 FROM users u
+            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
+        )
+    );
+
+CREATE POLICY "Admins can delete building images"
+    ON storage.objects FOR DELETE
+    TO authenticated
+    USING (
+        bucket_id = 'building-images' AND
+        EXISTS (
+            SELECT 1 FROM users u
+            WHERE u.auth_user_id = auth.uid() AND u.role = 'Admin'
+        )
+    );
+
+-- ============================================================================
+-- SUPABASE REALTIME
+-- ============================================================================
+-- Enable realtime subscriptions for collaborative editing
+-- Run via Supabase dashboard or CLI
+
+-- Enable realtime for key tables (collaborative updates)
+ALTER PUBLICATION supabase_realtime ADD TABLE buildings;
+ALTER PUBLICATION supabase_realtime ADD TABLE comments;
+ALTER PUBLICATION supabase_realtime ADD TABLE events;
+ALTER PUBLICATION supabase_realtime ADD TABLE errors;
+
+-- Note: Realtime can also be enabled via Supabase dashboard:
+-- Database > Replication > Select tables to enable
+
+-- ============================================================================
 -- MIGRATION NOTES
 -- ============================================================================
 /*
@@ -647,6 +761,7 @@ Migration from JSON files to Supabase:
    - Transform flat comparison fields into comparison_data JSONB
    - Map assignee names to assignee_id via user lookup
    - Images array stays as JSONB
+   - kanton column auto-derived via trigger from comparison_data
 
 3. ERRORS (errors.json → errors table)
    - Flatten keyed object to rows with building_id
