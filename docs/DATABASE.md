@@ -50,13 +50,128 @@ Each comparable field follows this structure:
 ```json
 {
   "fieldName": {
-    "sap": "...",      // SAP RE-FX value (read-only reference)
-    "gwr": "...",      // GWR value (read-only reference)
-    "value": "...",    // Canonical verified value (editable)
-    "match": false     // Whether all three values match
+    "sap": "...",       // SAP RE-FX value (read-only reference)
+    "gwr": "...",       // GWR value (read-only reference)
+    "korrektur": "...", // Manual correction value (editable, empty if no correction)
+    "match": false      // Whether SAP and GWR values match
   }
 }
 ```
+
+**Note:** The `korrektur` field is empty by default. When a user verifies and corrects a value, the correction is stored in `korrektur`. The canonical value is determined by: `korrektur` if set, otherwise the GWR value (preferred source).
+
+---
+
+## 1.5 Entity Overview
+
+The following ER diagram shows the main entities and their relationships in the Geo-Check data model.
+
+```mermaid
+erDiagram
+    BUILDING ||--o{ EVENT : "generates"
+    BUILDING ||--o{ COMMENT : "has"
+    BUILDING ||--o{ ERROR : "has"
+    BUILDING ||--o{ IMAGE : "contains"
+    USER ||--o{ BUILDING : "assigned to"
+    USER ||--o{ EVENT : "triggers"
+    USER ||--o{ COMMENT : "writes"
+    RULESET ||--|{ RULE : "contains"
+    RULE ||--o{ ERROR : "produces"
+
+    BUILDING {
+        string id PK "SAP ID (XXXX/YYYY/ZZ)"
+        string name "Display name"
+        string portfolio "Büro, Wohnen, etc."
+        string priority "low, medium, high"
+        object confidence "Scores per source"
+        string assignee FK "User name"
+        string kanbanStatus "Workflow status"
+        string dueDate "ISO date"
+        boolean inGwr "GWR registered"
+        string gwrEgid "GWR building ID"
+        float mapLat "Display latitude"
+        float mapLng "Display longitude"
+        object data "Compared fields"
+        array images "Attached photos"
+    }
+
+    USER {
+        int id PK
+        string name "Full name"
+        string initials "2-letter code"
+        string role "Admin, Bearbeiter, Leser"
+        int openTasks "Assigned count"
+        datetime lastLogin
+    }
+
+    EVENT {
+        int id PK
+        string buildingId FK
+        string type "Event category"
+        string action "German label"
+        string user "Actor name"
+        datetime timestamp
+        string details "Description"
+    }
+
+    COMMENT {
+        string buildingId FK
+        string author "User name"
+        string date "dd.mm.yyyy"
+        string text "Content"
+        boolean system "Auto-generated"
+    }
+
+    ERROR {
+        string buildingId FK
+        string checkId "Rule reference"
+        string description "Error message"
+        string level "error, warning, info"
+    }
+
+    IMAGE {
+        string id PK
+        string buildingId FK
+        string url "Image URL"
+        string filename "Original name"
+        datetime uploadDate
+        string uploadedBy "User name"
+    }
+
+    RULESET {
+        string id PK
+        string name "German name"
+        string description
+        boolean enabled
+        string entityType "building"
+    }
+
+    RULE {
+        string id PK
+        string ruleSetId FK
+        string name "Rule name"
+        string description
+        string attribute "Field(s) to check"
+        string operator "Validation type"
+        any value "Expected value"
+        string severity "error, warning, info"
+        string message "Error template"
+    }
+```
+
+### Entity Relationships
+
+| Relationship | Cardinality | Description |
+|--------------|-------------|-------------|
+| Building → User | N:1 | A building can be assigned to one user (via `assignee`) |
+| Building → Event | 1:N | A building can have multiple events in the activity log |
+| Building → Comment | 1:N | A building can have multiple comments |
+| Building → Error | 1:N | A building can have multiple validation errors |
+| Building → Image | 1:N | A building can have multiple attached images |
+| User → Event | 1:N | A user can trigger multiple events |
+| User → Comment | 1:N | A user can write multiple comments |
+| RuleSet → Rule | 1:N | A rule set contains multiple validation rules |
+| Rule → Error | 1:N | A rule can produce errors on multiple buildings |
 
 ---
 
@@ -69,35 +184,51 @@ The primary entity representing a federal building record.
 | Attribute | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `id` | string | Yes | SAP property ID (format: `XXXX/YYYY/ZZ`) |
-| `egid` | string | No | GWR building identifier (EGID) |
-| `egrid` | string | No | Land register parcel identifier (E-GRID) |
 | `name` | string | Yes | Display name (City, Street) |
-| `lat` | number | Yes | WGS84 latitude (canonical) |
-| `lng` | number | Yes | WGS84 longitude (canonical) |
-| `parcelArea` | number | No | Parcel area in m² (from cadastre) |
-| `footprintArea` | number | No | Building footprint area in m² (from cadastre) |
+| `portfolio` | string | Yes | Building type: Büro, Wohnen, Öffentlich, Industrie, Bildung |
+| `priority` | string | Yes | Task priority: low, medium, high |
 | `confidence` | object | Yes | Confidence scores per source |
-| `assignee` | string | No | Assigned team member |
+| `assignee` | string | No | Assigned team member name (null if unassigned) |
 | `kanbanStatus` | string | Yes | Workflow status |
-| `priority` | string | Yes | Task priority |
 | `dueDate` | string | No | ISO 8601 date |
 | `lastUpdate` | string | Yes | ISO 8601 timestamp |
-| `lastUpdateBy` | string | Yes | Last editor name |
-| `data` | object | Yes | Compared field values |
+| `lastUpdateBy` | string | Yes | Last editor name or "System" |
+| `inGwr` | boolean | Yes | Whether building exists in GWR |
+| `gwrEgid` | string | No | GWR building identifier (EGID) for linking |
+| `mapLat` | number | Yes | WGS84 latitude for map display |
+| `mapLng` | number | Yes | WGS84 longitude for map display |
+| `images` | array | No | Attached building photographs |
+
+**Comparison Fields** (follow Three-Value Pattern):
+
+| Field | Description |
+|-------|-------------|
+| `country` | ISO country code (CH) |
+| `kanton` | 2-letter canton code |
+| `gemeinde` | Municipality name |
+| `plz` | 4-digit postal code |
+| `ort` | Postal locality |
+| `strasse` | Street name |
+| `hausnummer` | House number |
+| `zusatz` | Address supplement |
+| `egid` | GWR building identifier |
+| `gkat` | Building category code |
+| `gklas` | Building class code |
+| `gbaup` | Construction period code |
+| `lat` | WGS84 latitude |
+| `lng` | WGS84 longitude |
+| `egrid` | E-GRID parcel identifier |
+| `parcelArea` | Parcel area in m² |
+| `footprintArea` | Building footprint in m² |
 
 ### 2.2 Complete Structure
 
 ```json
 {
   "id": "1080/2020/AA",
-  "egid": "2340212",
-  "egrid": "CH943571236489",
-  "name": "Romanshorn, Friedrichshafnerstrasse 12",
-
-  "lat": 47.5656,
-  "lng": 9.3744,
-  "parcelArea": 1250,
-  "footprintArea": 480,
+  "name": "Romanshorn, Friedrichshafnerstrasse",
+  "portfolio": "Büro",
+  "priority": "medium",
 
   "confidence": {
     "total": 67,
@@ -107,27 +238,46 @@ The primary entity representing a federal building record.
 
   "assignee": "M. Keller",
   "kanbanStatus": "inprogress",
-  "priority": "medium",
   "dueDate": "2026-02-15",
   "lastUpdate": "2026-01-27T14:30:00Z",
   "lastUpdateBy": "M. Keller",
 
-  "data": {
-    "country":    { "sap": "CH", "gwr": "CH", "value": "CH", "match": true },
-    "kanton":     { "sap": "TG", "gwr": "TG", "value": "TG", "match": true },
-    "gemeinde":   { "sap": "Romanshorn", "gwr": "Romanshorn", "value": "Romanshorn", "match": true },
-    "plz":        { "sap": "8590", "gwr": "8590", "value": "8590", "match": true },
-    "ort":        { "sap": "Romanshorn", "gwr": "Romanshorn", "value": "Romanshorn", "match": true },
-    "strasse":    { "sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "value": "Friedrichshafnerstrasse", "match": false },
-    "hausnummer": { "sap": "12", "gwr": "12", "value": "12", "match": true },
-    "zusatz":     { "sap": "", "gwr": "", "value": "", "match": true },
-    "gkat":       { "sap": "1060", "gwr": "1060", "value": "1060", "match": true },
-    "gklas":      { "sap": "1220", "gwr": "1220", "value": "1220", "match": true },
-    "gbaup":      { "sap": "8014", "gwr": "8014", "value": "8014", "match": true },
-    "coords":     { "sap": "47.5650, 9.3740", "gwr": "47.5656, 9.3744", "value": "47.5656, 9.3744", "match": false }
-  }
+  "inGwr": true,
+  "gwrEgid": "2340212",
+  "mapLat": 47.5656,
+  "mapLng": 9.3744,
+
+  "country":      { "sap": "CH", "gwr": "CH", "korrektur": "", "match": true },
+  "kanton":       { "sap": "TG", "gwr": "TG", "korrektur": "", "match": true },
+  "gemeinde":     { "sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true },
+  "plz":          { "sap": "8590", "gwr": "8590", "korrektur": "", "match": true },
+  "ort":          { "sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true },
+  "strasse":      { "sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "korrektur": "", "match": false },
+  "hausnummer":   { "sap": "", "gwr": "", "korrektur": "", "match": true },
+  "zusatz":       { "sap": "", "gwr": "", "korrektur": "", "match": true },
+  "egid":         { "sap": "", "gwr": "2340212", "korrektur": "", "match": false },
+  "gkat":         { "sap": "1060", "gwr": "1060", "korrektur": "", "match": true },
+  "gklas":        { "sap": "1220", "gwr": "1220", "korrektur": "", "match": true },
+  "gbaup":        { "sap": "8014", "gwr": "8014", "korrektur": "", "match": true },
+  "lat":          { "sap": "", "gwr": "47.5656", "korrektur": "", "match": false },
+  "lng":          { "sap": "", "gwr": "9.3744", "korrektur": "", "match": false },
+  "egrid":        { "sap": "", "gwr": "CH194381048573", "korrektur": "", "match": false },
+  "parcelArea":   { "sap": "1250", "gwr": "1275", "korrektur": "", "match": false },
+  "footprintArea": { "sap": "480", "gwr": "470", "korrektur": "", "match": false },
+
+  "images": [
+    {
+      "id": "img-001",
+      "url": "https://example.com/images/building1.jpg",
+      "filename": "Fassade_Nord.jpg",
+      "uploadDate": "2026-01-12T10:30:00Z",
+      "uploadedBy": "M. Keller"
+    }
+  ]
 }
 ```
+
+**Note:** Comparison fields are stored at the top level of the building object, not nested in a `data` object.
 
 ### 2.3 Confidence Object
 
@@ -319,65 +469,173 @@ Detailed building classification (EUROSTAT-based):
   "id": 1,
   "name": "M. Keller",
   "initials": "MK",
-  "role": "Admin"
+  "role": "Admin",
+  "openTasks": 3,
+  "lastLogin": "2026-01-31T08:42:00Z"
 }
 ```
 
-| Role | Description |
-|------|-------------|
-| `Admin` | Full access, can manage users |
-| `Bearbeiter` | Can edit buildings, manage tasks |
-| `Leser` | Read-only access |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `id` | number | Unique user identifier |
+| `name` | string | Full display name |
+| `initials` | string | 2-letter abbreviation |
+| `role` | string | Permission level |
+| `openTasks` | number | Count of assigned buildings |
+| `lastLogin` | string | ISO 8601 timestamp |
+
+| Role | German | Description |
+|------|--------|-------------|
+| `Admin` | Administrator | Full access, can manage users |
+| `Bearbeiter` | Bearbeiter | Can edit buildings, manage tasks |
+| `Leser` | Leser | Read-only access |
 
 ### 7.2 Error
 
+Errors are stored in `errors.json` as an object keyed by building ID.
+
 ```json
 {
-  "type": "coords",
-  "title": "Koordinatenabweichung",
-  "description": "SAP - GWR: 47m Differenz",
-  "severity": "warning"
+  "1080/2020/AA": [
+    {
+      "checkId": "GEO-012",
+      "description": "SAP - GWR: 47m Differenz",
+      "level": "warning"
+    }
+  ]
 }
 ```
 
-| Severity | Description |
-|----------|-------------|
-| `critical` | Major data inconsistency |
-| `warning` | Notable discrepancy |
-| `minor` | Small difference |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `checkId` | string | Validation rule reference (e.g., GEO-012) |
+| `description` | string | Human-readable error description |
+| `level` | string | Severity level |
+
+| Level | German | Description |
+|-------|--------|-------------|
+| `error` | Fehler | Critical issue, must be resolved |
+| `warning` | Warnung | Notable discrepancy, should review |
+| `info` | Hinweis | Minor difference, informational |
 
 ### 7.3 Comment
 
+Comments are stored in `comments.json` as an object keyed by building ID.
+
 ```json
 {
-  "author": "M. Keller",
-  "date": "2026-01-12T14:32:00Z",
-  "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
-  "system": false
+  "1080/2020/AA": [
+    {
+      "author": "M. Keller",
+      "date": "12.01.2026",
+      "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
+      "system": false
+    }
+  ]
 }
 ```
 
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `author` | string | User name or "System" |
+| `date` | string | Swiss format date (dd.mm.yyyy) |
+| `text` | string | Comment content |
+| `system` | boolean | Auto-generated vs user comment |
+
 ### 7.4 Event
+
+Events are stored in `events.json` as an array of activity records.
 
 ```json
 {
   "id": 1,
   "buildingId": "1080/2020/AA",
-  "type": "status_change",
+  "type": "status",
   "action": "Status geändert",
   "user": "M. Keller",
-  "timestamp": "2026-01-12T14:32:00Z",
-  "details": "backlog → inprogress"
+  "timestamp": "2026-01-12T14:32:00",
+  "details": "Status: Zugewiesen → In Prüfung"
 }
 ```
 
-| Event Type | Description |
-|------------|-------------|
-| `comment` | Comment added |
-| `assignment` | Assignee changed |
-| `detection` | Error detected |
-| `status_change` | Status updated |
-| `value_change` | Canonical value edited |
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `id` | number | Unique event identifier |
+| `buildingId` | string | Reference to building |
+| `type` | string | Event category |
+| `action` | string | German action label |
+| `user` | string | Actor name or "System" |
+| `timestamp` | string | ISO 8601 timestamp (without Z suffix) |
+| `details` | string | Detailed description |
+
+| Event Type | German Action | Description |
+|------------|---------------|-------------|
+| `comment` | Kommentar hinzugefügt | Comment added |
+| `assignment` | Zugewiesen | Assignee changed |
+| `detection` | Fehler erkannt | Error detected by system |
+| `status` | Status geändert | Workflow status updated |
+| `correction` | Korrektur angewendet | Value correction applied |
+
+### 7.5 Image
+
+Images are stored as an array within each Building object.
+
+```json
+{
+  "id": "img-001",
+  "url": "https://example.com/images/building1.jpg",
+  "filename": "Fassade_Nord.jpg",
+  "uploadDate": "2026-01-12T10:30:00Z",
+  "uploadedBy": "M. Keller"
+}
+```
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `id` | string | Unique image identifier (format: `img-XXX`) |
+| `url` | string | Full URL to image resource |
+| `filename` | string | Original uploaded filename |
+| `uploadDate` | string | ISO 8601 timestamp |
+| `uploadedBy` | string | User name who uploaded |
+
+### 7.6 Validation Rule
+
+Validation rules are organized in rule sets defined in `rules.json`.
+
+```json
+{
+  "id": "gwr-001",
+  "name": "EGID vorhanden",
+  "description": "Prüft ob eine gültige EGID vorhanden ist",
+  "attribute": "egid",
+  "operator": "exists",
+  "severity": "error",
+  "message": "Keine EGID vorhanden"
+}
+```
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| `id` | string | Unique rule identifier |
+| `name` | string | Short German name |
+| `description` | string | Full description |
+| `attribute` | string/array | Field(s) to validate |
+| `operator` | string | Validation operator type |
+| `value` | any | Expected value (optional) |
+| `severity` | string | error, warning, info |
+| `message` | string | Error message template |
+
+**Available Operators:**
+
+| Operator | Description |
+|----------|-------------|
+| `exists` | Value is present and not empty |
+| `matches` | Matches regular expression |
+| `in` | Value in allowed list |
+| `between` | Numeric value in range |
+| `within_bounds` | Coordinates in geographic bounds |
+| `deviation_percent` | Percentage difference threshold |
+| `all_exist` | All specified fields present |
 
 ---
 
@@ -552,5 +810,5 @@ Fields with missing values in all sources are excluded from calculation.
 
 ---
 
-*Document version: 2.0*
-*Last updated: 2026-02-01*
+*Document version: 2.1*
+*Last updated: 2026-02-02*
