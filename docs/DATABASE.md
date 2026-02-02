@@ -83,16 +83,17 @@ erDiagram
         string name "Display name"
         string portfolio "Büro, Wohnen, etc."
         string priority "low, medium, high"
-        object confidence "Scores per source"
-        string assignee FK "User name"
+        jsonb confidence "Scores per source"
+        int assigneeId FK "User reference"
+        string assignee "User name (denorm)"
         string kanbanStatus "Workflow status"
-        string dueDate "ISO date"
+        date dueDate "ISO date"
         boolean inGwr "GWR registered"
         string gwrEgid "GWR building ID"
         float mapLat "Display latitude"
         float mapLng "Display longitude"
-        object data "Compared fields"
-        array images "Attached photos"
+        jsonb comparison_fields "Three-Value Pattern fields"
+        jsonb images "Attached photos"
     }
 
     USER {
@@ -107,9 +108,10 @@ erDiagram
     EVENT {
         int id PK
         string buildingId FK
+        int userId FK "User reference"
+        string user "Actor name (denorm)"
         string type "Event category"
         string action "German label"
-        string user "Actor name"
         datetime timestamp
         string details "Description"
     }
@@ -141,7 +143,8 @@ erDiagram
         string url "Image URL"
         string filename "Original name"
         datetime uploadDate
-        string uploadedBy "User name"
+        int uploadedById FK "User reference"
+        string uploadedBy "User name (denorm)"
     }
 
     RULESET {
@@ -291,7 +294,12 @@ The primary entity representing a federal building record.
   "egid":         { "sap": "", "gwr": "302045678", "korrektur": "", "match": false },
   "gkat":         { "sap": "1060", "gwr": "1060", "korrektur": "", "match": true },
   "gklas":        { "sap": "1220", "gwr": "1220", "korrektur": "", "match": true },
+  "gstat":        { "sap": "1004", "gwr": "1004", "korrektur": "", "match": true },
   "gbaup":        { "sap": "8014", "gwr": "8014", "korrektur": "", "match": true },
+  "gbauj":        { "sap": "", "gwr": "1965", "korrektur": "", "match": false },
+  "gastw":        { "sap": "3", "gwr": "3", "korrektur": "", "match": true },
+  "ganzwhg":      { "sap": "0", "gwr": "0", "korrektur": "", "match": true },
+  "garea":        { "sap": "", "gwr": "485", "korrektur": "", "match": false },
   "lat":          { "sap": "", "gwr": "47.5656", "korrektur": "", "match": false },
   "lng":          { "sap": "", "gwr": "9.3744", "korrektur": "", "match": false },
   "egrid":        { "sap": "", "gwr": "CH336583840978", "korrektur": "", "match": false },
@@ -873,10 +881,14 @@ Validation rules are organized in rule sets defined in `rules.json`.
 
 ### 9.1 Field Comparison
 
-The `match` flag is `true` when all three values (SAP, GWR, canonical) are equivalent:
+The `match` flag indicates whether SAP and GWR values are equivalent:
 
 ```javascript
-match = normalize(sap) === normalize(gwr) && normalize(gwr) === normalize(value)
+// Basic match: SAP equals GWR
+match = normalize(sap) === normalize(gwr)
+
+// Canonical value derivation (for display/export)
+canonical = korrektur || gwr || sap || null
 ```
 
 **Normalization Rules:**
@@ -913,5 +925,5 @@ Fields with missing values in all sources are excluded from calculation.
 
 ---
 
-*Document version: 2.2*
+*Document version: 2.3*
 *Last updated: 2026-02-02*
