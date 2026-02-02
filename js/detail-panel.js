@@ -415,7 +415,7 @@ export function renderDataComparison(building) {
       // In edit mode: SAP and GWR are read-only, Korrektur is editable
       const isKorrekturEditable = KORREKTUR_EDITABLE_FIELDS.includes(key);
       const korrekturCell = isKorrekturEditable
-        ? `<input type="text" class="edit-input" data-field="${key}" data-column="korrektur" value="${korrekturValue}" placeholder="${gwrValue || sapValue}">`
+        ? `<input type="text" class="edit-input" data-field="${key}" data-column="korrektur" value="${korrekturValue}">`
         : `<span class="edit-locked">${korrekturValue}</span>`;
 
       return `

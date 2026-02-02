@@ -33,6 +33,9 @@ let identifyPopup = null;
 // Pending marker click handler (set before markers are ready)
 let pendingClickHandler = null;
 
+// Pending initial selection (set before markers are ready)
+let pendingSelection = null;
+
 // ========================================
 // Coordinate Conversion (WGS84 to LV95)
 // ========================================
@@ -151,6 +154,12 @@ export function initMap() {
     if (pendingClickHandler) {
       applyMarkerClickHandlers(pendingClickHandler);
       pendingClickHandler = null;
+    }
+
+    // Apply pending initial selection if set
+    if (pendingSelection) {
+      selectMarker(pendingSelection);
+      pendingSelection = null;
     }
 
     // Setup label visibility based on zoom
@@ -316,6 +325,12 @@ export function updateMapMarkers() {
 export function selectMarker(buildingId) {
   const building = buildings.find(b => b.id === buildingId);
   if (!building) return;
+
+  // If markers aren't ready yet, store selection for later
+  if (Object.keys(markers).length === 0) {
+    pendingSelection = buildingId;
+    return;
+  }
 
   // Update marker elements
   Object.entries(markers).forEach(([markerId, marker]) => {
