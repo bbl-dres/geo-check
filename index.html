@@ -114,7 +114,7 @@
       <!-- Multi-select: Konfidenz -->
       <div class="multi-select" id="filter-confidence">
         <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label">Konfidenz</span>
+          <span class="multi-select-label" title="Datenqualität basierend auf Übereinstimmung der Quellen">Konfidenz</span>
           <i data-lucide="chevron-down" class="icon-sm"></i>
         </button>
         <div class="multi-select-dropdown">
@@ -123,9 +123,9 @@
             <button type="button" class="multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
-            <label class="multi-select-option"><input type="checkbox" value="critical"><span>Kritisch</span></label>
-            <label class="multi-select-option"><input type="checkbox" value="warning"><span>Warnung</span></label>
-            <label class="multi-select-option"><input type="checkbox" value="ok"><span>OK</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="critical"><span title="Unter 50% Übereinstimmung">Kritisch</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="warning"><span title="50-80% Übereinstimmung">Warnung</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="ok"><span title="Über 80% Übereinstimmung">OK</span></label>
           </div>
         </div>
       </div>
@@ -163,9 +163,9 @@
             <button type="button" class="multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
-            <label class="multi-select-option"><input type="checkbox" value="backlog"><span>Backlog</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="backlog"><span>Offen</span></label>
             <label class="multi-select-option"><input type="checkbox" value="inprogress"><span>In Bearbeitung</span></label>
-            <label class="multi-select-option"><input type="checkbox" value="clarification"><span>Abklärung</span></label>
+            <label class="multi-select-option"><input type="checkbox" value="clarification"><span>Rückfrage</span></label>
             <label class="multi-select-option"><input type="checkbox" value="done"><span>Erledigt</span></label>
           </div>
         </div>
@@ -442,7 +442,7 @@
           <div class="kanban-column">
             <div class="kanban-header">
               <span class="kanban-header-icon"><i data-lucide="layers" class="icon"></i></span>
-              <span class="kanban-header-title">Backlog</span>
+              <span class="kanban-header-title">Offen</span>
               <span class="kanban-header-count" id="kanban-backlog-count">0</span>
             </div>
             <div class="kanban-cards" id="kanban-backlog">
@@ -464,7 +464,7 @@
           <div class="kanban-column">
             <div class="kanban-header">
               <span class="kanban-header-icon"><i data-lucide="help-circle" class="icon"></i></span>
-              <span class="kanban-header-title">Abklärung</span>
+              <span class="kanban-header-title">Rückfrage</span>
               <span class="kanban-header-count" id="kanban-clarification-count">0</span>
             </div>
             <div class="kanban-cards" id="kanban-clarification">
@@ -614,8 +614,8 @@
               <div class="workflow-info">
                 <div class="workflow-icon"><i data-lucide="database" class="icon-md"></i></div>
                 <div class="workflow-details">
-                  <span class="workflow-name">GWR-Daten anreichern</span>
-                  <span class="workflow-description">Ergänzt fehlende Daten aus dem Gebäude- und Wohnungsregister (GWR).</span>
+                  <span class="workflow-name">Gebäudedaten ergänzen</span>
+                  <span class="workflow-description">Ergänzt fehlende Daten aus dem Gebäude- und Wohnungsregister.</span>
                 </div>
               </div>
               <div class="workflow-meta">
@@ -753,7 +753,7 @@
 
           <div class="detail-section accordion open" data-accordion="konfidenz">
             <button class="accordion-header" type="button">
-              <span class="accordion-title">Konfidenz <span class="accordion-note">(eventuell löschen)</span></span>
+              <span class="accordion-title" title="Datenqualität: Wie gut stimmen SAP und GWR überein?">Konfidenz <span class="accordion-note">(eventuell löschen)</span></span>
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">
@@ -761,21 +761,21 @@
                 <div class="confidence-total" id="confidence-total">67%</div>
                 <div class="confidence-bars">
                   <div class="confidence-bar-row">
-                    <span class="confidence-bar-label">Georef</span>
+                    <span class="confidence-bar-label" title="Geografische Referenzdaten (Swisstopo)">Georef</span>
                     <div class="confidence-bar-track">
                       <div class="confidence-bar-fill" id="bar-georef" style="width: 67%"></div>
                     </div>
                     <span class="confidence-bar-value" id="val-georef">67%</span>
                   </div>
                   <div class="confidence-bar-row">
-                    <span class="confidence-bar-label">SAP</span>
+                    <span class="confidence-bar-label" title="Daten aus SAP RE-FX (Immobilienverwaltung)">SAP</span>
                     <div class="confidence-bar-track">
                       <div class="confidence-bar-fill ok" id="bar-sap" style="width: 100%"></div>
                     </div>
                     <span class="confidence-bar-value" id="val-sap">100%</span>
                   </div>
                   <div class="confidence-bar-row">
-                    <span class="confidence-bar-label">GWR</span>
+                    <span class="confidence-bar-label" title="Gebäude- und Wohnungsregister (Bundesamt für Statistik)">GWR</span>
                     <div class="confidence-bar-track">
                       <div class="confidence-bar-fill ok" id="bar-gwr" style="width: 100%"></div>
                     </div>
@@ -857,10 +857,10 @@
                 <thead>
                   <tr>
                     <th class="col-attr">Attribut</th>
-                    <th class="col-sap">SAP</th>
-                    <th class="col-gwr">GWR</th>
-                    <th class="col-korrektur">Korrektur</th>
-                    <th class="col-match"></th>
+                    <th class="col-sap" title="Daten aus SAP RE-FX (Immobilienverwaltung)">SAP</th>
+                    <th class="col-gwr" title="Daten aus dem Gebäude- und Wohnungsregister">GWR</th>
+                    <th class="col-korrektur" title="Manuelle Korrekturen überschreiben GWR-Werte">Korrektur</th>
+                    <th class="col-match" title="✓ = SAP und GWR stimmen überein, ✗ = Werte unterscheiden sich"></th>
                   </tr>
                 </thead>
                 <tbody id="data-comparison">

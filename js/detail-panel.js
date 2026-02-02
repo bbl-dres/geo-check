@@ -127,9 +127,9 @@ function createDropdown(config) {
 
 // Status options for dropdown
 const statusOptions = [
-  { value: 'backlog', label: 'Backlog', icon: 'layers' },
+  { value: 'backlog', label: 'Offen', icon: 'layers' },
   { value: 'inprogress', label: 'In Bearbeitung', icon: 'play-circle' },
-  { value: 'clarification', label: 'Abklärung', icon: 'help-circle' },
+  { value: 'clarification', label: 'Rückfrage', icon: 'help-circle' },
   { value: 'done', label: 'Erledigt', icon: 'check-circle' }
 ];
 
@@ -512,7 +512,7 @@ function renderEgidRow(building, isEditMode) {
         <td class="col-attr">${getDataLabel('egid')}</td>
         <td class="col-sap ref-locked">${sapValue}</td>
         <td class="col-gwr edit-cell">
-          <input type="text" class="edit-input" id="edit-gwrEgid" data-field="gwrEgid" value="${gwrValue}" placeholder="EGID eingeben">
+          <input type="text" class="edit-input" id="edit-gwrEgid" data-field="gwrEgid" value="${gwrValue}" placeholder="Gebäudenummer eingeben">
           <button type="button" class="btn-gwr-lookup" id="btn-gwr-lookup" title="GWR-Daten abrufen">
             <i data-lucide="search" class="icon-sm"></i>
           </button>
@@ -546,7 +546,7 @@ function setupEditModeHandlers(building) {
     lookupBtn.addEventListener('click', async () => {
       const egid = egidInput.value.trim();
       if (!egid) {
-        alert('Bitte EGID eingeben');
+        alert('Bitte Gebäudenummer eingeben');
         return;
       }
 
@@ -558,7 +558,7 @@ function setupEditModeHandlers(building) {
         const gwrData = await lookupGwrByEgid(egid);
 
         if (!gwrData) {
-          alert('Kein Gebäude mit dieser EGID gefunden');
+          alert('Kein Gebäude mit dieser Nummer gefunden');
           return;
         }
 
@@ -590,7 +590,7 @@ function setupEditModeHandlers(building) {
 
       } catch (error) {
         console.error('GWR lookup error:', error);
-        alert('Fehler beim Abrufen der GWR-Daten');
+        alert('Fehler beim Abrufen der Gebäudedaten');
       } finally {
         lookupBtn.disabled = false;
         lookupBtn.innerHTML = '<i data-lucide="search" class="icon-sm"></i>';

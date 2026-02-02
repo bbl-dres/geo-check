@@ -352,7 +352,7 @@ function renderStatusChart(filtered) {
         }
       }
     },
-    labels: ['Backlog', 'In Bearbeitung', 'Abklärung', 'Erledigt'],
+    labels: ['Offen', 'In Bearbeitung', 'Rückfrage', 'Erledigt'],
     colors: [chartColors.status.backlog, chartColors.status.inprogress, chartColors.status.clarification, chartColors.status.done],
     plotOptions: {
       pie: {

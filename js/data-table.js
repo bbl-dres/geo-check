@@ -474,9 +474,9 @@ export function renderTableView() {
 
 function getStatusLabel(status) {
   const labels = {
-    backlog: 'Backlog',
+    backlog: 'Offen',
     inprogress: 'In Bearbeitung',
-    clarification: 'Abklärung',
+    clarification: 'Rückfrage',
     done: 'Erledigt'
   };
   return labels[status] || labels.backlog;
