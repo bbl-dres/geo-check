@@ -143,8 +143,10 @@
   /* ======================================
      Z-INDEX SCALE
      ====================================== */
-  --z-dropdown: 100;
-  --z-sticky: 500;
-  --z-overlay: 1000;
-  --z-modal: 2000;
+  --z-base: 1;           /* Component-internal stacking (labels over images) */
+  --z-float: 10;         /* Floating UI within components (resize handles) */
+  --z-dropdown: 100;     /* Dropdowns, menus, tooltips */
+  --z-sticky: 500;       /* Sticky headers, fixed UI */
+  --z-overlay: 1000;     /* Overlays, sidebars */
+  --z-modal: 2000;       /* Modals, dialogs */
 }

@@ -1139,7 +1139,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .basemap-thumb span {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-base);
   flex: 1;
   padding: var(--space-xs);
   font-size: var(--font-xs);
@@ -1153,7 +1153,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   position: absolute;
   right: var(--space-xs);
   bottom: var(--space-xs);
-  z-index: 1;
+  z-index: var(--z-base);
   color: rgba(255, 255, 255, 0.7);
 }
 
@@ -1682,7 +1682,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  z-index: var(--z-dropdown);
 }
 
 .detail-resize-handle:hover,
@@ -2325,7 +2325,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: transparent;
   cursor: pointer;
   opacity: 0;
-  z-index: 2;
+  z-index: var(--z-base);
 }
 
 .duedate-input:focus {
