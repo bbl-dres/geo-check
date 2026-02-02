@@ -26,7 +26,9 @@
       "WebFetch(domain:www.bfs.admin.ch)",
       "WebFetch(domain:www.web.statistik.zh.ch)",
       "Bash(node transform.js:*)",
-      "Bash(del transform.js)"
+      "Bash(del transform.js)",
+      "Bash(python -m json.tool:*)",
+      "Bash(node scripts/migrate-buildings.js:*)"
     ]
   }
 }

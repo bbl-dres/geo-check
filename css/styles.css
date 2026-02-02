@@ -1663,6 +1663,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: none;
   flex-direction: column;
   flex-shrink: 1;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -2457,7 +2458,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-secondary);
 }
 
-.data-table .col-value {
+.data-table .col-value,
+.data-table .col-korrektur {
   width: 25%;
   font-weight: 500;
 }
@@ -2611,6 +2613,105 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .gwr-locked {
   color: var(--text-muted) !important;
   font-style: italic;
+}
+
+/* Edit mode select dropdown */
+.edit-select {
+  width: 100%;
+  padding: var(--space-sm);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-sm);
+  font-family: inherit;
+  background: var(--bg-white);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.edit-select:focus {
+  outline: none;
+  border-color: var(--federal-blue);
+}
+
+/* GWR column edit cells - matching padding */
+.ingwr-row .col-gwr.edit-cell,
+.egid-row .col-gwr.edit-cell {
+  padding-right: var(--space-md);
+}
+
+/* GWR lookup button (inside EGID input) */
+.egid-row .col-gwr.edit-cell {
+  position: relative;
+}
+
+.egid-row .edit-input {
+  width: 100%;
+  padding-right: 36px;
+}
+
+.btn-gwr-lookup {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-gwr-lookup:hover {
+  background: var(--bg-subtle);
+  color: var(--federal-blue);
+}
+
+.btn-gwr-lookup:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Edit hint text */
+.edit-hint {
+  display: block;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* Loading spinner animation */
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Keep button centered while loading */
+.btn-gwr-lookup:disabled {
+  transform: translateY(-50%);
+}
+
+/* Korrektur column styling - no min-width to prevent overflow */
+
+/* InGwr row styling */
+.ingwr-row {
+  background: var(--bg-subtle);
+}
+
+.ingwr-row .col-sap,
+.ingwr-row .col-korrektur {
+  color: var(--text-muted);
 }
 
 /* Draggable Marker */

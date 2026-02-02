@@ -3,7 +3,7 @@
 // Kanban board rendering and drag-drop
 // ========================================
 
-import { state, buildings, getFilteredBuildings, tableVisible, currentUser } from './state.js';
+import { state, buildings, getFilteredBuildings, tableVisible, currentUser, getFieldDisplayValue } from './state.js';
 import { updateMapMarkers } from './map.js';
 
 // Drag state
@@ -66,7 +66,7 @@ export function renderKanbanBoard() {
           </div>
           <div class="kanban-card-title">${building.name}</div>
           <div class="kanban-card-meta">
-            <span class="kanban-card-location">${building.kanton.value}</span>
+            <span class="kanban-card-location">${getFieldDisplayValue(building.kanton)}</span>
             <span class="kanban-card-confidence ${confidenceClass}">${building.confidence.total}%</span>
           </div>
           <div class="kanban-card-footer">

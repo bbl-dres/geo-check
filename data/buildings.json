@@ -14,106 +14,110 @@
     "dueDate": "2026-02-15",
     "lastUpdate": "2026-01-27T14:30:00Z",
     "lastUpdateBy": "M. Keller",
+    "inGwr": true,
+    "gwrEgid": "2340212",
+    "mapLat": 47.5656,
+    "mapLng": 9.3744,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "TG",
       "gwr": "TG",
-      "value": "TG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Romanshorn",
       "gwr": "Romanshorn",
-      "value": "Romanshorn",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8590",
       "gwr": "8590",
-      "value": "8590",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Romanshorn",
       "gwr": "Romanshorn",
-      "value": "Romanshorn",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Friedrichshafnerstr.",
       "gwr": "Friedrichshafnerstrasse",
-      "value": "Friedrichshafnerstrasse",
+      "korrektur": "",
       "match": false
     },
     "hausnummer": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "",
       "gwr": "2340212",
-      "value": "2340212",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1220",
       "gwr": "1220",
-      "value": "1220",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
-      "value": "8014",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "",
       "gwr": "47.5656",
-      "value": "47.5656",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "",
       "gwr": "9.3744",
-      "value": "9.3744",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH194381048573",
-      "value": "CH194381048573",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1250",
       "gwr": "1275",
-      "value": "1250",
+      "korrektur": "",
       "match": false
     },
     "footprintArea": {
       "sap": "480",
       "gwr": "470",
-      "value": "480",
+      "korrektur": "",
       "match": false
     },
     "images": [
@@ -155,106 +159,110 @@
     "dueDate": "2026-01-25",
     "lastUpdate": "2026-01-23T09:15:00Z",
     "lastUpdateBy": "System",
+    "inGwr": true,
+    "gwrEgid": "1456789",
+    "mapLat": 47.6512,
+    "mapLng": 9.1756,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "TG",
       "gwr": "TG",
-      "value": "TG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Kreuzlingen",
       "gwr": "Kreuzlingen",
-      "value": "Kreuzlingen",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8280",
       "gwr": "8280",
-      "value": "8280",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Kreuzlingen",
       "gwr": "Kreuzlingen",
-      "value": "Kreuzlingen",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Hauptstrasse",
       "gwr": "Hauptstr.",
-      "value": "Hauptstrasse",
+      "korrektur": "",
       "match": false
     },
     "hausnummer": {
       "sap": "12",
       "gwr": "12a",
-      "value": "12",
+      "korrektur": "",
       "match": false
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "",
       "gwr": "1456789",
-      "value": "1456789",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1020",
       "gwr": "1020",
-      "value": "1020",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1122",
       "gwr": "1121",
-      "value": "1122",
+      "korrektur": "",
       "match": false
     },
     "gbaup": {
       "sap": "8017",
       "gwr": "8016",
-      "value": "8017",
+      "korrektur": "",
       "match": false
     },
     "lat": {
       "sap": "47.65",
       "gwr": "47.6512",
-      "value": "47.6512",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "9.175",
       "gwr": "9.1756",
-      "value": "9.1756",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH293847561029",
-      "value": "CH293847561029",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "685",
       "gwr": "685",
-      "value": "685",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "310",
       "gwr": "310",
-      "value": "310",
+      "korrektur": "",
       "match": true
     },
     "images": [
@@ -282,106 +290,110 @@
     "dueDate": "2026-02-03",
     "lastUpdate": "2026-01-28T11:45:00Z",
     "lastUpdateBy": "S. Brunner",
+    "inGwr": true,
+    "gwrEgid": "1892345",
+    "mapLat": 47.4237,
+    "mapLng": 9.368,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "SG",
       "gwr": "SG",
-      "value": "SG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "St. Gallen",
       "gwr": "St. Gallen",
-      "value": "St. Gallen",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "9000",
       "gwr": "9000",
-      "value": "9000",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "St. Gallen",
       "gwr": "St. Gallen",
-      "value": "St. Gallen",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Bahnhofplatz",
       "gwr": "Bahnhofplatz",
-      "value": "Bahnhofplatz",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "1",
       "gwr": "1",
-      "value": "1",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "1892345",
       "gwr": "1892345",
-      "value": "1892345",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1241",
       "gwr": "1241",
-      "value": "1241",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8013",
       "gwr": "8013",
-      "value": "8013",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.4235",
       "gwr": "47.4237",
-      "value": "47.4237",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "9.3678",
       "gwr": "9.3680",
-      "value": "9.368",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH847291034856",
-      "value": "CH847291034856",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "3200",
       "gwr": "3200",
-      "value": "3200",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "1850",
       "gwr": "1850",
-      "value": "1850",
+      "korrektur": "",
       "match": true
     }
   },
@@ -400,106 +412,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-30T08:00:00Z",
     "lastUpdateBy": "T. Weber",
+    "inGwr": true,
+    "gwrEgid": "3456789",
+    "mapLat": 47.3834,
+    "mapLng": 8.5397,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "ZH",
       "gwr": "ZH",
-      "value": "ZH",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Zürich",
       "gwr": "Zürich",
-      "value": "Zürich",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8006",
       "gwr": "8006",
-      "value": "8006",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Zürich",
       "gwr": "Zürich",
-      "value": "Zürich",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Stampfenbachstrasse",
       "gwr": "Stampfenbachstrasse",
-      "value": "Stampfenbachstrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "85",
       "gwr": "85",
-      "value": "85",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "3456789",
       "gwr": "3456789",
-      "value": "3456789",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1220",
       "gwr": "1220",
-      "value": "1220",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
-      "value": "8015",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.3834",
       "gwr": "47.3834",
-      "value": "47.3834",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.5397",
       "gwr": "8.5397",
-      "value": "8.5397",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH583920174635",
-      "value": "CH583920174635",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "890",
       "gwr": "890",
-      "value": "890",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "520",
       "gwr": "520",
-      "value": "520",
+      "korrektur": "",
       "match": true
     }
   },
@@ -518,106 +534,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-25T16:20:00Z",
     "lastUpdateBy": "T. Weber",
+    "inGwr": true,
+    "gwrEgid": "5678901",
+    "mapLat": 46.948,
+    "mapLng": 7.4474,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "BE",
       "gwr": "BE",
-      "value": "BE",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Bern",
       "gwr": "Bern",
-      "value": "Bern",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "3003",
       "gwr": "3011",
-      "value": "3003",
+      "korrektur": "",
       "match": false
     },
     "ort": {
       "sap": "Bern",
       "gwr": "Bern",
-      "value": "Bern",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Bundesgasse",
       "gwr": "Bundes-Gasse",
-      "value": "Bundesgasse",
+      "korrektur": "",
       "match": false
     },
     "hausnummer": {
       "sap": "3",
       "gwr": "3",
-      "value": "3",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "5678901",
       "gwr": "5678901",
-      "value": "5678901",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1261",
       "gwr": "1261",
-      "value": "1261",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
-      "value": "8014",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "46.9478",
       "gwr": "46.9480",
-      "value": "46.948",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "7.4472",
       "gwr": "7.4474",
-      "value": "7.4474",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH291048573619",
-      "value": "CH291048573619",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1450",
       "gwr": "1450",
-      "value": "1450",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "780",
       "gwr": "764",
-      "value": "780",
+      "korrektur": "",
       "match": false
     }
   },
@@ -636,106 +656,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-20T10:00:00Z",
     "lastUpdateBy": "System",
+    "inGwr": true,
+    "gwrEgid": "9012999",
+    "mapLat": 46.8499,
+    "mapLng": 9.5329,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "GR",
       "gwr": "GR",
-      "value": "GR",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Chur",
       "gwr": "Chur",
-      "value": "Chur",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "7000",
       "gwr": "7000",
-      "value": "7000",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Chur",
       "gwr": "Chur",
-      "value": "Chur",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Grabenstrasse",
       "gwr": "Grabenstrasse",
-      "value": "Grabenstrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "1",
       "gwr": "1",
-      "value": "1",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "9012345",
       "gwr": "9012999",
-      "value": "9012999",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1251",
       "gwr": "1251",
-      "value": "1251",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8011",
       "gwr": "8017",
-      "value": "8017",
+      "korrektur": "",
       "match": false
     },
     "lat": {
       "sap": "46.8520",
       "gwr": "46.8499",
-      "value": "46.8499",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "9.5350",
       "gwr": "9.5329",
-      "value": "9.5329",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH738291045867",
-      "value": "CH738291045867",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "2100",
       "gwr": "2142",
-      "value": "2100",
+      "korrektur": "",
       "match": false
     },
     "footprintArea": {
       "sap": "950",
       "gwr": "950",
-      "value": "950",
+      "korrektur": "",
       "match": true
     }
   },
@@ -754,106 +778,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-26T13:10:00Z",
     "lastUpdateBy": "A. Meier",
+    "inGwr": true,
+    "gwrEgid": "2345678",
+    "mapLat": 47.4979,
+    "mapLng": 8.7246,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "ZH",
       "gwr": "ZH",
-      "value": "ZH",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Winterthur",
       "gwr": "Winterthur",
-      "value": "Winterthur",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8400",
       "gwr": "8400",
-      "value": "8400",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Winterthur",
       "gwr": "Winterthur",
-      "value": "Winterthur",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Technikumstrasse",
       "gwr": "Technikumstrasse",
-      "value": "Technikumstrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "8",
       "gwr": "8",
-      "value": "8",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "2345678",
       "gwr": "2345678",
-      "value": "2345678",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1263",
       "gwr": "1263",
-      "value": "1263",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "",
       "gwr": "8020",
-      "value": "8020",
+      "korrektur": "",
       "match": false
     },
     "lat": {
       "sap": "47.4977",
       "gwr": "47.4979",
-      "value": "47.4979",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.7244",
       "gwr": "8.7246",
-      "value": "8.7246",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH482910384756",
-      "value": "CH482910384756",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "5600",
       "gwr": "5600",
-      "value": "5600",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "2800",
       "gwr": "2800",
-      "value": "2800",
+      "korrektur": "",
       "match": true
     }
   },
@@ -872,106 +900,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-29T17:45:00Z",
     "lastUpdateBy": "M. Keller",
+    "inGwr": true,
+    "gwrEgid": "4567890",
+    "mapLat": 47.5533,
+    "mapLng": 8.8987,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "TG",
       "gwr": "TG",
-      "value": "TG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Frauenfeld",
       "gwr": "Frauenfeld",
-      "value": "Frauenfeld",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8510",
       "gwr": "8510",
-      "value": "8510",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Frauenfeld",
       "gwr": "Frauenfeld",
-      "value": "Frauenfeld",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Schlossmühlestrasse",
       "gwr": "Schlossmühlestrasse",
-      "value": "Schlossmühlestrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "15",
       "gwr": "15",
-      "value": "15",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "4567890",
       "gwr": "4567890",
-      "value": "4567890",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1020",
       "gwr": "1020",
-      "value": "1020",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1122",
       "gwr": "1122",
-      "value": "1122",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8018",
       "gwr": "8018",
-      "value": "8018",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.5531",
       "gwr": "47.5533",
-      "value": "47.5533",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.8985",
       "gwr": "8.8987",
-      "value": "8.8987",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH192837465019",
-      "value": "CH192837465019",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "720",
       "gwr": "720",
-      "value": "720",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "380",
       "gwr": "380",
-      "value": "380",
+      "korrektur": "",
       "match": true
     }
   },
@@ -990,106 +1022,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-30T09:30:00Z",
     "lastUpdateBy": "S. Brunner",
+    "inGwr": true,
+    "gwrEgid": "6789012",
+    "mapLat": 47.548,
+    "mapLng": 7.5896,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "BS",
       "gwr": "BS",
-      "value": "BS",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Basel",
       "gwr": "Basel",
-      "value": "Basel",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "4051",
       "gwr": "4051",
-      "value": "4051",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Basel",
       "gwr": "Basel",
-      "value": "Basel",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Elisabethenstrasse",
       "gwr": "Elisabethenstrasse",
-      "value": "Elisabethenstrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "51",
       "gwr": "51",
-      "value": "51",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "6789012",
       "gwr": "6789012",
-      "value": "6789012",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1220",
       "gwr": "1220",
-      "value": "1220",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8021",
       "gwr": "8021",
-      "value": "8021",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.5480",
       "gwr": "47.5480",
-      "value": "47.548",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "7.5896",
       "gwr": "7.5896",
-      "value": "7.5896",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH847291056382",
-      "value": "CH847291056382",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1100",
       "gwr": "1100",
-      "value": "1100",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "650",
       "gwr": "637",
-      "value": "650",
+      "korrektur": "",
       "match": false
     }
   },
@@ -1108,106 +1144,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-28T15:00:00Z",
     "lastUpdateBy": "M. Keller",
+    "inGwr": true,
+    "gwrEgid": "7890123",
+    "mapLat": 47.0502,
+    "mapLng": 8.3093,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "LU",
       "gwr": "LU",
-      "value": "LU",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Luzern",
       "gwr": "Luzern",
-      "value": "Luzern",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "6003",
       "gwr": "6003",
-      "value": "6003",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Luzern",
       "gwr": "Luzern",
-      "value": "Luzern",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Hirschengraben",
       "gwr": "Hirschengraben",
-      "value": "Hirschengraben",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "15",
       "gwr": "15a",
-      "value": "15",
+      "korrektur": "",
       "match": false
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "7890123",
       "gwr": "7890123",
-      "value": "7890123",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1020",
       "gwr": "1020",
-      "value": "1020",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1122",
       "gwr": "1122",
-      "value": "1122",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
-      "value": "8015",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.0500",
       "gwr": "47.0502",
-      "value": "47.0502",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.3091",
       "gwr": "8.3093",
-      "value": "8.3093",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH582910473856",
-      "value": "CH582910473856",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "680",
       "gwr": "680",
-      "value": "680",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "420",
       "gwr": "420",
-      "value": "420",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1226,106 +1266,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-16T08:30:00Z",
     "lastUpdateBy": "System",
+    "inGwr": true,
+    "gwrEgid": "8901234",
+    "mapLat": 46.2138,
+    "mapLng": 6.149,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "GE",
       "gwr": "GE",
-      "value": "GE",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Genève",
       "gwr": "Genève",
-      "value": "Genève",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "1202",
       "gwr": "1202",
-      "value": "1202",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Genève",
       "gwr": "Genève",
-      "value": "Genève",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Rue de Lausanne",
       "gwr": "Rue de Lausanne",
-      "value": "Rue de Lausanne",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "65",
       "gwr": "65",
-      "value": "65",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "",
       "gwr": "8901234",
-      "value": "8901234",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1251",
       "gwr": "1251",
-      "value": "1251",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
-      "value": "8014",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "46.2100",
       "gwr": "46.2138",
-      "value": "46.2138",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "6.1450",
       "gwr": "6.1490",
-      "value": "6.149",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH293847561029",
-      "value": "CH293847561029",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1800",
       "gwr": "1836",
-      "value": "1800",
+      "korrektur": "",
       "match": false
     },
     "footprintArea": {
       "sap": "920",
       "gwr": "920",
-      "value": "920",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1344,106 +1388,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-24T12:15:00Z",
     "lastUpdateBy": "S. Brunner",
+    "inGwr": true,
+    "gwrEgid": "9012345",
+    "mapLat": 46.005,
+    "mapLng": 8.952,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "TI",
       "gwr": "TI",
-      "value": "TI",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Lugano",
       "gwr": "Lugano",
-      "value": "Lugano",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "6900",
       "gwr": "6900",
-      "value": "6900",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Lugano",
       "gwr": "Lugano",
-      "value": "Lugano",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Via Nassa",
       "gwr": "Via Nassa",
-      "value": "Via Nassa",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "29",
       "gwr": "29",
-      "value": "29",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "9012345",
       "gwr": "9012345",
-      "value": "9012345",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1261",
       "gwr": "1261",
-      "value": "1261",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8017",
       "gwr": "8017",
-      "value": "8017",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "46.0048",
       "gwr": "46.0050",
-      "value": "46.005",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.9518",
       "gwr": "8.9520",
-      "value": "8.952",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH184729301856",
-      "value": "CH184729301856",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "950",
       "gwr": "950",
-      "value": "950",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "580",
       "gwr": "580",
-      "value": "580",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1462,106 +1510,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-29T10:00:00Z",
     "lastUpdateBy": "A. Meier",
+    "inGwr": true,
+    "gwrEgid": "1234567",
+    "mapLat": 47.3925,
+    "mapLng": 8.0444,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "AG",
       "gwr": "AG",
-      "value": "AG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Aarau",
       "gwr": "Aarau",
-      "value": "Aarau",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "5000",
       "gwr": "5000",
-      "value": "5000",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Aarau",
       "gwr": "Aarau",
-      "value": "Aarau",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Bahnhofstrasse",
       "gwr": "Bahnhofstr.",
-      "value": "Bahnhofstrasse",
+      "korrektur": "",
       "match": false
     },
     "hausnummer": {
       "sap": "20",
       "gwr": "20",
-      "value": "20",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "1234567",
       "gwr": "1234567",
-      "value": "1234567",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1220",
       "gwr": "1220",
-      "value": "1220",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8016",
       "gwr": "8017",
-      "value": "8017",
+      "korrektur": "",
       "match": false
     },
     "lat": {
       "sap": "47.3920",
       "gwr": "47.3925",
-      "value": "47.3925",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.0440",
       "gwr": "8.0444",
-      "value": "8.0444",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH738492015738",
-      "value": "CH738492015738",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1350",
       "gwr": "1350",
-      "value": "1350",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "720",
       "gwr": "706",
-      "value": "720",
+      "korrektur": "",
       "match": false
     }
   },
@@ -1580,106 +1632,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-28T16:30:00Z",
     "lastUpdateBy": "T. Weber",
+    "inGwr": true,
+    "gwrEgid": "2345678",
+    "mapLat": 47.2088,
+    "mapLng": 7.5378,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "SO",
       "gwr": "SO",
-      "value": "SO",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Solothurn",
       "gwr": "Solothurn",
-      "value": "Solothurn",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "4500",
       "gwr": "4500",
-      "value": "4500",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Solothurn",
       "gwr": "Solothurn",
-      "value": "Solothurn",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Hauptgasse",
       "gwr": "Hauptgasse",
-      "value": "Hauptgasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "5",
       "gwr": "5",
-      "value": "5",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "2345678",
       "gwr": "2345678",
-      "value": "2345678",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1272",
       "gwr": "1272",
-      "value": "1272",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
-      "value": "8015",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.2088",
       "gwr": "47.2088",
-      "value": "47.2088",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "7.5378",
       "gwr": "7.5378",
-      "value": "7.5378",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH849201573846",
-      "value": "CH849201573846",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "480",
       "gwr": "480",
-      "value": "480",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "320",
       "gwr": "320",
-      "value": "320",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1698,106 +1754,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-27T09:15:00Z",
     "lastUpdateBy": "M. Keller",
+    "inGwr": true,
+    "gwrEgid": "3456789",
+    "mapLat": 46.758,
+    "mapLng": 7.629,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "BE",
       "gwr": "BE",
-      "value": "BE",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Thun",
       "gwr": "Thun",
-      "value": "Thun",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "3600",
       "gwr": "3600",
-      "value": "3600",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Thun",
       "gwr": "Thun",
-      "value": "Thun",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Bälliz",
       "gwr": "Bälliz",
-      "value": "Bälliz",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "42",
       "gwr": "42",
-      "value": "42",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "3456789",
       "gwr": "3456789",
-      "value": "3456789",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1020",
       "gwr": "1020",
-      "value": "1020",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1122",
       "gwr": "1122",
-      "value": "1122",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8019",
       "gwr": "8019",
-      "value": "8019",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "46.758",
       "gwr": "46.758",
-      "value": "46.758",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "7.629",
       "gwr": "7.629",
-      "value": "7.629",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH582910384756",
-      "value": "CH582910384756",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "560",
       "gwr": "560",
-      "value": "560",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "380",
       "gwr": "380",
-      "value": "380",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1816,106 +1876,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-30T11:00:00Z",
     "lastUpdateBy": "S. Brunner",
+    "inGwr": true,
+    "gwrEgid": "4567890",
+    "mapLat": 47.1368,
+    "mapLng": 7.2467,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "BE",
       "gwr": "BE",
-      "value": "BE",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Biel/Bienne",
       "gwr": "Biel/Bienne",
-      "value": "Biel/Bienne",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "2502",
       "gwr": "2501",
-      "value": "2502",
+      "korrektur": "",
       "match": false
     },
     "ort": {
       "sap": "Biel/Bienne",
       "gwr": "Biel/Bienne",
-      "value": "Biel/Bienne",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Nidaugasse",
       "gwr": "Nidaugasse",
-      "value": "Nidaugasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "14",
       "gwr": "14",
-      "value": "14",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "",
       "gwr": "4567890",
-      "value": "4567890",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1251",
       "gwr": "1252",
-      "value": "1252",
+      "korrektur": "",
       "match": false
     },
     "gbaup": {
       "sap": "8013",
       "gwr": "8013",
-      "value": "8013",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "",
       "gwr": "47.1368",
-      "value": "47.1368",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "",
       "gwr": "7.2467",
-      "value": "7.2467",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH293018475639",
-      "value": "CH293018475639",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "1680",
       "gwr": "1714",
-      "value": "1680",
+      "korrektur": "",
       "match": false
     },
     "footprintArea": {
       "sap": "890",
       "gwr": "890",
-      "value": "890",
+      "korrektur": "",
       "match": true
     }
   },
@@ -1934,106 +1998,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-22T14:45:00Z",
     "lastUpdateBy": "System",
+    "inGwr": true,
+    "gwrEgid": "5678901",
+    "mapLat": 47.6961,
+    "mapLng": 8.635,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "SH",
       "gwr": "SH",
-      "value": "SH",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Schaffhausen",
       "gwr": "Schaffhausen",
-      "value": "Schaffhausen",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "8200",
       "gwr": "8200",
-      "value": "8200",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Schaffhausen",
       "gwr": "Schaffhausen",
-      "value": "Schaffhausen",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Vordergasse",
       "gwr": "Vordergasse",
-      "value": "Vordergasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "61",
       "gwr": "61",
-      "value": "61",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "5678901",
       "gwr": "5678901",
-      "value": "5678901",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1220",
       "gwr": "1220",
-      "value": "1220",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "",
       "gwr": "8014",
-      "value": "8014",
+      "korrektur": "",
       "match": false
     },
     "lat": {
       "sap": "47.6959",
       "gwr": "47.6961",
-      "value": "47.6961",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.6348",
       "gwr": "8.6350",
-      "value": "8.635",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH847291056382",
-      "value": "CH847291056382",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "420",
       "gwr": "420",
-      "value": "420",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "280",
       "gwr": "274",
-      "value": "280",
+      "korrektur": "",
       "match": false
     }
   },
@@ -2052,106 +2120,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-30T08:30:00Z",
     "lastUpdateBy": "M. Keller",
+    "inGwr": true,
+    "gwrEgid": "6789012",
+    "mapLat": 47.1724,
+    "mapLng": 8.5179,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "ZG",
       "gwr": "ZG",
-      "value": "ZG",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Zug",
       "gwr": "Zug",
-      "value": "Zug",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "6300",
       "gwr": "6300",
-      "value": "6300",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Zug",
       "gwr": "Zug",
-      "value": "Zug",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Baarerstrasse",
       "gwr": "Baarerstrasse",
-      "value": "Baarerstrasse",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "8",
       "gwr": "8",
-      "value": "8",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "6789012",
       "gwr": "6789012",
-      "value": "6789012",
+      "korrektur": "",
       "match": true
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1261",
       "gwr": "1261",
-      "value": "1261",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8022",
       "gwr": "8022",
-      "value": "8022",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "47.1724",
       "gwr": "47.1724",
-      "value": "47.1724",
+      "korrektur": "",
       "match": true
     },
     "lng": {
       "sap": "8.5179",
       "gwr": "8.5179",
-      "value": "8.5179",
+      "korrektur": "",
       "match": true
     },
     "egrid": {
       "sap": "",
       "gwr": "CH192837465019",
-      "value": "CH192837465019",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "780",
       "gwr": "780",
-      "value": "780",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "520",
       "gwr": "520",
-      "value": "520",
+      "korrektur": "",
       "match": true
     }
   },
@@ -2170,106 +2242,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-29T15:20:00Z",
     "lastUpdateBy": "T. Weber",
+    "inGwr": true,
+    "gwrEgid": "7890124",
+    "mapLat": 46.992,
+    "mapLng": 6.931,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "NE",
       "gwr": "NE",
-      "value": "NE",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Neuchâtel",
       "gwr": "Neuchâtel",
-      "value": "Neuchâtel",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "2000",
       "gwr": "2000",
-      "value": "2000",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Neuchâtel",
       "gwr": "Neuchâtel",
-      "value": "Neuchâtel",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Rue du Seyon",
       "gwr": "Rue du Seyon",
-      "value": "Rue du Seyon",
+      "korrektur": "",
       "match": true
     },
     "hausnummer": {
       "sap": "12",
       "gwr": "12",
-      "value": "12",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "7890123",
       "gwr": "7890124",
-      "value": "7890124",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1060",
       "gwr": "1060",
-      "value": "1060",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1263",
       "gwr": "1263",
-      "value": "1263",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8016",
       "gwr": "8016",
-      "value": "8016",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "46.990",
       "gwr": "46.992",
-      "value": "46.992",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "6.929",
       "gwr": "6.931",
-      "value": "6.931",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH738291045867",
-      "value": "CH738291045867",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "2200",
       "gwr": "2200",
-      "value": "2200",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "1100",
       "gwr": "1100",
-      "value": "1100",
+      "korrektur": "",
       "match": true
     }
   },
@@ -2288,106 +2364,110 @@
     "dueDate": null,
     "lastUpdate": "2026-01-18T10:00:00Z",
     "lastUpdateBy": "System",
+    "inGwr": true,
+    "gwrEgid": "8901234",
+    "mapLat": 46.2333,
+    "mapLng": 7.3592,
     "country": {
       "sap": "CH",
       "gwr": "CH",
-      "value": "CH",
+      "korrektur": "",
       "match": true
     },
     "kanton": {
       "sap": "VS",
       "gwr": "VS",
-      "value": "VS",
+      "korrektur": "",
       "match": true
     },
     "gemeinde": {
       "sap": "Sion",
       "gwr": "Sion",
-      "value": "Sion",
+      "korrektur": "",
       "match": true
     },
     "plz": {
       "sap": "1950",
       "gwr": "1950",
-      "value": "1950",
+      "korrektur": "",
       "match": true
     },
     "ort": {
       "sap": "Sion",
       "gwr": "Sion",
-      "value": "Sion",
+      "korrektur": "",
       "match": true
     },
     "strasse": {
       "sap": "Avenue de la Gare",
       "gwr": "Av. de la Gare",
-      "value": "Avenue de la Gare",
+      "korrektur": "",
       "match": false
     },
     "hausnummer": {
       "sap": "3",
       "gwr": "3",
-      "value": "3",
+      "korrektur": "",
       "match": true
     },
     "zusatz": {
       "sap": "",
       "gwr": "",
-      "value": "",
+      "korrektur": "",
       "match": true
     },
     "egid": {
       "sap": "",
       "gwr": "8901234",
-      "value": "8901234",
+      "korrektur": "",
       "match": false
     },
     "gkat": {
       "sap": "1020",
       "gwr": "1020",
-      "value": "1020",
+      "korrektur": "",
       "match": true
     },
     "gklas": {
       "sap": "1122",
       "gwr": "1122",
-      "value": "1122",
+      "korrektur": "",
       "match": true
     },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
-      "value": "8015",
+      "korrektur": "",
       "match": true
     },
     "lat": {
       "sap": "",
       "gwr": "46.2333",
-      "value": "46.2333",
+      "korrektur": "",
       "match": false
     },
     "lng": {
       "sap": "",
       "gwr": "7.3592",
-      "value": "7.3592",
+      "korrektur": "",
       "match": false
     },
     "egrid": {
       "sap": "",
       "gwr": "CH482910573846",
-      "value": "CH482910573846",
+      "korrektur": "",
       "match": false
     },
     "parcelArea": {
       "sap": "920",
       "gwr": "920",
-      "value": "920",
+      "korrektur": "",
       "match": true
     },
     "footprintArea": {
       "sap": "540",
       "gwr": "540",
-      "value": "540",
+      "korrektur": "",
       "match": true
     }
   }

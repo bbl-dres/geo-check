@@ -163,7 +163,7 @@ export function getFilteredBuildings() {
 
   // Kanton filter
   if (state.filterKanton.length > 0) {
-    filtered = filtered.filter(b => state.filterKanton.includes(b.kanton.value));
+    filtered = filtered.filter(b => state.filterKanton.includes(getFieldDisplayValue(b.kanton)));
   }
 
   // Confidence filter
@@ -206,9 +206,9 @@ export function getFilteredBuildings() {
     filtered = filtered.filter(b =>
       (b.name?.toLowerCase() || '').includes(q) ||
       (b.id?.toLowerCase() || '').includes(q) ||
-      (b.strasse?.value?.toLowerCase() || '').includes(q) ||
-      (b.ort?.value?.toLowerCase() || '').includes(q) ||
-      (b.kanton?.value?.toLowerCase() || '').includes(q)
+      (getFieldDisplayValue(b.strasse)?.toLowerCase() || '').includes(q) ||
+      (getFieldDisplayValue(b.ort)?.toLowerCase() || '').includes(q) ||
+      (getFieldDisplayValue(b.kanton)?.toLowerCase() || '').includes(q)
     );
   }
 
@@ -367,6 +367,26 @@ export function getDataLabel(key) {
   return labels[key] || key;
 }
 
+/**
+ * Get the display value for a comparison field.
+ * Priority: korrektur (if not empty) > gwr > sap
+ * @param {Object} field - Field object with { sap, gwr, korrektur, match }
+ * @returns {string} The value to display
+ */
+export function getFieldDisplayValue(field) {
+  if (!field) return '';
+  // User correction takes priority
+  if (field.korrektur && field.korrektur.trim() !== '') {
+    return field.korrektur;
+  }
+  // Then GWR value
+  if (field.gwr && field.gwr.trim() !== '') {
+    return field.gwr;
+  }
+  // Fallback to SAP
+  return field.sap || '';
+}
+
 export function formatRelativeTime(isoString) {
   if (!isoString) return '—';
   const date = new Date(isoString);
@@ -419,4 +439,92 @@ export function formatDisplayDate(dateStr) {
     month: 'short',
     year: 'numeric'
   });
+}
+
+// ========================================
+// GWR API Integration
+// ========================================
+
+// Cache for GWR lookups to avoid redundant API calls
+const gwrCache = new Map();
+
+/**
+ * Lookup building data from GWR API by EGID
+ * @param {string} egid - The EGID to look up
+ * @returns {Promise<Object|null>} Building data or null if not found
+ */
+export async function lookupGwrByEgid(egid) {
+  if (!egid || egid.trim() === '') {
+    return null;
+  }
+
+  // Check cache first
+  const cacheKey = egid.trim();
+  if (gwrCache.has(cacheKey)) {
+    return gwrCache.get(cacheKey);
+  }
+
+  try {
+    const params = new URLSearchParams({
+      layer: 'ch.bfs.gebaeude_wohnungs_register',
+      searchText: egid,
+      searchField: 'egid',
+      returnGeometry: 'true',
+      contains: 'false',
+      sr: '4326'  // WGS84 coordinates
+    });
+
+    const response = await fetch(
+      `https://api3.geo.admin.ch/rest/services/ech/MapServer/find?${params}`
+    );
+
+    if (!response.ok) {
+      console.error('GWR API error:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.results || data.results.length === 0) {
+      // Cache the null result to avoid repeated lookups
+      gwrCache.set(cacheKey, null);
+      return null;
+    }
+
+    const result = data.results[0];
+    const attr = result.attributes;
+
+    // Map API response to our field structure
+    const gwrData = {
+      egid: attr.egid,
+      plz: String(attr.dplz4 || ''),
+      ort: attr.ggdename || '',
+      strasse: attr.strname?.[0] || '',
+      hausnummer: attr.deinr || '',
+      kanton: attr.gdekt || '',
+      gemeinde: attr.ggdename || '',
+      egrid: attr.egrid || '',
+      gkat: String(attr.gkat || ''),
+      gklas: String(attr.gklas || ''),
+      gbaup: String(attr.gbaup || ''),
+      footprintArea: String(attr.garea || ''),
+      lat: result.geometry?.y || null,
+      lng: result.geometry?.x || null
+    };
+
+    // Cache the result
+    gwrCache.set(cacheKey, gwrData);
+
+    return gwrData;
+  } catch (error) {
+    console.error('GWR lookup failed:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear the GWR cache (useful when data might have changed)
+ */
+export function clearGwrCache() {
+  gwrCache.clear();
 }

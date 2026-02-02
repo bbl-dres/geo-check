@@ -12,7 +12,8 @@ import {
   getTagLabel,
   getErrorType,
   formatRelativeTime,
-  formatDateTime
+  formatDateTime,
+  getFieldDisplayValue
 } from './state.js';
 import { map } from './map.js';
 
@@ -79,7 +80,7 @@ function getSearchFilteredBuildings() {
       const searchFields = [
         b.id,
         b.name,
-        b.kanton?.value,
+        getFieldDisplayValue(b.kanton),
         getStatusLabel(b.kanbanStatus),
         b.assignee || ''
       ].map(f => (f || '').toLowerCase());
@@ -134,8 +135,8 @@ function getSortedBuildings(buildings) {
         valB = (b.name || '').toLowerCase();
         break;
       case 'kanton':
-        valA = (a.kanton?.value || '').toLowerCase();
-        valB = (b.kanton?.value || '').toLowerCase();
+        valA = (getFieldDisplayValue(a.kanton) || '').toLowerCase();
+        valB = (getFieldDisplayValue(b.kanton) || '').toLowerCase();
         break;
       case 'portfolio':
         valA = (a.portfolio || '').toLowerCase();
@@ -409,7 +410,7 @@ export function renderTableView() {
             </div>
           </td>
           <td data-col="name">${building.name}</td>
-          <td data-col="kanton">${building.kanton.value}</td>
+          <td data-col="kanton">${getFieldDisplayValue(building.kanton)}</td>
           <td data-col="portfolio">${building.portfolio || '<span class="text-muted">—</span>'}</td>
           <td data-col="status">
             <span class="status-badge status-${building.kanbanStatus || 'backlog'}">${statusLabel}</span>
@@ -525,7 +526,7 @@ function exportCSV(buildings) {
   const rows = buildings.map(b => [
     b.id,
     `"${(b.name || '').replace(/"/g, '""')}"`,
-    b.kanton?.value || '',
+    getFieldDisplayValue(b.kanton) || '',
     getStatusLabel(b.kanbanStatus),
     b.confidence.total,
     b.priority || 'medium',
@@ -550,7 +551,7 @@ function exportGeoJSON(buildings) {
     properties: {
       id: b.id,
       name: b.name,
-      kanton: b.kanton?.value || '',
+      kanton: getFieldDisplayValue(b.kanton) || '',
       status: b.kanbanStatus,
       confidence: b.confidence.total,
       priority: b.priority,
@@ -558,7 +559,7 @@ function exportGeoJSON(buildings) {
     },
     geometry: {
       type: 'Point',
-      coordinates: [parseFloat(b.lng.value), parseFloat(b.lat.value)] // GeoJSON uses [lon, lat]
+      coordinates: [b.mapLng, b.mapLat] // GeoJSON uses [lon, lat]
     }
   }));
 

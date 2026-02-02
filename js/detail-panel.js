@@ -15,7 +15,9 @@ import {
   getDataLabel,
   formatRelativeTime,
   formatDateTime,
-  formatDisplayDate
+  formatDisplayDate,
+  getFieldDisplayValue,
+  lookupGwrByEgid
 } from './state.js';
 import { map, markers } from './map.js';
 
@@ -284,12 +286,12 @@ export function renderDetailPanel(building) {
 // Data Comparison Table
 // ========================================
 
-// Fields that follow the three-value comparison pattern (sap, gwr, value)
+// Fields that follow the three-value comparison pattern (sap, gwr, korrektur)
 // Primary fields: essential for address verification, always visible
 // 'coords' is a virtual field that combines lat/lng into one row
-// NOTE: EGID is first - user testing question: can we fetch all data from GWR API using EGID?
+// NOTE: 'inGwr' is a special first row (dropdown) before EGID
 const PRIMARY_FIELDS = [
-  'egid',  // First position - key field for GWR lookup
+  'egid',  // Key field for GWR lookup (editable in GWR column)
   'plz', 'ort', 'strasse', 'hausnummer',
   'coords'
 ];
@@ -304,10 +306,13 @@ const SECONDARY_FIELDS = [
 // Combined for iteration (primary first, then secondary)
 const COMPARED_FIELDS = [...PRIMARY_FIELDS, ...SECONDARY_FIELDS];
 
-// Fields that are editable in edit mode
-// USER TESTING: Currently only EGID is editable - idea is to fetch all data from GWR API
-// If users don't like this, we can expand EDITABLE_FIELDS to include more fields
-const EDITABLE_FIELDS = ['egid'];
+// Fields editable in the Korrektur column (all comparison fields except coords)
+const KORREKTUR_EDITABLE_FIELDS = [
+  'plz', 'ort', 'strasse', 'hausnummer',
+  'country', 'kanton', 'gemeinde', 'zusatz',
+  'egrid', 'parcelArea', 'footprintArea',
+  'gkat', 'gklas', 'gbaup'
+];
 
 // All real data fields (for edit mode saving)
 const ALL_DATA_FIELDS = [
@@ -332,17 +337,27 @@ export function renderDataComparison(building) {
   const container = document.getElementById('data-comparison');
   const isEditMode = state.editMode;
 
-  // Get current lat/lng (from edit state or building value)
-  const currentLat = state.editedCoords ? state.editedCoords.lat : parseFloat(building.lat.value);
-  const currentLng = state.editedCoords ? state.editedCoords.lng : parseFloat(building.lng.value);
+  // Get current lat/lng (from edit state or building mapLat/mapLng)
+  const currentLat = state.editedCoords ? state.editedCoords.lat : building.mapLat;
+  const currentLng = state.editedCoords ? state.editedCoords.lng : building.mapLng;
 
-  container.innerHTML = COMPARED_FIELDS.map(key => {
+  // Build rows HTML
+  let rowsHtml = '';
+
+  // First row: "Gebäude im GWR?" (inGwr) - special dropdown row
+  const inGwrRow = renderInGwrRow(building, isEditMode);
+  rowsHtml += inGwrRow;
+
+  // Render data comparison fields
+  rowsHtml += COMPARED_FIELDS.map(key => {
     // Special handling for combined coordinates row
     if (key === 'coords') {
-      const sapCoords = formatCoords(building.lat.sap, building.lng.sap);
-      const gwrCoords = formatCoords(building.lat.gwr, building.lng.gwr);
-      const valueCoords = `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`;
-      const isMatch = building.lat.match && building.lng.match;
+      const sapCoords = formatCoords(building.lat?.sap, building.lng?.sap);
+      const gwrCoords = formatCoords(building.lat?.gwr, building.lng?.gwr);
+      const korrekturCoords = currentLat && currentLng
+        ? `${currentLat.toFixed(4)}, ${currentLng.toFixed(4)}`
+        : '';
+      const isMatch = building.lat?.match && building.lng?.match;
       const matchIcon = isMatch
         ? '<i data-lucide="check" class="match-icon match"></i>'
         : '<i data-lucide="x" class="match-icon mismatch"></i>';
@@ -353,8 +368,9 @@ export function renderDataComparison(building) {
             <td class="col-attr">Koordinaten</td>
             <td class="col-sap ref-locked">${sapCoords}</td>
             <td class="col-gwr ref-locked">${gwrCoords}</td>
-            <td class="col-value edit-cell">
-              <span class="edit-locked" id="edit-coords-display">${valueCoords}</span>
+            <td class="col-korrektur edit-cell">
+              <span class="edit-locked" id="edit-coords-display">${korrekturCoords}</span>
+              <span class="edit-hint">Marker ziehen</span>
             </td>
             <td class="col-match"></td>
           </tr>
@@ -365,11 +381,16 @@ export function renderDataComparison(building) {
             <td class="col-attr">Koordinaten</td>
             <td class="col-sap">${sapCoords}</td>
             <td class="col-gwr">${gwrCoords}</td>
-            <td class="col-value">${valueCoords}</td>
+            <td class="col-korrektur">${korrekturCoords}</td>
             <td class="col-match">${matchIcon}</td>
           </tr>
         `;
       }
+    }
+
+    // Special handling for EGID - editable in GWR column
+    if (key === 'egid') {
+      return renderEgidRow(building, isEditMode);
     }
 
     const field = building[key];
@@ -380,7 +401,10 @@ export function renderDataComparison(building) {
 
     const sapValue = field.sap || '';
     const gwrValue = field.gwr || '';
-    const canonicalValue = field.value || '';
+    const korrekturValue = field.korrektur || '';
+
+    // Display value uses priority: korrektur > gwr > sap
+    const displayValue = getFieldDisplayValue(field);
 
     const isMatch = field.match;
     const matchIcon = isMatch
@@ -388,34 +412,200 @@ export function renderDataComparison(building) {
       : '<i data-lucide="x" class="match-icon mismatch"></i>';
 
     if (isEditMode) {
-      const isEditable = EDITABLE_FIELDS.includes(key);
-      const valueCell = isEditable
-        ? `<input type="text" class="edit-input" data-field="${key}" value="${canonicalValue}" placeholder="">`
-        : `<span class="edit-locked">${canonicalValue}</span>`;
+      // In edit mode: SAP and GWR are read-only, Korrektur is editable
+      const isKorrekturEditable = KORREKTUR_EDITABLE_FIELDS.includes(key);
+      const korrekturCell = isKorrekturEditable
+        ? `<input type="text" class="edit-input" data-field="${key}" data-column="korrektur" value="${korrekturValue}" placeholder="${gwrValue || sapValue}">`
+        : `<span class="edit-locked">${korrekturValue}</span>`;
 
       return `
-        <tr class="data-row edit-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}${isEditable ? ' editable' : ''}">
+        <tr class="data-row edit-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}">
           <td class="col-attr">${getDataLabel(key)}</td>
           <td class="col-sap ref-locked">${sapValue}</td>
           <td class="col-gwr ref-locked">${gwrValue}</td>
-          <td class="col-value edit-cell">${valueCell}</td>
+          <td class="col-korrektur edit-cell">${korrekturCell}</td>
           <td class="col-match"></td>
         </tr>
       `;
     } else {
+      // In view mode: show actual korrektur value (empty if not set)
       return `
         <tr class="data-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}">
           <td class="col-attr">${getDataLabel(key)}</td>
           <td class="col-sap">${sapValue}</td>
           <td class="col-gwr">${gwrValue}</td>
-          <td class="col-value">${canonicalValue}</td>
+          <td class="col-korrektur">${korrekturValue}</td>
           <td class="col-match">${matchIcon}</td>
         </tr>
       `;
     }
   }).join('');
 
+  container.innerHTML = rowsHtml;
+
+  // Setup event handlers for edit mode
+  if (isEditMode) {
+    setupEditModeHandlers(building);
+  }
+
   updateEditButton();
+}
+
+// ========================================
+// InGwr Row (Is Building in GWR?)
+// ========================================
+function renderInGwrRow(building, isEditMode) {
+  const inGwr = building.inGwr;
+  const displayText = inGwr === true ? 'Ja' : inGwr === false ? 'Nein' : '—';
+
+  if (isEditMode) {
+    // Dropdown only in GWR column
+    return `
+      <tr class="data-row edit-row ingwr-row">
+        <td class="col-attr">Gebäude im GWR?</td>
+        <td class="col-sap ref-locked">—</td>
+        <td class="col-gwr edit-cell">
+          <select class="edit-select" id="edit-inGwr">
+            <option value="" ${inGwr === null || inGwr === undefined ? 'selected' : ''}>—</option>
+            <option value="true" ${inGwr === true ? 'selected' : ''}>Ja</option>
+            <option value="false" ${inGwr === false ? 'selected' : ''}>Nein</option>
+          </select>
+        </td>
+        <td class="col-korrektur ref-locked">—</td>
+        <td class="col-match"></td>
+      </tr>
+    `;
+  } else {
+    return `
+      <tr class="data-row ingwr-row">
+        <td class="col-attr">Gebäude im GWR?</td>
+        <td class="col-sap">—</td>
+        <td class="col-gwr">${displayText}</td>
+        <td class="col-korrektur">—</td>
+        <td class="col-match"></td>
+      </tr>
+    `;
+  }
+}
+
+// ========================================
+// EGID Row (Special: GWR column is editable)
+// ========================================
+function renderEgidRow(building, isEditMode) {
+  const field = building.egid;
+  if (!field) return '';
+
+  const sapValue = field.sap || '';
+  const gwrValue = building.gwrEgid || field.gwr || '';
+  const korrekturValue = field.korrektur || '';
+
+  const displayValue = getFieldDisplayValue(field);
+  const isMatch = field.match;
+  const matchIcon = isMatch
+    ? '<i data-lucide="check" class="match-icon match"></i>'
+    : '<i data-lucide="x" class="match-icon mismatch"></i>';
+
+  if (isEditMode) {
+    // EGID: SAP read-only, GWR editable (triggers API lookup), Korrektur read-only
+    return `
+      <tr class="data-row edit-row egid-row">
+        <td class="col-attr">${getDataLabel('egid')}</td>
+        <td class="col-sap ref-locked">${sapValue}</td>
+        <td class="col-gwr edit-cell">
+          <input type="text" class="edit-input" id="edit-gwrEgid" data-field="gwrEgid" value="${gwrValue}" placeholder="EGID eingeben">
+          <button type="button" class="btn-gwr-lookup" id="btn-gwr-lookup" title="GWR-Daten abrufen">
+            <i data-lucide="search" class="icon-sm"></i>
+          </button>
+        </td>
+        <td class="col-korrektur ref-locked">${korrekturValue || '—'}</td>
+        <td class="col-match"></td>
+      </tr>
+    `;
+  } else {
+    return `
+      <tr class="data-row egid-row">
+        <td class="col-attr">${getDataLabel('egid')}</td>
+        <td class="col-sap">${sapValue}</td>
+        <td class="col-gwr">${gwrValue}</td>
+        <td class="col-korrektur">${korrekturValue}</td>
+        <td class="col-match">${matchIcon}</td>
+      </tr>
+    `;
+  }
+}
+
+// ========================================
+// Edit Mode Event Handlers
+// ========================================
+function setupEditModeHandlers(building) {
+  // GWR EGID lookup button
+  const lookupBtn = document.getElementById('btn-gwr-lookup');
+  const egidInput = document.getElementById('edit-gwrEgid');
+
+  if (lookupBtn && egidInput) {
+    lookupBtn.addEventListener('click', async () => {
+      const egid = egidInput.value.trim();
+      if (!egid) {
+        alert('Bitte EGID eingeben');
+        return;
+      }
+
+      lookupBtn.disabled = true;
+      lookupBtn.innerHTML = '<i data-lucide="loader-2" class="icon-sm spin"></i>';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      try {
+        const gwrData = await lookupGwrByEgid(egid);
+
+        if (!gwrData) {
+          alert('Kein Gebäude mit dieser EGID gefunden');
+          return;
+        }
+
+        // Populate GWR column values in the building object (temporary for edit mode)
+        // These will be saved when user clicks "Speichern"
+        building.gwrEgid = egid;
+
+        // Update field GWR values from API response
+        const fieldsToUpdate = ['plz', 'ort', 'strasse', 'hausnummer', 'kanton', 'gemeinde', 'egrid', 'gkat', 'gklas', 'gbaup', 'footprintArea'];
+        fieldsToUpdate.forEach(fieldName => {
+          if (building[fieldName] && gwrData[fieldName]) {
+            building[fieldName].gwr = gwrData[fieldName];
+          }
+        });
+
+        // Update coordinates if available
+        if (gwrData.lat && gwrData.lng) {
+          if (building.lat) building.lat.gwr = String(gwrData.lat);
+          if (building.lng) building.lng.gwr = String(gwrData.lng);
+        }
+
+        // Set inGwr to true since we found the building
+        building.inGwr = true;
+
+        // Re-render the comparison table with updated GWR data
+        renderDataComparison(building);
+
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
+      } catch (error) {
+        console.error('GWR lookup error:', error);
+        alert('Fehler beim Abrufen der GWR-Daten');
+      } finally {
+        lookupBtn.disabled = false;
+        lookupBtn.innerHTML = '<i data-lucide="search" class="icon-sm"></i>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+      }
+    });
+
+    // Also trigger lookup on Enter key in EGID input
+    egidInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        lookupBtn.click();
+      }
+    });
+  }
 }
 
 // ========================================
@@ -481,10 +671,15 @@ export function enterEditMode() {
       state.originalBuildingData[field] = JSON.parse(JSON.stringify(building[field]));
     }
   });
+  // Also store inGwr and gwrEgid
+  state.originalBuildingData.inGwr = building.inGwr;
+  state.originalBuildingData.gwrEgid = building.gwrEgid;
+  state.originalBuildingData.mapLat = building.mapLat;
+  state.originalBuildingData.mapLng = building.mapLng;
 
   state.editedCoords = {
-    lat: parseFloat(building.lat.value),
-    lng: parseFloat(building.lng.value)
+    lat: building.mapLat,
+    lng: building.mapLng
   };
   state.editMode = true;
 
@@ -528,45 +723,63 @@ export function exitEditMode(save) {
   const marker = markers[building.id];
 
   if (save) {
-    // Save edited values to the canonical 'value' field (flat structure)
-    document.querySelectorAll('.edit-input').forEach(input => {
+    // Save inGwr dropdown value
+    const inGwrSelect = document.getElementById('edit-inGwr');
+    if (inGwrSelect) {
+      const val = inGwrSelect.value;
+      building.inGwr = val === 'true' ? true : val === 'false' ? false : null;
+    }
+
+    // Save gwrEgid from the GWR column input
+    const gwrEgidInput = document.getElementById('edit-gwrEgid');
+    if (gwrEgidInput) {
+      building.gwrEgid = gwrEgidInput.value.trim();
+    }
+
+    // Save edited korrektur values
+    document.querySelectorAll('.edit-input[data-column="korrektur"]').forEach(input => {
       const field = input.dataset.field;
       const newValue = input.value.trim();
       if (building[field]) {
-        building[field].value = newValue;
-        // Match is true when sap, gwr, and value all match
-        const sap = building[field].sap;
-        const gwr = building[field].gwr;
-        building[field].match = (sap === gwr) && (gwr === newValue);
+        building[field].korrektur = newValue;
+        // Recalculate match: true when sap === gwr === display value
+        // Display value is korrektur if set, else gwr, else sap
+        const sap = building[field].sap || '';
+        const gwr = building[field].gwr || '';
+        const displayVal = newValue || gwr || sap;
+        building[field].match = (sap === gwr) && (gwr === displayVal);
       }
     });
 
-    // Save coordinates (lat/lng are separate fields now)
+    // Save coordinates to mapLat/mapLng
     if (state.editedCoords) {
+      building.mapLat = state.editedCoords.lat;
+      building.mapLng = state.editedCoords.lng;
+
+      // Also update lat/lng korrektur fields for display
       const newLatValue = state.editedCoords.lat.toFixed(4);
       const newLngValue = state.editedCoords.lng.toFixed(4);
 
-      building.lat.value = newLatValue;
-      building.lng.value = newLngValue;
+      if (building.lat) building.lat.korrektur = newLatValue;
+      if (building.lng) building.lng.korrektur = newLngValue;
 
-      // Update match for lat/lng (hardcoded for demo, backend will calculate)
-      // Match if close enough to both sap and gwr
+      // Update match for lat/lng
       const tolerance = 0.001;
       const latVal = state.editedCoords.lat;
       const lngVal = state.editedCoords.lng;
 
-      const sapLat = building.lat.sap ? parseFloat(building.lat.sap) : null;
-      const sapLng = building.lng.sap ? parseFloat(building.lng.sap) : null;
-      const gwrLat = building.lat.gwr ? parseFloat(building.lat.gwr) : null;
-      const gwrLng = building.lng.gwr ? parseFloat(building.lng.gwr) : null;
+      const sapLat = building.lat?.sap ? parseFloat(building.lat.sap) : null;
+      const sapLng = building.lng?.sap ? parseFloat(building.lng.sap) : null;
+      const gwrLat = building.lat?.gwr ? parseFloat(building.lat.gwr) : null;
+      const gwrLng = building.lng?.gwr ? parseFloat(building.lng.gwr) : null;
 
       const latSapMatch = sapLat !== null && Math.abs(latVal - sapLat) < tolerance;
       const latGwrMatch = gwrLat !== null && Math.abs(latVal - gwrLat) < tolerance;
       const lngSapMatch = sapLng !== null && Math.abs(lngVal - sapLng) < tolerance;
       const lngGwrMatch = gwrLng !== null && Math.abs(lngVal - gwrLng) < tolerance;
 
-      building.lat.match = latSapMatch && latGwrMatch;
-      building.lng.match = lngSapMatch && lngGwrMatch;
+      if (building.lat) building.lat.match = latSapMatch && latGwrMatch;
+      if (building.lng) building.lng.match = lngSapMatch && lngGwrMatch;
     }
 
     building.lastUpdate = new Date().toISOString();
@@ -579,12 +792,15 @@ export function exitEditMode(save) {
           building[field] = state.originalBuildingData[field];
         }
       });
+      // Restore inGwr, gwrEgid, and map coordinates
+      building.inGwr = state.originalBuildingData.inGwr;
+      building.gwrEgid = state.originalBuildingData.gwrEgid;
+      building.mapLat = state.originalBuildingData.mapLat;
+      building.mapLng = state.originalBuildingData.mapLng;
     }
     if (marker) {
       // Mapbox: setLngLat uses [lng, lat] order
-      const lng = parseFloat(building.lng.value);
-      const lat = parseFloat(building.lat.value);
-      marker.setLngLat([lng, lat]);
+      marker.setLngLat([building.mapLng, building.mapLat]);
     }
   }
 
