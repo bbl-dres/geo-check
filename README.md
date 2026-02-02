@@ -1,6 +1,8 @@
 # BBL Geo-Check
 
-A web application for validating and managing the Swiss Federal Building Inventory (Liegenschaftsinventar). Built for the Federal Office for Buildings and Logistics (BBL).
+**This is a prototype for demonstration purposes.**
+
+A prototype web application for validating and managing the Swiss Federal Building Inventory (Liegenschaftsinventar). Built for the Federal Office for Buildings and Logistics (BBL).
 
 ![Preview](assets/preview1.jpg)
 
