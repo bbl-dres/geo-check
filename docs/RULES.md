@@ -29,10 +29,9 @@ When discrepancies exist, the system flags them for manual review. The **canonic
 - Coordinates must fall within Swiss borders
 - Address components (PLZ, Ort, Strasse) must resolve to a location near the stored coordinates
 - Coordinate precision must be sufficient for building-level identification (≥5 decimal places)
-- Tolerance thresholds account for legitimate differences:
+- Tolerance thresholds account for legitimate coordinate deviations:
   - **Urban areas:** 5-10m deviation acceptable
   - **Rural areas:** 10-20m deviation acceptable
-  - **Street name variations:** Abbreviations (Str./Strasse) are normalized before comparison
 
 ### 1.3 Actionable Feedback
 
@@ -88,6 +87,24 @@ Buildings cannot be marked as "Erledigt" (done) until:
 - All **error**-level validation issues are resolved
 - Required fields (EGID, address, coordinates) are present
 - A responsible person has verified the data
+
+### 1.7 No Auto-Corrections
+
+**The validation engine only informs — it never auto-corrects data.**
+
+This is a foundational principle:
+
+| Principle | Rationale |
+|-----------|-----------|
+| **Inform only** | The system detects and reports discrepancies, but does not modify data |
+| **Human decision** | Data stewards review each issue and decide the correct action |
+| **Audit trail** | All corrections are manual and traceable to a responsible person |
+| **No normalization** | Values are compared as-is; no automatic transformation of addresses, names, or codes |
+
+**Why no auto-corrections:**
+- Automated fixes may propagate errors (e.g., "correcting" a valid edge case)
+- Data ownership requires human accountability
+- Legal compliance (VGWR) requires traceable manual verification
 
 ---
 
@@ -149,14 +166,19 @@ These rules ensure that SAP RE-FX records can be uniquely linked to the correct 
 | `ID-002` | EGID Format | EGID format valid (1-9 digits, no leading zeros) | error |
 | `ID-003` | EGID verifiziert | EGID points to correct building in GWR (not a different building) | error |
 | `ID-004` | EGRID vorhanden | EGRID exists for cadastre/ÖREB linkage | warning |
+| `ID-005` | EGID Duplikat | Same EGID used for multiple SAP records | error |
+| `ID-006` | Koordinaten Duplikat | Same coordinates used for multiple SAP records | warning |
+| `ID-007` | Mehrere GWR-Gebäude | One SAP record links to multiple GWR buildings (1:N) | info |
 
 **Error consolidation:** If EGID is missing (`ID-001`), do not also trigger `ID-002` or `ID-003`.
+
+**Note on ID-007:** It is valid for one SAP RE-FX object to represent multiple physical buildings in GWR (building consolidation). This is flagged as `info` for awareness, not as an error.
 
 ### 3.2 Adresse (`address`)
 
 **SAP ↔ GWR address consistency per GeoNV.**
 
-Compares address components between SAP RE-FX and GWR. Street names are normalized before comparison (e.g., "Str." → "Strasse").
+Compares address components between SAP RE-FX and GWR. Values are compared as-is without normalization (see §1.7).
 
 | Rule ID | Name | Field | Description | Severity |
 |---------|------|-------|-------------|----------|
@@ -166,15 +188,14 @@ Compares address components between SAP RE-FX and GWR. Street names are normaliz
 | `ADR-004` | BFS-Nr | `bfsNr` | BFS municipality number differs | warning |
 | `ADR-005` | PLZ | `plz` | Postal code differs | warning |
 | `ADR-006` | Ort | `ort` | Locality differs | warning |
-| `ADR-007` | Strasse | `strasse` | Street name differs (after normalization) | info |
+| `ADR-007` | Strasse | `strasse` | Street name differs | info |
 | `ADR-008` | Hausnummer | `hausnummer` | House number differs or missing | warning |
 | `ADR-009` | Zusatz | `zusatz` | Address supplement differs | info |
 
-**Normalization rules:**
-- Street abbreviations: `Str.` → `Strasse`, `Pl.` → `Platz`, `Av.` → `Avenue`
-- Case-insensitive comparison
-- Whitespace trimming
-- Empty values treated as missing (not mismatched)
+**Comparison behavior:**
+- Values compared exactly as stored (no normalization per §1.7)
+- Empty values in both sources = no error
+- Empty in one source, value in other = flagged as difference
 
 ### 3.3 Geometrie (`geometry`)
 
@@ -212,10 +233,10 @@ The following checks are planned for future releases:
 
 | Rule Set | Rules | Errors | Warnings | Info |
 |----------|-------|--------|----------|------|
-| Identifikation | 4 | 3 | 1 | 0 |
+| Identifikation | 7 | 4 | 2 | 1 |
 | Adresse | 9 | 1 | 6 | 2 |
 | Geometrie | 4 | 2 | 1 | 1 |
-| **Total** | **17** | **6** | **8** | **3** |
+| **Total** | **20** | **7** | **9** | **4** |
 
 This focused approach ensures:
 - **No duplicate errors** for the same root cause
@@ -326,6 +347,9 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | `ID-002` | EGID format invalid | error |
 | `ID-003` | EGID points to wrong building in GWR | error |
 | `ID-004` | EGRID missing (cadastre linkage) | warning |
+| `ID-005` | Duplicate EGID (same EGID for multiple SAP records) | error |
+| `ID-006` | Duplicate coordinates (same coords for multiple SAP records) | warning |
+| `ID-007` | Multiple GWR buildings linked to one SAP record (1:N) | info |
 
 ### 6.2 ADR Errors (Address)
 
@@ -749,5 +773,5 @@ The VGWR establishes quality standards for recognized cantonal/municipal registe
 
 ---
 
-*Document version: 1.2*
+*Document version: 1.3*
 *Last updated: 2026-02-03*
