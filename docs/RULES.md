@@ -135,57 +135,92 @@ flowchart LR
 
 ## 3. Rule Sets
 
-Rules are organized into 5 rule sets, each targeting a specific validation domain.
+Rules are organized into 3 focused rule sets that avoid overwhelming users while ensuring data quality.
 
-### 3.1 GWR Grundprüfungen (`gwr-basic`)
+### 3.1 Identifikation (`identification`)
 
-Basic validations against the Swiss Federal Register of Buildings and Dwellings (GWR).
+**Critical checks for linkage to authoritative registers.**
 
-| Rule ID | Name | Description | Severity |
-|---------|------|-------------|----------|
-| `gwr-001` | EGID vorhanden | Checks if a valid EGID exists | error |
-| `gwr-002` | EGID Format | Validates EGID format (1-9 digits, no leading zeros) | error |
-| `gwr-003` | Gebäudestatus gültig | Checks if building status is a valid GWR value | error |
-| `gwr-004` | Baujahr plausibel | Checks if construction year is plausible (1800-2030) | warning |
-
-### 3.2 Geometrie-Qualität (`geo-quality`)
-
-Validations for geodata quality and coordinate accuracy.
+These rules ensure that SAP RE-FX records can be uniquely linked to the correct building in GWR and the correct parcel in the cadastre.
 
 | Rule ID | Name | Description | Severity |
 |---------|------|-------------|----------|
-| `geo-001` | Koordinaten in Schweiz | Checks if coordinates are within Swiss borders | error |
-| `geo-002` | Koordinaten-Präzision | Checks coordinate precision (min. 5 decimal places) | warning |
-| `geo-003` | Adresse-Koordinaten-Match | Checks if address and coordinates match (< 50m) | warning |
+| `ID-001` | EGID vorhanden | EGID must exist | error |
+| `ID-002` | EGID Format | EGID format valid (1-9 digits, no leading zeros) | error |
+| `ID-003` | EGID verifiziert | EGID points to correct building in GWR (not a different building) | error |
+| `ID-004` | EGRID vorhanden | EGRID exists for cadastre/ÖREB linkage | warning |
 
-### 3.3 SAP RE-FX Abgleich (`sap-refx`)
+**Error consolidation:** If EGID is missing (`ID-001`), do not also trigger `ID-002` or `ID-003`.
 
-Validations against the SAP Real Estate system.
+### 3.2 Adresse (`address`)
+
+**SAP ↔ GWR address consistency per GeoNV.**
+
+Compares address components between SAP RE-FX and GWR. Street names are normalized before comparison (e.g., "Str." → "Strasse").
+
+| Rule ID | Name | Field | Description | Severity |
+|---------|------|-------|-------------|----------|
+| `ADR-001` | Land | `country` | Country code differs (should be CH) | error |
+| `ADR-002` | Kanton | `kanton` | Canton code differs | warning |
+| `ADR-003` | Gemeinde | `gemeinde` | Municipality name differs | warning |
+| `ADR-004` | BFS-Nr | `bfsNr` | BFS municipality number differs | warning |
+| `ADR-005` | PLZ | `plz` | Postal code differs | warning |
+| `ADR-006` | Ort | `ort` | Locality differs | warning |
+| `ADR-007` | Strasse | `strasse` | Street name differs (after normalization) | info |
+| `ADR-008` | Hausnummer | `hausnummer` | House number differs or missing | warning |
+| `ADR-009` | Zusatz | `zusatz` | Address supplement differs | info |
+
+**Normalization rules:**
+- Street abbreviations: `Str.` → `Strasse`, `Pl.` → `Platz`, `Av.` → `Avenue`
+- Case-insensitive comparison
+- Whitespace trimming
+- Empty values treated as missing (not mismatched)
+
+### 3.3 Geometrie (`geometry`)
+
+**Spatial accuracy and coordinate quality.**
 
 | Rule ID | Name | Description | Severity |
 |---------|------|-------------|----------|
-| `sap-001` | RE-Objekt vorhanden | Checks if a linked SAP RE object exists | warning |
-| `sap-002` | Fläche plausibel | Checks if area is plausible (1-1,000,000 m²) | warning |
-| `sap-003` | Flächen-Abweichung GWR | Checks SAP/GWR area deviation (max 10%) | warning |
+| `GEO-001` | Koordinaten vorhanden | Coordinates exist in at least one source | error |
+| `GEO-002` | Koordinaten in Schweiz | Coordinates within Swiss borders (lat 45.8-47.8, lng 5.9-10.5) | error |
+| `GEO-003` | Koordinaten-Abweichung | SAP vs GWR coordinates differ by > 50m | warning |
+| `GEO-004` | Adresse-Koordinaten-Match | Geocoded address > 100m from stored coordinates | info |
 
-### 3.4 ÖREB Prüfungen (`oereb-check`)
+**Error consolidation:** If coordinates are missing (`GEO-001`), do not also trigger `GEO-002`, `GEO-003`, or `GEO-004`.
 
-Validations against the ÖREB cadastre (public law restrictions on land ownership).
+### 3.4 Future Development
 
-| Rule ID | Name | Description | Severity |
-|---------|------|-------------|----------|
-| `oereb-001` | ÖREB-Kanton aktiv | Checks if canton provides ÖREB data | info |
-| `oereb-002` | Grundstück-ID vorhanden | Checks if parcel ID exists for ÖREB queries | warning |
+The following checks are planned for future releases:
 
-### 3.5 Vollständigkeit (`completeness`)
+| Category | Rule | Description | Priority |
+|----------|------|-------------|----------|
+| **Flächen** | Flächen-Abweichung | SAP vs GWR building area deviation > 10% | Medium |
+| **Nutzung** | Nutzungsart-Abgleich | SAP usage type matches GWR GKAT/GKLAS | Medium |
+| **Baujahr** | Baujahr-Validierung | Construction year/period (GBAUJ/GBAUP) consistency | Low |
+| **Energie** | Heizsystem erfasst | Heating system (GENH1, GWAERZH1) recorded for energy monitoring | Low |
+| **Eigentum** | Eigentümer-Abgleich | Ownership matches cadastre/land register | Low |
 
-Checks for data completeness.
+**Why deferred:**
+- **Flächen-Abweichung:** High false-positive rate; area definitions differ between systems
+- **Nutzungsart:** Requires mapping table between SAP and GWR classification codes
+- **Baujahr:** Often legitimately unknown or estimated; low impact on data quality
+- **Energie:** Depends on GWR data completeness; not all cantons report
+- **Eigentum:** Requires integration with cantonal land registers (Grundbuch)
 
-| Rule ID | Name | Description | Severity |
-|---------|------|-------------|----------|
-| `comp-001` | Pflichtfelder | Checks if all required fields are filled | error |
-| `comp-002` | Portfolio zugewiesen | Checks if building is assigned to a portfolio | warning |
-| `comp-003` | Verantwortlicher zugewiesen | Checks if a responsible person is assigned | info |
+### Summary
+
+| Rule Set | Rules | Errors | Warnings | Info |
+|----------|-------|--------|----------|------|
+| Identifikation | 4 | 3 | 1 | 0 |
+| Adresse | 9 | 1 | 6 | 2 |
+| Geometrie | 4 | 2 | 1 | 1 |
+| **Total** | **17** | **6** | **8** | **3** |
+
+This focused approach ensures:
+- **No duplicate errors** for the same root cause
+- **Actionable feedback** - every error can be resolved by the data steward
+- **Appropriate severity** - only true blockers are errors
 
 ---
 
@@ -274,7 +309,7 @@ Each rule has a severity level that determines how violations are prioritized an
 ### Display in UI
 
 - **Detail Panel:** Errors are shown in the "Fehler" accordion section with severity badges
-- **Statistics:** Error counts are aggregated by source (GEO, GWR, SAP, ADR)
+- **Statistics:** Error counts are aggregated by category (ID, ADR, GEO)
 - **Kanban:** Cards show error indicators for buildings with critical issues
 
 ---
@@ -283,38 +318,37 @@ Each rule has a severity level that determines how violations are prioritized an
 
 Validation errors are identified by prefixed codes that indicate the error domain.
 
-### 6.1 GEO Errors (Geometry/Coordinates)
+### 6.1 ID Errors (Identification)
 
 | Code | Description | Severity |
 |------|-------------|----------|
-| `GEO-001` | Coordinates missing or invalid | error |
-| `GEO-012` | Coordinate deviation between sources | warning |
+| `ID-001` | EGID missing | error |
+| `ID-002` | EGID format invalid | error |
+| `ID-003` | EGID points to wrong building in GWR | error |
+| `ID-004` | EGRID missing (cadastre linkage) | warning |
 
-### 6.2 GWR Errors (Building Register)
-
-| Code | Description | Severity |
-|------|-------------|----------|
-| `GWR-003` | Building not registered in GWR | error |
-| `GWR-005` | EGID mismatch or refers to different building | error |
-| `GWR-009` | Floor count discrepancy | info |
-| `GWR-011` | Building area deviation | info |
-
-### 6.3 SAP Errors (SAP RE-FX)
+### 6.2 ADR Errors (Address)
 
 | Code | Description | Severity |
 |------|-------------|----------|
-| `SAP-008` | Usage type not recorded | warning |
-| `SAP-015` | Construction year discrepancy | info |
-| `SAP-016` | Construction period mismatch | warning |
-| `SAP-020` | Data not updated for extended period | warning |
+| `ADR-001` | Country code differs or not CH | error |
+| `ADR-002` | Canton code differs | warning |
+| `ADR-003` | Municipality name differs | warning |
+| `ADR-004` | BFS municipality number differs | warning |
+| `ADR-005` | Postal code differs | warning |
+| `ADR-006` | Locality differs | warning |
+| `ADR-007` | Street name differs | info |
+| `ADR-008` | House number differs or missing | warning |
+| `ADR-009` | Address supplement differs | info |
 
-### 6.4 ADR Errors (Address)
+### 6.3 GEO Errors (Geometry/Coordinates)
 
 | Code | Description | Severity |
 |------|-------------|----------|
-| `ADR-002` | Postal code deviation | warning |
-| `ADR-004` | House number supplement missing | warning |
-| `ADR-007` | Street name deviation | warning |
+| `GEO-001` | Coordinates missing in all sources | error |
+| `GEO-002` | Coordinates outside Swiss borders | error |
+| `GEO-003` | SAP/GWR coordinate deviation > 50m | warning |
+| `GEO-004` | Address/coordinate mismatch > 100m | info |
 
 ---
 
@@ -324,9 +358,9 @@ Validation errors are identified by prefixed codes that indicate the error domai
 
 ```json
 {
-  "id": "gwr-basic",
-  "name": "GWR Grundprüfungen",
-  "description": "Grundlegende Validierungen gegen das GWR",
+  "id": "identification",
+  "name": "Identifikation",
+  "description": "Prüfung der Verknüpfung mit GWR und Kataster",
   "enabled": true,
   "entityType": "building",
   "rules": [...]
@@ -346,7 +380,7 @@ Validation errors are identified by prefixed codes that indicate the error domai
 
 ```json
 {
-  "id": "gwr-001",
+  "id": "ID-001",
   "name": "EGID vorhanden",
   "description": "Prüft ob eine gültige EGID vorhanden ist",
   "attribute": "egid",
@@ -487,14 +521,14 @@ flowchart TB
 
 ```json
 {
-  "id": "gwr-005",
-  "name": "Stockwerkzahl plausibel",
-  "description": "Prüft ob die Anzahl Stockwerke plausibel ist (1-50)",
-  "attribute": "gastw",
-  "operator": "between",
-  "value": [1, 50],
+  "id": "ADR-010",
+  "name": "BFS-Nr Format",
+  "description": "Prüft ob die BFS-Gemeindenummer 4-stellig ist",
+  "attribute": "bfsNr",
+  "operator": "matches",
+  "value": "^[0-9]{4}$",
   "severity": "warning",
-  "message": "Stockwerkzahl {value} ausserhalb des plausiblen Bereichs"
+  "message": "BFS-Nr {value} ist nicht 4-stellig"
 }
 ```
 
@@ -715,5 +749,5 @@ The VGWR establishes quality standards for recognized cantonal/municipal registe
 
 ---
 
-*Document version: 1.1*
+*Document version: 1.2*
 *Last updated: 2026-02-03*
