@@ -4,7 +4,94 @@ This document describes the validation rule system used by Geo-Check to ensure d
 
 ---
 
-## 1. Overview
+## 1. Goals
+
+The validation system is designed to achieve the following objectives:
+
+### 1.1 Source Consistency
+
+**Ensure SAP RE-FX data is consistent with national authoritative databases.**
+
+Federal building records in SAP RE-FX must align with:
+
+| Source | Authoritative For | Key Identifiers |
+|--------|-------------------|-----------------|
+| **GWR** (Eidg. Gebäude- und Wohnungsregister) | Building attributes, EGID | EGID, GKAT, GKLAS, GSTAT |
+| **Cadastre** (Amtliche Vermessung) | Parcel boundaries, land ownership | EGRID, parcel geometry |
+| **BFS** (Bundesamt für Statistik) | Municipality codes, administrative boundaries | BFS-Nr, canton codes |
+
+When discrepancies exist, the system flags them for manual review. The **canonical value** follows this priority: `korrektur` (manual correction) → `GWR` → `SAP`.
+
+### 1.2 Spatial Accuracy
+
+**Ensure addresses and coordinates are correct and mutually consistent.**
+
+- Coordinates must fall within Swiss borders
+- Address components (PLZ, Ort, Strasse) must resolve to a location near the stored coordinates
+- Coordinate precision must be sufficient for building-level identification (≥5 decimal places)
+- Tolerance thresholds account for legitimate differences:
+  - **Urban areas:** 5-10m deviation acceptable
+  - **Rural areas:** 10-20m deviation acceptable
+  - **Street name variations:** Abbreviations (Str./Strasse) are normalized before comparison
+
+### 1.3 Actionable Feedback
+
+**Avoid overwhelming data stewards with unnecessary warnings.**
+
+Every validation error must be:
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Actionable** | Clear what needs to be fixed and how |
+| **Relevant** | Only flag issues that matter for data quality |
+| **Prioritized** | Severity levels (error > warning > info) guide workflow |
+| **Contextual** | Show related data to help resolve the issue |
+
+**What we avoid:**
+- Duplicate errors for the same root cause
+- Warnings for edge cases that don't affect data usability
+- Errors that cannot be resolved by the data steward
+
+### 1.4 Prioritization
+
+**Help users focus on critical issues first.**
+
+The system supports prioritization through:
+
+1. **Severity Levels:** Errors must be fixed, warnings should be reviewed, info is for awareness
+2. **Confidence Scores:** Buildings with low confidence (< 50%) are flagged as critical
+3. **Building Priority:** High/medium/low based on business importance
+4. **Due Dates:** Time-sensitive corrections are tracked
+
+Data stewards can filter by severity, confidence, and priority to focus their work.
+
+### 1.5 Traceability
+
+**Track validation history for audit and accountability.**
+
+The system maintains:
+
+| What | Where | Purpose |
+|------|-------|---------|
+| Error detection timestamp | `errors.detectedAt` | When issue was first found |
+| Error resolution timestamp | `errors.resolvedAt` | When issue was fixed |
+| Last update timestamp | `buildings.lastUpdate` | When record was modified |
+| Update author | `buildings.lastUpdateBy` | Who made the change |
+| Activity log | `events` | Full history of actions |
+
+### 1.6 Data Completeness
+
+**Ensure required fields are populated before sign-off.**
+
+Buildings cannot be marked as "Erledigt" (done) until:
+
+- All **error**-level validation issues are resolved
+- Required fields (EGID, address, coordinates) are present
+- A responsible person has verified the data
+
+---
+
+## 2. Overview
 
 Geo-Check validates building data by comparing records from multiple authoritative sources (SAP RE-FX, GWR, Cadastre) and checking for completeness, consistency, and plausibility. The validation system uses declarative rules organized into rule sets.
 
@@ -46,11 +133,11 @@ flowchart LR
 
 ---
 
-## 2. Rule Sets
+## 3. Rule Sets
 
 Rules are organized into 5 rule sets, each targeting a specific validation domain.
 
-### 2.1 GWR Grundprüfungen (`gwr-basic`)
+### 3.1 GWR Grundprüfungen (`gwr-basic`)
 
 Basic validations against the Swiss Federal Register of Buildings and Dwellings (GWR).
 
@@ -61,7 +148,7 @@ Basic validations against the Swiss Federal Register of Buildings and Dwellings 
 | `gwr-003` | Gebäudestatus gültig | Checks if building status is a valid GWR value | error |
 | `gwr-004` | Baujahr plausibel | Checks if construction year is plausible (1800-2030) | warning |
 
-### 2.2 Geometrie-Qualität (`geo-quality`)
+### 3.2 Geometrie-Qualität (`geo-quality`)
 
 Validations for geodata quality and coordinate accuracy.
 
@@ -71,7 +158,7 @@ Validations for geodata quality and coordinate accuracy.
 | `geo-002` | Koordinaten-Präzision | Checks coordinate precision (min. 5 decimal places) | warning |
 | `geo-003` | Adresse-Koordinaten-Match | Checks if address and coordinates match (< 50m) | warning |
 
-### 2.3 SAP RE-FX Abgleich (`sap-refx`)
+### 3.3 SAP RE-FX Abgleich (`sap-refx`)
 
 Validations against the SAP Real Estate system.
 
@@ -81,7 +168,7 @@ Validations against the SAP Real Estate system.
 | `sap-002` | Fläche plausibel | Checks if area is plausible (1-1,000,000 m²) | warning |
 | `sap-003` | Flächen-Abweichung GWR | Checks SAP/GWR area deviation (max 10%) | warning |
 
-### 2.4 ÖREB Prüfungen (`oereb-check`)
+### 3.4 ÖREB Prüfungen (`oereb-check`)
 
 Validations against the ÖREB cadastre (public law restrictions on land ownership).
 
@@ -90,7 +177,7 @@ Validations against the ÖREB cadastre (public law restrictions on land ownershi
 | `oereb-001` | ÖREB-Kanton aktiv | Checks if canton provides ÖREB data | info |
 | `oereb-002` | Grundstück-ID vorhanden | Checks if parcel ID exists for ÖREB queries | warning |
 
-### 2.5 Vollständigkeit (`completeness`)
+### 3.5 Vollständigkeit (`completeness`)
 
 Checks for data completeness.
 
@@ -102,11 +189,11 @@ Checks for data completeness.
 
 ---
 
-## 3. Operators
+## 4. Operators
 
 Operators define the type of validation check performed. Each rule specifies one operator.
 
-### 3.1 Existence Operators
+### 4.1 Existence Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
@@ -114,7 +201,7 @@ Operators define the type of validation check performed. Each rule specifies one
 | `not_exists` | Value is absent or empty | `{ "attribute": "korrektur", "operator": "not_exists" }` |
 | `all_exist` | All specified attributes are present | `{ "attribute": ["name", "plz", "ort"], "operator": "all_exist" }` |
 
-### 3.2 Comparison Operators
+### 4.2 Comparison Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
@@ -124,21 +211,21 @@ Operators define the type of validation check performed. Each rule specifies one
 | `less_than` | Numeric less than | `{ "attribute": "distance", "operator": "less_than", "value": 50 }` |
 | `between` | Value in numeric range | `{ "attribute": "baujahr", "operator": "between", "value": [1800, 2030] }` |
 
-### 3.3 Set Operators
+### 4.3 Set Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
 | `in` | Value in allowed list | `{ "attribute": "gwr_status", "operator": "in", "value": ["projektiert", "bestehend"] }` |
 | `not_in` | Value not in list | `{ "attribute": "kanton", "operator": "not_in", "value": ["FL"] }` |
 
-### 3.4 String Operators
+### 4.4 String Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
 | `matches` | Matches regex pattern | `{ "attribute": "egid", "operator": "matches", "value": "^[1-9][0-9]{0,8}$" }` |
 | `contains` | Contains substring | `{ "attribute": "strasse", "operator": "contains", "value": "strasse" }` |
 
-### 3.5 Specialized Operators
+### 4.5 Specialized Operators
 
 | Operator | Description | Example |
 |----------|-------------|---------|
@@ -174,7 +261,7 @@ Operators define the type of validation check performed. Each rule specifies one
 
 ---
 
-## 4. Severity Levels
+## 5. Severity Levels
 
 Each rule has a severity level that determines how violations are prioritized and displayed.
 
@@ -192,18 +279,18 @@ Each rule has a severity level that determines how violations are prioritized an
 
 ---
 
-## 5. Error Code Catalog
+## 6. Error Code Catalog
 
 Validation errors are identified by prefixed codes that indicate the error domain.
 
-### 5.1 GEO Errors (Geometry/Coordinates)
+### 6.1 GEO Errors (Geometry/Coordinates)
 
 | Code | Description | Severity |
 |------|-------------|----------|
 | `GEO-001` | Coordinates missing or invalid | error |
 | `GEO-012` | Coordinate deviation between sources | warning |
 
-### 5.2 GWR Errors (Building Register)
+### 6.2 GWR Errors (Building Register)
 
 | Code | Description | Severity |
 |------|-------------|----------|
@@ -212,7 +299,7 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | `GWR-009` | Floor count discrepancy | info |
 | `GWR-011` | Building area deviation | info |
 
-### 5.3 SAP Errors (SAP RE-FX)
+### 6.3 SAP Errors (SAP RE-FX)
 
 | Code | Description | Severity |
 |------|-------------|----------|
@@ -221,7 +308,7 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | `SAP-016` | Construction period mismatch | warning |
 | `SAP-020` | Data not updated for extended period | warning |
 
-### 5.4 ADR Errors (Address)
+### 6.4 ADR Errors (Address)
 
 | Code | Description | Severity |
 |------|-------------|----------|
@@ -231,9 +318,9 @@ Validation errors are identified by prefixed codes that indicate the error domai
 
 ---
 
-## 6. Rule Structure
+## 7. Rule Structure
 
-### 6.1 Rule Set Schema
+### 7.1 Rule Set Schema
 
 ```json
 {
@@ -255,7 +342,7 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | `entityType` | string | Yes | Target entity type (currently only "building") |
 | `rules` | array | Yes | Array of rule definitions |
 
-### 6.2 Rule Schema
+### 7.2 Rule Schema
 
 ```json
 {
@@ -284,9 +371,9 @@ Validation errors are identified by prefixed codes that indicate the error domai
 
 ---
 
-## 7. Error Storage
+## 8. Error Storage
 
-### 7.1 Format
+### 8.1 Format
 
 Errors are stored in `data/errors.json` as an object keyed by building ID:
 
@@ -314,7 +401,7 @@ Errors are stored in `data/errors.json` as an object keyed by building ID:
 }
 ```
 
-### 7.2 Error Object
+### 8.2 Error Object
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -322,7 +409,7 @@ Errors are stored in `data/errors.json` as an object keyed by building ID:
 | `description` | string | Human-readable error description |
 | `level` | string | Severity: error, warning, info |
 
-### 7.3 Extended Fields (Supabase)
+### 8.3 Extended Fields (Supabase)
 
 When stored in Supabase, errors include additional fields:
 
@@ -335,9 +422,9 @@ When stored in Supabase, errors include additional fields:
 
 ---
 
-## 8. Integration Points
+## 9. Integration Points
 
-### 8.1 UI Display
+### 9.1 UI Display
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
@@ -345,7 +432,7 @@ When stored in Supabase, errors include additional fields:
 | Detail Panel | `#error-table` | Shows errors for selected building |
 | Statistics | Chart: "Errors by Source" | Aggregates errors by prefix |
 
-### 8.2 Code References
+### 9.2 Code References
 
 | File | Function | Purpose |
 |------|----------|---------|
@@ -355,7 +442,7 @@ When stored in Supabase, errors include additional fields:
 | `js/supabase.js:232-252` | `transformRulesFromDB()` | Transforms DB rules to app format |
 | `js/state.js:44` | `rulesConfig` | Global rules configuration |
 
-### 8.3 Data Flow
+### 9.3 Data Flow
 
 ```mermaid
 flowchart TB
@@ -390,9 +477,9 @@ flowchart TB
 
 ---
 
-## 9. Adding New Rules
+## 10. Adding New Rules
 
-### 9.1 Adding to JSON
+### 10.1 Adding to JSON
 
 1. Open `data/rules.json`
 2. Find the appropriate rule set (or create a new one)
@@ -411,7 +498,7 @@ flowchart TB
 }
 ```
 
-### 9.2 Creating a New Rule Set
+### 10.2 Creating a New Rule Set
 
 ```json
 {
@@ -426,7 +513,7 @@ flowchart TB
 }
 ```
 
-### 9.3 Adding to Supabase
+### 10.3 Adding to Supabase
 
 For Supabase deployments, add rules via the `rules` and `rule_sets` tables:
 
@@ -442,7 +529,7 @@ VALUES ('custom-001', 'custom-checks', 'Regel Name', '...', 'fieldName', 'exists
 
 ---
 
-## 10. Confidence Score Calculation
+## 11. Confidence Score Calculation
 
 Validation results contribute to the overall confidence score displayed for each building.
 
@@ -470,7 +557,7 @@ total = (georef × 0.30) + (sap × 0.35) + (gwr × 0.35)
 
 ---
 
-## 11. References
+## 12. References
 
 - [DATABASE.md](./DATABASE.md) - Complete data model documentation
 - [GWR Merkmalskatalog](https://www.housing-stat.ch/catalog/de/4.3/final) - Official GWR attributes
