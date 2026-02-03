@@ -119,10 +119,10 @@ CREATE TABLE buildings (
     CONSTRAINT valid_lat CHECK (map_lat IS NULL OR (map_lat >= 45.81 AND map_lat <= 47.81)),
     CONSTRAINT valid_lng CHECK (map_lng IS NULL OR (map_lng >= 5.95 AND map_lng <= 10.49)),
     CONSTRAINT valid_confidence CHECK (
-        (confidence->>'total')::int BETWEEN 0 AND 100 AND
-        (confidence->>'georef')::int BETWEEN 0 AND 100 AND
-        (confidence->>'sap')::int BETWEEN 0 AND 100 AND
-        (confidence->>'gwr')::int BETWEEN 0 AND 100
+        CAST(confidence->>'total' AS int) BETWEEN 0 AND 100 AND
+        CAST(confidence->>'georef' AS int) BETWEEN 0 AND 100 AND
+        CAST(confidence->>'sap' AS int) BETWEEN 0 AND 100 AND
+        CAST(confidence->>'gwr' AS int) BETWEEN 0 AND 100
     )
 );
 
@@ -131,7 +131,7 @@ CREATE INDEX idx_buildings_assignee ON buildings(assignee_id);
 CREATE INDEX idx_buildings_status ON buildings(kanban_status);
 CREATE INDEX idx_buildings_priority ON buildings(priority);
 CREATE INDEX idx_buildings_portfolio ON buildings(portfolio);
-CREATE INDEX idx_buildings_confidence ON buildings((confidence->>'total')::int);
+CREATE INDEX idx_buildings_confidence ON buildings(CAST(confidence->>'total' AS int));
 CREATE INDEX idx_buildings_gwr_egid ON buildings(gwr_egid) WHERE gwr_egid IS NOT NULL;
 CREATE INDEX idx_buildings_coords ON buildings(map_lat, map_lng) WHERE map_lat IS NOT NULL;
 CREATE INDEX idx_buildings_kanton ON buildings(kanton) WHERE kanton IS NOT NULL;

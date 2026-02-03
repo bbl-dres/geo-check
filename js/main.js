@@ -14,8 +14,35 @@ import {
   toggleFilter,
   setupMultiSelectFilter,
   applyMultiSelectState,
-  setSearchQuery
+  setSearchQuery,
+  setCurrentUser,
+  eventsData,
+  errorsData
 } from './state.js';
+
+// Supabase integration
+import {
+  initSupabase,
+  loadAllData as loadDataFromSupabase,
+  updateUserLastLogin,
+  updateUserRole,
+  removeUser
+} from './supabase.js';
+
+import {
+  initAuth,
+  onAuthStateChange,
+  setupLoginForm,
+  setupPasswordResetForm,
+  setupUserDropdown,
+  showPasswordResetModal,
+  isPasswordRecoveryMode,
+  updateUIForAuthState,
+  getCurrentUser,
+  getCurrentUserName,
+  getCurrentUserId,
+  isAuthenticated
+} from './auth.js';
 
 import {
   map,
@@ -88,41 +115,49 @@ function updateTabUI(tabId) {
 // ========================================
 // Data Loading
 // ========================================
+
 async function loadData() {
+  if (!isAuthenticated()) {
+    console.log('Not authenticated - skipping data load');
+    return;
+  }
+
   try {
-    const [buildingsRes, usersRes, eventsRes, commentsRes, errorsRes, rulesRes] = await Promise.all([
-      fetch('data/buildings.json'),
-      fetch('data/users.json'),
-      fetch('data/events.json'),
-      fetch('data/comments.json'),
-      fetch('data/errors.json'),
-      fetch('data/rules.json')
-    ]);
-
-    const buildingsData = await buildingsRes.json();
-    const usersData = await usersRes.json();
-    const eventsData = await eventsRes.json();
-    const commentsData = await commentsRes.json();
-    const errorsData = await errorsRes.json();
-    const rulesConfig = await rulesRes.json();
-
-    // Enrich buildings with related data
-    buildingsData.forEach(b => {
-      b.errors = errorsData[b.id] || [];
-      b.comments = commentsData[b.id] || [];
-    });
-
-    setData({
-      buildings: buildingsData,
-      teamMembers: usersData,
-      eventsData,
-      commentsData,
-      errorsData,
-      rulesConfig
-    });
-
+    const data = await loadDataFromSupabase();
+    setData(data);
+    console.log('Data loaded from Supabase');
   } catch (error) {
-    // Data loading failed - app will show empty state
+    console.error('Data loading error:', error);
+    showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
+  }
+}
+
+// ========================================
+// App State (Login/App visibility)
+// ========================================
+
+function showLoginLanding() {
+  document.getElementById('login-landing')?.classList.add('visible');
+  document.getElementById('app-container')?.classList.remove('visible');
+}
+
+function showApp() {
+  document.getElementById('login-landing')?.classList.remove('visible');
+  document.getElementById('app-container')?.classList.add('visible');
+}
+
+function showAppError(message) {
+  const errorEl = document.getElementById('app-error');
+  if (errorEl) {
+    errorEl.textContent = message;
+    errorEl.style.display = 'block';
+  }
+}
+
+function hideAppError() {
+  const errorEl = document.getElementById('app-error');
+  if (errorEl) {
+    errorEl.style.display = 'none';
   }
 }
 
@@ -444,6 +479,9 @@ function renderRules() {
   });
 }
 
+// User management edit mode state
+let usersEditMode = false;
+
 function renderUsersTable() {
   const tbody = document.getElementById('users-table-body');
   if (!tbody) return;
@@ -451,7 +489,7 @@ function renderUsersTable() {
   import('./state.js').then(mod => {
     const users = mod.teamMembers;
     if (!users || users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-message">Keine Benutzer vorhanden</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="3" class="empty-message">Keine Benutzer vorhanden</td></tr>';
       return;
     }
 
@@ -460,6 +498,23 @@ function renderUsersTable() {
       const formattedLogin = loginDate
         ? loginDate.toLocaleString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
         : '—';
+
+      // Role cell - either static text or dropdown
+      const roleCell = usersEditMode
+        ? `<select class="user-role-select" data-user-id="${user.id}">
+            <option value="Leser" ${user.role === 'Leser' ? 'selected' : ''}>Leser</option>
+            <option value="Bearbeiter" ${user.role === 'Bearbeiter' ? 'selected' : ''}>Bearbeiter</option>
+            <option value="Admin" ${user.role === 'Admin' ? 'selected' : ''}>Admin</option>
+          </select>`
+        : user.role;
+
+      // Actions cell - only show remove button in edit mode
+      const actionsCell = usersEditMode
+        ? `<button class="btn btn-ghost btn-sm btn-remove-user" data-user-id="${user.id}" title="Entfernen">
+            <i data-lucide="trash-2" class="icon-sm"></i>
+          </button>`
+        : '';
+
       return `
       <tr>
         <td>
@@ -468,17 +523,78 @@ function renderUsersTable() {
             <span>${user.name}</span>
           </div>
         </td>
-        <td>${user.role}</td>
-        <td class="user-last-login">${formattedLogin}</td>
-        <td>
-          <button class="action-btn-icon" title="Bearbeiten">
-            <i data-lucide="pencil" class="icon-sm"></i>
-          </button>
+        <td>${roleCell}</td>
+        <td class="user-last-login">
+          ${formattedLogin}
+          ${actionsCell}
         </td>
       </tr>
     `}).join('');
 
     if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Attach event handlers in edit mode
+    if (usersEditMode) {
+      // Role change handlers
+      tbody.querySelectorAll('.user-role-select').forEach(select => {
+        select.addEventListener('change', async (e) => {
+          const userId = parseInt(e.target.dataset.userId);
+          const newRole = e.target.value;
+          try {
+            await updateUserRole(userId, newRole);
+            // Update local state
+            const user = users.find(u => u.id === userId);
+            if (user) user.role = newRole;
+          } catch (error) {
+            console.error('Error updating role:', error);
+            alert('Fehler beim Aktualisieren der Rolle');
+            renderUsersTable(); // Reset to previous state
+          }
+        });
+      });
+
+      // Remove user handlers
+      tbody.querySelectorAll('.btn-remove-user').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const userId = parseInt(e.currentTarget.dataset.userId);
+          const user = users.find(u => u.id === userId);
+          if (!user) return;
+
+          if (confirm(`Benutzer "${user.name}" wirklich entfernen?`)) {
+            try {
+              await removeUser(userId);
+              // Reload data and re-render
+              await loadData();
+              renderUsersTable();
+            } catch (error) {
+              console.error('Error removing user:', error);
+              alert('Fehler beim Entfernen des Benutzers');
+            }
+          }
+        });
+      });
+    }
+  });
+}
+
+function setupUserEditButton() {
+  const editBtn = document.getElementById('btn-edit-users');
+  if (!editBtn) return;
+
+  editBtn.addEventListener('click', () => {
+    usersEditMode = !usersEditMode;
+
+    // Update button appearance
+    if (usersEditMode) {
+      editBtn.innerHTML = '<i data-lucide="check" class="icon-sm"></i> Fertig';
+      editBtn.classList.add('active');
+    } else {
+      editBtn.innerHTML = '<i data-lucide="pencil" class="icon-sm"></i> Bearbeiten';
+      editBtn.classList.remove('active');
+    }
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    renderUsersTable();
   });
 }
 
@@ -584,6 +700,171 @@ function setupEventListeners() {
       submitComment();
     }
   });
+
+  // Export handlers
+  const exportErrorsBtn = document.getElementById('export-errors');
+  if (exportErrorsBtn) {
+    exportErrorsBtn.addEventListener('click', exportErrorsReport);
+  }
+
+  const exportEventsBtn = document.getElementById('export-events');
+  if (exportEventsBtn) {
+    exportEventsBtn.addEventListener('click', exportEventsReport);
+  }
+}
+
+// ========================================
+// CSV Export Functions
+// ========================================
+
+/**
+ * Download content as a CSV file
+ */
+function downloadCSV(filename, csvContent) {
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+/**
+ * Escape a value for CSV (handle commas, quotes, newlines)
+ */
+function escapeCSV(value) {
+  if (value === null || value === undefined) return '';
+  const str = String(value);
+  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+/**
+ * Export errors report as CSV
+ */
+function exportErrorsReport() {
+  // Flatten errorsData (keyed by building ID) into array
+  const rows = [];
+
+  // Get building info for additional context
+  const buildingMap = {};
+  buildings.forEach(b => {
+    buildingMap[b.id] = b;
+  });
+
+  // Iterate through buildings and their errors
+  for (const buildingId in errorsData) {
+    const buildingErrors = errorsData[buildingId];
+    const building = buildingMap[buildingId];
+    const buildingName = building ? building.name : '';
+
+    if (Array.isArray(buildingErrors)) {
+      buildingErrors.forEach(error => {
+        rows.push({
+          buildingId: buildingId,
+          buildingName: buildingName,
+          checkId: error.check_id || error.checkId || '',
+          description: error.description || '',
+          level: error.level || ''
+        });
+      });
+    }
+  }
+
+  if (rows.length === 0) {
+    alert('Keine Fehler zum Exportieren vorhanden.');
+    return;
+  }
+
+  // Create CSV content
+  const headers = ['Gebäude-ID', 'Gebäudename', 'Prüf-ID', 'Beschreibung', 'Stufe'];
+  const csvRows = [headers.join(';')];
+
+  rows.forEach(row => {
+    csvRows.push([
+      escapeCSV(row.buildingId),
+      escapeCSV(row.buildingName),
+      escapeCSV(row.checkId),
+      escapeCSV(row.description),
+      escapeCSV(row.level)
+    ].join(';'));
+  });
+
+  const csvContent = csvRows.join('\r\n');
+  const timestamp = new Date().toISOString().slice(0, 10);
+  downloadCSV(`Fehlerbericht_${timestamp}.csv`, csvContent);
+
+  // Update last run timestamp
+  const timestampEl = document.getElementById('workflow-errors-time');
+  if (timestampEl) {
+    const now = new Date();
+    timestampEl.textContent = now.toLocaleString('de-CH', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace(',', ',');
+  }
+}
+
+/**
+ * Export events report as CSV
+ */
+function exportEventsReport() {
+  if (!Array.isArray(eventsData) || eventsData.length === 0) {
+    alert('Keine Ereignisse zum Exportieren vorhanden.');
+    return;
+  }
+
+  // Create CSV content
+  const headers = ['ID', 'Gebäude-ID', 'Typ', 'Aktion', 'Benutzer', 'Zeitstempel', 'Details'];
+  const csvRows = [headers.join(';')];
+
+  eventsData.forEach(event => {
+    // Format timestamp for display
+    const timestamp = event.timestamp
+      ? new Date(event.timestamp).toLocaleString('de-CH', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      : '';
+
+    csvRows.push([
+      escapeCSV(event.id),
+      escapeCSV(event.buildingId),
+      escapeCSV(event.type),
+      escapeCSV(event.action),
+      escapeCSV(event.user),
+      escapeCSV(timestamp),
+      escapeCSV(event.details)
+    ].join(';'));
+  });
+
+  const csvContent = csvRows.join('\r\n');
+  const timestamp = new Date().toISOString().slice(0, 10);
+  downloadCSV(`Ereignisse_${timestamp}.csv`, csvContent);
+
+  // Update last run timestamp
+  const timestampEl = document.getElementById('workflow-events-time');
+  if (timestampEl) {
+    const now = new Date();
+    timestampEl.textContent = now.toLocaleString('de-CH', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).replace(',', ',');
+  }
 }
 
 // ========================================
@@ -640,17 +921,86 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Lucide icons
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  // Load data
-  await loadData();
+  // Initialize Supabase client
+  initSupabase();
 
-  // Store rulesConfig globally for renderRules and render settings tab content
-  import('./state.js').then(mod => {
-    window.rulesConfig = mod.rulesConfig;
-    renderRules();
-    renderUsersTable();
+  // Setup login form handlers (needed even before auth check)
+  setupLoginForm();
+  setupPasswordResetForm();
+  setupUserDropdown();
+
+  // Check if user arrived via password reset link
+  if (isPasswordRecoveryMode()) {
+    showPasswordResetModal();
+  }
+
+  // Initialize authentication
+  const user = await initAuth();
+
+  // Setup auth state change handler
+  onAuthStateChange(async (event, session, appUser) => {
+    console.log('Auth state changed:', event);
+
+    if (appUser) {
+      setCurrentUser(appUser.name);
+    } else {
+      setCurrentUser(null);
+    }
+
+    // Show/hide app based on auth state
+    if (event === 'SIGNED_IN' && appUser) {
+      showApp();
+      hideAppError();
+      // Update last login timestamp
+      await updateUserLastLogin(appUser.id);
+      await loadData();
+      // Re-render views
+      updateMapMarkers();
+      updateCounts();
+      updateStatistik();
+      renderKanbanBoard();
+      if (tableVisible) renderTableView();
+      renderRules();
+      renderUsersTable();
+      // Resize map after showing
+      if (map) setTimeout(() => map.resize(), 100);
+    } else if (event === 'SIGNED_OUT') {
+      showLoginLanding();
+      // Clear data
+      setData({ buildings: [], teamMembers: [], eventsData: {}, commentsData: {}, errorsData: {}, rulesConfig: null });
+    }
+
+    // Update UI for auth state
+    updateUIForAuthState();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   });
 
-  // Initialize map
+  // Check if already authenticated
+  if (user) {
+    setCurrentUser(user.name);
+    console.log('Logged in as:', user.name);
+    showApp();
+
+    // Load data
+    await loadData();
+
+    // Update auth UI
+    updateUIForAuthState();
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Store rulesConfig globally for renderRules and render settings tab content
+    import('./state.js').then(mod => {
+      window.rulesConfig = mod.rulesConfig;
+      renderRules();
+      renderUsersTable();
+    });
+  } else {
+    // Not authenticated - show login landing
+    showLoginLanding();
+    console.log('Not authenticated - showing login page');
+  }
+
+  // Initialize map (needed for both states, will show when app is visible)
   initMap();
 
   // Setup module callbacks
@@ -682,6 +1032,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupFieldToggle();
   setupImageWidget();
   setupRunChecksButton();
+  setupUserEditButton();
 
   // Setup chart filter callback (cross-filtering updates other views)
   setChartFilterCallback(() => {

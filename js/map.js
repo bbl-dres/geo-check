@@ -966,7 +966,7 @@ export function setupContextMenu() {
   contextMenuSwisstopo.addEventListener('click', function() {
     if (!contextMenuLatLng) return;
     const lv95 = wgs84ToLV95(contextMenuLatLng.lat, contextMenuLatLng.lng);
-    const url = `https://map.geo.admin.ch/?E=${lv95.E}&N=${lv95.N}&zoom=10`;
+    const url = `https://map.geo.admin.ch/#/map?lang=de&center=${lv95.E},${lv95.N}&z=13&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register,t;ch.swisstopo.amtliches-strassenverzeichnis,t&bgLayer=ch.swisstopo.swissimage&crosshair=marker,${lv95.E},${lv95.N}`;
     window.open(url, '_blank');
     hideContextMenu();
   });

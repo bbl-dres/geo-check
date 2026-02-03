@@ -3,8 +3,17 @@
 // Central state, URL sync, and filtering
 // ========================================
 
-// Current user (centralized for easy swapping)
-export const currentUser = 'M. Keller';
+// Current user (set by auth.js on login)
+// Uses ES module live bindings so imported `currentUser` updates when set
+export let currentUser = 'Gast';
+
+export function setCurrentUser(userName) {
+  currentUser = userName || 'Gast';
+}
+
+export function getCurrentUser() {
+  return currentUser;
+}
 
 // Application state
 export const state = {

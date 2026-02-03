@@ -19,13 +19,52 @@
   <!-- ApexCharts -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Header -->
-  <header class="header">
+  <!-- Login Landing Page (shown when not authenticated) -->
+  <div class="login-landing" id="login-landing">
+    <div class="login-landing-container">
+      <div class="login-landing-content">
+        <div class="login-landing-box">
+          <h2 class="login-landing-box-title">Anmelden</h2>
+          <p class="login-landing-box-text">Melden Sie sich mit Ihrem BBL-Konto an, um auf das Liegenschaftsinventar zuzugreifen.</p>
+
+          <form id="landing-login-form" class="login-landing-form">
+            <div class="login-landing-error" id="landing-login-error"></div>
+            <div class="login-landing-field">
+              <label for="landing-email">E-Mail-Adresse</label>
+              <input type="email" id="landing-email" name="email" placeholder="name@bbl.admin.ch" required autocomplete="email">
+            </div>
+            <div class="login-landing-field">
+              <label for="landing-password">Passwort</label>
+              <input type="password" id="landing-password" name="password" placeholder="Passwort" required autocomplete="current-password">
+            </div>
+            <button type="submit" class="login-landing-submit">Anmelden</button>
+            <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
+          </form>
+        </div>
+      </div>
+
+      <div>
+        <span>© Schweizerische Eidgenossenschaft</span>
+        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Container (shown when authenticated) -->
+  <div class="app-container" id="app-container">
+    <!-- App Error Message -->
+    <div class="app-error" id="app-error" style="display: none;"></div>
+
+    <!-- Header -->
+    <header class="header">
     <div class="logo">
       <img src="assets/swiss-logo-flag.svg" alt="Schweizerische Eidgenossenschaft" class="logo-flag">
       <div class="logo-text">
@@ -57,7 +96,28 @@
       <button class="filter-toggle active" id="filter-toggle" type="button">
         <i data-lucide="sliders-horizontal" class="icon"></i>
       </button>
-      <div class="user-avatar">MK</div>
+      <div class="user-menu" id="user-menu">
+        <!-- Login button (shown when not authenticated) -->
+        <button class="btn btn-primary btn-sm" id="login-btn" onclick="window.auth.showLoginModal()">
+          Anmelden
+        </button>
+        <!-- User dropdown trigger (shown when authenticated) -->
+        <button class="user-trigger" id="user-trigger" style="display: none;">
+          <span class="user-initials" id="user-initials">??</span>
+        </button>
+        <!-- Dropdown menu -->
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="user-dropdown-header">
+            <span class="user-dropdown-name" id="user-dropdown-name">Name</span>
+            <span class="user-dropdown-role" id="user-dropdown-role">Rolle</span>
+          </div>
+          <div class="user-dropdown-divider"></div>
+          <button class="user-dropdown-item" onclick="window.auth.signOut()">
+            <i data-lucide="log-out" class="icon-sm"></i>
+            <span>Abmelden</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -569,10 +629,16 @@
         <div class="settings-section">
           <div class="section-header-with-action">
             <h2 class="settings-section-title section-title-icon"><i data-lucide="users" class="icon-lg"></i> Benutzerverwaltung</h2>
-            <button class="btn btn-primary btn-sm" onclick="openModal('modal-invite-user')">
-              <i data-lucide="user-plus" class="icon-sm"></i>
-              Einladen
-            </button>
+            <div class="header-actions">
+              <button class="btn btn-ghost btn-sm" id="btn-edit-users">
+                <i data-lucide="pencil" class="icon-sm"></i>
+                Bearbeiten
+              </button>
+              <button class="btn btn-primary btn-sm" onclick="openModal('modal-invite-user')">
+                <i data-lucide="user-plus" class="icon-sm"></i>
+                Einladen
+              </button>
+            </div>
           </div>
           <table class="users-table">
             <thead>
@@ -580,7 +646,6 @@
                 <th>Benutzer</th>
                 <th>Rolle</th>
                 <th>Letzter Login</th>
-                <th>Aktionen</th>
               </tr>
             </thead>
             <tbody id="users-table-body">
@@ -918,16 +983,17 @@
     </div><!-- /content-with-panel -->
   </main>
 
-  <!-- Footer -->
-  <footer class="app-footer">
-    <div class="footer-version">v0.1.0</div>
-    <div class="footer-links">
-      <a href="#" class="footer-link-placeholder">API</a>
-      <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
-      <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
-      <a href="mailto:dres@bbl.admin.ch">Kontakt</a>
-    </div>
-  </footer>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-version">v0.1.0</div>
+      <div class="footer-links">
+        <a href="#" class="footer-link-placeholder">API</a>
+        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
+        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+        <a href="mailto:dres@bbl.admin.ch">Kontakt</a>
+      </div>
+    </footer>
+  </div><!-- /app-container -->
 
   <!-- Invite User Modal -->
   <div class="modal-overlay" id="modal-invite-user">
@@ -992,17 +1058,63 @@
       <span>Nächstes Objekt</span>
     </div>
     <div class="context-menu-divider"></div>
+    <div class="context-menu-item" id="context-menu-swisstopo">
+      <i data-lucide="building-2" class="icon-sm"></i>
+      <span>In Gebäude- und Wohnungsregister öffnen</span>
+    </div>
     <div class="context-menu-item" id="context-menu-google-maps">
       <i data-lucide="map" class="icon-sm"></i>
       <span>In Google Maps öffnen</span>
     </div>
-    <div class="context-menu-item" id="context-menu-swisstopo">
-      <i data-lucide="mountain" class="icon-sm"></i>
-      <span>In Swisstopo öffnen</span>
-    </div>
     <div class="context-menu-item" id="context-menu-google-earth">
       <i data-lucide="globe" class="icon-sm"></i>
       <span>In Google Earth 3D öffnen</span>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" id="login-modal">
+    <div class="modal login-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Anmelden</h3>
+        <button class="modal-close" onclick="window.auth.hideLoginModal()">×</button>
+      </div>
+      <form id="login-form">
+        <div class="modal-body">
+          <div class="login-error" style="display: none;"></div>
+          <label class="modal-label">E-Mail-Adresse</label>
+          <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required autocomplete="email">
+          <label class="modal-label">Passwort</label>
+          <input type="password" name="password" class="modal-input" placeholder="Passwort" required autocomplete="current-password">
+          <a href="#" id="forgot-password-link" class="forgot-password-link">Passwort vergessen?</a>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-btn cancel" onclick="window.auth.hideLoginModal()">Abbrechen</button>
+          <button type="submit" class="modal-btn primary">Anmelden</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Password Reset Modal -->
+  <div class="modal-overlay" id="password-reset-modal">
+    <div class="modal login-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Neues Passwort setzen</h3>
+      </div>
+      <form id="password-reset-form">
+        <div class="modal-body">
+          <div class="password-reset-error" id="password-reset-error" style="display: none;"></div>
+          <div class="password-reset-success" id="password-reset-success" style="display: none;"></div>
+          <label class="modal-label">Neues Passwort</label>
+          <input type="password" name="password" class="modal-input" placeholder="Mindestens 6 Zeichen" required autocomplete="new-password" minlength="6">
+          <label class="modal-label">Passwort bestätigen</label>
+          <input type="password" name="password-confirm" class="modal-input" placeholder="Passwort wiederholen" required autocomplete="new-password">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="modal-btn primary">Passwort speichern</button>
+        </div>
+      </form>
     </div>
   </div>
 
