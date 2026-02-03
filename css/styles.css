@@ -3950,10 +3950,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   color: var(--text-muted);
   white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-sm);
 }
 
 .user-role-select {
@@ -3974,6 +3970,11 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: none;
   border-color: var(--federal-blue);
   box-shadow: 0 0 0 2px rgba(26, 54, 93, 0.2);
+}
+
+.user-actions {
+  width: 48px;
+  text-align: center;
 }
 
 .btn-remove-user {

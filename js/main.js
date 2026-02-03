@@ -49,6 +49,7 @@ import {
   markers,
   initMap,
   updateMapMarkers,
+  recreateMarkers,
   selectMarker,
   deselectAllMarkers,
   setupBasemapSelector,
@@ -484,12 +485,21 @@ let usersEditMode = false;
 
 function renderUsersTable() {
   const tbody = document.getElementById('users-table-body');
+  const thead = document.querySelector('.users-table thead tr');
   if (!tbody) return;
+
+  // Update header based on edit mode
+  if (thead) {
+    thead.innerHTML = usersEditMode
+      ? `<th>Benutzer</th><th>Rolle</th><th>Letzter Login</th><th></th>`
+      : `<th>Benutzer</th><th>Rolle</th><th>Letzter Login</th>`;
+  }
 
   import('./state.js').then(mod => {
     const users = mod.teamMembers;
+    const colSpan = usersEditMode ? 4 : 3;
     if (!users || users.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="3" class="empty-message">Keine Benutzer vorhanden</td></tr>';
+      tbody.innerHTML = `<tr><td colspan="${colSpan}" class="empty-message">Keine Benutzer vorhanden</td></tr>`;
       return;
     }
 
@@ -508,11 +518,13 @@ function renderUsersTable() {
           </select>`
         : user.role;
 
-      // Actions cell - only show remove button in edit mode
+      // Actions cell - only in edit mode
       const actionsCell = usersEditMode
-        ? `<button class="btn btn-ghost btn-sm btn-remove-user" data-user-id="${user.id}" title="Entfernen">
-            <i data-lucide="trash-2" class="icon-sm"></i>
-          </button>`
+        ? `<td class="user-actions">
+            <button class="btn btn-ghost btn-sm btn-remove-user" data-user-id="${user.id}" title="Entfernen">
+              <i data-lucide="trash-2" class="icon-sm"></i>
+            </button>
+          </td>`
         : '';
 
       return `
@@ -524,10 +536,8 @@ function renderUsersTable() {
           </div>
         </td>
         <td>${roleCell}</td>
-        <td class="user-last-login">
-          ${formattedLogin}
-          ${actionsCell}
-        </td>
+        <td class="user-last-login">${formattedLogin}</td>
+        ${actionsCell}
       </tr>
     `}).join('');
 
@@ -954,8 +964,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       // Update last login timestamp
       await updateUserLastLogin(appUser.id);
       await loadData();
-      // Re-render views
-      updateMapMarkers();
+      // Re-render views - recreate markers since data changed
+      recreateMarkers(selectBuilding);
       updateCounts();
       updateStatistik();
       renderKanbanBoard();

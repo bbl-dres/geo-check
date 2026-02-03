@@ -616,8 +616,13 @@ if (typeof window !== 'undefined') {
         hideLoginModal,
         hidePasswordResetModal,
         signOut: async () => {
-            await signOut();
-            window.location.reload();
+            try {
+                await signOut();
+                window.location.reload();
+            } catch (error) {
+                console.error('Sign out error:', error);
+                alert('Fehler beim Abmelden. Bitte versuchen Sie es erneut.');
+            }
         }
     };
 }

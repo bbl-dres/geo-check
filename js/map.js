@@ -36,6 +36,12 @@ let pendingClickHandler = null;
 // Pending initial selection (set before markers are ready)
 let pendingSelection = null;
 
+// Flag to track if markers have been created
+let markersReady = false;
+
+// Flag to track if a filter update is pending
+let pendingFilterUpdate = false;
+
 // ========================================
 // Coordinate Conversion (WGS84 to LV95)
 // ========================================
@@ -150,6 +156,9 @@ export function initMap() {
       markers[building.id] = marker;
     });
 
+    // Mark markers as ready
+    markersReady = true;
+
     // Apply pending click handler if set
     if (pendingClickHandler) {
       applyMarkerClickHandlers(pendingClickHandler);
@@ -160,6 +169,12 @@ export function initMap() {
     if (pendingSelection) {
       selectMarker(pendingSelection);
       pendingSelection = null;
+    }
+
+    // Apply pending filter update if set
+    if (pendingFilterUpdate) {
+      pendingFilterUpdate = false;
+      updateMapMarkers();
     }
 
     // Setup label visibility based on zoom
@@ -297,6 +312,45 @@ export function createMarker(building) {
   return marker;
 }
 
+/**
+ * Recreate all markers from current buildings data.
+ * Call this when data is reloaded (e.g., after sign in).
+ */
+export function recreateMarkers(clickHandler = null) {
+  // Don't recreate if map isn't ready
+  if (!map) return;
+
+  // Remove existing markers
+  Object.values(markers).forEach(marker => marker.remove());
+  markers = {};
+  markersReady = false;
+
+  // Create new markers from current buildings data
+  buildings.forEach(building => {
+    const marker = createMarker(building);
+    markers[building.id] = marker;
+  });
+
+  // Apply click handler if provided
+  if (clickHandler) {
+    applyMarkerClickHandlers(clickHandler);
+  } else if (pendingClickHandler) {
+    applyMarkerClickHandlers(pendingClickHandler);
+    pendingClickHandler = null;
+  }
+
+  // Mark as ready and apply any pending updates
+  markersReady = true;
+
+  if (pendingFilterUpdate) {
+    pendingFilterUpdate = false;
+    updateMapMarkers();
+  }
+
+  // Update label visibility
+  updateLabelVisibility();
+}
+
 export function zoomToVisibleMarkers() {
   const filtered = getFilteredBuildings();
   if (filtered.length === 0) return;
@@ -308,6 +362,12 @@ export function zoomToVisibleMarkers() {
 }
 
 export function updateMapMarkers() {
+  // If markers aren't ready yet, defer the update
+  if (!markersReady) {
+    pendingFilterUpdate = true;
+    return;
+  }
+
   const filtered = getFilteredBuildings();
   const filteredIds = new Set(filtered.map(b => b.id));
 
