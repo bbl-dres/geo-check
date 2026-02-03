@@ -533,7 +533,7 @@ VALUES ('custom-001', 'custom-checks', 'Regel Name', '...', 'fieldName', 'exists
 
 Validation results contribute to the overall confidence score displayed for each building.
 
-### 10.1 Score Components
+### 11.1 Score Components
 
 | Component | Weight | Description |
 |-----------|--------|-------------|
@@ -541,13 +541,13 @@ Validation results contribute to the overall confidence score displayed for each
 | `sap` | 35% | SAP RE-FX completeness/match rate |
 | `gwr` | 35% | GWR data completeness/match rate |
 
-### 10.2 Calculation
+### 11.2 Calculation
 
 ```
 total = (georef × 0.30) + (sap × 0.35) + (gwr × 0.35)
 ```
 
-### 10.3 Thresholds
+### 11.3 Thresholds
 
 | Level | Range | Color | CSS Variable |
 |-------|-------|-------|--------------|
@@ -557,13 +557,163 @@ total = (georef × 0.30) + (sap × 0.35) + (gwr × 0.35)
 
 ---
 
-## 12. References
+## 12. Standards and Legal Framework
 
-- [DATABASE.md](./DATABASE.md) - Complete data model documentation
-- [GWR Merkmalskatalog](https://www.housing-stat.ch/catalog/de/4.3/final) - Official GWR attributes
-- [ÖREB-Kataster](https://www.cadastre.ch/de/oereb.html) - Public law restrictions
+This section documents the standards and Swiss legal requirements that inform the validation rules.
+
+### 12.1 What is Data Quality?
+
+Data quality refers to the fitness of data for its intended use. The international standard **ISO 8000** defines data quality management principles, while the **DAMA International** framework identifies six core dimensions:
+
+| Dimension | Definition | Geo-Check Application |
+|-----------|------------|----------------------|
+| **Accuracy** | Data correctly reflects real-world entities | Coordinates match actual building location |
+| **Completeness** | All required data elements are present | EGID, address, coordinates must be filled |
+| **Consistency** | Data values agree across different sources | SAP and GWR values should match |
+| **Timeliness** | Data reflects the current state | Building status is up-to-date |
+| **Validity** | Data conforms to defined formats and rules | EGID format, PLZ is 4 digits |
+| **Uniqueness** | Each entity is represented only once | One EGID per building, no duplicates |
+
+### 12.2 Swiss Legal Framework
+
+The validation rules are grounded in Swiss federal law governing geoinformation and building registers.
+
+#### Hierarchy of Legal Sources
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Federal Constitution (BV) Art. 75a                     │
+│  Harmonization of official land information             │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+┌─────────────────────────▼───────────────────────────────┐
+│  GeoIG (SR 510.62) - Geoinformationsgesetz              │
+│  Federal Act on Geoinformation (2007)                   │
+└─────────────────────────┬───────────────────────────────┘
+                          │
+        ┌─────────────────┼─────────────────┐
+        │                 │                 │
+┌───────▼───────┐ ┌───────▼───────┐ ┌───────▼───────┐
+│ GeoIV         │ │ GeoNV         │ │ VAV           │
+│ SR 510.620    │ │ SR 510.625    │ │ SR 211.432.2  │
+│ Geoinform.    │ │ Geographic    │ │ Official      │
+│ Ordinance     │ │ Names         │ │ Survey        │
+└───────────────┘ └───────────────┘ └───────────────┘
+```
+
+#### Key Ordinances
+
+| Ordinance | SR Number | Relevance to Geo-Check |
+|-----------|-----------|------------------------|
+| **VGWR** | [SR 431.841](https://www.fedlex.admin.ch/eli/cc/2017/376/de) | Defines GWR structure, EGID/EWID, building attributes, update obligations |
+| **GeoNV** | [SR 510.625](https://www.fedlex.admin.ch/eli/cc/2008/390/de) | Building addressing rules, street name conventions, official address register |
+| **VAV** | [SR 211.432.2](https://www.fedlex.admin.ch/eli/cc/1992/2446_2446_2446/de) | Cadastral survey requirements, parcel boundaries, EGRID |
+| **GeoIG** | [SR 510.62](https://www.fedlex.admin.ch/eli/cc/2008/388/de) | Framework law for all geoinformation in Switzerland |
+
+### 12.3 Key Identifiers
+
+Swiss building and parcel data uses federally-defined unique identifiers:
+
+#### EGID (Eidgenössischer Gebäudeidentifikator)
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Definition** | Unique building identifier in the Federal Register of Buildings and Dwellings |
+| **Format** | 1-9 digits, no leading zeros |
+| **Regex** | `^[1-9][0-9]{0,8}$` |
+| **Scope** | Unique across all of Switzerland |
+| **Persistence** | Unchanged through municipal mergers, ownership changes, renovations |
+| **Authority** | BFS (Bundesamt für Statistik) via GWR |
+| **Legal basis** | VGWR Art. 8 |
+
+#### EGRID (Eidgenössischer Grundstücksidentifikator)
+
+| Attribute | Specification |
+|-----------|---------------|
+| **Definition** | Unique parcel identifier in official surveying and land register |
+| **Format** | `CH` + 12 alphanumeric characters |
+| **Regex** | `^CH[A-Z0-9]{12}$` |
+| **Scope** | Unique across all of Switzerland |
+| **Since** | 2010 |
+| **Authority** | Cantons (cadastral surveying) |
+| **Legal basis** | VAV, GeoIG |
+
+#### Related Identifiers
+
+| ID | Name | Purpose |
+|----|------|---------|
+| **EWID** | Eidgenössischer Wohnungsidentifikator | Dwelling within a building |
+| **EDID** | Eingangsidentifikator | Building entrance |
+| **BFS-Nr** | Gemeindenummer | 4-digit municipality code |
+
+### 12.4 Building Address Requirements
+
+According to **GeoNV Art. 26c**, the official address register (amtliches Verzeichnis der Gebäudeadressen) must contain:
+
+- All buildings with residential use
+- All buildings with workplaces
+- All buildings of general public interest
+
+Each building must have **one or more unique addresses**. The canonical source is the GWR.
+
+#### Address Components (per GeoNV)
+
+| Component | German | Required | Authority |
+|-----------|--------|----------|-----------|
+| Street name | Strassenname | Yes | Municipality |
+| House number | Hausnummer | Yes | Municipality |
+| Postal code | PLZ | Yes | Swiss Post |
+| Locality | Ortschaft | Yes | Canton |
+| Municipality | Gemeinde | Yes | BFS |
+
+### 12.5 GWR Update Obligations
+
+According to **VGWR Art. 10**, responsible authorities must:
+
+1. Maintain all building project information in the GWR continuously
+2. Complete quarterly updates within **30 days** after quarter end
+3. Report all construction phases: planned → approved → under construction → completed
+
+### 12.6 Data Quality Requirements
+
+The VGWR establishes quality standards for recognized cantonal/municipal registers (Art. 6):
+
+| Requirement | Description |
+|-------------|-------------|
+| Legal basis | Cantonal or municipal regulation required |
+| Minimum quality | Defined by BFS |
+| Minimum size | 25,000 buildings and 100,000 dwellings, OR complete cantonal coverage |
+| Audit | BFS may verify compliance |
 
 ---
 
-*Document version: 1.0*
+## 13. References
+
+### Internal Documentation
+
+- [DATABASE.md](./DATABASE.md) - Complete data model documentation
+
+### Swiss Federal Law (Fedlex)
+
+- [VGWR (SR 431.841)](https://www.fedlex.admin.ch/eli/cc/2017/376/de) - Verordnung über das eidgenössische Gebäude- und Wohnungsregister
+- [GeoIG (SR 510.62)](https://www.fedlex.admin.ch/eli/cc/2008/388/de) - Bundesgesetz über Geoinformation
+- [GeoNV (SR 510.625)](https://www.fedlex.admin.ch/eli/cc/2008/390/de) - Verordnung über die geografischen Namen
+- [VAV (SR 211.432.2)](https://www.fedlex.admin.ch/eli/cc/1992/2446_2446_2446/de) - Verordnung über die amtliche Vermessung
+
+### Technical Resources
+
+- [GWR Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final) - Official GWR attribute catalog
+- [ÖREB-Kataster](https://www.cadastre.ch/de/oereb.html) - Public law restrictions on ownership
+- [EGID/EWID Documentation](https://www.bfs.admin.ch/bfs/de/home/register/personenregister/registerharmonisierung/egid-ewid.html) - Identifier documentation
+- [E-GRID Service](https://www.cadastre.ch/de/services/service/egrid.html) - Parcel identifier lookup
+- [Gebäudeadressierung (GeoNV)](https://www.giswiki.ch/Auszüge_der_GeoNV_für_die_Gebäudeadressierung) - Address requirements
+
+### International Standards
+
+- [ISO 8000](https://www.iso.org/standard/62392.html) - Data quality management
+- [INSPIRE Directive](https://inspire.ec.europa.eu/) - EU spatial data infrastructure (reference)
+
+---
+
+*Document version: 1.1*
 *Last updated: 2026-02-03*
