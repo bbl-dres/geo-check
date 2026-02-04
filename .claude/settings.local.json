@@ -29,7 +29,8 @@
       "Bash(del transform.js)",
       "Bash(python -m json.tool:*)",
       "Bash(node scripts/migrate-buildings.js:*)",
-      "Bash(node scripts/migrate-to-supabase.js:*)"
+      "Bash(node scripts/migrate-to-supabase.js:*)",
+      "Bash(ping:*)"
     ]
   }
 }

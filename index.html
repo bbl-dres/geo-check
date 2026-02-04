@@ -30,30 +30,42 @@
   <!-- Login Landing Page (shown when not authenticated) -->
   <div class="login-landing" id="login-landing">
     <div class="login-landing-container">
-      <div class="login-landing-content">
-        <div class="login-landing-box">
-          <h2 class="login-landing-box-title">Anmelden</h2>
-          <p class="login-landing-box-text">Melden Sie sich mit Ihrem BBL-Konto an, um auf das Liegenschaftsinventar zuzugreifen.</p>
+      <!-- Login Card -->
+      <div class="login-landing-box">
+        <h2 class="login-landing-box-title">Anmelden</h2>
+        <p class="login-landing-box-text">Melden Sie sich mit Ihrem BBL-Konto an.</p>
 
-          <form id="landing-login-form" class="login-landing-form">
-            <div class="login-landing-error" id="landing-login-error"></div>
-            <div class="login-landing-field">
-              <label for="landing-email">E-Mail-Adresse</label>
-              <input type="email" id="landing-email" name="email" placeholder="name@bbl.admin.ch" required autocomplete="email">
-            </div>
-            <div class="login-landing-field">
-              <label for="landing-password">Passwort</label>
-              <input type="password" id="landing-password" name="password" placeholder="Passwort" required autocomplete="current-password">
-            </div>
-            <button type="submit" class="login-landing-submit">Anmelden</button>
-            <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
-          </form>
-        </div>
+        <form id="landing-login-form" class="login-landing-form">
+          <div class="login-landing-error" id="landing-login-error"></div>
+          <div class="login-landing-field">
+            <label for="landing-email">E-Mail-Adresse</label>
+            <input type="email" id="landing-email" name="email" placeholder="name@bbl.admin.ch" required autocomplete="email">
+          </div>
+          <div class="login-landing-field">
+            <label for="landing-password">Passwort</label>
+            <input type="password" id="landing-password" name="password" placeholder="Passwort" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="login-landing-submit">Anmelden</button>
+          <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
+        </form>
       </div>
 
-      <div>
-        <span>© Schweizerische Eidgenossenschaft</span>
-        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+      <!-- Demo Card -->
+      <div class="login-landing-box login-landing-demo">
+        <h2 class="login-landing-box-title">Demo testen</h2>
+        <p class="login-landing-box-text">Erkunden Sie die Anwendung mit Beispieldaten.</p>
+        <button type="button" class="login-landing-demo-btn" id="demo-btn">
+          <i data-lucide="play" class="icon-sm"></i>
+          Demo starten
+        </button>
+      </div>
+
+      <!-- Footer -->
+      <div class="login-landing-footer">
+        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" class="login-landing-link">
+          <i data-lucide="github" class="icon-sm"></i>
+          Quellcode
+        </a>
       </div>
     </div>
   </div>

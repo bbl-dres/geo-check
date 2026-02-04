@@ -118,7 +118,7 @@ function updateTabUI(tabId) {
 // ========================================
 
 async function loadData() {
-  if (!isAuthenticated()) {
+  if (!isAuthenticated() && !window.isDemoMode) {
     console.log('Not authenticated - skipping data load');
     return;
   }
@@ -130,6 +130,113 @@ async function loadData() {
   } catch (error) {
     console.error('Data loading error:', error);
     showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
+  }
+}
+
+// ========================================
+// Demo Mode - Load from JSON files
+// ========================================
+
+async function loadDemoData() {
+  try {
+    const [buildingsRes, usersRes, eventsRes, commentsRes, errorsRes, rulesRes] = await Promise.all([
+      fetch('data/buildings.json'),
+      fetch('data/users.json'),
+      fetch('data/events.json'),
+      fetch('data/comments.json'),
+      fetch('data/errors.json'),
+      fetch('data/rules.json')
+    ]);
+
+    const [buildingsRaw, users, events, comments, errors, rules] = await Promise.all([
+      buildingsRes.json(),
+      usersRes.json(),
+      eventsRes.json(),
+      commentsRes.json(),
+      errorsRes.json(),
+      rulesRes.json()
+    ]);
+
+    // Transform buildings to attach errors and comments
+    const buildings = (buildingsRaw || []).map(b => ({
+      ...b,
+      // Extract kanton string from object if needed
+      kanton: typeof b.kanton === 'object' ? (b.kanton.sap || b.kanton.gwr || '') : b.kanton,
+      // Attach errors for this building
+      errors: errors[b.id] || [],
+      // Attach comments for this building
+      comments: comments[b.id] || []
+    }));
+
+    return {
+      buildings,
+      teamMembers: users || [],
+      eventsData: events || [],
+      commentsData: comments || {},
+      errorsData: errors || {},
+      rulesConfig: rules || null
+    };
+  } catch (error) {
+    console.error('Error loading demo data:', error);
+    throw error;
+  }
+}
+
+async function startDemoMode() {
+  window.isDemoMode = true;
+  console.log('Starting demo mode...');
+
+  try {
+    const data = await loadDemoData();
+    setData(data);
+    console.log('Demo data loaded successfully');
+
+    // Set demo user
+    setCurrentUser('Demo Benutzer');
+
+    // Store rulesConfig globally for renderRules
+    window.rulesConfig = data.rulesConfig;
+
+    // Show app
+    showApp();
+    hideAppError();
+
+    // Update UI for demo user
+    const loginBtn = document.getElementById('login-btn');
+    const userTrigger = document.getElementById('user-trigger');
+    const userInitials = document.getElementById('user-initials');
+    const userDropdownName = document.getElementById('user-dropdown-name');
+    const userDropdownRole = document.getElementById('user-dropdown-role');
+
+    if (loginBtn) loginBtn.style.display = 'none';
+    if (userTrigger) userTrigger.style.display = 'flex';
+    if (userInitials) userInitials.textContent = 'DE';
+    if (userDropdownName) userDropdownName.textContent = 'Demo Benutzer';
+    if (userDropdownRole) userDropdownRole.textContent = 'Demo';
+
+    // Re-render views
+    recreateMarkers(selectBuilding);
+    updateCounts();
+    updateStatistik();
+    renderKanbanBoard();
+    if (tableVisible) renderTableView();
+    renderRules();
+    renderUsersTable();
+
+    // Resize map after showing
+    if (map) setTimeout(() => map.resize(), 100);
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  } catch (error) {
+    console.error('Demo mode error:', error);
+    showAppError('Demo-Daten konnten nicht geladen werden.');
+  }
+}
+
+function setupDemoButton() {
+  const demoBtn = document.getElementById('demo-btn');
+  if (demoBtn) {
+    demoBtn.addEventListener('click', startDemoMode);
   }
 }
 
@@ -938,6 +1045,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupLoginForm();
   setupPasswordResetForm();
   setupUserDropdown();
+  setupDemoButton();
 
   // Check if user arrived via password reset link
   if (isPasswordRecoveryMode()) {

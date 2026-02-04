@@ -5346,34 +5346,131 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   margin: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: var(--space-lg);
 }
 
-.login-landing-content {
+/* Header with logo and titles */
+.login-landing-header {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  text-align: center;
+}
+
+.login-landing-logo {
+  height: 56px;
+  width: auto;
+}
+
+.login-landing-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.login-landing-title {
+  font-size: var(--font-base);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+.login-landing-subtitle {
+  font-size: var(--font-sm);
+  color: var(--text-secondary);
+}
+
+/* Vertical card layout */
+.login-landing-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
 }
 
 .login-landing-box {
-  width: 100%;
   background: var(--bg-white);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-lg);
-  padding: var(--space-2xl);
-  box-shadow: var(--shadow-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-landing-box-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+  color: var(--text-secondary);
+}
+
+.login-landing-box-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 .login-landing-box-title {
-  font-size: var(--font-xl);
+  font-size: var(--font-lg);
   font-weight: var(--font-semibold);
   color: var(--text-primary);
-  margin: 0 0 var(--space-sm) 0;
+  margin: 0 0 var(--space-xs) 0;
 }
 
 .login-landing-box-text {
   font-size: var(--font-sm);
   color: var(--text-secondary);
-  margin: 0 0 var(--space-xl) 0;
+  margin: 0 0 var(--space-lg) 0;
   line-height: var(--leading-normal);
+}
+
+/* Demo card styling */
+.login-landing-demo {
+  background: var(--federal-blue);
+  border-color: var(--federal-blue);
+}
+
+.login-landing-demo .login-landing-box-icon {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--text-inverse);
+}
+
+.login-landing-demo .login-landing-box-title {
+  color: var(--text-inverse);
+}
+
+.login-landing-demo .login-landing-box-text {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.login-landing-demo-btn {
+  height: var(--touch-target-min);
+  background: var(--bg-white);
+  color: var(--federal-blue);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.login-landing-demo-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.login-landing-demo-btn:active {
+  transform: translateY(0);
 }
 
 .login-landing-form {
@@ -5474,12 +5571,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .login-landing-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  font-size: var(--font-xs);
+  font-size: var(--font-sm);
   color: var(--text-muted);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-default);
 }
 
 .login-landing-footer a {
@@ -5490,7 +5585,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .login-landing-footer a:hover {
   color: var(--federal-blue);
-  text-decoration: underline;
+}
+
+.login-landing-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
 }
 
 /* App Container visibility */
