@@ -204,11 +204,10 @@ Compares address components between SAP RE-FX and GWR. Values are compared as-is
 | Rule ID | Name | Description | Severity |
 |---------|------|-------------|----------|
 | `GEO-001` | Koordinaten vorhanden | Coordinates exist in at least one source | error |
-| `GEO-002` | Koordinaten in Schweiz | Coordinates within Swiss borders (lat 45.8-47.8, lng 5.9-10.5) | error |
-| `GEO-003` | Koordinaten-Abweichung | SAP vs GWR coordinates differ by > 50m | warning |
-| `GEO-004` | Adresse-Koordinaten-Match | Geocoded address > 100m from stored coordinates | info |
+| `GEO-002` | Koordinaten-Abweichung | SAP vs GWR coordinates differ by > 50m | warning |
+| `GEO-003` | Adresse-Koordinaten-Match | Geocoded address > 100m from stored coordinates | info |
 
-**Error consolidation:** If coordinates are missing (`GEO-001`), do not also trigger `GEO-002`, `GEO-003`, or `GEO-004`.
+**Error consolidation:** If coordinates are missing (`GEO-001`), do not also trigger `GEO-002` or `GEO-003`.
 
 ### 3.4 Future Development
 
@@ -235,8 +234,8 @@ The following checks are planned for future releases:
 |----------|-------|--------|----------|------|
 | Identifikation | 7 | 4 | 2 | 1 |
 | Adresse | 9 | 1 | 6 | 2 |
-| Geometrie | 4 | 2 | 1 | 1 |
-| **Total** | **20** | **7** | **9** | **4** |
+| Geometrie | 3 | 1 | 1 | 1 |
+| **Total** | **19** | **6** | **9** | **4** |
 
 This focused approach ensures:
 - **No duplicate errors** for the same root cause
@@ -370,9 +369,8 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | Code | Description | Severity |
 |------|-------------|----------|
 | `GEO-001` | Coordinates missing in all sources | error |
-| `GEO-002` | Coordinates outside Swiss borders | error |
-| `GEO-003` | SAP/GWR coordinate deviation > 50m | warning |
-| `GEO-004` | Address/coordinate mismatch > 100m | info |
+| `GEO-002` | SAP/GWR coordinate deviation > 50m | warning |
+| `GEO-003` | Address/coordinate mismatch > 100m | info |
 
 ---
 
