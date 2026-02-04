@@ -30,10 +30,17 @@
   <!-- Login Landing Page (shown when not authenticated) -->
   <div class="login-landing" id="login-landing">
     <div class="login-landing-container">
+      <!-- Header -->
+      <div class="login-landing-header">
+        <div class="login-landing-org">Bundesamt für Bauten und Logistik</div>
+        <div class="login-landing-dept">Abteilung Digital Real Estate und Support</div>
+        <div class="login-landing-app">Korrekturen Liegenschaftsinventar</div>
+      </div>
+
       <!-- Login Card -->
       <div class="login-landing-box">
         <h2 class="login-landing-box-title">Anmelden</h2>
-        <p class="login-landing-box-text">Melden Sie sich mit Ihrem BBL-Konto an.</p>
+        <p class="login-landing-box-text">Melden Sie sich mit Ihrem Benutzer Konto an.</p>
 
         <form id="landing-login-form" class="login-landing-form">
           <div class="login-landing-error" id="landing-login-error"></div>
@@ -46,7 +53,11 @@
             <input type="password" id="landing-password" name="password" placeholder="Passwort" required autocomplete="current-password">
           </div>
           <button type="submit" class="login-landing-submit">Anmelden</button>
-          <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
+          <div class="login-landing-links">
+            <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
+            <span class="login-landing-links-sep">·</span>
+            <a href="#" class="login-landing-forgot">Zugang beantragen</a>
+          </div>
         </form>
       </div>
 
@@ -62,10 +73,11 @@
 
       <!-- Footer -->
       <div class="login-landing-footer">
-        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" class="login-landing-link">
-          <i data-lucide="github" class="icon-sm"></i>
-          Quellcode
-        </a>
+        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
+        <span class="login-landing-footer-sep">·</span>
+        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+        <span class="login-landing-footer-sep">·</span>
+        <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Kontakt</a>
       </div>
     </div>
   </div>

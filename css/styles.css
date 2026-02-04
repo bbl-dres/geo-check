@@ -5337,54 +5337,35 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .login-landing.visible {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  padding: var(--space-2xl) var(--space-lg);
 }
 
 .login-landing-container {
   width: 100%;
-  max-width: 400px;
-  margin: var(--space-xl);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-}
-
-/* Header with logo and titles */
-.login-landing-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  text-align: center;
-}
-
-.login-landing-logo {
-  height: 56px;
-  width: auto;
-}
-
-.login-landing-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.login-landing-title {
-  font-size: var(--font-base);
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-}
-
-.login-landing-subtitle {
-  font-size: var(--font-sm);
-  color: var(--text-secondary);
-}
-
-/* Vertical card layout */
-.login-landing-cards {
+  max-width: 360px;
+  margin-top: 10vh;
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
+}
+
+/* Header text */
+.login-landing-header {
+  text-align: center;
+  margin-bottom: var(--space-sm);
+}
+
+.login-landing-org,
+.login-landing-dept,
+.login-landing-app {
+  font-size: var(--font-base);
+  color: var(--text-secondary);
+}
+
+.login-landing-org {
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
 }
 
 .login-landing-box {
@@ -5555,6 +5536,17 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   text-decoration: underline;
 }
 
+.login-landing-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.login-landing-links-sep {
+  color: var(--border-default);
+}
+
 .login-landing-error {
   padding: var(--space-sm) var(--space-md);
   background: rgba(220, 38, 38, 0.08);
@@ -5573,6 +5565,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: var(--space-sm);
   font-size: var(--font-sm);
   color: var(--text-muted);
 }
@@ -5587,10 +5580,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--federal-blue);
 }
 
-.login-landing-link {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
+.login-landing-footer-sep {
+  color: var(--border-default);
 }
 
 /* App Container visibility */
@@ -5726,14 +5717,23 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  /* Login landing: tighter spacing on mobile */
+  /* Login landing: mobile adjustments */
+  .login-landing.visible {
+    padding: var(--space-lg);
+    align-items: flex-start;
+  }
+
   .login-landing-container {
-    margin: var(--space-lg);
+    margin-top: var(--space-xl);
+    gap: var(--space-sm);
+  }
+
+  .login-landing-box {
+    padding: var(--space-lg);
   }
 
   .login-landing-footer {
-    flex-direction: column;
-    gap: var(--space-sm);
-    text-align: center;
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
