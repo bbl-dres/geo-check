@@ -178,8 +178,8 @@
         </button>
         <div class="multi-select-dropdown">
           <div class="multi-select-actions">
-            <button type="button" class="multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
             <label class="multi-select-option"><input type="checkbox" value="TG"><span>TG</span></label>
@@ -203,8 +203,8 @@
         </button>
         <div class="multi-select-dropdown">
           <div class="multi-select-actions">
-            <button type="button" class="multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
             <label class="multi-select-option"><input type="checkbox" value="critical"><span title="Unter 50% Übereinstimmung">Kritisch</span></label>
@@ -222,8 +222,8 @@
         </button>
         <div class="multi-select-dropdown">
           <div class="multi-select-actions">
-            <button type="button" class="multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
             <label class="multi-select-option"><input type="checkbox" value="Büro"><span>Büro</span></label>
@@ -243,8 +243,8 @@
         </button>
         <div class="multi-select-dropdown">
           <div class="multi-select-actions">
-            <button type="button" class="multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
             <label class="multi-select-option"><input type="checkbox" value="backlog"><span>Offen</span></label>
@@ -263,8 +263,8 @@
         </button>
         <div class="multi-select-dropdown">
           <div class="multi-select-actions">
-            <button type="button" class="multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="multi-select-action" data-action="none">Keine</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
+            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
           </div>
           <div class="multi-select-options">
             <label class="multi-select-option"><input type="checkbox" value="M. Keller"><span>M. Keller</span></label>
@@ -371,7 +371,7 @@
               <span class="scale-bar-text" id="scale-bar-text">100 m</span>
             </div>
 
-            <button class="table-toggle-btn active" id="table-toggle-btn">
+            <button class="btn btn-outline btn-sm table-toggle-btn active" id="table-toggle-btn">
               <i data-lucide="chevron-up" class="icon-sm chevron"></i>
               <span>Tabelle</span>
             </button>
@@ -391,7 +391,7 @@
                 </button>
               </div>
               <div class="table-columns-container">
-                <button class="table-columns-btn" id="table-columns-btn" type="button" title="Spalten ein-/ausblenden">
+                <button class="btn btn-outline btn-sm" id="table-columns-btn" type="button" title="Spalten ein-/ausblenden">
                   <i data-lucide="columns-3" class="icon-sm"></i>
                   <span>Spalten</span>
                   <i data-lucide="chevron-down" class="icon-sm"></i>
@@ -441,7 +441,7 @@
                 </div>
               </div>
               <div class="table-export-container">
-                <button class="table-export-btn" id="table-export-btn" type="button">
+                <button class="btn btn-outline btn-sm" id="table-export-btn" type="button">
                   <i data-lucide="download" class="icon-sm"></i>
                   <span>Exportieren</span>
                   <i data-lucide="chevron-down" class="icon-sm"></i>
@@ -461,7 +461,7 @@
                   </div>
                 </div>
               </div>
-              <button class="table-panel-close" id="table-close-btn" type="button">
+              <button class="btn btn-icon" id="table-close-btn" type="button">
                 <i data-lucide="x" class="icon"></i>
               </button>
             </div>
@@ -493,11 +493,11 @@
               </div>
               <div class="table-footer-center">
                 <div class="table-pagination" id="table-pagination">
-                  <button class="pagination-btn" id="pagination-prev" type="button" disabled>
+                  <button class="btn btn-icon" id="pagination-prev" type="button" disabled>
                     <i data-lucide="chevron-left" class="icon-sm"></i>
                   </button>
                   <div class="pagination-pages" id="pagination-pages"></div>
-                  <button class="pagination-btn" id="pagination-next" type="button">
+                  <button class="btn btn-icon" id="pagination-next" type="button">
                     <i data-lucide="chevron-right" class="icon-sm"></i>
                   </button>
                 </div>
@@ -875,32 +875,6 @@
             </div>
           </div>
 
-          <div class="detail-section accordion" data-accordion="fehler">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Fehler</span>
-              <span class="accordion-count" id="error-count"></span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <table class="error-table" id="error-table">
-                <thead>
-                  <tr>
-                    <th class="col-check-id">ID</th>
-                    <th class="col-desc">Beschreibung</th>
-                    <th class="col-level">Level</th>
-                  </tr>
-                </thead>
-                <tbody id="error-tbody">
-                  <!-- Populated by JS -->
-                </tbody>
-              </table>
-              <div class="error-empty-state" id="error-empty-state" style="display: none;">
-                <i data-lucide="check-circle" class="icon-lg"></i>
-                <span>Keine Fehler gefunden</span>
-              </div>
-            </div>
-          </div>
-
           <div class="detail-section accordion open" data-accordion="status">
             <button class="accordion-header" type="button">
               <span class="accordion-title">Zuständigkeiten</span>
@@ -936,6 +910,32 @@
             </div>
           </div>
 
+          <div class="detail-section accordion" data-accordion="fehler">
+            <button class="accordion-header" type="button">
+              <span class="accordion-title">Fehler</span>
+              <span class="accordion-count" id="error-count"></span>
+              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
+            </button>
+            <div class="accordion-content">
+              <table class="error-table" id="error-table">
+                <thead>
+                  <tr>
+                    <th class="col-check-id">ID</th>
+                    <th class="col-desc">Beschreibung</th>
+                    <th class="col-level">Level</th>
+                  </tr>
+                </thead>
+                <tbody id="error-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+              <div class="error-empty-state" id="error-empty-state" style="display: none;">
+                <i data-lucide="check-circle" class="icon-lg"></i>
+                <span>Keine Fehler gefunden</span>
+              </div>
+            </div>
+          </div>
+
           <div class="detail-section accordion open" data-accordion="datenvergleich">
             <button class="accordion-header" type="button">
               <span class="accordion-title">Korrektur</span>
@@ -960,10 +960,10 @@
                 <button class="btn btn-ghost btn-sm" id="btn-toggle-fields" type="button">
                   <i data-lucide="chevron-down" class="icon-sm"></i> Mehr Attribute
                 </button>
-                <button class="data-correct-btn" id="btn-correct" type="button">Daten bearbeiten</button>
+                <button class="btn btn-secondary btn-sm" id="btn-correct" type="button">Daten bearbeiten</button>
                 <div class="edit-actions" id="edit-actions" style="display: none;">
-                  <button class="edit-cancel-btn" id="btn-edit-cancel" type="button">Abbrechen</button>
-                  <button class="edit-save-btn" id="btn-edit-save" type="button">Speichern</button>
+                  <button class="btn btn-secondary btn-sm" id="btn-edit-cancel" type="button">Abbrechen</button>
+                  <button class="btn btn-primary btn-sm" id="btn-edit-save" type="button">Speichern</button>
                 </div>
               </div>
             </div>
@@ -1024,7 +1024,7 @@
     <div class="modal">
       <div class="modal-header">
         <h3 class="modal-title">Benutzer einladen</h3>
-        <button class="modal-close" onclick="closeModal('modal-invite-user')">×</button>
+        <button class="btn btn-icon" onclick="closeModal('modal-invite-user')">×</button>
       </div>
       <div class="modal-body">
         <label class="modal-label">E-Mail-Adresse</label>
@@ -1041,8 +1041,8 @@
         <textarea class="modal-textarea" placeholder="Persönliche Nachricht zur Einladung..."></textarea>
       </div>
       <div class="modal-footer">
-        <button class="modal-btn cancel" onclick="closeModal('modal-invite-user')">Abbrechen</button>
-        <button class="modal-btn primary">Einladung senden</button>
+        <button class="btn btn-secondary" onclick="closeModal('modal-invite-user')">Abbrechen</button>
+        <button class="btn btn-primary">Einladung senden</button>
       </div>
     </div>
   </div>
@@ -1052,7 +1052,7 @@
     <div class="layer-info-modal-content">
       <div class="layer-info-modal-header">
         <span class="layer-info-modal-title" id="layer-info-modal-title">Layer Information</span>
-        <button class="layer-info-modal-close" id="layer-info-modal-close">
+        <button class="btn btn-icon" id="layer-info-modal-close">
           <i data-lucide="x" class="icon-sm"></i>
         </button>
       </div>
@@ -1101,7 +1101,7 @@
     <div class="modal login-modal">
       <div class="modal-header">
         <h3 class="modal-title">Anmelden</h3>
-        <button class="modal-close" onclick="window.auth.hideLoginModal()">×</button>
+        <button class="btn btn-icon" onclick="window.auth.hideLoginModal()">×</button>
       </div>
       <form id="login-form">
         <div class="modal-body">
@@ -1113,8 +1113,8 @@
           <a href="#" id="forgot-password-link" class="forgot-password-link">Passwort vergessen?</a>
         </div>
         <div class="modal-footer">
-          <button type="button" class="modal-btn cancel" onclick="window.auth.hideLoginModal()">Abbrechen</button>
-          <button type="submit" class="modal-btn primary">Anmelden</button>
+          <button type="button" class="btn btn-secondary" onclick="window.auth.hideLoginModal()">Abbrechen</button>
+          <button type="submit" class="btn btn-primary">Anmelden</button>
         </div>
       </form>
     </div>
@@ -1136,7 +1136,7 @@
           <input type="password" name="password-confirm" class="modal-input" placeholder="Passwort wiederholen" required autocomplete="new-password">
         </div>
         <div class="modal-footer">
-          <button type="submit" class="modal-btn primary">Passwort speichern</button>
+          <button type="submit" class="btn btn-primary">Passwort speichern</button>
         </div>
       </form>
     </div>
