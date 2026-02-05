@@ -119,6 +119,50 @@ export async function loadAllData() {
 }
 
 // =============================================================================
+// TARGETED EXPORT QUERIES
+// =============================================================================
+
+/**
+ * Fetch fresh errors data for CSV export
+ * Returns { errors (keyed by building_id), buildings (id + name list) }
+ */
+export async function fetchErrorsForExport() {
+    const client = getSupabase();
+    if (!client) throw new Error('Supabase client not initialized');
+
+    const [errorsResult, buildingsResult] = await Promise.all([
+        client.from('errors').select('*'),
+        client.from('buildings').select('id, name')
+    ]);
+
+    if (errorsResult.error) throw errorsResult.error;
+    if (buildingsResult.error) throw buildingsResult.error;
+
+    return {
+        errors: keyByBuildingId(errorsResult.data),
+        buildings: buildingsResult.data
+    };
+}
+
+/**
+ * Fetch fresh events data for CSV export
+ * Returns transformed array matching app format
+ */
+export async function fetchEventsForExport() {
+    const client = getSupabase();
+    if (!client) throw new Error('Supabase client not initialized');
+
+    const { data, error } = await client
+        .from('events')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return transformEventsFromDB(data);
+}
+
+// =============================================================================
 // DATA TRANSFORMATIONS (DB → App Format)
 // =============================================================================
 

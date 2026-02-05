@@ -22,6 +22,9 @@
   <!-- Supabase JS -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- SheetJS for Excel export -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <!-- CSS -->
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/styles.css">
@@ -720,7 +723,7 @@
                 <div class="workflow-icon"><i data-lucide="file-spreadsheet" class="icon-md"></i></div>
                 <div class="workflow-details">
                   <span class="workflow-name">Fehlerbericht exportieren</span>
-                  <span class="workflow-description">Exportiert alle aktuellen Validierungsfehler als XLSX-Datei.</span>
+                  <span class="workflow-description">Exportiert alle aktuellen Validierungsfehler als Excel-Datei.</span>
                 </div>
               </div>
               <div class="workflow-meta">
@@ -736,7 +739,7 @@
                 <div class="workflow-icon"><i data-lucide="history" class="icon-md"></i></div>
                 <div class="workflow-details">
                   <span class="workflow-name">Ereignisse exportieren</span>
-                  <span class="workflow-description">Exportiert das Aktivitätsprotokoll als CSV-Datei.</span>
+                  <span class="workflow-description">Exportiert das Aktivitätsprotokoll als Excel-Datei.</span>
                 </div>
               </div>
               <div class="workflow-meta">
@@ -756,7 +759,7 @@
             <h2 class="settings-section-title section-title-icon"><i data-lucide="shield-check" class="icon-lg"></i> Prüfregeln</h2>
             <button class="btn btn-ghost btn-sm" id="download-pruefplan">
               <i data-lucide="download" class="icon-sm"></i>
-              Prüfplan (PDF)
+              Prüfplan (Excel)
             </button>
           </div>
           <p class="section-description">Diese Regeln werden automatisch auf alle Gebäude angewendet.</p>

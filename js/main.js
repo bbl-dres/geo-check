@@ -24,6 +24,8 @@ import {
 import {
   initSupabase,
   loadAllData as loadDataFromSupabase,
+  fetchErrorsForExport,
+  fetchEventsForExport,
   updateUserLastLogin,
   updateUserRole,
   removeUser
@@ -379,12 +381,20 @@ function initAPITab() {
   const iframe = document.getElementById('api-iframe');
   const loading = document.getElementById('api-loading');
 
-  iframe.src = API_DOC_URL;
-
   iframe.addEventListener('load', () => {
     loading.style.display = 'none';
     iframe.style.display = 'block';
   });
+
+  iframe.addEventListener('error', () => {
+    loading.innerHTML = `
+      <i data-lucide="alert-circle" class="icon-lg"></i>
+      <p>API-Dokumentation konnte nicht geladen werden.</p>
+      <p style="font-size: var(--font-sm)">Backend nicht erreichbar: ${API_DOC_URL}</p>`;
+    lucide.createIcons({ attrs: { class: ['lucide'] } });
+  });
+
+  iframe.src = API_DOC_URL;
 }
 
 // ========================================
@@ -559,24 +569,33 @@ function renderRules() {
     info: { label: 'Hinweis', priority: 3 }
   };
 
+  const operatorLabels = rulesConfig.operators || {};
+
+  // Summary counts
+  const totalRules = rulesConfig.ruleSets.reduce((sum, rs) => sum + rs.rules.length, 0);
+  const activeSets = rulesConfig.ruleSets.filter(rs => rs.enabled).length;
+
   const html = rulesConfig.ruleSets.map(ruleSet => {
     const rulesHtml = ruleSet.rules.map(rule => {
-      const severityInfo = severityLabels[rule.severity] || { label: rule.severity };
+      const sev = severityLabels[rule.severity] || { label: rule.severity };
+      const fieldDisplay = Array.isArray(rule.field) ? rule.field.join(', ') : (rule.field || '—');
+      const operatorDisplay = operatorLabels[rule.operator] || rule.operator;
+      const valueDisplay = rule.value != null
+        ? `${rule.value}${rule.unit ? ' ' + rule.unit : ''}`
+        : '';
+
       return `
-        <div class="rule-item">
-          <span class="rule-severity ${rule.severity}"></span>
-          <div class="rule-details">
-            <div class="rule-header">
-              <span class="rule-name">${rule.name}</span>
-              <span class="rule-id">${rule.id}</span>
-            </div>
-            <p class="rule-description">${rule.description}</p>
-            <div class="rule-meta">
-              <span class="rule-tag">${Array.isArray(rule.attribute) ? rule.attribute.join(', ') : rule.attribute}</span>
-              <span class="rule-tag">${rule.operator}</span>
-            </div>
-          </div>
-        </div>
+        <tr class="rules-table-row">
+          <td class="rules-table-cell rules-table-id">${rule.id}</td>
+          <td class="rules-table-cell">
+            <span class="rule-name">${rule.name}</span>
+            <span class="rule-description">${rule.description}</span>
+          </td>
+          <td class="rules-table-cell"><code class="rule-field">${fieldDisplay}</code></td>
+          <td class="rules-table-cell">${operatorDisplay}</td>
+          <td class="rules-table-cell">${sev.label}</td>
+          <td class="rules-table-cell">${rule.message || ''}</td>
+        </tr>
       `;
     }).join('');
 
@@ -595,15 +614,44 @@ function renderRules() {
         </button>
         <div class="rule-set-content">
           <p class="rule-set-description">${ruleSet.description}</p>
-          <div class="rules-list">
-            ${rulesHtml}
-          </div>
+          <table class="rules-table">
+            <colgroup>
+              <col class="col-id">
+              <col class="col-regel">
+              <col class="col-feld">
+              <col class="col-operator">
+              <col class="col-stufe">
+              <col class="col-meldung">
+            </colgroup>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Regel</th>
+                <th>Feld</th>
+                <th>Operator</th>
+                <th>Stufe</th>
+                <th>Meldung</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rulesHtml}
+            </tbody>
+          </table>
         </div>
       </div>
     `;
   }).join('');
 
-  container.innerHTML = html;
+  container.innerHTML = `
+    <div class="rules-summary">
+      <span>${totalRules} Regeln</span>
+      <span class="rules-summary-sep"></span>
+      <span>${rulesConfig.ruleSets.length} Regelsets</span>
+      <span class="rules-summary-sep"></span>
+      <span>${activeSets} aktiv</span>
+    </div>
+    ${html}
+  `;
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
@@ -865,160 +913,208 @@ function setupEventListeners() {
   if (exportEventsBtn) {
     exportEventsBtn.addEventListener('click', exportEventsReport);
   }
-}
 
-// ========================================
-// CSV Export Functions
-// ========================================
-
-/**
- * Download content as a CSV file
- */
-function downloadCSV(filename, csvContent) {
-  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
-/**
- * Escape a value for CSV (handle commas, quotes, newlines)
- */
-function escapeCSV(value) {
-  if (value === null || value === undefined) return '';
-  const str = String(value);
-  if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
-    return '"' + str.replace(/"/g, '""') + '"';
+  const pruefplanBtn = document.getElementById('download-pruefplan');
+  if (pruefplanBtn) {
+    pruefplanBtn.addEventListener('click', exportPruefplanCSV);
   }
-  return str;
+}
+
+// ========================================
+// Excel Export Functions (SheetJS)
+// ========================================
+
+/**
+ * Download an array-of-arrays as an .xlsx file using SheetJS
+ */
+function downloadXLSX(filename, sheetData, sheetName) {
+  const ws = XLSX.utils.aoa_to_sheet(sheetData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName || 'Daten');
+  XLSX.writeFile(wb, filename);
 }
 
 /**
- * Export errors report as CSV
+ * Export errors report as Excel
+ * Authenticated: fresh query from Supabase | Demo: in-memory JSON data
  */
-function exportErrorsReport() {
-  // Flatten errorsData (keyed by building ID) into array
-  const rows = [];
+async function exportErrorsReport() {
+  const btn = document.getElementById('export-errors');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Exportieren...';
+  }
 
-  // Get building info for additional context
-  const buildingMap = {};
-  buildings.forEach(b => {
-    buildingMap[b.id] = b;
-  });
+  try {
+    let sourceErrors;
+    let buildingMap = {};
 
-  // Iterate through buildings and their errors
-  for (const buildingId in errorsData) {
-    const buildingErrors = errorsData[buildingId];
-    const building = buildingMap[buildingId];
-    const buildingName = building ? building.name : '';
+    if (isAuthenticated() && !window.isDemoMode) {
+      const { errors, buildings: buildingsList } = await fetchErrorsForExport();
+      sourceErrors = errors;
+      buildingsList.forEach(b => { buildingMap[b.id] = b; });
+    } else {
+      sourceErrors = errorsData;
+      buildings.forEach(b => { buildingMap[b.id] = b; });
+    }
 
-    if (Array.isArray(buildingErrors)) {
-      buildingErrors.forEach(error => {
-        rows.push({
-          buildingId: buildingId,
-          buildingName: buildingName,
-          checkId: error.check_id || error.checkId || '',
-          description: error.description || '',
-          level: error.level || ''
+    const rows = [];
+    for (const buildingId in sourceErrors) {
+      const buildingErrors = sourceErrors[buildingId];
+      const building = buildingMap[buildingId];
+      const buildingName = building ? building.name : '';
+
+      if (Array.isArray(buildingErrors)) {
+        buildingErrors.forEach(error => {
+          rows.push([
+            buildingId,
+            buildingName,
+            error.check_id || error.checkId || '',
+            error.description || '',
+            error.level || ''
+          ]);
         });
-      });
+      }
+    }
+
+    if (rows.length === 0) {
+      alert('Keine Fehler zum Exportieren vorhanden.');
+      return;
+    }
+
+    const headers = ['Gebäude-ID', 'Gebäudename', 'Prüf-ID', 'Beschreibung', 'Stufe'];
+    const timestamp = new Date().toISOString().slice(0, 10);
+    downloadXLSX(`Fehlerbericht_${timestamp}.xlsx`, [headers, ...rows], 'Fehlerbericht');
+
+    // Update last run timestamp
+    const timestampEl = document.getElementById('workflow-errors-time');
+    if (timestampEl) {
+      const now = new Date();
+      timestampEl.textContent = now.toLocaleString('de-CH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).replace(',', ',');
+    }
+  } catch (error) {
+    console.error('Error exporting errors report:', error);
+    alert('Export fehlgeschlagen. Bitte versuchen Sie es erneut.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
     }
   }
+}
 
-  if (rows.length === 0) {
-    alert('Keine Fehler zum Exportieren vorhanden.');
-    return;
+/**
+ * Export events report as Excel
+ * Authenticated: fresh query from Supabase | Demo: in-memory JSON data
+ */
+async function exportEventsReport() {
+  const btn = document.getElementById('export-events');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Exportieren...';
   }
 
-  // Create CSV content
-  const headers = ['Gebäude-ID', 'Gebäudename', 'Prüf-ID', 'Beschreibung', 'Stufe'];
-  const csvRows = [headers.join(';')];
+  try {
+    let sourceEvents;
 
-  rows.forEach(row => {
-    csvRows.push([
-      escapeCSV(row.buildingId),
-      escapeCSV(row.buildingName),
-      escapeCSV(row.checkId),
-      escapeCSV(row.description),
-      escapeCSV(row.level)
-    ].join(';'));
-  });
+    if (isAuthenticated() && !window.isDemoMode) {
+      sourceEvents = await fetchEventsForExport();
+    } else {
+      sourceEvents = eventsData;
+    }
 
-  const csvContent = csvRows.join('\r\n');
-  const timestamp = new Date().toISOString().slice(0, 10);
-  downloadCSV(`Fehlerbericht_${timestamp}.csv`, csvContent);
+    if (!Array.isArray(sourceEvents) || sourceEvents.length === 0) {
+      alert('Keine Ereignisse zum Exportieren vorhanden.');
+      return;
+    }
 
-  // Update last run timestamp
-  const timestampEl = document.getElementById('workflow-errors-time');
-  if (timestampEl) {
-    const now = new Date();
-    timestampEl.textContent = now.toLocaleString('de-CH', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).replace(',', ',');
+    const headers = ['ID', 'Gebäude-ID', 'Typ', 'Aktion', 'Benutzer', 'Zeitstempel', 'Details'];
+    const rows = sourceEvents.map(event => [
+      event.id || '',
+      event.buildingId || event.building_id || '',
+      event.type || '',
+      event.action || '',
+      event.user || event.user_name || '',
+      event.timestamp
+        ? new Date(event.timestamp).toLocaleString('de-CH', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })
+        : '',
+      event.details || ''
+    ]);
+
+    const timestamp = new Date().toISOString().slice(0, 10);
+    downloadXLSX(`Ereignisse_${timestamp}.xlsx`, [headers, ...rows], 'Ereignisse');
+
+    // Update last run timestamp
+    const timestampEl = document.getElementById('workflow-events-time');
+    if (timestampEl) {
+      const now = new Date();
+      timestampEl.textContent = now.toLocaleString('de-CH', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).replace(',', ',');
+    }
+  } catch (error) {
+    console.error('Error exporting events report:', error);
+    alert('Export fehlgeschlagen. Bitte versuchen Sie es erneut.');
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
   }
 }
 
 /**
- * Export events report as CSV
+ * Export Prüfplan (rules) as Excel
  */
-function exportEventsReport() {
-  if (!Array.isArray(eventsData) || eventsData.length === 0) {
-    alert('Keine Ereignisse zum Exportieren vorhanden.');
+function exportPruefplanCSV() {
+  const rulesConfig = window.rulesConfig;
+  if (!rulesConfig || !rulesConfig.ruleSets) {
+    alert('Keine Regeln zum Exportieren vorhanden.');
     return;
   }
 
-  // Create CSV content
-  const headers = ['ID', 'Gebäude-ID', 'Typ', 'Aktion', 'Benutzer', 'Zeitstempel', 'Details'];
-  const csvRows = [headers.join(';')];
+  const operatorLabels = rulesConfig.operators || {};
+  const severityLabels = rulesConfig.severityLevels || {};
 
-  eventsData.forEach(event => {
-    // Format timestamp for display
-    const timestamp = event.timestamp
-      ? new Date(event.timestamp).toLocaleString('de-CH', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-      : '';
+  const headers = ['Regelset', 'ID', 'Name', 'Beschreibung', 'Feld', 'Operator', 'Wert', 'Stufe', 'Meldung'];
+  const rows = [];
 
-    csvRows.push([
-      escapeCSV(event.id),
-      escapeCSV(event.buildingId),
-      escapeCSV(event.type),
-      escapeCSV(event.action),
-      escapeCSV(event.user),
-      escapeCSV(timestamp),
-      escapeCSV(event.details)
-    ].join(';'));
+  rulesConfig.ruleSets.forEach(ruleSet => {
+    ruleSet.rules.forEach(rule => {
+      rows.push([
+        ruleSet.name,
+        rule.id,
+        rule.name,
+        rule.description,
+        Array.isArray(rule.field) ? rule.field.join(', ') : (rule.field || ''),
+        operatorLabels[rule.operator] || rule.operator,
+        rule.value != null ? `${rule.value}${rule.unit ? ' ' + rule.unit : ''}` : '',
+        severityLabels[rule.severity]?.label || rule.severity,
+        rule.message || ''
+      ]);
+    });
   });
 
-  const csvContent = csvRows.join('\r\n');
   const timestamp = new Date().toISOString().slice(0, 10);
-  downloadCSV(`Ereignisse_${timestamp}.csv`, csvContent);
-
-  // Update last run timestamp
-  const timestampEl = document.getElementById('workflow-events-time');
-  if (timestampEl) {
-    const now = new Date();
-    timestampEl.textContent = now.toLocaleString('de-CH', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).replace(',', ',');
-  }
+  downloadXLSX(`Pruefplan_${timestamp}.xlsx`, [headers, ...rows], 'Prüfplan');
 }
 
 // ========================================
