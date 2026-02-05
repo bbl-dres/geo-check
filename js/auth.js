@@ -5,7 +5,7 @@
  * Email + Password authentication for now, with SAML SSO support planned.
  */
 
-import { getSupabase } from './supabase.js';
+import { getSupabase, SUPABASE_URL } from './supabase.js';
 
 // =============================================================================
 // STATE
@@ -156,12 +156,13 @@ export async function resetPassword(email) {
 }
 
 /**
- * Check if we're in password recovery mode (user clicked reset link in email)
+ * Check if we're in password recovery or invite mode
+ * (user clicked reset link or invite link in email)
  */
 export function isPasswordRecoveryMode() {
-    // Supabase adds #access_token=...&type=recovery to URL after clicking reset link
+    // Supabase adds #access_token=...&type=recovery (or type=invite) to URL
     const hash = window.location.hash;
-    return hash.includes('type=recovery');
+    return hash.includes('type=recovery') || hash.includes('type=invite');
 }
 
 /**
@@ -449,22 +450,15 @@ function setupFormHandler(formId, errorId, resetLinkId, isModal) {
         }
     });
 
-    // Password reset link
+    // Password reset link — open the forgot password modal
     const resetLink = document.getElementById(resetLinkId);
     if (resetLink) {
-        resetLink.addEventListener('click', async (e) => {
+        resetLink.addEventListener('click', (e) => {
             e.preventDefault();
+            // Pre-fill email if already entered
             const email = form.querySelector('input[name="email"]').value;
-            if (!email) {
-                showError('Bitte E-Mail-Adresse eingeben');
-                return;
-            }
-            try {
-                await resetPassword(email);
-                showError('Passwort-Reset E-Mail gesendet');
-            } catch (error) {
-                showError('Fehler beim Senden der E-Mail');
-            }
+            if (isModal) hideLoginModal();
+            showForgotPasswordModal(email);
         });
     }
 }
@@ -572,6 +566,194 @@ export function setupPasswordResetForm() {
 }
 
 // =============================================================================
+// FORGOT PASSWORD MODAL
+// =============================================================================
+
+/**
+ * Show the forgot password modal, optionally pre-filling the email
+ */
+export function showForgotPasswordModal(email = '') {
+    const modal = document.getElementById('forgot-password-modal');
+    if (!modal) return;
+
+    // Reset to form step
+    const formStep = document.getElementById('forgot-password-form-step');
+    const confirmStep = document.getElementById('forgot-password-confirm-step');
+    if (formStep) formStep.style.display = '';
+    if (confirmStep) confirmStep.style.display = 'none';
+
+    // Pre-fill email if provided
+    const emailInput = modal.querySelector('input[name="email"]');
+    if (emailInput && email) emailInput.value = email;
+
+    // Clear error
+    const errorEl = document.getElementById('forgot-password-error');
+    if (errorEl) errorEl.style.display = 'none';
+
+    modal.classList.add('visible');
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+}
+
+/**
+ * Hide the forgot password modal
+ */
+export function hideForgotPasswordModal() {
+    const modal = document.getElementById('forgot-password-modal');
+    if (!modal) return;
+    modal.classList.remove('visible');
+    // Clear form
+    const form = modal.querySelector('form');
+    if (form) form.reset();
+}
+
+/**
+ * Setup forgot password form handler
+ */
+export function setupForgotPasswordForm() {
+    const form = document.getElementById('forgot-password-form');
+    if (!form) return;
+
+    const errorEl = document.getElementById('forgot-password-error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = form.querySelector('input[name="email"]').value;
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        // Hide previous error
+        if (errorEl) errorEl.style.display = 'none';
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Senden...';
+
+        try {
+            await resetPassword(email);
+            // Switch to confirmation step
+            const formStep = document.getElementById('forgot-password-form-step');
+            const confirmStep = document.getElementById('forgot-password-confirm-step');
+            if (formStep) formStep.style.display = 'none';
+            if (confirmStep) confirmStep.style.display = '';
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (error) {
+            console.error('Password reset error:', error);
+            if (errorEl) {
+                errorEl.textContent = 'Fehler beim Senden der E-Mail. Bitte versuchen Sie es erneut.';
+                errorEl.style.display = 'block';
+            }
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Link senden';
+        }
+    });
+}
+
+// =============================================================================
+// INVITE USER
+// =============================================================================
+
+/**
+ * Show the invite user modal
+ */
+export function showInviteModal() {
+    const modal = document.getElementById('modal-invite-user');
+    if (!modal) return;
+
+    // Reset to form step
+    const formStep = document.getElementById('invite-form-step');
+    const confirmStep = document.getElementById('invite-confirm-step');
+    if (formStep) formStep.style.display = '';
+    if (confirmStep) confirmStep.style.display = 'none';
+
+    // Clear form and error
+    const form = document.getElementById('invite-user-form');
+    if (form) form.reset();
+    const errorEl = document.getElementById('invite-error');
+    if (errorEl) errorEl.style.display = 'none';
+
+    modal.classList.add('active');
+}
+
+/**
+ * Hide the invite user modal
+ */
+export function hideInviteModal() {
+    const modal = document.getElementById('modal-invite-user');
+    if (!modal) return;
+    modal.classList.remove('active');
+}
+
+/**
+ * Invite a user via Supabase Edge Function
+ */
+async function inviteUserByEmail(email, role) {
+    const supabase = getSupabase();
+    const { data: { session } } = await supabase.auth.getSession();
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/invite-user`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ email, role })
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Einladung fehlgeschlagen');
+    }
+
+    return response.json();
+}
+
+/**
+ * Setup invite user form handler
+ */
+export function setupInviteForm() {
+    const form = document.getElementById('invite-user-form');
+    if (!form) return;
+
+    const errorEl = document.getElementById('invite-error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = form.querySelector('input[name="email"]').value;
+        const role = form.querySelector('select[name="role"]').value;
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        // Hide previous error
+        if (errorEl) errorEl.style.display = 'none';
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Senden...';
+
+        try {
+            await inviteUserByEmail(email, role);
+
+            // Switch to confirmation step
+            const formStep = document.getElementById('invite-form-step');
+            const confirmStep = document.getElementById('invite-confirm-step');
+            const confirmEmail = document.getElementById('invite-confirm-email');
+            if (formStep) formStep.style.display = 'none';
+            if (confirmStep) confirmStep.style.display = '';
+            if (confirmEmail) confirmEmail.textContent = `${email} erhält eine E-Mail mit einem Link zur Registrierung.`;
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        } catch (error) {
+            console.error('Invite error:', error);
+            if (errorEl) {
+                errorEl.textContent = error.message || 'Einladung konnte nicht gesendet werden.';
+                errorEl.style.display = 'block';
+            }
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Einladung senden';
+        }
+    });
+}
+
+// =============================================================================
 // USER DROPDOWN
 // =============================================================================
 
@@ -615,6 +797,8 @@ if (typeof window !== 'undefined') {
         showLoginModal,
         hideLoginModal,
         hidePasswordResetModal,
+        showForgotPasswordModal,
+        hideForgotPasswordModal,
         signOut: async () => {
             try {
                 await signOut();
@@ -624,5 +808,10 @@ if (typeof window !== 'undefined') {
                 alert('Fehler beim Abmelden. Bitte versuchen Sie es erneut.');
             }
         }
+    };
+
+    window.inviteUser = {
+        show: showInviteModal,
+        hide: hideInviteModal
     };
 }

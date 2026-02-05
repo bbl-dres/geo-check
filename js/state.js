@@ -114,7 +114,7 @@ export function parseURL() {
   const params = new URLSearchParams(window.location.search);
 
   const tab = params.get('tab');
-  if (tab && ['karte', 'aufgaben', 'statistik', 'settings'].includes(tab)) {
+  if (tab && ['karte', 'aufgaben', 'statistik', 'settings', 'api'].includes(tab)) {
     state.currentTab = tab;
   }
 

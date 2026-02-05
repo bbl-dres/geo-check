@@ -1,222 +1,211 @@
 {
   "version": "1.0",
-  "description": "BBL Geo-Check validation rules",
+  "description": "BBL Geo-Check validation rules — source of truth: docs/RULES.md",
   "ruleSets": [
     {
-      "id": "gwr-basic",
-      "name": "GWR Grundprüfungen",
-      "description": "Grundlegende Validierungen gegen das Gebäude- und Wohnungsregister",
+      "id": "identification",
+      "name": "Identifikation",
+      "description": "Prüfung der Verknüpfung mit GWR und Kataster",
       "enabled": true,
       "entityType": "building",
       "rules": [
         {
-          "id": "gwr-001",
+          "id": "ID-001",
           "name": "EGID vorhanden",
-          "description": "Prüft ob eine gültige EGID (Eidgenössischer Gebäudeidentifikator) vorhanden ist",
-          "attribute": "egid",
+          "description": "Prüft ob eine gültige EGID vorhanden ist",
+          "field": "egid",
           "operator": "exists",
           "severity": "error",
           "message": "Keine EGID vorhanden"
         },
         {
-          "id": "gwr-002",
+          "id": "ID-002",
           "name": "EGID Format",
           "description": "Prüft ob die EGID dem korrekten Format entspricht (1-9 Ziffern, keine führenden Nullen)",
-          "attribute": "egid",
+          "field": "egid",
           "operator": "matches",
           "value": "^[1-9][0-9]{0,8}$",
           "severity": "error",
-          "message": "EGID hat ungültiges Format (erwartet: 1-9 Ziffern ohne führende Nullen)"
+          "message": "EGID hat ungültiges Format"
         },
         {
-          "id": "gwr-003",
-          "name": "Gebäudestatus gültig",
-          "description": "Prüft ob der Gebäudestatus einem gültigen GWR-Wert entspricht",
-          "attribute": "gwr_status",
-          "operator": "in",
-          "value": ["projektiert", "im_bau", "bestehend", "nicht_nutzbar", "abgebrochen"],
+          "id": "ID-003",
+          "name": "EGID verifiziert",
+          "description": "Prüft ob die EGID auf das korrekte Gebäude im GWR zeigt (nicht auf ein anderes Gebäude)",
+          "field": "egid",
+          "operator": "equals",
           "severity": "error",
-          "message": "Ungültiger Gebäudestatus: {value}"
+          "message": "EGID zeigt auf ein anderes Gebäude im GWR"
         },
         {
-          "id": "gwr-004",
-          "name": "Baujahr plausibel",
-          "description": "Prüft ob das Baujahr im plausiblen Bereich liegt",
-          "attribute": "baujahr",
-          "operator": "between",
-          "value": [1800, 2030],
+          "id": "ID-004",
+          "name": "EGRID vorhanden",
+          "description": "Prüft ob eine EGRID für die Kataster-/ÖREB-Verknüpfung vorhanden ist",
+          "field": "egrid",
+          "operator": "exists",
           "severity": "warning",
-          "message": "Baujahr {value} ausserhalb des plausiblen Bereichs"
+          "message": "Keine EGRID vorhanden"
+        },
+        {
+          "id": "ID-005",
+          "name": "EGID Duplikat",
+          "description": "Prüft ob dieselbe EGID für mehrere SAP-Datensätze verwendet wird",
+          "field": "egid",
+          "operator": "unique",
+          "severity": "error",
+          "message": "Dieselbe EGID wird für mehrere Gebäude verwendet"
+        },
+        {
+          "id": "ID-006",
+          "name": "Koordinaten Duplikat",
+          "description": "Prüft ob dieselben Koordinaten für mehrere SAP-Datensätze verwendet werden",
+          "field": ["lat", "lng"],
+          "operator": "unique",
+          "severity": "warning",
+          "message": "Dieselben Koordinaten werden für mehrere Gebäude verwendet"
+        },
+        {
+          "id": "ID-007",
+          "name": "Mehrere GWR-Gebäude",
+          "description": "Ein SAP-Datensatz ist mit mehreren GWR-Gebäuden verknüpft (1:N)",
+          "field": "inGwr",
+          "operator": "check",
+          "severity": "info",
+          "message": "Mehrere GWR-Gebäude mit einem SAP-Objekt verknüpft"
         }
       ]
     },
     {
-      "id": "geo-quality",
-      "name": "Geometrie-Qualität",
-      "description": "Prüfungen zur Qualität der Geodaten und Koordinaten",
+      "id": "address",
+      "name": "Adresse",
+      "description": "SAP ↔ GWR Adress-Konsistenz gemäss GeoNV",
       "enabled": true,
       "entityType": "building",
       "rules": [
         {
-          "id": "geo-001",
-          "name": "Koordinaten in Schweiz",
-          "description": "Prüft ob die Koordinaten innerhalb der Schweizer Landesgrenzen liegen (inkl. südliches Tessin)",
-          "attribute": ["lat", "lng"],
-          "operator": "within_bounds",
-          "value": {
-            "lat_min": 45.81,
-            "lat_max": 47.81,
-            "lng_min": 5.95,
-            "lng_max": 10.49
-          },
+          "id": "ADR-001",
+          "name": "Land",
+          "description": "Prüft ob der Ländercode übereinstimmt (soll CH sein)",
+          "field": "country",
+          "operator": "source_match",
           "severity": "error",
-          "message": "Koordinaten liegen ausserhalb der Schweiz"
+          "message": "Ländercode weicht ab"
         },
         {
-          "id": "geo-002",
-          "name": "Koordinaten-Präzision",
-          "description": "Prüft ob die Koordinaten ausreichend präzise sind (mind. 5 Dezimalstellen)",
-          "attribute": ["lat", "lng"],
-          "operator": "decimal_places",
-          "value": 5,
+          "id": "ADR-002",
+          "name": "Kanton",
+          "description": "Prüft ob der Kantonscode übereinstimmt",
+          "field": "kanton",
+          "operator": "source_match",
           "severity": "warning",
-          "message": "Koordinaten haben unzureichende Präzision"
+          "message": "Kantonscode weicht ab"
         },
         {
-          "id": "geo-003",
-          "name": "Adresse-Koordinaten-Match",
-          "description": "Prüft ob die Adresse und Koordinaten übereinstimmen",
-          "attribute": "address_coord_distance",
-          "operator": "less_than",
+          "id": "ADR-003",
+          "name": "Gemeinde",
+          "description": "Prüft ob der Gemeindename übereinstimmt",
+          "field": "gemeinde",
+          "operator": "source_match",
+          "severity": "warning",
+          "message": "Gemeindename weicht ab"
+        },
+        {
+          "id": "ADR-004",
+          "name": "PLZ",
+          "description": "Prüft ob die Postleitzahl übereinstimmt",
+          "field": "plz",
+          "operator": "source_match",
+          "severity": "warning",
+          "message": "Postleitzahl weicht ab"
+        },
+        {
+          "id": "ADR-005",
+          "name": "Ort",
+          "description": "Prüft ob die Ortsbezeichnung übereinstimmt",
+          "field": "ort",
+          "operator": "source_match",
+          "severity": "warning",
+          "message": "Ortsbezeichnung weicht ab"
+        },
+        {
+          "id": "ADR-006",
+          "name": "Strasse",
+          "description": "Prüft ob der Strassenname übereinstimmt",
+          "field": "strasse",
+          "operator": "source_match",
+          "severity": "info",
+          "message": "Strassenname weicht ab"
+        },
+        {
+          "id": "ADR-007",
+          "name": "Hausnummer",
+          "description": "Prüft ob die Hausnummer übereinstimmt oder fehlt",
+          "field": "hausnummer",
+          "operator": "source_match",
+          "severity": "warning",
+          "message": "Hausnummer weicht ab oder fehlt"
+        },
+        {
+          "id": "ADR-008",
+          "name": "Zusatz",
+          "description": "Prüft ob der Adresszusatz übereinstimmt",
+          "field": "zusatz",
+          "operator": "source_match",
+          "severity": "info",
+          "message": "Adresszusatz weicht ab"
+        }
+      ]
+    },
+    {
+      "id": "geometry",
+      "name": "Geometrie",
+      "description": "Räumliche Genauigkeit und Koordinaten-Qualität",
+      "enabled": true,
+      "entityType": "building",
+      "rules": [
+        {
+          "id": "GEO-001",
+          "name": "Koordinaten vorhanden",
+          "description": "Prüft ob Koordinaten in mindestens einer Quelle vorhanden sind",
+          "field": ["lat", "lng"],
+          "operator": "exists",
+          "severity": "error",
+          "message": "Koordinaten fehlen in allen Quellen"
+        },
+        {
+          "id": "GEO-002",
+          "name": "Koordinaten-Abweichung",
+          "description": "Prüft ob SAP- und GWR-Koordinaten um mehr als 50m abweichen",
+          "field": ["lat", "lng"],
+          "operator": "distance",
           "value": 50,
           "unit": "meters",
           "severity": "warning",
+          "message": "SAP- und GWR-Koordinaten weichen um {value}m ab"
+        },
+        {
+          "id": "GEO-003",
+          "name": "Adresse-Koordinaten-Match",
+          "description": "Prüft ob die geocodierte Adresse mehr als 100m von den gespeicherten Koordinaten abweicht",
+          "field": ["lat", "lng"],
+          "operator": "geocode_distance",
+          "value": 100,
+          "unit": "meters",
+          "severity": "info",
           "message": "Adresse und Koordinaten weichen um {value}m ab"
-        }
-      ]
-    },
-    {
-      "id": "sap-refx",
-      "name": "SAP RE-FX Abgleich",
-      "description": "Prüfungen gegen das SAP Real Estate System",
-      "enabled": true,
-      "entityType": "building",
-      "rules": [
-        {
-          "id": "sap-001",
-          "name": "RE-Objekt vorhanden",
-          "description": "Prüft ob ein zugehöriges RE-Objekt in SAP existiert",
-          "attribute": "sap_re_id",
-          "operator": "exists",
-          "severity": "warning",
-          "message": "Kein SAP RE-FX Objekt verknüpft"
-        },
-        {
-          "id": "sap-002",
-          "name": "Fläche plausibel",
-          "description": "Prüft ob die Fläche im plausiblen Bereich liegt",
-          "attribute": "flaeche_m2",
-          "operator": "between",
-          "value": [1, 1000000],
-          "severity": "warning",
-          "message": "Fläche {value} m² ausserhalb des plausiblen Bereichs"
-        },
-        {
-          "id": "sap-003",
-          "name": "Flächen-Abweichung GWR",
-          "description": "Prüft ob die SAP-Fläche mit der GWR-Fläche übereinstimmt (max. 10% Abweichung)",
-          "attribute": ["sap_flaeche", "gwr_flaeche"],
-          "operator": "deviation_percent",
-          "value": 10,
-          "severity": "warning",
-          "message": "Flächen-Abweichung zwischen SAP und GWR: {value}%"
-        }
-      ]
-    },
-    {
-      "id": "oereb-check",
-      "name": "ÖREB Prüfungen",
-      "description": "Prüfungen gegen den ÖREB-Kataster",
-      "enabled": true,
-      "entityType": "building",
-      "rules": [
-        {
-          "id": "oereb-001",
-          "name": "ÖREB-Kanton aktiv",
-          "description": "Prüft ob der Kanton ÖREB-Daten bereitstellt",
-          "attribute": "kanton",
-          "operator": "lookup",
-          "lookupTable": "oereb_kantone",
-          "lookupField": "active",
-          "value": true,
-          "severity": "info",
-          "message": "Kanton {value} hat noch keinen aktiven ÖREB-Kataster"
-        },
-        {
-          "id": "oereb-002",
-          "name": "Grundstück-ID vorhanden",
-          "description": "Prüft ob eine Grundstück-ID für ÖREB-Abfragen vorhanden ist",
-          "attribute": "grundstueck_id",
-          "operator": "exists",
-          "severity": "warning",
-          "message": "Keine Grundstück-ID für ÖREB-Abfrage vorhanden"
-        }
-      ]
-    },
-    {
-      "id": "completeness",
-      "name": "Vollständigkeit",
-      "description": "Prüft die Vollständigkeit der erfassten Daten",
-      "enabled": true,
-      "entityType": "building",
-      "rules": [
-        {
-          "id": "comp-001",
-          "name": "Pflichtfelder",
-          "description": "Prüft ob alle Pflichtfelder ausgefüllt sind",
-          "attribute": ["name", "strasse", "plz", "ort", "kanton"],
-          "operator": "all_exist",
-          "severity": "error",
-          "message": "Pflichtfeld '{attribute}' ist nicht ausgefüllt"
-        },
-        {
-          "id": "comp-002",
-          "name": "Portfolio zugewiesen",
-          "description": "Prüft ob das Gebäude einem Portfolio zugewiesen ist",
-          "attribute": "portfolio",
-          "operator": "exists",
-          "severity": "warning",
-          "message": "Gebäude ist keinem Portfolio zugewiesen"
-        },
-        {
-          "id": "comp-003",
-          "name": "Verantwortlicher zugewiesen",
-          "description": "Prüft ob ein Verantwortlicher zugewiesen ist",
-          "attribute": "assignee",
-          "operator": "exists",
-          "severity": "info",
-          "message": "Kein Verantwortlicher zugewiesen"
         }
       ]
     }
   ],
   "operators": {
     "exists": "Prüft ob der Wert vorhanden und nicht leer ist",
-    "not_exists": "Prüft ob der Wert nicht vorhanden oder leer ist",
     "equals": "Prüft auf exakte Übereinstimmung",
-    "not_equals": "Prüft auf Ungleichheit",
-    "in": "Prüft ob der Wert in einer Liste enthalten ist",
-    "not_in": "Prüft ob der Wert nicht in einer Liste enthalten ist",
     "matches": "Prüft gegen einen regulären Ausdruck",
-    "contains": "Prüft ob der Wert einen Teilstring enthält",
-    "greater_than": "Prüft ob der Wert grösser ist",
-    "less_than": "Prüft ob der Wert kleiner ist",
-    "between": "Prüft ob der Wert in einem Bereich liegt",
-    "within_bounds": "Prüft ob Koordinaten in einem Gebiet liegen",
-    "decimal_places": "Prüft die Anzahl Dezimalstellen",
-    "deviation_percent": "Prüft die prozentuale Abweichung zwischen zwei Werten",
-    "all_exist": "Prüft ob alle angegebenen Attribute vorhanden sind",
-    "lookup": "Prüft einen Wert gegen eine Lookup-Tabelle"
+    "source_match": "Vergleicht SAP- und GWR-Werte (as-is, keine Normalisierung)",
+    "unique": "Prüft ob der Wert einmalig ist (kein Duplikat)",
+    "distance": "Prüft die Entfernung zwischen zwei Koordinatenpaaren",
+    "geocode_distance": "Prüft die Entfernung zwischen geocodierter Adresse und Koordinaten",
+    "check": "Allgemeine Prüfung mit benutzerdefinierter Logik"
   },
   "severityLevels": {
     "error": {

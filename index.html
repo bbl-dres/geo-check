@@ -56,7 +56,7 @@
           <div class="login-landing-links">
             <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
             <span class="login-landing-links-sep">·</span>
-            <a href="#" class="login-landing-forgot">Zugang beantragen</a>
+            <a href="mailto:david.rasner@bbl.admin.ch?subject=Zugangsanfrage%20Geo-Check&body=Guten%20Tag%2C%0A%0AIch%20m%C3%B6chte%20Zugang%20zu%20Geo-Check%20beantragen.%0A%0AFreundliche%20Gr%C3%BCsse" class="login-landing-forgot">Zugang beantragen</a>
           </div>
         </form>
       </div>
@@ -658,7 +658,7 @@
                 <i data-lucide="pencil" class="icon-sm"></i>
                 Bearbeiten
               </button>
-              <button class="btn btn-primary btn-sm" onclick="openModal('modal-invite-user')">
+              <button class="btn btn-primary btn-sm" onclick="window.inviteUser.show()">
                 <i data-lucide="user-plus" class="icon-sm"></i>
                 Einladen
               </button>
@@ -703,8 +703,8 @@
               <div class="workflow-info">
                 <div class="workflow-icon"><i data-lucide="database" class="icon-md"></i></div>
                 <div class="workflow-details">
-                  <span class="workflow-name">Gebäudedaten ergänzen</span>
-                  <span class="workflow-description">Ergänzt fehlende Daten aus dem Gebäude- und Wohnungsregister.</span>
+                  <span class="workflow-name">GWR Daten aktualisieren</span>
+                  <span class="workflow-description">Aktualisiert Gebäudedaten aus dem Gebäude- und Wohnungsregister (GWR).</span>
                 </div>
               </div>
               <div class="workflow-meta">
@@ -764,6 +764,17 @@
             <div class="rules-loading">Regeln werden geladen...</div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- API Documentation Tab -->
+    <div class="tab-content" id="tab-api">
+      <div class="api-container">
+        <div class="api-loading" id="api-loading">
+          <i data-lucide="loader" class="icon-lg spinner"></i>
+          <p>API-Dokumentation wird geladen...</p>
+        </div>
+        <iframe id="api-iframe" title="API Documentation"></iframe>
       </div>
     </div>
 
@@ -1011,7 +1022,7 @@
     <footer class="app-footer">
       <div class="footer-version">v0.1.0</div>
       <div class="footer-links">
-        <a href="#" class="footer-link-placeholder">API</a>
+        <a href="#" id="footer-api-link">API</a>
         <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
         <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
         <a href="mailto:dres@bbl.admin.ch">Kontakt</a>
@@ -1024,25 +1035,41 @@
     <div class="modal">
       <div class="modal-header">
         <h3 class="modal-title">Benutzer einladen</h3>
-        <button class="btn btn-icon" onclick="closeModal('modal-invite-user')">×</button>
+        <button class="btn btn-icon" onclick="window.inviteUser.hide()">×</button>
       </div>
-      <div class="modal-body">
-        <label class="modal-label">E-Mail-Adresse</label>
-        <input type="email" class="modal-input" placeholder="name@bbl.admin.ch">
+      <!-- Step 1: Invite form -->
+      <div id="invite-form-step">
+        <form id="invite-user-form">
+          <div class="modal-body">
+            <div class="invite-error" id="invite-error" style="display: none;"></div>
+            <label class="modal-label">E-Mail-Adresse</label>
+            <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required>
 
-        <label class="modal-label">Rolle</label>
-        <select class="modal-select">
-          <option value="reader">Leser - Nur Ansicht</option>
-          <option value="editor" selected>Bearbeiter - Kann Daten bearbeiten</option>
-          <option value="admin">Admin - Voller Zugriff</option>
-        </select>
-
-        <label class="modal-label">Nachricht (optional)</label>
-        <textarea class="modal-textarea" placeholder="Persönliche Nachricht zur Einladung..."></textarea>
+            <label class="modal-label">Rolle</label>
+            <select name="role" class="modal-select">
+              <option value="reader">Leser - Nur Ansicht</option>
+              <option value="editor" selected>Bearbeiter - Kann Daten bearbeiten</option>
+              <option value="admin">Admin - Voller Zugriff</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="window.inviteUser.hide()">Abbrechen</button>
+            <button type="submit" class="btn btn-primary">Einladung senden</button>
+          </div>
+        </form>
       </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeModal('modal-invite-user')">Abbrechen</button>
-        <button class="btn btn-primary">Einladung senden</button>
+      <!-- Step 2: Confirmation -->
+      <div id="invite-confirm-step" style="display: none;">
+        <div class="modal-body">
+          <div class="invite-confirm">
+            <i data-lucide="user-check" class="invite-confirm-icon"></i>
+            <h4>Einladung gesendet</h4>
+            <p id="invite-confirm-email"></p>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: center;">
+          <button type="button" class="btn btn-primary" onclick="window.inviteUser.hide()">Schliessen</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1117,6 +1144,44 @@
           <button type="submit" class="btn btn-primary">Anmelden</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div class="modal-overlay" id="forgot-password-modal">
+    <div class="modal login-modal">
+      <div class="modal-header">
+        <h3 class="modal-title">Passwort zurücksetzen</h3>
+        <button class="btn btn-icon" onclick="window.auth.hideForgotPasswordModal()">×</button>
+      </div>
+      <!-- Step 1: Email input -->
+      <div id="forgot-password-form-step">
+        <form id="forgot-password-form">
+          <div class="modal-body">
+            <div class="forgot-password-error" id="forgot-password-error" style="display: none;"></div>
+            <p class="modal-description">Geben Sie Ihre E-Mail-Adresse ein. Sie erhalten einen Link zum Zurücksetzen Ihres Passworts.</p>
+            <label class="modal-label">E-Mail-Adresse</label>
+            <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required autocomplete="email">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" onclick="window.auth.hideForgotPasswordModal()">Abbrechen</button>
+            <button type="submit" class="btn btn-primary">Link senden</button>
+          </div>
+        </form>
+      </div>
+      <!-- Step 2: Confirmation -->
+      <div id="forgot-password-confirm-step" style="display: none;">
+        <div class="modal-body">
+          <div class="forgot-password-confirm">
+            <i data-lucide="mail-check" class="forgot-password-confirm-icon"></i>
+            <h4>E-Mail gesendet</h4>
+            <p>Prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um Ihr Passwort zurückzusetzen.</p>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: center;">
+          <button type="button" class="btn btn-primary" onclick="window.auth.hideForgotPasswordModal()">Schliessen</button>
+        </div>
+      </div>
     </div>
   </div>
 

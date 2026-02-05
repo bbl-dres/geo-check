@@ -30,7 +30,15 @@
       "Bash(python -m json.tool:*)",
       "Bash(node scripts/migrate-buildings.js:*)",
       "Bash(node scripts/migrate-to-supabase.js:*)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Users\\\\DavidRasner\\\\.deno\\\\bin\\\\deno.exe\" --version)",
+      "Bash(sh:*)",
+      "Bash(export PATH=\"$HOME/.deno/bin:$PATH\")",
+      "Bash(deno:*)",
+      "Bash(echo:*)",
+      "Bash(PATH=\"$HOME/.deno/bin:$PATH\" timeout 15 deno run:*)",
+      "Bash(PATH=\"$HOME/.deno/bin:$PATH\" deno run:*)"
     ]
   }
 }

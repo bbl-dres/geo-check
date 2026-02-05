@@ -1,106 +1,72 @@
 {
   "1080/2020/AA": [
     {
-      "checkId": "GEO-012",
-      "description": "SAP - GWR: 47m Differenz",
+      "checkId": "GEO-002",
+      "description": "SAP- und GWR-Koordinaten weichen um 47m ab",
       "level": "warning"
     }
   ],
   "1080/2021/AB": [
     {
       "checkId": "GEO-001",
-      "description": "Koordinaten in SAP RE-FX fehlen vollständig",
+      "description": "Koordinaten fehlen in allen Quellen",
       "level": "error"
     },
     {
-      "checkId": "GWR-003",
-      "description": "Gebäude im GWR nicht registriert",
+      "checkId": "ID-001",
+      "description": "Keine EGID vorhanden",
       "level": "error"
     }
   ],
-  "1090/3010/AC": [
-    {
-      "checkId": "SAP-015",
-      "description": "Baujahr Diskrepanz: SAP 1952, GWR 1954",
-      "level": "info"
-    }
-  ],
+  "1090/3010/AC": [],
   "1100/4050/AD": [],
   "1110/5020/AE": [
     {
-      "checkId": "ADR-007",
-      "description": "Strassenname weicht zwischen SAP und GWR ab",
-      "level": "warning"
+      "checkId": "ADR-006",
+      "description": "Strasse: SAP 'Bundesgasse', GWR 'Bundesgasse '",
+      "level": "info"
     },
     {
-      "checkId": "ADR-002",
-      "description": "PLZ Abweichung: SAP 3003, GWR 3011",
+      "checkId": "ADR-004",
+      "description": "PLZ: SAP '3003', GWR '3011'",
       "level": "warning"
     }
   ],
   "1120/6030/AF": [
     {
-      "checkId": "GEO-001",
-      "description": "Koordinaten weichen um 234m ab",
-      "level": "error"
+      "checkId": "GEO-002",
+      "description": "SAP- und GWR-Koordinaten weichen um 234m ab",
+      "level": "warning"
     },
     {
-      "checkId": "GWR-005",
-      "description": "EGID verweist auf anderes Gebäude",
+      "checkId": "ID-003",
+      "description": "EGID Diskrepanz: SAP 5678901, GWR 5678902",
       "level": "error"
     }
   ],
-  "1100/4051/AG": [
-    {
-      "checkId": "SAP-008",
-      "description": "Nutzungsart nicht erfasst",
-      "level": "warning"
-    }
-  ],
-  "1080/2022/AH": [
-    {
-      "checkId": "GWR-011",
-      "description": "Gebäudefläche: Differenz von 12m² zur GWR-Angabe",
-      "level": "info"
-    }
-  ],
+  "1100/4051/AG": [],
+  "1080/2022/AH": [],
   "1130/7010/AI": [],
   "1140/8020/AJ": [
     {
-      "checkId": "ADR-004",
-      "description": "Hausnummer-Zusatz fehlt in SAP (GWR: 15a)",
-      "level": "warning"
+      "checkId": "ADR-008",
+      "description": "Zusatz: fehlt in SAP (GWR: a)",
+      "level": "info"
     }
   ],
   "1150/9030/AK": [
     {
       "checkId": "GEO-001",
-      "description": "Gebäude am falschen Standort eingetragen",
+      "description": "Koordinaten fehlen in allen Quellen",
       "level": "error"
-    },
-    {
-      "checkId": "SAP-020",
-      "description": "Letzte Aktualisierung vor 5 Jahren",
-      "level": "warning"
     }
   ],
-  "1160/1040/AL": [
-    {
-      "checkId": "GWR-009",
-      "description": "Stockwerkzahl: SAP 4, GWR 3",
-      "level": "info"
-    }
-  ],
+  "1160/1040/AL": [],
   "1170/2050/AM": [
     {
-      "checkId": "ADR-007",
-      "description": "Strassenname: SAP 'Bahnhofstrasse', GWR 'Bahnhofstr.'",
-      "level": "warning"
-    },
-    {
-      "checkId": "SAP-016",
-      "description": "Bauperiode weicht ab: SAP 8016, GWR 8017",
-      "level": "warning"
+      "checkId": "ADR-006",
+      "description": "Strasse: SAP 'Bahnhofstrasse', GWR 'Bahnhofstr.'",
+      "level": "info"
     }
   ],
   "1180/3060/AN": [],
@@ -108,55 +74,49 @@
   "1200/5080/AP": [
     {
       "checkId": "GEO-001",
-      "description": "Koordinaten in SAP fehlen vollständig",
+      "description": "Koordinaten fehlen in allen Quellen",
       "level": "error"
     },
     {
-      "checkId": "GWR-003",
-      "description": "EGID in SAP nicht erfasst",
+      "checkId": "ID-001",
+      "description": "Keine EGID vorhanden",
       "level": "error"
     },
     {
-      "checkId": "ADR-002",
-      "description": "PLZ Abweichung: SAP 2502, GWR 2501",
+      "checkId": "ADR-004",
+      "description": "PLZ: SAP '2502', GWR '2501'",
       "level": "warning"
     }
   ],
-  "1210/6090/AQ": [
-    {
-      "checkId": "SAP-016",
-      "description": "Bauperiode fehlt in SAP (GWR: 8014)",
-      "level": "warning"
-    }
-  ],
+  "1210/6090/AQ": [],
   "1220/7100/AR": [],
   "1230/8110/AS": [
     {
-      "checkId": "GWR-005",
+      "checkId": "ID-003",
       "description": "EGID Diskrepanz: SAP 7890123, GWR 7890124",
       "level": "error"
     },
     {
-      "checkId": "GEO-012",
-      "description": "Koordinaten-Abweichung > 10m zwischen SAP und GWR",
+      "checkId": "GEO-002",
+      "description": "SAP- und GWR-Koordinaten weichen um 85m ab",
       "level": "warning"
     }
   ],
   "1240/9120/AT": [
     {
       "checkId": "GEO-001",
-      "description": "Koordinaten in SAP fehlen vollständig",
+      "description": "Koordinaten fehlen in allen Quellen",
       "level": "error"
     },
     {
-      "checkId": "GWR-003",
-      "description": "EGID in SAP nicht erfasst",
+      "checkId": "ID-001",
+      "description": "Keine EGID vorhanden",
       "level": "error"
     },
     {
-      "checkId": "ADR-007",
-      "description": "Strassenname: SAP 'Avenue de la Gare', GWR 'Av. de la Gare'",
-      "level": "warning"
+      "checkId": "ADR-006",
+      "description": "Strasse: SAP 'Avenue de la Gare', GWR 'Av. de la Gare'",
+      "level": "info"
     }
   ]
 }

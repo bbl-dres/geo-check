@@ -34,6 +34,8 @@ import {
   onAuthStateChange,
   setupLoginForm,
   setupPasswordResetForm,
+  setupForgotPasswordForm,
+  setupInviteForm,
   setupUserDropdown,
   showPasswordResetModal,
   isPasswordRecoveryMode,
@@ -365,6 +367,27 @@ function handlePopState(event) {
 }
 
 // ========================================
+// API Tab
+// ========================================
+const API_DOC_URL = 'http://localhost:8787/doc';
+let apiIframeLoaded = false;
+
+function initAPITab() {
+  if (apiIframeLoaded) return;
+  apiIframeLoaded = true;
+
+  const iframe = document.getElementById('api-iframe');
+  const loading = document.getElementById('api-loading');
+
+  iframe.src = API_DOC_URL;
+
+  iframe.addEventListener('load', () => {
+    loading.style.display = 'none';
+    iframe.style.display = 'block';
+  });
+}
+
+// ========================================
 // Tab Switching
 // ========================================
 function switchTab(tabId, shouldUpdateURL = true) {
@@ -388,6 +411,11 @@ function switchTab(tabId, shouldUpdateURL = true) {
   // Resize map if switching to karte tab
   if (tabId === 'karte' && map) {
     setTimeout(() => map.resize(), 100);
+  }
+
+  // Lazy-load API iframe on first visit
+  if (tabId === 'api') {
+    initAPITab();
   }
 
   if (shouldUpdateURL) {
@@ -744,9 +772,18 @@ function setupRunChecksButton() {
 // Main Event Listeners
 // ========================================
 function setupEventListeners() {
+  // Logo → default view
+  document.querySelector('.logo')?.addEventListener('click', () => switchTab('karte'));
+
   // Tab switching
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+  });
+
+  // Footer API link
+  document.getElementById('footer-api-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    switchTab('api');
   });
 
   // Detail panel close button
@@ -1044,10 +1081,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Setup login form handlers (needed even before auth check)
   setupLoginForm();
   setupPasswordResetForm();
+  setupForgotPasswordForm();
+  setupInviteForm();
   setupUserDropdown();
   setupDemoButton();
 
-  // Check if user arrived via password reset link
+  // Check if user arrived via password reset or invite link
   if (isPasswordRecoveryMode()) {
     showPasswordResetModal();
   }
