@@ -1,7 +1,8 @@
 # BBL Geo-Check
 
-**This is a prototype for demonstration purposes.**
-
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
 A prototype web application for validating and managing property data. Built for the Federal Office for Buildings and Logistics (BBL).
 
 ![Preview](assets/preview1.jpg)
@@ -105,4 +106,6 @@ Modern browsers with ES Module support:
 
 ## License
 
-Internal use - Federal Office for Buildings and Logistics (BBL)
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
