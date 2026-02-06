@@ -364,7 +364,7 @@ export function getDataLabel(key) {
     egrid: 'E-GRID',
     // Area (abbreviated to avoid line breaks)
     parcelArea: 'Grundstückfl.',
-    footprintArea: 'Gebäudefl.',
+    garea: 'Gebäudefl.',
     // Building classification
     gkat: 'Gebäudekat.',
     gklas: 'Gebäudekl.',
@@ -516,7 +516,7 @@ export async function lookupGwrByEgid(egid) {
       gkat: String(attr.gkat || ''),
       gklas: String(attr.gklas || ''),
       gbaup: String(attr.gbaup || ''),
-      footprintArea: String(attr.garea || ''),
+      garea: String(attr.garea || ''),
       lat: result.geometry?.y || null,
       lng: result.geometry?.x || null
     };

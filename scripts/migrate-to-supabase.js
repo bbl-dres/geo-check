@@ -22,7 +22,7 @@ const users = JSON.parse(fs.readFileSync(path.join(dataDir, 'users.json'), 'utf8
 const comparisonFields = [
     'country', 'kanton', 'gemeinde', 'bfsNr', 'plz', 'ort',
     'strasse', 'hausnummer', 'zusatz', 'egid', 'gkat', 'gklas',
-    'gbaup', 'lat', 'lng', 'egrid', 'parcelArea', 'footprintArea'
+    'gbaup', 'lat', 'lng', 'egrid', 'parcelArea', 'garea'
 ];
 
 // Create user name to ID mapping

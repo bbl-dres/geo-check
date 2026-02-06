@@ -18,7 +18,7 @@ const outputPath = path.join(__dirname, '..', 'data', 'buildings.json');
 const DATA_FIELDS = [
   'country', 'kanton', 'gemeinde', 'plz', 'ort', 'strasse', 'hausnummer',
   'zusatz', 'egid', 'gkat', 'gklas', 'gbaup', 'lat', 'lng', 'egrid',
-  'parcelArea', 'footprintArea'
+  'parcelArea', 'garea'
 ];
 
 function migrateBuilding(building) {

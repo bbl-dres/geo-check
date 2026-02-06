@@ -46,7 +46,7 @@ export interface Building {
   lat: SourceField;
   lng: SourceField;
   parcelArea: SourceField;
-  footprintArea: SourceField;
+  garea: SourceField;
 }
 
 /** Severity levels for validation errors */

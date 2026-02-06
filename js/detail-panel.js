@@ -299,7 +299,7 @@ const PRIMARY_FIELDS = [
 // Secondary fields: supplementary context, hidden by default
 const SECONDARY_FIELDS = [
   'country', 'kanton', 'gemeinde', 'zusatz',
-  'egrid', 'parcelArea', 'footprintArea',
+  'egrid', 'parcelArea', 'garea',
   'gkat', 'gklas', 'gbaup'
 ];
 
@@ -310,7 +310,7 @@ const COMPARED_FIELDS = [...PRIMARY_FIELDS, ...SECONDARY_FIELDS];
 const KORREKTUR_EDITABLE_FIELDS = [
   'plz', 'ort', 'strasse', 'hausnummer',
   'country', 'kanton', 'gemeinde', 'zusatz',
-  'egrid', 'parcelArea', 'footprintArea',
+  'egrid', 'parcelArea', 'garea',
   'gkat', 'gklas', 'gbaup'
 ];
 
@@ -318,7 +318,7 @@ const KORREKTUR_EDITABLE_FIELDS = [
 const ALL_DATA_FIELDS = [
   'plz', 'ort', 'strasse', 'hausnummer', 'egid',
   'country', 'kanton', 'gemeinde', 'zusatz',
-  'egrid', 'parcelArea', 'footprintArea',
+  'egrid', 'parcelArea', 'garea',
   'gkat', 'gklas', 'gbaup', 'lat', 'lng'
 ];
 
@@ -567,7 +567,7 @@ function setupEditModeHandlers(building) {
         building.gwrEgid = egid;
 
         // Update field GWR values from API response
-        const fieldsToUpdate = ['plz', 'ort', 'strasse', 'hausnummer', 'kanton', 'gemeinde', 'egrid', 'gkat', 'gklas', 'gbaup', 'footprintArea'];
+        const fieldsToUpdate = ['plz', 'ort', 'strasse', 'hausnummer', 'kanton', 'gemeinde', 'egrid', 'gkat', 'gklas', 'gbaup', 'garea'];
         fieldsToUpdate.forEach(fieldName => {
           if (building[fieldName] && gwrData[fieldName]) {
             building[fieldName].gwr = gwrData[fieldName];

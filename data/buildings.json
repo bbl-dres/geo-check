@@ -114,7 +114,7 @@
       "korrektur": "",
       "match": false
     },
-    "footprintArea": {
+    "garea": {
       "sap": "480",
       "gwr": "470",
       "korrektur": "",
@@ -259,7 +259,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "310",
       "gwr": "310",
       "korrektur": "",
@@ -390,7 +390,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "1850",
       "gwr": "1850",
       "korrektur": "",
@@ -512,7 +512,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "520",
       "gwr": "520",
       "korrektur": "",
@@ -634,7 +634,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "780",
       "gwr": "764",
       "korrektur": "",
@@ -756,7 +756,7 @@
       "korrektur": "",
       "match": false
     },
-    "footprintArea": {
+    "garea": {
       "sap": "950",
       "gwr": "950",
       "korrektur": "",
@@ -878,7 +878,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "2800",
       "gwr": "2800",
       "korrektur": "",
@@ -1000,7 +1000,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "380",
       "gwr": "380",
       "korrektur": "",
@@ -1122,7 +1122,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "650",
       "gwr": "637",
       "korrektur": "",
@@ -1244,7 +1244,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "420",
       "gwr": "420",
       "korrektur": "",
@@ -1366,7 +1366,7 @@
       "korrektur": "",
       "match": false
     },
-    "footprintArea": {
+    "garea": {
       "sap": "920",
       "gwr": "920",
       "korrektur": "",
@@ -1488,7 +1488,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "580",
       "gwr": "580",
       "korrektur": "",
@@ -1610,7 +1610,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "720",
       "gwr": "706",
       "korrektur": "",
@@ -1732,7 +1732,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "320",
       "gwr": "320",
       "korrektur": "",
@@ -1854,7 +1854,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "380",
       "gwr": "380",
       "korrektur": "",
@@ -1976,7 +1976,7 @@
       "korrektur": "",
       "match": false
     },
-    "footprintArea": {
+    "garea": {
       "sap": "890",
       "gwr": "890",
       "korrektur": "",
@@ -2098,7 +2098,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "280",
       "gwr": "274",
       "korrektur": "",
@@ -2220,7 +2220,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "520",
       "gwr": "520",
       "korrektur": "",
@@ -2342,7 +2342,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "1100",
       "gwr": "1100",
       "korrektur": "",
@@ -2464,7 +2464,7 @@
       "korrektur": "",
       "match": true
     },
-    "footprintArea": {
+    "garea": {
       "sap": "540",
       "gwr": "540",
       "korrektur": "",

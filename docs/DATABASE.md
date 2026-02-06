@@ -230,32 +230,31 @@ The primary entity representing a federal building record.
 | `mapLng` | number | Yes | | | WGS84 longitude for map display (derived) |
 | `images` | array | No | | | Attached building photographs |
 | **Address Fields** (Three-Value Pattern) |||||
-| `country` | TVP | Yes | | | ISO country code (CH) |
-| `kanton` | TVP | Yes | | | 2-letter canton code (derived from GGDENR) |
-| `gemeinde` | TVP | Yes | | GGDENR | Municipality name (from BFS number) |
-| `bfsNr` | TVP | No | | GGDENR | BFS municipality number (4-digit) |
-| `plz` | TVP | Yes | | DPLZ4 | 4-digit postal code (Postleitzahl) |
-| `ort` | TVP | Yes | | DPLZ4+DPLZZ | Postal locality (derived) |
-| `strasse` | TVP | Yes | | STRNAME | Street name (Strassenbezeichnung) |
-| `hausnummer` | TVP | No | | DEINR | House number (Eingangsnummer) |
-| `zusatz` | TVP | No | | DPLZZ | Address supplement |
+| `country` | TVP | Yes | X | | ISO country code (CH) |
+| `kanton` | TVP | Yes | X | | 2-letter canton code (derived from GGDENR) |
+| `gemeinde` | TVP | Yes | X | GGDENR | Municipality name (from BFS number) |
+| `bfsNr` | TVP | No | X | GGDENR | BFS municipality number (4-digit) |
+| `plz` | TVP | Yes | X | DPLZ4 | 4-digit postal code (Postleitzahl) |
+| `ort` | TVP | Yes | X | DPLZ4+DPLZZ | Postal locality (derived) |
+| `strasse` | TVP | Yes | X | STRNAME | Street name (Strassenbezeichnung) |
+| `hausnummer` | TVP | No | X | DEINR | House number (Eingangsnummer) |
+| `zusatz` | TVP | No | X | DPLZZ | Address supplement |
 | **Building Identifiers** (Three-Value Pattern) |||||
-| `egid` | TVP | No | | EGID | GWR building identifier |
-| `egrid` | TVP | No | | GEGRID | E-GRID parcel identifier |
-| `lat` | TVP | Yes | | GKODN | WGS84 latitude (N-Gebäudekoordinate) |
-| `lng` | TVP | Yes | | GKODE | WGS84 longitude (E-Gebäudekoordinate) |
+| `egid` | TVP | No | X | EGID | GWR building identifier |
+| `egrid` | TVP | No | X | GEGRID | E-GRID parcel identifier |
+| `lat` | TVP | Yes | | GKODN | WGS84 latitude (GWR: LV95 N-coordinate, converted) |
+| `lng` | TVP | Yes | | GKODE | WGS84 longitude (GWR: LV95 E-coordinate, converted) |
 | **Building Classification** (Three-Value Pattern) |||||
-| `gkat` | TVP | No | | GKAT | Building category (Gebäudekategorie) |
-| `gklas` | TVP | No | | GKLAS | Building class (Gebäudeklasse) |
-| `gstat` | TVP | No | | GSTAT | Building status (Gebäudestatus) |
-| `gbaup` | TVP | No | | GBAUP | Construction period (Bauperiode) |
-| `gbauj` | TVP | No | | GBAUJ | Construction year (Baujahr) |
-| `gastw` | TVP | No | | GASTW | Number of floors (Anzahl Geschosse) |
-| `ganzwhg` | TVP | No | | | Number of dwellings (derived from EWID count) |
-| `garea` | TVP | No | | GAREA | Building area in m² (Gebäudefläche) |
+| `gkat` | TVP | No | X | GKAT | Building category (SAP: mapped from own classification) |
+| `gklas` | TVP | No | X | GKLAS | Building class (SAP: mapped from own classification) |
+| `gstat` | TVP | No | X | GSTAT | Building status (Gebäudestatus) |
+| `gbaup` | TVP | No | X | GBAUP | Construction period (Bauperiode) |
+| `gbauj` | TVP | No | X | GBAUJ | Construction year (Baujahr) |
+| `gastw` | TVP | No | X | GASTW | Number of floors (SAP: derived from measurements) |
+| `ganzwhg` | TVP | No | X | | Number of dwellings (derived from EWID count) |
+| `garea` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
 | **Area Fields** (Three-Value Pattern) |||||
-| `parcelArea` | TVP | No | | | Parcel area in m² (from cadastre, not in GWR) |
-| `footprintArea` | TVP | No | | GAREA | Building footprint in m² (Gebäudefläche) |
+| `parcelArea` | TVP | No | X | | Parcel area in m² (from cadastre, not in GWR) |
 
 **Legend:**
 - **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
@@ -312,7 +311,6 @@ The primary entity representing a federal building record.
   "lng":          { "sap": "", "gwr": "9.3744", "korrektur": "", "match": false },
   "egrid":        { "sap": "", "gwr": "CH336583840978", "korrektur": "", "match": false },
   "parcelArea":   { "sap": "1250", "gwr": "1275", "korrektur": "", "match": false },
-  "footprintArea": { "sap": "480", "gwr": "470", "korrektur": "", "match": false },
 
   "images": [
     {
@@ -480,7 +478,7 @@ The building entity stores coordinates in two places for different purposes:
 | Field | Unit | Source | Description |
 |-------|------|--------|-------------|
 | `parcelArea` | m² | Cadastre | Total parcel (Grundstück) area |
-| `footprintArea` | m² | Cadastre | Building footprint (Gebäudegrundfläche) |
+| `garea` | m² | GWR | Building footprint (Gebäudefläche) |
 
 These areas help validate address correctness:
 - Large discrepancy between SAP/GWR building size and footprint suggests wrong building
