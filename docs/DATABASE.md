@@ -250,11 +250,11 @@ The primary entity representing a federal building record.
 | `gstat` | TVP | No | X | GSTAT | Building status (Gebäudestatus) |
 | `gbaup` | TVP | No | X | GBAUP | Construction period (Bauperiode) |
 | `gbauj` | TVP | No | X | GBAUJ | Construction year (Baujahr) |
-| `gastw` | TVP | No | X | GASTW | Number of floors (SAP: derived from measurements) |
-| `ganzwhg` | TVP | No | X | | Number of dwellings (derived from EWID count) |
+| **Bemessungen** (Three-Value Pattern) |||||
+| `gastw` | TVP | No | X | GASTW | Number of floors (Anzahl Geschosse) |
+| `ganzwhg` | TVP | No | X | | Number of dwellings (Anzahl Wohnungen) |
 | `garea` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
-| **Area Fields** (Three-Value Pattern) |||||
-| `parcelArea` | TVP | No | X | | Parcel area in m² (from cadastre, not in GWR) |
+| `parcelArea` | TVP | No | X | | Parcel area in m² (Grundstückfläche) |
 
 **Legend:**
 - **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
@@ -473,15 +473,19 @@ The building entity stores coordinates in two places for different purposes:
 - Users may need to manually correct positions after field verification
 - The Three-Value Pattern preserves original values for audit trail
 
-### 4.3 Area Fields
+### 4.3 Bemessungen (Measurements)
 
 | Field | Unit | Source | Description |
 |-------|------|--------|-------------|
-| `parcelArea` | m² | Cadastre | Total parcel (Grundstück) area |
+| `gastw` | count | SAP/GWR | Number of floors (Anzahl Geschosse) |
+| `ganzwhg` | count | SAP/GWR | Number of dwellings (Anzahl Wohnungen) |
 | `garea` | m² | GWR | Building footprint (Gebäudefläche) |
+| `parcelArea` | m² | Cadastre | Total parcel area (Grundstückfläche) |
 
-These areas help validate address correctness:
-- Large discrepancy between SAP/GWR building size and footprint suggests wrong building
+These measurements help validate building data:
+- Floor count discrepancy may indicate different building or measurement method
+- Dwelling count helps verify residential classification
+- Large discrepancy between SAP/GWR building size suggests wrong building match
 - Parcel area helps identify if coordinates fall within expected boundaries
 
 ---
