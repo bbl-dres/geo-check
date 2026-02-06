@@ -242,8 +242,8 @@ The primary entity representing a federal building record.
 | **Building Identifiers** (Three-Value Pattern) |||||
 | `egid` | TVP | No | X | EGID | GWR building identifier |
 | `egrid` | TVP | No | X | GEGRID | E-GRID parcel identifier |
-| `lat` | TVP | Yes | | GKODN | WGS84 latitude (GWR: LV95 N-coordinate, converted) |
-| `lng` | TVP | Yes | | GKODE | WGS84 longitude (GWR: LV95 E-coordinate, converted) |
+| `lat` | TVP | Yes | X | GKODN | WGS84 latitude (GWR: LV95 N-coordinate, converted) |
+| `lng` | TVP | Yes | X | GKODE | WGS84 longitude (GWR: LV95 E-coordinate, converted) |
 | **Building Classification** (Three-Value Pattern) |||||
 | `gkat` | TVP | No | X | GKAT | Building category (SAP: mapped from own classification) |
 | `gklas` | TVP | No | X | GKLAS | Building class (SAP: mapped from own classification) |
