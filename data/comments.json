@@ -1,14 +1,18 @@
 {
   "1080/2020/AA": [
     {
+      "id": "cmt-1080-2020-AA-001",
       "author": "M. Keller",
-      "date": "12.01.2026",
+      "authorId": 1,
+      "timestamp": "2026-01-12T14:32:00Z",
       "text": "Vor Ort verifiziert - GWR Position ist korrekt.",
       "system": false
     },
     {
+      "id": "cmt-1080-2020-AA-002",
       "author": "System",
-      "date": "10.01.2026",
+      "authorId": null,
+      "timestamp": "2026-01-10T09:00:00Z",
       "text": "Automatisch erkannt: Koordinatenabweichung > 30m",
       "system": true
     }
@@ -16,16 +20,20 @@
   "1080/2021/AB": [],
   "1090/3010/AC": [
     {
+      "id": "cmt-1090-3010-AC-001",
       "author": "S. Brunner",
-      "date": "14.01.2026",
+      "authorId": 2,
+      "timestamp": "2026-01-14T10:15:00Z",
       "text": "Archivdokumente angefragt zur Klärung.",
       "system": false
     }
   ],
   "1100/4050/AD": [
     {
+      "id": "cmt-1100-4050-AD-001",
       "author": "System",
-      "date": "08.01.2026",
+      "authorId": null,
+      "timestamp": "2026-01-08T08:00:00Z",
       "text": "Alle Prüfungen bestanden.",
       "system": true
     }
@@ -33,8 +41,10 @@
   "1110/5020/AE": [],
   "1120/6030/AF": [
     {
+      "id": "cmt-1120-6030-AF-001",
       "author": "System",
-      "date": "05.01.2026",
+      "authorId": null,
+      "timestamp": "2026-01-05T11:30:00Z",
       "text": "Kritischer Fehler erkannt - manuelle Prüfung erforderlich",
       "system": true
     }
@@ -44,12 +54,22 @@
   "1130/7010/AI": [],
   "1140/8020/AJ": [
     {
+      "id": "cmt-1140-8020-AJ-001",
       "author": "M. Keller",
-      "date": "13.01.2026",
+      "authorId": 1,
+      "timestamp": "2026-01-13T14:00:00Z",
       "text": "Vor Ort geprüft - Hausnummer ist 15a.",
       "system": false
     }
   ],
   "1150/9030/AK": [],
-  "1160/1040/AL": []
+  "1160/1040/AL": [],
+  "1170/2050/AM": [],
+  "1180/3060/AN": [],
+  "1190/4070/AO": [],
+  "1200/5080/AP": [],
+  "1210/6090/AQ": [],
+  "1220/7100/AR": [],
+  "1230/8110/AS": [],
+  "1240/9120/AT": []
 }

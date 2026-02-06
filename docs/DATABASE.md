@@ -93,7 +93,7 @@ erDiagram
         float mapLat "Display latitude"
         float mapLng "Display longitude"
         string kanton "Canton code (denorm)"
-        jsonb comparison_fields "Three-Value Pattern fields"
+        jsonb comparison_data "Three-Value Pattern fields"
         jsonb images "Attached photos"
     }
 
@@ -118,7 +118,7 @@ erDiagram
     }
 
     COMMENT {
-        string id PK "cmt-{buildingId}-{seq}"
+        string id PK "cmt-{id/→-}-{seq}"
         string buildingId FK
         string author "User name"
         int authorId FK "User reference"
@@ -128,7 +128,7 @@ erDiagram
     }
 
     ERROR {
-        string id PK "err-{buildingId}-{seq}"
+        string id PK "err-{id/→-}-{seq}"
         string buildingId FK
         string checkId "Rule reference"
         string description "Error message"
@@ -604,9 +604,9 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 {
   "1080/2020/AA": [
     {
-      "id": "err-1080-001",
-      "checkId": "GEO-012",
-      "description": "SAP - GWR: 47m Differenz",
+      "id": "err-1080-2020-AA-001",
+      "checkId": "GEO-002",
+      "description": "SAP- und GWR-Koordinaten weichen um 47m ab",
       "level": "warning",
       "field": "lat",
       "detectedAt": "2026-01-15T09:30:00Z",
@@ -618,7 +618,7 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `id` | string | Unique error identifier (format: `err-{buildingId}-{seq}`) |
+| `id` | string | Unique error identifier (format: `err-{id/→-}-{seq}`, e.g. `err-1080-2020-AA-001`) |
 | `checkId` | string | Validation rule reference (e.g., GEO-012) |
 | `description` | string | Human-readable error description |
 | `level` | string | Severity level |
@@ -640,7 +640,7 @@ Comments are stored in `comments.json` as an object keyed by building ID.
 {
   "1080/2020/AA": [
     {
-      "id": "cmt-1080-001",
+      "id": "cmt-1080-2020-AA-001",
       "author": "M. Keller",
       "authorId": 1,
       "timestamp": "2026-01-12T14:32:00Z",
@@ -653,7 +653,7 @@ Comments are stored in `comments.json` as an object keyed by building ID.
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `id` | string | Unique comment identifier (format: `cmt-{buildingId}-{seq}`) |
+| `id` | string | Unique comment identifier (format: `cmt-{id/→-}-{seq}`, e.g. `cmt-1080-2020-AA-001`) |
 | `author` | string | User display name or "System" |
 | `authorId` | number | User ID reference (null for system comments) |
 | `timestamp` | string | ISO 8601 timestamp |
@@ -750,12 +750,13 @@ Validation rules are organized in rule sets defined in `rules.json`.
 | Operator | Description |
 |----------|-------------|
 | `exists` | Value is present and not empty |
+| `equals` | Exact value match |
 | `matches` | Matches regular expression |
-| `in` | Value in allowed list |
-| `between` | Numeric value in range |
-| `within_bounds` | Coordinates in geographic bounds |
-| `deviation_percent` | Percentage difference threshold |
-| `all_exist` | All specified fields present |
+| `source_match` | Compares SAP and GWR values (as-is, no normalization) |
+| `unique` | Value is unique across all buildings (no duplicates) |
+| `distance` | Distance between two coordinate pairs (in meters) |
+| `geocode_distance` | Distance between geocoded address and stored coordinates |
+| `check` | General check with custom logic |
 
 ---
 

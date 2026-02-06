@@ -578,7 +578,7 @@ function renderRules() {
   const html = rulesConfig.ruleSets.map(ruleSet => {
     const rulesHtml = ruleSet.rules.map(rule => {
       const sev = severityLabels[rule.severity] || { label: rule.severity };
-      const fieldDisplay = Array.isArray(rule.field) ? rule.field.join(', ') : (rule.field || '—');
+      const fieldDisplay = Array.isArray(rule.attribute) ? rule.attribute.join(', ') : (rule.attribute || '—');
       const operatorDisplay = operatorLabels[rule.operator] || rule.operator;
       const valueDisplay = rule.value != null
         ? `${rule.value}${rule.unit ? ' ' + rule.unit : ''}`
@@ -1104,7 +1104,7 @@ function exportPruefplanCSV() {
         rule.id,
         rule.name,
         rule.description,
-        Array.isArray(rule.field) ? rule.field.join(', ') : (rule.field || ''),
+        Array.isArray(rule.attribute) ? rule.attribute.join(', ') : (rule.attribute || ''),
         operatorLabels[rule.operator] || rule.operator,
         rule.value != null ? `${rule.value}${rule.unit ? ' ' + rule.unit : ''}` : '',
         severityLabels[rule.severity]?.label || rule.severity,

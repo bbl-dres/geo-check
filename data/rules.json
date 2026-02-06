@@ -13,7 +13,7 @@
           "id": "ID-001",
           "name": "EGID vorhanden",
           "description": "Prüft ob eine gültige EGID vorhanden ist",
-          "field": "egid",
+          "attribute": "egid",
           "operator": "exists",
           "severity": "error",
           "message": "Keine EGID vorhanden"
@@ -22,7 +22,7 @@
           "id": "ID-002",
           "name": "EGID Format",
           "description": "Prüft ob die EGID dem korrekten Format entspricht (1-9 Ziffern, keine führenden Nullen)",
-          "field": "egid",
+          "attribute": "egid",
           "operator": "matches",
           "value": "^[1-9][0-9]{0,8}$",
           "severity": "error",
@@ -32,7 +32,7 @@
           "id": "ID-003",
           "name": "EGID verifiziert",
           "description": "Prüft ob die EGID auf das korrekte Gebäude im GWR zeigt (nicht auf ein anderes Gebäude)",
-          "field": "egid",
+          "attribute": "egid",
           "operator": "equals",
           "severity": "error",
           "message": "EGID zeigt auf ein anderes Gebäude im GWR"
@@ -41,7 +41,7 @@
           "id": "ID-004",
           "name": "EGRID vorhanden",
           "description": "Prüft ob eine EGRID für die Kataster-/ÖREB-Verknüpfung vorhanden ist",
-          "field": "egrid",
+          "attribute": "egrid",
           "operator": "exists",
           "severity": "warning",
           "message": "Keine EGRID vorhanden"
@@ -50,7 +50,7 @@
           "id": "ID-005",
           "name": "EGID Duplikat",
           "description": "Prüft ob dieselbe EGID für mehrere SAP-Datensätze verwendet wird",
-          "field": "egid",
+          "attribute": "egid",
           "operator": "unique",
           "severity": "error",
           "message": "Dieselbe EGID wird für mehrere Gebäude verwendet"
@@ -59,7 +59,7 @@
           "id": "ID-006",
           "name": "Koordinaten Duplikat",
           "description": "Prüft ob dieselben Koordinaten für mehrere SAP-Datensätze verwendet werden",
-          "field": ["lat", "lng"],
+          "attribute": ["lat", "lng"],
           "operator": "unique",
           "severity": "warning",
           "message": "Dieselben Koordinaten werden für mehrere Gebäude verwendet"
@@ -68,7 +68,7 @@
           "id": "ID-007",
           "name": "Mehrere GWR-Gebäude",
           "description": "Ein SAP-Datensatz ist mit mehreren GWR-Gebäuden verknüpft (1:N)",
-          "field": "inGwr",
+          "attribute": "inGwr",
           "operator": "check",
           "severity": "info",
           "message": "Mehrere GWR-Gebäude mit einem SAP-Objekt verknüpft"
@@ -86,7 +86,7 @@
           "id": "ADR-001",
           "name": "Land",
           "description": "Prüft ob der Ländercode übereinstimmt (soll CH sein)",
-          "field": "country",
+          "attribute": "country",
           "operator": "source_match",
           "severity": "error",
           "message": "Ländercode weicht ab"
@@ -95,7 +95,7 @@
           "id": "ADR-002",
           "name": "Kanton",
           "description": "Prüft ob der Kantonscode übereinstimmt",
-          "field": "kanton",
+          "attribute": "kanton",
           "operator": "source_match",
           "severity": "warning",
           "message": "Kantonscode weicht ab"
@@ -104,7 +104,7 @@
           "id": "ADR-003",
           "name": "Gemeinde",
           "description": "Prüft ob der Gemeindename übereinstimmt",
-          "field": "gemeinde",
+          "attribute": "gemeinde",
           "operator": "source_match",
           "severity": "warning",
           "message": "Gemeindename weicht ab"
@@ -113,7 +113,7 @@
           "id": "ADR-004",
           "name": "PLZ",
           "description": "Prüft ob die Postleitzahl übereinstimmt",
-          "field": "plz",
+          "attribute": "plz",
           "operator": "source_match",
           "severity": "warning",
           "message": "Postleitzahl weicht ab"
@@ -122,7 +122,7 @@
           "id": "ADR-005",
           "name": "Ort",
           "description": "Prüft ob die Ortsbezeichnung übereinstimmt",
-          "field": "ort",
+          "attribute": "ort",
           "operator": "source_match",
           "severity": "warning",
           "message": "Ortsbezeichnung weicht ab"
@@ -131,7 +131,7 @@
           "id": "ADR-006",
           "name": "Strasse",
           "description": "Prüft ob der Strassenname übereinstimmt",
-          "field": "strasse",
+          "attribute": "strasse",
           "operator": "source_match",
           "severity": "info",
           "message": "Strassenname weicht ab"
@@ -140,7 +140,7 @@
           "id": "ADR-007",
           "name": "Hausnummer",
           "description": "Prüft ob die Hausnummer übereinstimmt oder fehlt",
-          "field": "hausnummer",
+          "attribute": "hausnummer",
           "operator": "source_match",
           "severity": "warning",
           "message": "Hausnummer weicht ab oder fehlt"
@@ -149,7 +149,7 @@
           "id": "ADR-008",
           "name": "Zusatz",
           "description": "Prüft ob der Adresszusatz übereinstimmt",
-          "field": "zusatz",
+          "attribute": "zusatz",
           "operator": "source_match",
           "severity": "info",
           "message": "Adresszusatz weicht ab"
@@ -167,7 +167,7 @@
           "id": "GEO-001",
           "name": "Koordinaten vorhanden",
           "description": "Prüft ob Koordinaten in mindestens einer Quelle vorhanden sind",
-          "field": ["lat", "lng"],
+          "attribute": ["lat", "lng"],
           "operator": "exists",
           "severity": "error",
           "message": "Koordinaten fehlen in allen Quellen"
@@ -176,7 +176,7 @@
           "id": "GEO-002",
           "name": "Koordinaten-Abweichung",
           "description": "Prüft ob SAP- und GWR-Koordinaten um mehr als 50m abweichen",
-          "field": ["lat", "lng"],
+          "attribute": ["lat", "lng"],
           "operator": "distance",
           "value": 50,
           "unit": "meters",
@@ -187,7 +187,7 @@
           "id": "GEO-003",
           "name": "Adresse-Koordinaten-Match",
           "description": "Prüft ob die geocodierte Adresse mehr als 100m von den gespeicherten Koordinaten abweicht",
-          "field": ["lat", "lng"],
+          "attribute": ["lat", "lng"],
           "operator": "geocode_distance",
           "value": 100,
           "unit": "meters",

@@ -213,7 +213,7 @@ CREATE INDEX idx_errors_unresolved ON errors(building_id) WHERE resolved_at IS N
 CREATE INDEX idx_errors_check ON errors(check_id);
 
 COMMENT ON TABLE errors IS 'Validation errors detected on buildings';
-COMMENT ON COLUMN errors.id IS 'Format: err-{buildingId}-{seq}';
+COMMENT ON COLUMN errors.id IS 'Format: err-{id/→-}-{seq}, e.g. err-1080-2020-AA-001';
 
 -- ----------------------------------------------------------------------------
 -- Comments
@@ -233,7 +233,7 @@ CREATE INDEX idx_comments_author ON comments(author_id);
 CREATE INDEX idx_comments_created ON comments(created_at DESC);
 
 COMMENT ON TABLE comments IS 'User and system comments on buildings';
-COMMENT ON COLUMN comments.id IS 'Format: cmt-{buildingId}-{seq}';
+COMMENT ON COLUMN comments.id IS 'Format: cmt-{id/→-}-{seq}, e.g. cmt-1080-2020-AA-001';
 COMMENT ON COLUMN comments.is_system IS 'TRUE for auto-generated comments';
 
 -- ----------------------------------------------------------------------------
@@ -339,19 +339,19 @@ CREATE OR REPLACE FUNCTION generate_comment_id(p_building_id VARCHAR(20))
 RETURNS VARCHAR(50) AS $$
 DECLARE
     v_seq INTEGER;
-    v_short_id VARCHAR(10);
+    v_bid VARCHAR(20);
 BEGIN
-    -- Extract short ID (first part before /)
-    v_short_id := SPLIT_PART(p_building_id, '/', 1);
+    -- Replace slashes with dashes for a unique, URL-safe prefix
+    v_bid := REPLACE(p_building_id, '/', '-');
 
-    -- Get next sequence number
+    -- Get next sequence number for this building
     SELECT COALESCE(MAX(
-        CAST(SPLIT_PART(id, '-', 3) AS INTEGER)
+        CAST(REGEXP_REPLACE(id, '^.*-(\d+)$', '\1') AS INTEGER)
     ), 0) + 1 INTO v_seq
     FROM comments
     WHERE building_id = p_building_id;
 
-    RETURN 'cmt-' || v_short_id || '-' || LPAD(v_seq::TEXT, 3, '0');
+    RETURN 'cmt-' || v_bid || '-' || LPAD(v_seq::TEXT, 3, '0');
 END;
 $$ LANGUAGE plpgsql;
 
@@ -359,17 +359,19 @@ CREATE OR REPLACE FUNCTION generate_error_id(p_building_id VARCHAR(20))
 RETURNS VARCHAR(50) AS $$
 DECLARE
     v_seq INTEGER;
-    v_short_id VARCHAR(10);
+    v_bid VARCHAR(20);
 BEGIN
-    v_short_id := SPLIT_PART(p_building_id, '/', 1);
+    -- Replace slashes with dashes for a unique, URL-safe prefix
+    v_bid := REPLACE(p_building_id, '/', '-');
 
+    -- Get next sequence number for this building
     SELECT COALESCE(MAX(
-        CAST(SPLIT_PART(id, '-', 3) AS INTEGER)
+        CAST(REGEXP_REPLACE(id, '^.*-(\d+)$', '\1') AS INTEGER)
     ), 0) + 1 INTO v_seq
     FROM errors
     WHERE building_id = p_building_id;
 
-    RETURN 'err-' || v_short_id || '-' || LPAD(v_seq::TEXT, 3, '0');
+    RETURN 'err-' || v_bid || '-' || LPAD(v_seq::TEXT, 3, '0');
 END;
 $$ LANGUAGE plpgsql;
 

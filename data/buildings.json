@@ -6,6 +6,7 @@
     "priority": "medium",
     "confidence": {
       "total": 67,
+      "georef": 67,
       "sap": 100,
       "gwr": 100
     },
@@ -15,7 +16,7 @@
     "lastUpdate": "2026-01-27T14:30:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "2340212",
+    "gwrEgid": "302045678",
     "mapLat": 47.5656,
     "mapLng": 9.3744,
     "country": {
@@ -33,6 +34,12 @@
     "gemeinde": {
       "sap": "Romanshorn",
       "gwr": "Romanshorn",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "4436",
+      "gwr": "4436",
       "korrektur": "",
       "match": true
     },
@@ -68,7 +75,7 @@
     },
     "egid": {
       "sap": "",
-      "gwr": "2340212",
+      "gwr": "302045678",
       "korrektur": "",
       "match": false
     },
@@ -84,11 +91,23 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
       "korrektur": "",
       "match": true
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "1965",
+      "korrektur": "",
+      "match": false
     },
     "lat": {
       "sap": "",
@@ -104,7 +123,7 @@
     },
     "egrid": {
       "sap": "",
-      "gwr": "CH194381048573",
+      "gwr": "CH336583840978",
       "korrektur": "",
       "match": false
     },
@@ -115,10 +134,22 @@
       "match": false
     },
     "garea": {
-      "sap": "480",
-      "gwr": "470",
+      "sap": "",
+      "gwr": "485",
       "korrektur": "",
       "match": false
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     },
     "images": [
       {
@@ -151,6 +182,7 @@
     "priority": "high",
     "confidence": {
       "total": 72,
+      "georef": 68,
       "sap": 85,
       "gwr": 78
     },
@@ -178,6 +210,12 @@
     "gemeinde": {
       "sap": "Kreuzlingen",
       "gwr": "Kreuzlingen",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "4671",
+      "gwr": "4671",
       "korrektur": "",
       "match": true
     },
@@ -229,9 +267,21 @@
       "korrektur": "",
       "match": false
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8017",
       "gwr": "8016",
+      "korrektur": "",
+      "match": false
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "1983",
       "korrektur": "",
       "match": false
     },
@@ -265,6 +315,18 @@
       "korrektur": "",
       "match": true
     },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "6",
+      "gwr": "6",
+      "korrektur": "",
+      "match": true
+    },
     "images": [
       {
         "id": "img-004",
@@ -282,6 +344,7 @@
     "priority": "low",
     "confidence": {
       "total": 78,
+      "georef": 82,
       "sap": 70,
       "gwr": 70
     },
@@ -309,6 +372,12 @@
     "gemeinde": {
       "sap": "St. Gallen",
       "gwr": "St. Gallen",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "3203",
+      "gwr": "3203",
       "korrektur": "",
       "match": true
     },
@@ -360,9 +429,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8013",
       "gwr": "8013",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1955",
+      "gwr": "1955",
       "korrektur": "",
       "match": true
     },
@@ -395,6 +476,18 @@
       "gwr": "1850",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -404,6 +497,7 @@
     "priority": "low",
     "confidence": {
       "total": 98,
+      "georef": 95,
       "sap": 95,
       "gwr": 100
     },
@@ -431,6 +525,12 @@
     "gemeinde": {
       "sap": "Zürich",
       "gwr": "Zürich",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "261",
+      "gwr": "261",
       "korrektur": "",
       "match": true
     },
@@ -482,9 +582,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1975",
+      "gwr": "1975",
       "korrektur": "",
       "match": true
     },
@@ -517,6 +629,18 @@
       "gwr": "520",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "5",
+      "gwr": "5",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -526,6 +650,7 @@
     "priority": "medium",
     "confidence": {
       "total": 72,
+      "georef": 75,
       "sap": 60,
       "gwr": 70
     },
@@ -553,6 +678,12 @@
     "gemeinde": {
       "sap": "Bern",
       "gwr": "Bern",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "351",
+      "gwr": "351",
       "korrektur": "",
       "match": true
     },
@@ -604,9 +735,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1965",
+      "gwr": "1965",
       "korrektur": "",
       "match": true
     },
@@ -639,6 +782,18 @@
       "gwr": "764",
       "korrektur": "",
       "match": false
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -648,6 +803,7 @@
     "priority": "high",
     "confidence": {
       "total": 35,
+      "georef": 30,
       "sap": 50,
       "gwr": 35
     },
@@ -675,6 +831,12 @@
     "gemeinde": {
       "sap": "Chur",
       "gwr": "Chur",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "3901",
+      "gwr": "3901",
       "korrektur": "",
       "match": true
     },
@@ -726,9 +888,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8011",
       "gwr": "8017",
+      "korrektur": "",
+      "match": false
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "1988",
       "korrektur": "",
       "match": false
     },
@@ -761,6 +935,18 @@
       "gwr": "950",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "2",
+      "gwr": "2",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -770,6 +956,7 @@
     "priority": "medium",
     "confidence": {
       "total": 65,
+      "georef": 60,
       "sap": 55,
       "gwr": 60
     },
@@ -797,6 +984,12 @@
     "gemeinde": {
       "sap": "Winterthur",
       "gwr": "Winterthur",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "230",
+      "gwr": "230",
       "korrektur": "",
       "match": true
     },
@@ -848,9 +1041,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "",
       "gwr": "8020",
+      "korrektur": "",
+      "match": false
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "2003",
       "korrektur": "",
       "match": false
     },
@@ -883,6 +1088,18 @@
       "gwr": "2800",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -892,6 +1109,7 @@
     "priority": "low",
     "confidence": {
       "total": 82,
+      "georef": 80,
       "sap": 75,
       "gwr": 80
     },
@@ -919,6 +1137,12 @@
     "gemeinde": {
       "sap": "Frauenfeld",
       "gwr": "Frauenfeld",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "4566",
+      "gwr": "4566",
       "korrektur": "",
       "match": true
     },
@@ -970,9 +1194,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8018",
       "gwr": "8018",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1993",
+      "gwr": "1993",
       "korrektur": "",
       "match": true
     },
@@ -1005,6 +1241,18 @@
       "gwr": "380",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "8",
+      "gwr": "8",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1014,6 +1262,7 @@
     "priority": "low",
     "confidence": {
       "total": 95,
+      "georef": 93,
       "sap": 92,
       "gwr": 95
     },
@@ -1041,6 +1290,12 @@
     "gemeinde": {
       "sap": "Basel",
       "gwr": "Basel",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "2701",
+      "gwr": "2701",
       "korrektur": "",
       "match": true
     },
@@ -1092,9 +1347,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8021",
       "gwr": "8021",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "2008",
+      "gwr": "2008",
       "korrektur": "",
       "match": true
     },
@@ -1127,6 +1394,18 @@
       "gwr": "637",
       "korrektur": "",
       "match": false
+    },
+    "gastw": {
+      "sap": "5",
+      "gwr": "5",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1136,6 +1415,7 @@
     "priority": "medium",
     "confidence": {
       "total": 70,
+      "georef": 72,
       "sap": 68,
       "gwr": 67
     },
@@ -1163,6 +1443,12 @@
     "gemeinde": {
       "sap": "Luzern",
       "gwr": "Luzern",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "1061",
+      "gwr": "1061",
       "korrektur": "",
       "match": true
     },
@@ -1214,9 +1500,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1975",
+      "gwr": "1975",
       "korrektur": "",
       "match": true
     },
@@ -1249,6 +1547,18 @@
       "gwr": "420",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "10",
+      "gwr": "10",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1258,6 +1568,7 @@
     "priority": "high",
     "confidence": {
       "total": 28,
+      "georef": 22,
       "sap": 45,
       "gwr": 30
     },
@@ -1285,6 +1596,12 @@
     "gemeinde": {
       "sap": "Genève",
       "gwr": "Genève",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "6621",
+      "gwr": "6621",
       "korrektur": "",
       "match": true
     },
@@ -1336,9 +1653,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8014",
       "gwr": "8014",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1965",
+      "gwr": "1965",
       "korrektur": "",
       "match": true
     },
@@ -1371,6 +1700,18 @@
       "gwr": "920",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1380,6 +1721,7 @@
     "priority": "low",
     "confidence": {
       "total": 85,
+      "georef": 88,
       "sap": 80,
       "gwr": 82
     },
@@ -1407,6 +1749,12 @@
     "gemeinde": {
       "sap": "Lugano",
       "gwr": "Lugano",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "5192",
+      "gwr": "5192",
       "korrektur": "",
       "match": true
     },
@@ -1458,9 +1806,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8017",
       "gwr": "8017",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1988",
+      "gwr": "1988",
       "korrektur": "",
       "match": true
     },
@@ -1493,6 +1853,18 @@
       "gwr": "580",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1502,6 +1874,7 @@
     "priority": "high",
     "confidence": {
       "total": 45,
+      "georef": 40,
       "sap": 55,
       "gwr": 50
     },
@@ -1529,6 +1902,12 @@
     "gemeinde": {
       "sap": "Aarau",
       "gwr": "Aarau",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "4001",
+      "gwr": "4001",
       "korrektur": "",
       "match": true
     },
@@ -1580,9 +1959,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8016",
       "gwr": "8017",
+      "korrektur": "",
+      "match": false
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "1988",
       "korrektur": "",
       "match": false
     },
@@ -1615,6 +2006,18 @@
       "gwr": "706",
       "korrektur": "",
       "match": false
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1624,6 +2027,7 @@
     "priority": "medium",
     "confidence": {
       "total": 92,
+      "georef": 90,
       "sap": 90,
       "gwr": 90
     },
@@ -1651,6 +2055,12 @@
     "gemeinde": {
       "sap": "Solothurn",
       "gwr": "Solothurn",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "2601",
+      "gwr": "2601",
       "korrektur": "",
       "match": true
     },
@@ -1702,9 +2112,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1975",
+      "gwr": "1975",
       "korrektur": "",
       "match": true
     },
@@ -1737,6 +2159,18 @@
       "gwr": "320",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1746,6 +2180,7 @@
     "priority": "low",
     "confidence": {
       "total": 88,
+      "georef": 85,
       "sap": 85,
       "gwr": 88
     },
@@ -1773,6 +2208,12 @@
     "gemeinde": {
       "sap": "Thun",
       "gwr": "Thun",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "942",
+      "gwr": "942",
       "korrektur": "",
       "match": true
     },
@@ -1824,9 +2265,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8019",
       "gwr": "8019",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1998",
+      "gwr": "1998",
       "korrektur": "",
       "match": true
     },
@@ -1859,6 +2312,18 @@
       "gwr": "380",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "12",
+      "gwr": "12",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1868,6 +2333,7 @@
     "priority": "high",
     "confidence": {
       "total": 38,
+      "georef": 35,
       "sap": 45,
       "gwr": 45
     },
@@ -1895,6 +2361,12 @@
     "gemeinde": {
       "sap": "Biel/Bienne",
       "gwr": "Biel/Bienne",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "371",
+      "gwr": "371",
       "korrektur": "",
       "match": true
     },
@@ -1946,9 +2418,21 @@
       "korrektur": "",
       "match": false
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8013",
       "gwr": "8013",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1955",
+      "gwr": "1955",
       "korrektur": "",
       "match": true
     },
@@ -1981,6 +2465,18 @@
       "gwr": "890",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "2",
+      "gwr": "2",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -1990,6 +2486,7 @@
     "priority": "medium",
     "confidence": {
       "total": 75,
+      "georef": 72,
       "sap": 70,
       "gwr": 75
     },
@@ -2017,6 +2514,12 @@
     "gemeinde": {
       "sap": "Schaffhausen",
       "gwr": "Schaffhausen",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "2939",
+      "gwr": "2939",
       "korrektur": "",
       "match": true
     },
@@ -2068,9 +2571,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "",
       "gwr": "8014",
+      "korrektur": "",
+      "match": false
+    },
+    "gbauj": {
+      "sap": "",
+      "gwr": "1965",
       "korrektur": "",
       "match": false
     },
@@ -2103,6 +2618,18 @@
       "gwr": "274",
       "korrektur": "",
       "match": false
+    },
+    "gastw": {
+      "sap": "4",
+      "gwr": "4",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -2112,6 +2639,7 @@
     "priority": "low",
     "confidence": {
       "total": 96,
+      "georef": 98,
       "sap": 95,
       "gwr": 95
     },
@@ -2139,6 +2667,12 @@
     "gemeinde": {
       "sap": "Zug",
       "gwr": "Zug",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "1711",
+      "gwr": "1711",
       "korrektur": "",
       "match": true
     },
@@ -2190,9 +2724,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8022",
       "gwr": "8022",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "2013",
+      "gwr": "2013",
       "korrektur": "",
       "match": true
     },
@@ -2225,6 +2771,18 @@
       "gwr": "520",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "5",
+      "gwr": "5",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -2234,6 +2792,7 @@
     "priority": "medium",
     "confidence": {
       "total": 58,
+      "georef": 55,
       "sap": 60,
       "gwr": 60
     },
@@ -2261,6 +2820,12 @@
     "gemeinde": {
       "sap": "Neuchâtel",
       "gwr": "Neuchâtel",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "6458",
+      "gwr": "6458",
       "korrektur": "",
       "match": true
     },
@@ -2312,9 +2877,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8016",
       "gwr": "8016",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1983",
+      "gwr": "1983",
       "korrektur": "",
       "match": true
     },
@@ -2347,6 +2924,18 @@
       "gwr": "1100",
       "korrektur": "",
       "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "0",
+      "gwr": "0",
+      "korrektur": "",
+      "match": true
     }
   },
   {
@@ -2356,6 +2945,7 @@
     "priority": "high",
     "confidence": {
       "total": 32,
+      "georef": 28,
       "sap": 40,
       "gwr": 40
     },
@@ -2383,6 +2973,12 @@
     "gemeinde": {
       "sap": "Sion",
       "gwr": "Sion",
+      "korrektur": "",
+      "match": true
+    },
+    "bfsNr": {
+      "sap": "6266",
+      "gwr": "6266",
       "korrektur": "",
       "match": true
     },
@@ -2434,9 +3030,21 @@
       "korrektur": "",
       "match": true
     },
+    "gstat": {
+      "sap": "1004",
+      "gwr": "1004",
+      "korrektur": "",
+      "match": true
+    },
     "gbaup": {
       "sap": "8015",
       "gwr": "8015",
+      "korrektur": "",
+      "match": true
+    },
+    "gbauj": {
+      "sap": "1975",
+      "gwr": "1975",
       "korrektur": "",
       "match": true
     },
@@ -2467,6 +3075,18 @@
     "garea": {
       "sap": "540",
       "gwr": "540",
+      "korrektur": "",
+      "match": true
+    },
+    "gastw": {
+      "sap": "3",
+      "gwr": "3",
+      "korrektur": "",
+      "match": true
+    },
+    "ganzwhg": {
+      "sap": "6",
+      "gwr": "6",
       "korrektur": "",
       "match": true
     }

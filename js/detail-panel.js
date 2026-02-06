@@ -244,7 +244,7 @@ export function renderDetailPanel(building) {
         <div class="comment ${comment.system ? 'system' : ''}">
           <div class="comment-header">
             <span class="comment-author">${comment.author}</span>
-            <span class="comment-date">${comment.date}</span>
+            <span class="comment-date">${new Date(comment.timestamp).toLocaleDateString('de-CH')}</span>
           </div>
           <div class="comment-text">${comment.text}</div>
         </div>
@@ -1083,7 +1083,7 @@ export function submitComment() {
 
   const newComment = {
     author: currentUser,
-    date: new Date().toLocaleDateString('de-CH'),
+    timestamp: new Date().toISOString(),
     text: text,
     system: false
   };
