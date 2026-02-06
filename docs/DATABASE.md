@@ -214,9 +214,9 @@ The primary entity representing a federal building record.
 | Attribute | Type | Required | SAP | GWR | Description |
 |-----------|------|----------|:---:|:---:|-------------|
 | **Top-Level (Metadata)** |||||
-| `id` | string | Yes | X | | SAP property ID (format: `XXXX/YYYY/ZZ`) |
-| `name` | string | Yes | X | | Display name (City, Street) |
-| `portfolio` | string | Yes | X | | Building type: Büro, Wohnen, Öffentlich, Industrie, Bildung |
+| `id` | string | Yes | X | | SAP RE-FX property ID (format: `XXXX/YYYY/ZZ`) |
+| `name` | string | Yes | X | | SAP Name (City, Street) from RE-FX |
+| `portfolio` | string | Yes | X | | Building type from SAP RE-FX: Büro, Wohnen, Öffentlich, Industrie, Bildung |
 | `priority` | string | Yes | | | Task priority: low, medium, high |
 | `confidence` | object | Yes | | | Confidence scores per source |
 | `assignee` | string | No | | | Assigned team member name (null if unassigned) |
