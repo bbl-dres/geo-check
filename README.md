@@ -7,7 +7,7 @@ A prototype web application for validating and managing property data.
 > All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
 A prototype web application for validating and managing property data. Built for the Federal Office for Buildings and Logistics (BBL).
 
-- **Live Demo:* https://bbl-dres.github.io/geo-check/
+- **Live Demo:** https://bbl-dres.github.io/geo-check/
 
 ![Preview](assets/preview1.jpg)
 
