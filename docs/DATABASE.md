@@ -254,11 +254,12 @@ The primary entity representing a federal building record.
 | `gastw` | TVP | No | X | GASTW | Number of floors (Anzahl Geschosse) |
 | `ganzwhg` | TVP | No | X | | Number of dwellings (Anzahl Wohnungen) |
 | `garea` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
-| `parcelArea` | TVP | No | X | | Parcel area in m² (Grundstückfläche) |
+| `parcelArea` | TVP | No | X | ÖREB | Parcel area in m² (via Swisstopo API by EGID) |
 
 **Legend:**
 - **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
 - **SAP/GWR columns**: Official field code from that source, empty if not available
+- **ÖREB** = Cadastre data retrieved via [Swisstopo API](https://api3.geo.admin.ch/) using EGID
 
 **GWR Reference:** [Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final)
 
@@ -480,7 +481,7 @@ The building entity stores coordinates in two places for different purposes:
 | `gastw` | count | SAP/GWR | Number of floors (Anzahl Geschosse) |
 | `ganzwhg` | count | SAP/GWR | Number of dwellings (Anzahl Wohnungen) |
 | `garea` | m² | GWR | Building footprint (Gebäudefläche) |
-| `parcelArea` | m² | Cadastre | Total parcel area (Grundstückfläche) |
+| `parcelArea` | m² | ÖREB | Total parcel area (via Swisstopo API by EGID) |
 
 These measurements help validate building data:
 - Floor count discrepancy may indicate different building or measurement method
