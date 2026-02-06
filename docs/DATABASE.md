@@ -209,54 +209,57 @@ The current JSON-based storage uses display names only. When migrating to a rela
 
 The primary entity representing a federal building record.
 
-### 2.1 Top-Level Attributes
+### 2.1 Attributes
 
-| Attribute | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `id` | string | Yes | SAP property ID (format: `XXXX/YYYY/ZZ`) |
-| `name` | string | Yes | Display name (City, Street) |
-| `portfolio` | string | Yes | Building type: Büro, Wohnen, Öffentlich, Industrie, Bildung |
-| `priority` | string | Yes | Task priority: low, medium, high |
-| `confidence` | object | Yes | Confidence scores per source |
-| `assignee` | string | No | Assigned team member name (null if unassigned) |
-| `kanbanStatus` | string | Yes | Workflow status |
-| `dueDate` | string | No | ISO 8601 date |
-| `lastUpdate` | string | Yes | ISO 8601 timestamp |
-| `lastUpdateBy` | string | Yes | Last editor name or "System" |
-| `inGwr` | boolean | Yes | Whether building exists in GWR |
-| `gwrEgid` | string | No | GWR building identifier (EGID) for linking |
-| `mapLat` | number | Yes | WGS84 latitude for map display |
-| `mapLng` | number | Yes | WGS84 longitude for map display |
-| `kanton` | string | No | 2-letter canton code (denormalized for filter performance) |
-| `images` | array | No | Attached building photographs |
+| Attribute | Type | Required | SAP | GWR | Description |
+|-----------|------|----------|:---:|:---:|-------------|
+| **Top-Level (Metadata)** |||||
+| `id` | string | Yes | | | SAP property ID (format: `XXXX/YYYY/ZZ`) |
+| `name` | string | Yes | | | Display name (City, Street) |
+| `portfolio` | string | Yes | | | Building type: Büro, Wohnen, Öffentlich, Industrie, Bildung |
+| `priority` | string | Yes | | | Task priority: low, medium, high |
+| `confidence` | object | Yes | | | Confidence scores per source |
+| `assignee` | string | No | | | Assigned team member name (null if unassigned) |
+| `kanbanStatus` | string | Yes | | | Workflow status |
+| `dueDate` | string | No | | | ISO 8601 date |
+| `lastUpdate` | string | Yes | | | ISO 8601 timestamp |
+| `lastUpdateBy` | string | Yes | | | Last editor name or "System" |
+| `inGwr` | boolean | Yes | | | Whether building exists in GWR |
+| `gwrEgid` | string | No | | | GWR building identifier (EGID) for linking |
+| `mapLat` | number | Yes | | | WGS84 latitude for map display (derived) |
+| `mapLng` | number | Yes | | | WGS84 longitude for map display (derived) |
+| `images` | array | No | | | Attached building photographs |
+| **Address Fields** (Three-Value Pattern) |||||
+| `country` | TVP | Yes | X | X | ISO country code (CH) |
+| `kanton` | TVP | Yes | X | X | 2-letter canton code |
+| `gemeinde` | TVP | Yes | X | X | Municipality name |
+| `bfsNr` | TVP | No | X | X | BFS municipality number (4-digit) |
+| `plz` | TVP | Yes | X | X | 4-digit postal code |
+| `ort` | TVP | Yes | X | X | Postal locality |
+| `strasse` | TVP | Yes | X | X | Street name |
+| `hausnummer` | TVP | No | X | X | House number |
+| `zusatz` | TVP | No | X | X | Address supplement |
+| **Building Identifiers** (Three-Value Pattern) |||||
+| `egid` | TVP | No | | X | GWR building identifier (EGID) |
+| `egrid` | TVP | No | | X | E-GRID parcel identifier |
+| `lat` | TVP | Yes | | X | WGS84 latitude |
+| `lng` | TVP | Yes | | X | WGS84 longitude |
+| **Building Classification** (Three-Value Pattern) |||||
+| `gkat` | TVP | No | X | X | Building category code (GKAT) |
+| `gklas` | TVP | No | X | X | Building class code (GKLAS) |
+| `gstat` | TVP | No | X | X | Building status code (GSTAT) |
+| `gbaup` | TVP | No | X | X | Construction period code (GBAUP) |
+| `gbauj` | TVP | No | | X | Exact construction year (if known) |
+| `gastw` | TVP | No | X | X | Number of floors above ground |
+| `ganzwhg` | TVP | No | X | X | Number of dwellings |
+| `garea` | TVP | No | | X | Building area in m² |
+| **Area Fields** (Three-Value Pattern) |||||
+| `parcelArea` | TVP | No | X | X | Parcel area in m² (from cadastre) |
+| `footprintArea` | TVP | No | X | X | Building footprint in m² (from cadastre) |
 
-**Comparison Fields** (follow Three-Value Pattern):
-
-| Field | Description |
-|-------|-------------|
-| `country` | ISO country code (CH) |
-| `kanton` | 2-letter canton code |
-| `gemeinde` | Municipality name |
-| `bfsNr` | BFS municipality number (4-digit) |
-| `plz` | 4-digit postal code |
-| `ort` | Postal locality |
-| `strasse` | Street name |
-| `hausnummer` | House number |
-| `zusatz` | Address supplement |
-| `egid` | GWR building identifier |
-| `gkat` | Building category code (GKAT) |
-| `gklas` | Building class code (GKLAS) |
-| `gstat` | Building status code (GSTAT) |
-| `gbaup` | Construction period code (GBAUP) |
-| `gbauj` | Exact construction year (if known) |
-| `gastw` | Number of floors above ground |
-| `ganzwhg` | Number of dwellings |
-| `garea` | Building area from GWR in m² |
-| `lat` | WGS84 latitude |
-| `lng` | WGS84 longitude |
-| `egrid` | E-GRID parcel identifier |
-| `parcelArea` | Parcel area in m² (from cadastre) |
-| `footprintArea` | Building footprint in m² (from cadastre) |
+**Legend:**
+- **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
+- **X** = Attribute is provided by this data source
 
 ### 2.2 Complete Structure
 
