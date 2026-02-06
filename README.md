@@ -1,4 +1,6 @@
-# BBL Geo-Check
+# Geo-Check
+
+A prototype web application for validating and managing property data.
 
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
