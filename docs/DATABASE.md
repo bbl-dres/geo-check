@@ -230,36 +230,38 @@ The primary entity representing a federal building record.
 | `mapLng` | number | Yes | | | WGS84 longitude for map display (derived) |
 | `images` | array | No | | | Attached building photographs |
 | **Address Fields** (Three-Value Pattern) |||||
-| `country` | TVP | Yes | X | X | ISO country code (CH) |
-| `kanton` | TVP | Yes | X | X | 2-letter canton code |
-| `gemeinde` | TVP | Yes | X | X | Municipality name |
-| `bfsNr` | TVP | No | X | X | BFS municipality number (4-digit) |
-| `plz` | TVP | Yes | X | X | 4-digit postal code |
-| `ort` | TVP | Yes | X | X | Postal locality |
-| `strasse` | TVP | Yes | X | X | Street name |
-| `hausnummer` | TVP | No | X | X | House number |
-| `zusatz` | TVP | No | X | X | Address supplement |
+| `country` | TVP | Yes | | | ISO country code (CH) |
+| `kanton` | TVP | Yes | | | 2-letter canton code (derived from GGDENR) |
+| `gemeinde` | TVP | Yes | | GGDENR | Municipality name (from BFS number) |
+| `bfsNr` | TVP | No | | GGDENR | BFS municipality number (4-digit) |
+| `plz` | TVP | Yes | | DPLZ4 | 4-digit postal code (Postleitzahl) |
+| `ort` | TVP | Yes | | DPLZ4+DPLZZ | Postal locality (derived) |
+| `strasse` | TVP | Yes | | STRNAME | Street name (Strassenbezeichnung) |
+| `hausnummer` | TVP | No | | DEINR | House number (Eingangsnummer) |
+| `zusatz` | TVP | No | | DPLZZ | Address supplement |
 | **Building Identifiers** (Three-Value Pattern) |||||
-| `egid` | TVP | No | | X | GWR building identifier (EGID) |
-| `egrid` | TVP | No | | X | E-GRID parcel identifier |
-| `lat` | TVP | Yes | | X | WGS84 latitude |
-| `lng` | TVP | Yes | | X | WGS84 longitude |
+| `egid` | TVP | No | | EGID | GWR building identifier |
+| `egrid` | TVP | No | | GEGRID | E-GRID parcel identifier |
+| `lat` | TVP | Yes | | GKODN | WGS84 latitude (N-Gebäudekoordinate) |
+| `lng` | TVP | Yes | | GKODE | WGS84 longitude (E-Gebäudekoordinate) |
 | **Building Classification** (Three-Value Pattern) |||||
-| `gkat` | TVP | No | X | X | Building category code (GKAT) |
-| `gklas` | TVP | No | X | X | Building class code (GKLAS) |
-| `gstat` | TVP | No | X | X | Building status code (GSTAT) |
-| `gbaup` | TVP | No | X | X | Construction period code (GBAUP) |
-| `gbauj` | TVP | No | | X | Exact construction year (if known) |
-| `gastw` | TVP | No | X | X | Number of floors above ground |
-| `ganzwhg` | TVP | No | X | X | Number of dwellings |
-| `garea` | TVP | No | | X | Building area in m² |
+| `gkat` | TVP | No | | GKAT | Building category (Gebäudekategorie) |
+| `gklas` | TVP | No | | GKLAS | Building class (Gebäudeklasse) |
+| `gstat` | TVP | No | | GSTAT | Building status (Gebäudestatus) |
+| `gbaup` | TVP | No | | GBAUP | Construction period (Bauperiode) |
+| `gbauj` | TVP | No | | GBAUJ | Construction year (Baujahr) |
+| `gastw` | TVP | No | | GASTW | Number of floors (Anzahl Geschosse) |
+| `ganzwhg` | TVP | No | | | Number of dwellings (derived from EWID count) |
+| `garea` | TVP | No | | GAREA | Building area in m² (Gebäudefläche) |
 | **Area Fields** (Three-Value Pattern) |||||
-| `parcelArea` | TVP | No | X | X | Parcel area in m² (from cadastre) |
-| `footprintArea` | TVP | No | X | X | Building footprint in m² (from cadastre) |
+| `parcelArea` | TVP | No | | | Parcel area in m² (from cadastre, not in GWR) |
+| `footprintArea` | TVP | No | | GAREA | Building footprint in m² (Gebäudefläche) |
 
 **Legend:**
 - **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
-- **X** = Attribute is provided by this data source
+- **SAP/GWR columns**: Official field code from that source, empty if not available
+
+**GWR Reference:** [Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final)
 
 ### 2.2 Complete Structure
 

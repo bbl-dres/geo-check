@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=11" />
+    <link rel="icon" href="assets/img/favicon.ico" type="image/x-icon">
+    <title data-lingua="title">...</title>
+
+    <!--default style-->
+    <link rel="stylesheet" href="thirdparty/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="thirdparty/jquery/jquery-ui.min.css" />
+    <link rel="stylesheet" href="thirdparty/fontawesome/fontawesome.min.css" />    
+    <link rel="stylesheet" href="thirdparty/fontawesome/solid.min.css" />    
+    <link rel="stylesheet" href="thirdparty/fontawesome/brands.min.css" />
+    <link rel="stylesheet" type="text/css" href="thirdparty/css/app.css">
+    
+    <!--custom style-->
+    <link rel="stylesheet" type="text/css" href="thirdparty/css/custom.css" type="text/css">
+
+  </head>
+  <body>
+
+    <!-- Navbar (https://getbootstrap.com/docs/5.3/components/navbar/) -->
+    <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark d-print-none">
+      <div class="container-fluid px-3">
+        <a class="navbar-brand" href="#">
+          <img src="assets/img/logo.png" style="width: 30px; padding-bottom: 4 px;" class="d-inline-block align-top" alt="">
+          <span id="brand-name" data-lingua="title">...</span>
+        </a>
+    
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText"
+          aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarText">
+          <!-- Dropdown for selecting version -->
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item dropdown" id="menu_version"></li>
+            <li class="nav-item" id="menu_final"></li>
+            <!--<li class="nav-item dropdown" id="menu_section"></li>--> <!--NEW-->
+          </ul>
+         
+          <span class="navbar-text" id="menu_language"></span>
+    
+        </div>
+    
+      </div> <!-- div.navbar-collapse -->
+    </nav>
+    
+    <main role="main" class="container">
+      <ul id="toc-list" class="list-group"></ul>
+      <div id="content"></div>
+    </main>
+    
+<!-- Go to the top button -->
+<a href="#toc-list" 
+   id="goTopBtn" 
+   class="btn btn-outline-primary" 
+   style="position: fixed; bottom: 16px; right: 16px; opacity: 0; pointer-events: none; transition: opacity 0.5s ease;">
+   ↑
+</a>
+
+    <!-- JS scripts -->
+    <script src="thirdparty/bootstrap/bootstrap.min.js"></script>   <!--<script src="thirdparty/popper/popper.min.js"></script>-->
+    <script src="thirdparty/jquery/jquery.min.js"></script>
+    <script src="thirdparty/momentjs/moment.min.js"></script>
+    <script src="thirdparty/axios/axios.min.js"></script>
+    <script src="thirdparty/js-yaml/js-yaml.min.js"></script>
+    <script src="thirdparty/dompurify/dompurify.min.js"></script>
+    <script src="thirdparty/lodash/lodash.min.js"></script>
+    <script src="thirdparty/handlebars/handlebars.min.js"></script>
+    <script src="thirdparty/querystring/querystring.js"></script>
+    <script src="thirdparty/linguajs/lingua.js"></script>
+    <script src="thirdparty/waituntil/waituntil.js"></script>
+    <script src="thirdparty/toc/toc.js"></script>
+    <script src="thirdparty/changes/changes.js"></script>
+    <script src="thirdparty/changes/changesExportCSV.js"></script>
+    <script src="app.js"></script>
+    
+    <script>
+			// Get the button
+			const goTopBtn = document.getElementById("goTopBtn");
+
+			window.addEventListener("scroll", function() {
+			  if (window.scrollY > 1000) {
+			    goTopBtn.style.opacity = "1";        // fade in
+			    goTopBtn.style.pointerEvents = "auto"; // clickable
+			  } else {
+			    goTopBtn.style.opacity = "0";        // fade out
+			    goTopBtn.style.pointerEvents = "none"; // not clickable
+			  }
+			});
+
+			</script>
+			
+    <script>        
+      $app.bootstrap();
+    </script>
+
+
+  </body>
+</html>
