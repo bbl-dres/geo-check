@@ -4,7 +4,7 @@
  * Transforms JSON data files and generates SQL for Supabase import.
  * Run with: node scripts/migrate-to-supabase.js
  *
- * Output: scripts/migration.sql (paste into Supabase SQL Editor)
+ * Output: scripts/test-data.sql (paste into Supabase SQL Editor)
  */
 
 const fs = require('fs');
@@ -12,7 +12,7 @@ const path = require('path');
 
 // Paths
 const dataDir = path.join(__dirname, '..', 'data');
-const outputFile = path.join(__dirname, 'migration.sql');
+const outputFile = path.join(__dirname, 'test-data.sql');
 
 // Load JSON files
 const buildings = JSON.parse(fs.readFileSync(path.join(dataDir, 'buildings.json'), 'utf8'));
@@ -45,7 +45,7 @@ function toJsonb(obj) {
 
 // Build SQL
 let sql = `-- ============================================================================
--- Migration Script - Generated ${new Date().toISOString()}
+-- Test Data - Generated ${new Date().toISOString()}
 -- ============================================================================
 -- Run this in the Supabase SQL Editor to import test data
 -- ============================================================================
@@ -140,5 +140,5 @@ console.log(`- ${users.length} users`);
 console.log(`- ${buildings.length} buildings`);
 console.log(`\nNext steps:`);
 console.log(`1. Open Supabase Dashboard > SQL Editor`);
-console.log(`2. Paste the contents of scripts/migration.sql`);
+console.log(`2. Paste the contents of scripts/test-data.sql`);
 console.log(`3. Run the query`);
