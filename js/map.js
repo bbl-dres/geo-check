@@ -171,7 +171,8 @@ function addBuildingLayers() {
     data: buildingsToGeoJSON(filtered),
     cluster: true,
     clusterMaxZoom: 11,
-    clusterRadius: 40
+    clusterRadius: 40,
+    promoteId: 'id'
   });
 
   // 1. Selected point halo (outer glow ring)
@@ -350,23 +351,52 @@ function setBuildingLayersVisibility(visibility) {
 // ========================================
 // Layer Click & Hover Handlers
 // ========================================
+
+// Named handler references for clean removal
+let _onClickUnclustered = null;
+let _onClickSelected = null;
+let _onClickCluster = null;
+let _onEnterUnclustered = null;
+let _onLeaveUnclustered = null;
+let _onEnterCluster = null;
+let _onLeaveCluster = null;
+let _onEnterSelected = null;
+let _onLeaveSelected = null;
+
+function removeLayerClickHandlers() {
+  if (_onClickUnclustered) {
+    map.off('click', 'unclustered-point', _onClickUnclustered);
+    map.off('click', 'selected-point', _onClickSelected);
+    map.off('click', 'clusters', _onClickCluster);
+    map.off('mouseenter', 'unclustered-point', _onEnterUnclustered);
+    map.off('mouseleave', 'unclustered-point', _onLeaveUnclustered);
+    map.off('mouseenter', 'clusters', _onEnterCluster);
+    map.off('mouseleave', 'clusters', _onLeaveCluster);
+    map.off('mouseenter', 'selected-point', _onEnterSelected);
+    map.off('mouseleave', 'selected-point', _onLeaveSelected);
+  }
+}
+
 function setupLayerClickHandlers(selectBuildingFn) {
+  // Remove any previously registered handlers to prevent stacking
+  removeLayerClickHandlers();
+
   // Click on unclustered point → select building
-  map.on('click', 'unclustered-point', (e) => {
+  _onClickUnclustered = (e) => {
     if (!e.features || e.features.length === 0) return;
     const id = e.features[0].properties.id;
     selectBuildingFn(id);
-  });
+  };
 
   // Click on selected-point layer (already selected)
-  map.on('click', 'selected-point', (e) => {
+  _onClickSelected = (e) => {
     if (!e.features || e.features.length === 0) return;
     const id = e.features[0].properties.id;
     selectBuildingFn(id);
-  });
+  };
 
   // Click on cluster → zoom to expand
-  map.on('click', 'clusters', (e) => {
+  _onClickCluster = (e) => {
     const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
     if (!features.length) return;
     const clusterId = features[0].properties.cluster_id;
@@ -378,27 +408,25 @@ function setupLayerClickHandlers(selectBuildingFn) {
         duration: 400
       });
     });
-  });
+  };
 
   // Cursor changes
-  map.on('mouseenter', 'unclustered-point', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', 'unclustered-point', () => {
-    map.getCanvas().style.cursor = '';
-  });
-  map.on('mouseenter', 'clusters', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', 'clusters', () => {
-    map.getCanvas().style.cursor = '';
-  });
-  map.on('mouseenter', 'selected-point', () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', 'selected-point', () => {
-    map.getCanvas().style.cursor = '';
-  });
+  _onEnterUnclustered = () => { map.getCanvas().style.cursor = 'pointer'; };
+  _onLeaveUnclustered = () => { map.getCanvas().style.cursor = ''; };
+  _onEnterCluster = () => { map.getCanvas().style.cursor = 'pointer'; };
+  _onLeaveCluster = () => { map.getCanvas().style.cursor = ''; };
+  _onEnterSelected = () => { map.getCanvas().style.cursor = 'pointer'; };
+  _onLeaveSelected = () => { map.getCanvas().style.cursor = ''; };
+
+  map.on('click', 'unclustered-point', _onClickUnclustered);
+  map.on('click', 'selected-point', _onClickSelected);
+  map.on('click', 'clusters', _onClickCluster);
+  map.on('mouseenter', 'unclustered-point', _onEnterUnclustered);
+  map.on('mouseleave', 'unclustered-point', _onLeaveUnclustered);
+  map.on('mouseenter', 'clusters', _onEnterCluster);
+  map.on('mouseleave', 'clusters', _onLeaveCluster);
+  map.on('mouseenter', 'selected-point', _onEnterSelected);
+  map.on('mouseleave', 'selected-point', _onLeaveSelected);
 }
 
 // ========================================
@@ -642,6 +670,9 @@ export function selectMarker(buildingId) {
     pendingSelection = buildingId;
     return;
   }
+
+  // Stop any in-progress animation to prevent visual glitches
+  map.stop();
 
   // Update selection layer filters
   if (map.getLayer('selected-point')) {
