@@ -489,21 +489,25 @@ const GWR_FIELD_MAP = {
  * @returns {Object} Row object with id + updated columns
  */
 export function buildGwrUpdateRow(buildingId, building, gwrData) {
-    const row = { id: buildingId, in_gwr: !!gwrData };
-
-    if (!gwrData) return row;
+    // Include name & portfolio: NOT NULL columns without defaults.
+    // Include ALL GWR_FIELD_MAP columns in every row so PostgREST batches
+    // have consistent columns (missing columns get NULL → NOT NULL violation).
+    const row = { id: buildingId, in_gwr: !!gwrData, name: building.name, portfolio: building.portfolio };
 
     for (const [appKey, dbCol] of Object.entries(GWR_FIELD_MAP)) {
         const current = building[appKey];
-        const gwrVal = gwrData[appKey] ?? '';
 
-        if (current && typeof current === 'object' && 'sap' in current) {
-            const sap = current.sap || '';
-            const korrektur = current.korrektur || '';
-            const gwr = String(gwrVal);
-            const match = (!sap && !gwr) || sap === gwr;
-            row[dbCol] = { sap, gwr, korrektur, match };
+        if (!gwrData || !(current && typeof current === 'object' && 'sap' in current)) {
+            // No GWR data or field isn't a TVP — keep existing value
+            row[dbCol] = current ?? {};
+            continue;
         }
+
+        const sap = current.sap || '';
+        const korrektur = current.korrektur || '';
+        const gwr = String(gwrData[appKey] ?? '');
+        const match = (!sap && !gwr) || sap === gwr;
+        row[dbCol] = { sap, gwr, korrektur, match };
     }
 
     return row;
