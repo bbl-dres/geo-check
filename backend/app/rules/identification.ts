@@ -73,7 +73,7 @@ registerRule("ID-006", "warning", "lat", "identification", (_b: Building) => {
 // ID-007: Mehrere GWR-Gebäude
 // One SAP record links to multiple GWR buildings (1:N)
 // Flagged as info for awareness, not an error
-registerRule("ID-007", "info", "inGwr", "identification", (_b: Building) => {
+registerRule("ID-007", "info", "in_gwr", "identification", (_b: Building) => {
   // Requires GWR API lookup — placeholder for future implementation
   return null;
 });

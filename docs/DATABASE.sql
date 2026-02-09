@@ -72,6 +72,7 @@ DROP FUNCTION IF EXISTS generate_error_id CASCADE;
 DROP FUNCTION IF EXISTS derive_kanton CASCADE;
 DROP FUNCTION IF EXISTS derive_map_coordinates CASCADE;
 DROP FUNCTION IF EXISTS safe_jsonb CASCADE;
+DROP FUNCTION IF EXISTS get_my_role CASCADE;
 
 -- ============================================================================
 -- EXTENSIONS
@@ -460,6 +461,17 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 COMMENT ON FUNCTION safe_jsonb(TEXT) IS 'Safely cast TEXT to JSONB — returns {} for NULL, empty string, or invalid JSON. Use in ETL pipelines (FME, migration scripts) to avoid "invalid input syntax for type json" errors.';
 
 -- ----------------------------------------------------------------------------
+-- Get current user's role (SECURITY DEFINER — bypasses RLS to avoid infinite
+-- recursion when RLS policies on the users table need to check the user's role)
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION get_my_role()
+RETURNS TEXT AS $$
+    SELECT role FROM public.users WHERE auth_user_id = auth.uid();
+$$ LANGUAGE sql STABLE SECURITY DEFINER;
+
+COMMENT ON FUNCTION get_my_role() IS 'Returns the role of the currently authenticated user. SECURITY DEFINER bypasses RLS to prevent infinite recursion in users table policies.';
+
+-- ----------------------------------------------------------------------------
 -- Derive kanton_code from kanton TVP column (for filtering performance)
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION derive_kanton()
@@ -550,12 +562,7 @@ CREATE POLICY "Users can view all users"
 CREATE POLICY "Admins can manage users"
     ON users FOR ALL
     TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role = 'Admin'
-        )
-    );
+    USING (get_my_role() = 'Admin');
 
 -- ----------------------------------------------------------------------------
 -- Buildings policies
@@ -568,12 +575,7 @@ CREATE POLICY "All authenticated users can view buildings"
 CREATE POLICY "Bearbeiter and Admin can modify buildings"
     ON buildings FOR ALL
     TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
-        )
-    );
+    USING (get_my_role() IN ('Admin', 'Bearbeiter'));
 
 -- ----------------------------------------------------------------------------
 -- Rules policies (read-only for most users)
@@ -591,22 +593,12 @@ CREATE POLICY "All authenticated users can view rule definitions"
 CREATE POLICY "Admins can manage rules"
     ON rule_sets FOR ALL
     TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role = 'Admin'
-        )
-    );
+    USING (get_my_role() = 'Admin');
 
 CREATE POLICY "Admins can manage rule definitions"
     ON rules FOR ALL
     TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role = 'Admin'
-        )
-    );
+    USING (get_my_role() = 'Admin');
 
 -- ----------------------------------------------------------------------------
 -- Errors policies
@@ -619,12 +611,7 @@ CREATE POLICY "All authenticated users can view errors"
 CREATE POLICY "Bearbeiter and Admin can manage errors"
     ON errors FOR ALL
     TO authenticated
-    USING (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
-        )
-    );
+    USING (get_my_role() IN ('Admin', 'Bearbeiter'));
 
 -- ----------------------------------------------------------------------------
 -- Comments policies
@@ -637,12 +624,7 @@ CREATE POLICY "All authenticated users can view comments"
 CREATE POLICY "Bearbeiter and Admin can add comments"
     ON comments FOR INSERT
     TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
-        )
-    );
+    WITH CHECK (get_my_role() IN ('Admin', 'Bearbeiter'));
 
 -- ----------------------------------------------------------------------------
 -- Events policies (read-only, system-generated)
@@ -657,12 +639,7 @@ CREATE POLICY "All authenticated users can view events"
 CREATE POLICY "Bearbeiter and Admin can create events"
     ON events FOR INSERT
     TO authenticated
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
-        )
-    );
+    WITH CHECK (get_my_role() IN ('Admin', 'Bearbeiter'));
 
 -- Service role bypass for system-generated events (triggers)
 CREATE POLICY "Service role can insert events"
@@ -898,10 +875,7 @@ CREATE POLICY "Authenticated users can upload building images"
     TO authenticated
     WITH CHECK (
         bucket_id = 'building-images' AND
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role IN ('Admin', 'Bearbeiter')
-        )
+        get_my_role() IN ('Admin', 'Bearbeiter')
     );
 
 CREATE POLICY "Admins can delete building images"
@@ -909,10 +883,7 @@ CREATE POLICY "Admins can delete building images"
     TO authenticated
     USING (
         bucket_id = 'building-images' AND
-        EXISTS (
-            SELECT 1 FROM users u
-            WHERE u.auth_user_id = auth.uid() AND u.role = 'Admin'
-        )
+        get_my_role() = 'Admin'
     );
 
 -- ============================================================================
