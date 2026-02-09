@@ -5,6 +5,7 @@
  * Email + Password authentication for now, with SAML SSO support planned.
  */
 
+import { scheduleLucideRefresh } from './icons.js';
 import { getSupabase, SUPABASE_URL } from './supabase.js';
 
 // =============================================================================
@@ -561,7 +562,7 @@ export function showForgotPasswordModal(email = '') {
     if (errorEl) errorEl.style.display = 'none';
 
     modal.classList.add('visible');
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
 }
 
 /**
@@ -604,7 +605,7 @@ export function setupForgotPasswordForm() {
             const confirmStep = document.getElementById('forgot-password-confirm-step');
             if (formStep) formStep.style.display = 'none';
             if (confirmStep) confirmStep.style.display = '';
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            scheduleLucideRefresh();
         } catch (error) {
             console.error('Password reset error:', error);
             if (errorEl) {
@@ -709,7 +710,7 @@ export function setupInviteForm() {
             if (formStep) formStep.style.display = 'none';
             if (confirmStep) confirmStep.style.display = '';
             if (confirmEmail) confirmEmail.textContent = `${email} erhält eine E-Mail mit einem Link zur Registrierung.`;
-            if (typeof lucide !== 'undefined') lucide.createIcons();
+            scheduleLucideRefresh();
         } catch (error) {
             console.error('Invite error:', error);
             if (errorEl) {

@@ -7,6 +7,7 @@ import {
   state,
   buildings,
   setData,
+  getFilteredBuildings,
   tableVisible,
   setTableVisible,
   parseURL,
@@ -101,6 +102,8 @@ import {
 } from './statistics.js';
 
 import { setupSearch, removeSearchMarker } from './search.js';
+import { scheduleLucideRefresh } from './icons.js';
+import { ensureXLSX } from './xlsx-loader.js';
 
 // ========================================
 // Tab UI Helper
@@ -114,7 +117,7 @@ function updateTabUI(tabId) {
   });
 
   // Toggle page-scroll mode for non-map tabs
-  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings', 'api'];
   document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(tabId));
 }
 
@@ -231,7 +234,7 @@ async function startDemoMode() {
     // Resize map after showing
     if (map) setTimeout(() => map.resize(), 100);
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
   } catch (error) {
     console.error('Demo mode error:', error);
     showAppError('Demo-Daten konnten nicht geladen werden.');
@@ -349,8 +352,9 @@ function handlePopState(event) {
     document.getElementById('table-toggle-btn').classList.toggle('active', tableVisible);
 
     // Render views
-    updateMapMarkers();
-    updateCounts();
+    const filtered = getFilteredBuildings();
+    updateMapMarkers(filtered);
+    updateCounts(filtered);
 
     if (state.selectedBuildingId) {
       const building = buildings.find(b => b.id === state.selectedBuildingId);
@@ -362,7 +366,7 @@ function handlePopState(event) {
       renderDetailPanel(null);
     }
 
-    if (tableVisible) renderTableView();
+    if (tableVisible) renderTableView(filtered);
 
     if (state.currentTab === 'karte') {
       setTimeout(() => map.resize(), 100);
@@ -371,41 +375,73 @@ function handlePopState(event) {
 }
 
 // ========================================
-// API Tab
+// API Tab — Swagger UI (lazy-loaded)
 // ========================================
-const API_DOC_URL = '';
-let apiIframeLoaded = false;
+const SWAGGER_CSS = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css';
+const SWAGGER_JS = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js';
+let swaggerPromise = null;
+let apiLoaded = false;
 
-function initAPITab() {
-  if (apiIframeLoaded) return;
-  apiIframeLoaded = true;
+function loadSwaggerUI() {
+  if (typeof SwaggerUIBundle !== 'undefined') return Promise.resolve();
+  if (swaggerPromise) return swaggerPromise;
 
-  const iframe = document.getElementById('api-iframe');
-  const loading = document.getElementById('api-loading');
+  swaggerPromise = new Promise((resolve, reject) => {
+    // Load CSS
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = SWAGGER_CSS;
+    document.head.appendChild(link);
 
-  if (!API_DOC_URL) {
-    loading.innerHTML = `
-      <i data-lucide="alert-circle" class="icon-lg"></i>
-      <p>API-Dokumentation ist nicht konfiguriert.</p>
-      <p style="font-size: var(--font-sm)">Kein Backend verfügbar in dieser Umgebung.</p>`;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-    return;
-  }
-
-  iframe.addEventListener('load', () => {
-    loading.style.display = 'none';
-    iframe.style.display = 'block';
+    // Load JS
+    const script = document.createElement('script');
+    script.src = SWAGGER_JS;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error('Swagger UI konnte nicht geladen werden'));
+    document.head.appendChild(script);
   });
 
-  iframe.addEventListener('error', () => {
+  return swaggerPromise;
+}
+
+async function initAPITab() {
+  if (apiLoaded) return;
+  apiLoaded = true;
+
+  const loading = document.getElementById('api-loading');
+
+  try {
+    // Load Swagger UI assets on demand
+    await loadSwaggerUI();
+
+    // Fetch OpenAPI spec from edge function (public, anon key only)
+    const specUrl = `${SUPABASE_URL}/functions/v1/rule-engine/openapi.json`;
+    const res = await fetch(specUrl, {
+      headers: { 'apikey': SUPABASE_KEY }
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const spec = await res.json();
+
+    // Hide loading, show Swagger container
+    loading.style.display = 'none';
+    document.getElementById('swagger-ui').style.display = 'block';
+
+    // Render Swagger UI
+    SwaggerUIBundle({
+      spec,
+      dom_id: '#swagger-ui',
+      deepLinking: true,
+      defaultModelsExpandDepth: 1,
+      defaultModelExpandDepth: 1,
+    });
+  } catch (err) {
+    console.error('API docs error:', err);
     loading.innerHTML = `
       <i data-lucide="alert-circle" class="icon-lg"></i>
       <p>API-Dokumentation konnte nicht geladen werden.</p>
-      <p style="font-size: var(--font-sm)">Backend nicht erreichbar: ${API_DOC_URL}</p>`;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
-  });
-
-  iframe.src = API_DOC_URL;
+      <p style="font-size: var(--font-sm)">${err.message}</p>`;
+    scheduleLucideRefresh();
+  }
 }
 
 // ========================================
@@ -417,7 +453,7 @@ function switchTab(tabId, shouldUpdateURL = true) {
   updateTabUI(tabId);
 
   // Reset scroll position when switching tabs
-  const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
+  const pageScrollTabs = ['statistik', 'aufgaben', 'settings', 'api'];
   if (pageScrollTabs.includes(tabId)) {
     window.scrollTo(0, 0);
   }
@@ -481,16 +517,17 @@ function selectBuilding(id, shouldUpdateURL = true) {
 // Filter Application
 // ========================================
 function applyFilters(shouldUpdateURL = true) {
-  updateMapMarkers();
-  updateCounts();
-  updateStatistik();
-  renderKanbanBoard();
+  const filtered = getFilteredBuildings();
+  updateMapMarkers(filtered);
+  updateCounts(filtered);
+  updateStatistik(filtered);
+  renderKanbanBoard(filtered);
 
   // Reset table pagination when global filters change
   resetTableState();
 
   if (tableVisible) {
-    renderTableView();
+    renderTableView(filtered);
   }
 
   if (shouldUpdateURL) {
@@ -643,7 +680,7 @@ function renderRules() {
     ${html}
   `;
 
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 
   container.querySelectorAll('.rule-set-header').forEach(header => {
     header.addEventListener('click', () => {
@@ -714,7 +751,7 @@ function renderUsersTable() {
       </tr>
     `}).join('');
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
 
     // Attach event handlers in edit mode
     if (usersEditMode) {
@@ -776,7 +813,7 @@ function setupUserEditButton() {
       editBtn.classList.remove('active');
     }
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
     renderUsersTable();
   });
 }
@@ -1010,7 +1047,7 @@ function setupGwrEnrichButton() {
     } finally {
       btn.disabled = false;
       btn.innerHTML = originalHTML;
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      scheduleLucideRefresh();
     }
   });
 }
@@ -1124,9 +1161,10 @@ function setupEventListeners() {
 // ========================================
 
 /**
- * Download an array-of-arrays as an .xlsx file using SheetJS
+ * Download an array-of-arrays as an .xlsx file using SheetJS (lazy-loaded)
  */
-function downloadXLSX(filename, sheetData, sheetName) {
+async function downloadXLSX(filename, sheetData, sheetName) {
+  await ensureXLSX();
   const ws = XLSX.utils.aoa_to_sheet(sheetData);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, sheetName || 'Daten');
@@ -1183,7 +1221,7 @@ async function exportErrorsReport() {
 
     const headers = ['Gebäude-ID', 'Gebäudename', 'Prüf-ID', 'Beschreibung', 'Stufe'];
     const timestamp = new Date().toISOString().slice(0, 10);
-    downloadXLSX(`Fehlerbericht_${timestamp}.xlsx`, [headers, ...rows], 'Fehlerbericht');
+    await downloadXLSX(`Fehlerbericht_${timestamp}.xlsx`, [headers, ...rows], 'Fehlerbericht');
 
     // Update last run timestamp
     const timestampEl = document.getElementById('workflow-errors-time');
@@ -1204,7 +1242,7 @@ async function exportErrorsReport() {
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      scheduleLucideRefresh();
     }
   }
 }
@@ -1255,7 +1293,7 @@ async function exportEventsReport() {
     ]);
 
     const timestamp = new Date().toISOString().slice(0, 10);
-    downloadXLSX(`Ereignisse_${timestamp}.xlsx`, [headers, ...rows], 'Ereignisse');
+    await downloadXLSX(`Ereignisse_${timestamp}.xlsx`, [headers, ...rows], 'Ereignisse');
 
     // Update last run timestamp
     const timestampEl = document.getElementById('workflow-events-time');
@@ -1276,7 +1314,7 @@ async function exportEventsReport() {
     if (btn) {
       btn.disabled = false;
       btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      scheduleLucideRefresh();
     }
   }
 }
@@ -1284,7 +1322,7 @@ async function exportEventsReport() {
 /**
  * Export Prüfplan (rules) as Excel
  */
-function exportPruefplanCSV() {
+async function exportPruefplanCSV() {
   if (!rulesConfig || !rulesConfig.ruleSets) {
     alert('Keine Regeln zum Exportieren vorhanden.');
     return;
@@ -1313,7 +1351,7 @@ function exportPruefplanCSV() {
   });
 
   const timestamp = new Date().toISOString().slice(0, 10);
-  downloadXLSX(`Pruefplan_${timestamp}.xlsx`, [headers, ...rows], 'Prüfplan');
+  await downloadXLSX(`Pruefplan_${timestamp}.xlsx`, [headers, ...rows], 'Prüfplan');
 }
 
 // ========================================
@@ -1323,29 +1361,34 @@ function setupModuleCallbacks() {
   // Detail panel callbacks
   setDetailPanelCallbacks({
     onStatusChange: () => {
-      renderKanbanBoard();
-      if (tableVisible) renderTableView();
-      updateCounts();
-      updateStatistik();
+      const filtered = getFilteredBuildings();
+      renderKanbanBoard(filtered);
+      if (tableVisible) renderTableView(filtered);
+      updateCounts(filtered);
+      updateStatistik(filtered);
     },
     onAssigneeChange: () => {
-      renderKanbanBoard();
-      if (tableVisible) renderTableView();
-      updateCounts();
+      const filtered = getFilteredBuildings();
+      renderKanbanBoard(filtered);
+      if (tableVisible) renderTableView(filtered);
+      updateCounts(filtered);
     },
     onPriorityChange: () => {
-      renderKanbanBoard();
-      if (tableVisible) renderTableView();
-      updateCounts();
+      const filtered = getFilteredBuildings();
+      renderKanbanBoard(filtered);
+      if (tableVisible) renderTableView(filtered);
+      updateCounts(filtered);
     },
     onDueDateChange: () => {
-      renderKanbanBoard();
-      if (tableVisible) renderTableView();
-      updateStatistik();
+      const filtered = getFilteredBuildings();
+      renderKanbanBoard(filtered);
+      if (tableVisible) renderTableView(filtered);
+      updateStatistik(filtered);
     },
     onDataChange: () => {
-      if (tableVisible) renderTableView();
-      updateStatistik();
+      const filtered = getFilteredBuildings();
+      if (tableVisible) renderTableView(filtered);
+      updateStatistik(filtered);
     }
   });
 
@@ -1353,7 +1396,8 @@ function setupModuleCallbacks() {
   setKanbanCallbacks({
     onSelectBuilding: selectBuilding,  // No longer switches tab
     onDataChange: () => {
-      if (tableVisible) renderTableView();
+      const filtered = getFilteredBuildings();
+      if (tableVisible) renderTableView(filtered);
     }
   });
 
@@ -1430,7 +1474,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update UI for auth state
     updateUIForAuthState();
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
   });
 
   // Check if already authenticated
@@ -1443,7 +1487,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Update auth UI
     updateUIForAuthState();
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
 
     // Render settings tab content
     renderRules();
@@ -1490,14 +1534,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup chart filter callback (cross-filtering updates other views)
   setChartFilterCallback(() => {
-    updateMapMarkers();
-    renderKanbanBoard();
-    if (tableVisible) renderTableView();
+    const filtered = getFilteredBuildings();
+    updateMapMarkers(filtered);
+    renderKanbanBoard(filtered);
+    if (tableVisible) renderTableView(filtered);
   });
 
   // Update counts and statistics
-  updateCounts();
-  updateStatistik();
+  const initialFiltered = getFilteredBuildings();
+  updateCounts(initialFiltered);
+  updateStatistik(initialFiltered);
 
   // Apply building selection from URL
   if (state.selectedBuildingId) {

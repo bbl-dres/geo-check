@@ -3910,10 +3910,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   overflow: hidden;
 }
 
-#api-iframe {
+#swagger-ui {
   width: 100%;
   height: 100%;
-  border: none;
+  overflow-y: auto;
+}
+
+#swagger-ui .topbar {
   display: none;
 }
 

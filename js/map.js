@@ -3,6 +3,7 @@
 // Mapbox GL JS map, clustering, basemaps, layers
 // ========================================
 
+import { scheduleLucideRefresh } from './icons.js';
 import { state, buildings, getFilteredBuildings, updateURL, escapeHtml } from './state.js';
 
 // Mapbox access token
@@ -649,7 +650,7 @@ export function zoomToVisibleMarkers() {
   map.fitBounds(bounds, { padding: 50 });
 }
 
-export function updateMapMarkers() {
+export function updateMapMarkers(preFiltered = null) {
   if (!markersReady) {
     pendingFilterUpdate = true;
     return;
@@ -658,7 +659,7 @@ export function updateMapMarkers() {
   const source = map.getSource('buildings-source');
   if (!source) return;
 
-  const filtered = markersVisible ? getFilteredBuildings() : [];
+  const filtered = markersVisible ? (preFiltered || getFilteredBuildings()) : [];
   source.setData(buildingsToGeoJSON(filtered));
 }
 
@@ -1197,7 +1198,7 @@ export function setupContextMenu() {
     contextMenu.classList.toggle('flip-vertical', flipVertical);
     contextMenu.classList.add('show');
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
   });
 
   map.on('click', hideContextMenu);

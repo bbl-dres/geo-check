@@ -33,8 +33,8 @@ export function setChartFilterCallback(callback) {
 }
 
 // Get filtered buildings with chart filters applied
-function getChartFilteredBuildings() {
-  let filtered = getFilteredBuildings();
+function getChartFilteredBuildings(preFiltered = null) {
+  let filtered = preFiltered || getFilteredBuildings();
 
   // Apply chart-specific filters (aligned with main filters: 50/80 thresholds)
   if (chartFilters.confidence) {
@@ -193,7 +193,7 @@ const baseChartOptions = {
 // ========================================
 // Update Counts (Filter Bar)
 // ========================================
-export function updateCounts() {
+export function updateCounts(preFiltered = null) {
   const counts = { high: 0, medium: 0, low: 0 };
   buildings.forEach(b => {
     if (counts[b.priority] !== undefined) counts[b.priority]++;
@@ -204,7 +204,7 @@ export function updateCounts() {
     if (el) el.textContent = `(${count})`;
   });
 
-  const filtered = getFilteredBuildings();
+  const filtered = preFiltered || getFilteredBuildings();
   const filteredCountEl = document.getElementById('filtered-count');
   const totalCountEl = document.getElementById('total-count');
   if (filteredCountEl) filteredCountEl.textContent = filtered.length;
@@ -214,8 +214,8 @@ export function updateCounts() {
 // ========================================
 // Update Statistics Tab
 // ========================================
-export function updateStatistik() {
-  const filtered = getChartFilteredBuildings();
+export function updateStatistik(preFiltered = null) {
+  const filtered = getChartFilteredBuildings(preFiltered);
 
   if (filtered.length === 0 && !hasActiveChartFilter()) {
     document.getElementById('stat-progress').textContent = '0/0';

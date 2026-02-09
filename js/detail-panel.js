@@ -3,6 +3,7 @@
 // Building detail view, edit mode, dropdowns
 // ========================================
 
+import { scheduleLucideRefresh } from './icons.js';
 import {
   state,
   buildings,
@@ -133,7 +134,7 @@ function createDropdown(config) {
     closeDropdown();
   });
 
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 }
 
 // Status options for dropdown
@@ -287,7 +288,7 @@ export function renderDetailPanel(building) {
   renderEventsLog(building.id);
 
   // Refresh icons
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 
   // Update edit button state
   updateEditButton();
@@ -566,7 +567,7 @@ function setupEditModeHandlers(building) {
 
       lookupBtn.disabled = true;
       lookupBtn.innerHTML = '<i data-lucide="loader-2" class="icon-sm spin"></i>';
-      if (typeof lucide !== 'undefined') lucide.createIcons();
+      scheduleLucideRefresh();
 
       try {
         const gwrData = await lookupGwrByEgid(egid);
@@ -600,7 +601,7 @@ function setupEditModeHandlers(building) {
         // Re-render the comparison table with updated GWR data
         renderDataComparison(building);
 
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        scheduleLucideRefresh();
 
       } catch (error) {
         console.error('GWR lookup error:', error);
@@ -608,7 +609,7 @@ function setupEditModeHandlers(building) {
       } finally {
         lookupBtn.disabled = false;
         lookupBtn.innerHTML = '<i data-lucide="search" class="icon-sm"></i>';
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        scheduleLucideRefresh();
       }
     });
 
@@ -634,7 +635,7 @@ export function toggleSecondaryFields() {
     const icon = showSecondaryFields ? 'chevron-up' : 'chevron-down';
     const text = showSecondaryFields ? 'Weniger Attribute' : 'Mehr Attribute';
     toggleBtn.innerHTML = `<i data-lucide="${icon}" class="icon-sm"></i> ${text}`;
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
   }
 
   // Toggle visibility of secondary field rows
@@ -725,7 +726,7 @@ export function enterEditMode() {
   document.getElementById('detail-panel')?.classList.add('edit-mode');
   document.querySelector('.map-panel')?.classList.add('edit-mode');
 
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 }
 
 export function exitEditMode(save) {
@@ -863,7 +864,7 @@ export function exitEditMode(save) {
 
   if (onDataChange) onDataChange();
 
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 }
 
 // ========================================
@@ -1064,7 +1065,7 @@ function renderDueDateDisplay(building) {
     });
   }
 
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 }
 
 function updateBuildingDueDate(buildingId, newDueDate) {
@@ -1436,7 +1437,7 @@ function openFullscreen() {
       }
     });
 
-    if (typeof lucide !== 'undefined') lucide.createIcons();
+    scheduleLucideRefresh();
   }
 
   modal.querySelector('img').src = currentImage.url;

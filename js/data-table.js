@@ -3,6 +3,8 @@
 // Table view rendering with search, pagination, and selection
 // ========================================
 
+import { ensureXLSX } from './xlsx-loader.js';
+import { scheduleLucideRefresh } from './icons.js';
 import {
   state,
   getFilteredBuildings,
@@ -72,8 +74,8 @@ export function closeTableView() {
 // ========================================
 // Search & Filter
 // ========================================
-function getSearchFilteredBuildings() {
-  let buildings = getFilteredBuildings();
+function getSearchFilteredBuildings(preFiltered = null) {
+  let buildings = preFiltered || getFilteredBuildings();
 
   if (tableSearchQuery.trim()) {
     const query = tableSearchQuery.toLowerCase().trim();
@@ -362,10 +364,10 @@ function generatePageNumbers(current, total) {
 // ========================================
 // Table Rendering
 // ========================================
-export function renderTableView() {
+export function renderTableView(preFiltered = null) {
   const tbody = document.getElementById('table-body');
-  const totalBuildings = getFilteredBuildings();
-  const filteredBuildings = getSearchFilteredBuildings();
+  const totalBuildings = preFiltered || getFilteredBuildings();
+  const filteredBuildings = getSearchFilteredBuildings(totalBuildings);
   const sortedBuildings = getSortedBuildings(filteredBuildings);
   const paginatedBuildings = getPaginatedBuildings(sortedBuildings);
 
@@ -462,7 +464,7 @@ export function renderTableView() {
   updateSelectionUI();
 
   // Refresh icons
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 
   // Reapply column visibility to newly rendered rows
   applyInitialColumnVisibility();
@@ -490,7 +492,7 @@ function getPriorityLabel(priority) {
 // ========================================
 // Export Functions
 // ========================================
-function exportData(format, selectionOnly) {
+async function exportData(format, selectionOnly) {
   const buildings = selectionOnly ? getSelectedBuildings() : getSearchFilteredBuildings();
 
   if (buildings.length === 0) {
@@ -503,7 +505,7 @@ function exportData(format, selectionOnly) {
       exportCSV(buildings);
       break;
     case 'xlsx':
-      exportXLSX(buildings);
+      await exportXLSX(buildings);
       break;
     case 'geojson':
       exportGeoJSON(buildings);
@@ -528,7 +530,8 @@ function exportCSV(buildings) {
   downloadFile(csv, 'gebaeude-export.csv', 'text/csv;charset=utf-8');
 }
 
-function exportXLSX(buildings) {
+async function exportXLSX(buildings) {
+  await ensureXLSX();
   const headers = ['ID', 'Name', 'Kanton', 'Status', 'Konfidenz', 'Priorität', 'Zugewiesen', 'Letzte Aktualisierung'];
   const rows = buildings.map(b => [
     b.id,
