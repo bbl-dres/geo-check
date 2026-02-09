@@ -41,7 +41,16 @@
       "Bash(PATH=\"$HOME/.deno/bin:$PATH\" deno run:*)",
       "WebFetch(domain:wiki.openstreetmap.org)",
       "Bash(git mv:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "WebFetch(domain:registry.npmjs.org)",
+      "Bash(for sym in state buildings setData tableVisible setTableVisible parseURL updateURL toggleFilter setupMultiSelectFilter applyMultiSelectState setSearchQuery setCurrentUser eventsData errorsData)",
+      "Bash(do grep -q \"^export.*\\\\b$sym\\\\b\" js/state.js)",
+      "Bash(done)",
+      "Bash(for sym in state buildings teamMembers eventsData commentsData tableVisible currentUser getTagLabel getDataLabel formatRelativeTime formatDateTime formatDisplayDate getFieldDisplayValue lookupGwrByEgid escapeHtml)",
+      "Bash(for sym in state buildings getFilteredBuildings tableVisible currentUser getFieldDisplayValue escapeHtml formatDueDate getDueDateClass)",
+      "Bash(for sym in state getFilteredBuildings tableVisible setTableVisible updateURL getTagLabel getErrorType formatRelativeTime formatDateTime getFieldDisplayValue escapeHtml)",
+      "Bash(for sym in escapeHtml)",
+      "Bash(for sym in state buildings getFilteredBuildings updateURL escapeHtml)"
     ]
   }
 }

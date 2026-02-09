@@ -3,6 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://api.mapbox.com 'unsafe-inline' 'unsafe-eval';
+    style-src 'self' https://fonts.googleapis.com https://api.mapbox.com 'unsafe-inline';
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data: blob: https://*.mapbox.com https://*.geo.admin.ch https://*.supabase.co;
+    connect-src 'self' https://*.supabase.co https://api.mapbox.com https://*.mapbox.com https://*.geo.admin.ch https://api3.geo.admin.ch https://unpkg.com https://cdn.jsdelivr.net;
+    worker-src blob:;
+    child-src blob:;
+  ">
   <title>BBL Liegenschaftsinventar - Korrekturen</title>
 
   <!-- Google Fonts -->
@@ -14,13 +24,13 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/lucide@0.563.0/dist/umd/lucide.min.js"></script>
 
   <!-- ApexCharts -->
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts@5.3.6"></script>
 
   <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3"></script>
 
   <!-- SheetJS for Excel export -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -856,7 +866,7 @@
 
           <div class="detail-section accordion open" data-accordion="konfidenz">
             <button class="accordion-header" type="button">
-              <span class="accordion-title" title="Datenqualität: Wie gut stimmen SAP und GWR überein?">Konfidenz <span class="accordion-note">(eventuell löschen)</span></span>
+              <span class="accordion-title" title="Datenqualität: Wie gut stimmen SAP und GWR überein?">Konfidenz</span>
               <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
             </button>
             <div class="accordion-content">

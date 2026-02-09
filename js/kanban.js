@@ -3,7 +3,7 @@
 // Kanban board rendering and drag-drop
 // ========================================
 
-import { state, buildings, getFilteredBuildings, tableVisible, currentUser, getFieldDisplayValue } from './state.js';
+import { state, buildings, getFilteredBuildings, tableVisible, currentUser, getFieldDisplayValue, escapeHtml, formatDueDate, getDueDateClass } from './state.js';
 import { updateMapMarkers } from './map.js';
 import { updateBuildingStatus as persistStatus } from './supabase.js';
 import { getCurrentUserId, getCurrentUserName, isAuthenticated } from './auth.js';
@@ -66,7 +66,7 @@ export function renderKanbanBoard() {
             <span class="kanban-card-id">${building.id}</span>
             ${priorityIcon}
           </div>
-          <div class="kanban-card-title">${building.name}</div>
+          <div class="kanban-card-title">${escapeHtml(building.name)}</div>
           <div class="kanban-card-meta">
             <span class="kanban-card-location">${getFieldDisplayValue(building.kanton)}</span>
             <span class="kanban-card-confidence ${confidenceClass}">${building.confidence.total}%</span>
@@ -108,51 +108,6 @@ function getPriorityIcon(priority) {
     low: '<span class="priority-icon priority-low"><i data-lucide="minus" class="icon"></i></span>'
   };
   return icons[priority] || icons.medium;
-}
-
-function formatDueDate(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const dateOnly = new Date(date);
-  dateOnly.setHours(0, 0, 0, 0);
-
-  if (dateOnly.getTime() === today.getTime()) {
-    return 'Heute';
-  }
-  if (dateOnly.getTime() === tomorrow.getTime()) {
-    return 'Morgen';
-  }
-
-  // Format as "15. Jan" or "15. Jan 2027" if different year
-  const day = date.getDate();
-  const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
-  const month = monthNames[date.getMonth()];
-
-  if (date.getFullYear() !== today.getFullYear()) {
-    return `${day}. ${month} ${date.getFullYear()}`;
-  }
-  return `${day}. ${month}`;
-}
-
-function getDueDateClass(dateStr) {
-  if (!dateStr) return '';
-  const date = new Date(dateStr);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const dateOnly = new Date(date);
-  dateOnly.setHours(0, 0, 0, 0);
-
-  const diffDays = Math.ceil((dateOnly - today) / (1000 * 60 * 60 * 24));
-
-  if (diffDays < 0) return 'overdue';
-  if (diffDays <= 7) return 'soon';
-  return '';
 }
 
 // ========================================

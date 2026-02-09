@@ -67,52 +67,62 @@ app.get("/rules", (c) => {
 
 // ── Check single building ─────────────────────────────────────────
 app.post("/check/:id{.+}", async (c) => {
-  const buildingId = c.req.param("id");
+  try {
+    const buildingId = c.req.param("id");
 
-  const result = await checkBuilding(buildingId);
+    const result = await checkBuilding(buildingId);
 
-  if (!result) {
-    return c.json({ error: `Gebäude '${buildingId}' nicht gefunden` }, 404);
+    if (!result) {
+      return c.json({ error: `Gebäude '${buildingId}' nicht gefunden` }, 404);
+    }
+
+    return c.json(result);
+  } catch (err) {
+    console.error("check failed:", err);
+    return c.json({ error: true, message: (err as Error).message }, 500);
   }
-
-  return c.json(result);
 });
 
 // ── Check all buildings (chunked) ─────────────────────────────────
 app.post("/check-all", async (c) => {
-  const url = new URL(c.req.url);
-  const offset = parseInt(url.searchParams.get("offset") ?? "0");
-  const limit = parseInt(url.searchParams.get("limit") ?? "50");
+  try {
+    const url = new URL(c.req.url);
+    const offset = parseInt(url.searchParams.get("offset") ?? "0");
+    const limit = parseInt(url.searchParams.get("limit") ?? "50");
 
-  // Cap limit to avoid timeout (150s Edge Function limit)
-  const safeLimit = Math.min(limit, 100);
+    // Cap limit to avoid timeout (150s Edge Function limit)
+    const safeLimit = Math.min(limit, 100);
 
-  const { results, total, hasMore } = await checkBuildingsChunk(offset, safeLimit);
+    const { results, total, hasMore } = await checkBuildingsChunk(offset, safeLimit);
 
-  const summary = {
-    totalBuildings: total,
-    checked: results.length,
-    offset,
-    limit: safeLimit,
-    hasMore,
-    nextOffset: hasMore ? offset + safeLimit : null,
-    totalErrors: results.reduce((sum, r) => sum + r.errors.length, 0),
-    byLevel: {
-      error: results.reduce(
-        (sum, r) => sum + r.errors.filter((e) => e.level === "error").length, 0,
-      ),
-      warning: results.reduce(
-        (sum, r) => sum + r.errors.filter((e) => e.level === "warning").length, 0,
-      ),
-      info: results.reduce(
-        (sum, r) => sum + r.errors.filter((e) => e.level === "info").length, 0,
-      ),
-    },
-    checkedAt: new Date().toISOString(),
-    results,
-  };
+    const summary = {
+      totalBuildings: total,
+      checked: results.length,
+      offset,
+      limit: safeLimit,
+      hasMore,
+      nextOffset: hasMore ? offset + safeLimit : null,
+      totalErrors: results.reduce((sum, r) => sum + r.errors.length, 0),
+      byLevel: {
+        error: results.reduce(
+          (sum, r) => sum + r.errors.filter((e) => e.level === "error").length, 0,
+        ),
+        warning: results.reduce(
+          (sum, r) => sum + r.errors.filter((e) => e.level === "warning").length, 0,
+        ),
+        info: results.reduce(
+          (sum, r) => sum + r.errors.filter((e) => e.level === "info").length, 0,
+        ),
+      },
+      checkedAt: new Date().toISOString(),
+      results,
+    };
 
-  return c.json(summary);
+    return c.json(summary);
+  } catch (err) {
+    console.error("check-all failed:", err);
+    return c.json({ error: true, message: (err as Error).message }, 500);
+  }
 });
 
 // ── OpenAPI spec ──────────────────────────────────────────────────

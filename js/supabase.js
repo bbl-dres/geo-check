@@ -119,7 +119,13 @@ export async function loadAllData() {
     );
 
     const teamMembers = transformUsersFromDB(usersResult.data);
-    const eventsData = transformEventsFromDB(eventsResult.data);
+    const eventsFlat = transformEventsFromDB(eventsResult.data);
+    // Group events by buildingId for keyed lookup in detail panel
+    const eventsData = {};
+    eventsFlat.forEach(e => {
+      if (!eventsData[e.buildingId]) eventsData[e.buildingId] = [];
+      eventsData[e.buildingId].push(e);
+    });
     const rulesConfig = rulesJsonResult;
 
     // Also return raw keyed data for backwards compatibility
@@ -304,36 +310,6 @@ function transformEventsFromDB(events) {
         timestamp: e.created_at,
         details: e.details
     }));
-}
-
-/**
- * Transform rules from DB format to app format
- */
-function transformRulesFromDB(ruleSets, rules) {
-    return {
-        version: '1.0',
-        description: 'Validation rules from Supabase',
-        ruleSets: ruleSets.map(rs => ({
-            id: rs.id,
-            name: rs.name,
-            description: rs.description,
-            enabled: rs.enabled,
-            entityType: rs.entity_type,
-            rules: rules
-                .filter(r => r.rule_set_id === rs.id)
-                .map(r => ({
-                    id: r.id,
-                    name: r.name,
-                    description: r.description,
-                    attribute: r.attribute,
-                    operator: r.operator,
-                    value: r.value,
-                    severity: r.severity,
-                    message: r.message,
-                    enabled: r.enabled
-                }))
-        }))
-    };
 }
 
 // =============================================================================
@@ -618,55 +594,6 @@ export async function uploadImage(buildingId, file, userId, userName) {
     if (updateError) throw updateError;
 
     return imageObj;
-}
-
-// =============================================================================
-// REALTIME SUBSCRIPTIONS
-// =============================================================================
-
-/**
- * Subscribe to building changes
- */
-export function subscribeToBuildingChanges(callback) {
-    const client = getSupabase();
-
-    return client
-        .channel('buildings-changes')
-        .on('postgres_changes',
-            { event: '*', schema: 'public', table: 'buildings' },
-            (payload) => callback(payload)
-        )
-        .subscribe();
-}
-
-/**
- * Subscribe to comment changes
- */
-export function subscribeToCommentChanges(callback) {
-    const client = getSupabase();
-
-    return client
-        .channel('comments-changes')
-        .on('postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'comments' },
-            (payload) => callback(payload)
-        )
-        .subscribe();
-}
-
-/**
- * Subscribe to event changes (activity feed)
- */
-export function subscribeToEventChanges(callback) {
-    const client = getSupabase();
-
-    return client
-        .channel('events-changes')
-        .on('postgres_changes',
-            { event: 'INSERT', schema: 'public', table: 'events' },
-            (payload) => callback(payload)
-        )
-        .subscribe();
 }
 
 // =============================================================================

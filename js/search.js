@@ -4,6 +4,7 @@
 // ========================================
 
 import { map } from './map.js';
+import { escapeHtml } from './state.js';
 
 // Search marker reference
 let searchMarker = null;
@@ -304,11 +305,3 @@ export function removeSearchMarker() {
   }
 }
 
-// ========================================
-// Utility
-// ========================================
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
