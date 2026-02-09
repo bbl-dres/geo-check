@@ -19,7 +19,17 @@ import {
   getFieldDisplayValue,
   lookupGwrByEgid
 } from './state.js';
-import { map, markers } from './map.js';
+import { map, getOrCreateEditMarker, removeEditMarker } from './map.js';
+import {
+  updateBuildingStatus as persistStatus,
+  updateBuildingAssignee as persistAssignee,
+  updateBuildingPriority as persistPriority,
+  updateBuildingDueDate as persistDueDate,
+  updateBuildingComparisonData as persistComparisonData,
+  addComment as persistComment,
+  uploadImage as persistImage
+} from './supabase.js';
+import { getCurrentUserId, getCurrentUserName, isAuthenticated } from './auth.js';
 
 // Store cleanup functions to prevent memory leaks from duplicate event listeners
 const dropdownCleanup = new Map();
@@ -685,7 +695,7 @@ export function enterEditMode() {
   };
   state.editMode = true;
 
-  const marker = markers[building.id];
+  const marker = getOrCreateEditMarker(building.id);
   if (marker) {
     // Mapbox: enable dragging
     marker.setDraggable(true);
@@ -722,7 +732,7 @@ export function exitEditMode(save) {
   const building = buildings.find(b => b.id === state.selectedBuildingId);
   if (!building) return;
 
-  const marker = markers[building.id];
+  const marker = getOrCreateEditMarker(building.id);
 
   if (save) {
     // Save inGwr dropdown value
@@ -786,6 +796,22 @@ export function exitEditMode(save) {
 
     building.lastUpdate = new Date().toISOString();
     building.lastUpdateBy = currentUser;
+
+    // Persist corrections to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      const comparisonData = {};
+      ALL_DATA_FIELDS.forEach(field => {
+        if (building[field] && typeof building[field] === 'object' && 'sap' in building[field]) {
+          comparisonData[field] = building[field];
+        }
+      });
+      comparisonData.map_lat = building.mapLat;
+      comparisonData.map_lng = building.mapLng;
+      comparisonData.in_gwr = building.inGwr;
+
+      persistComparisonData(building.id, comparisonData, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist corrections:', err));
+    }
   } else {
     // Restore original values (flat structure)
     if (state.originalBuildingData) {
@@ -821,6 +847,9 @@ export function exitEditMode(save) {
       currentDragHandler = null;
     }
   }
+
+  // Clean up the temporary edit marker
+  removeEditMarker();
 
   state.editMode = false;
   state.originalBuildingData = null;
@@ -867,6 +896,12 @@ function updateBuildingPriority(buildingId, newPriority) {
     renderPriorityDisplay(building);
 
     if (onPriorityChange) onPriorityChange();
+
+    // Persist to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      persistPriority(buildingId, newPriority, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist priority:', err));
+    }
   }
 }
 
@@ -901,6 +936,12 @@ function updateBuildingStatus(buildingId, newStatus) {
     renderStatusDisplay(building);
 
     if (onStatusChange) onStatusChange();
+
+    // Persist to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      persistStatus(buildingId, newStatus, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist status:', err));
+    }
   }
 }
 
@@ -945,6 +986,13 @@ function assignBuilding(buildingId, assigneeName) {
     renderAssigneeDisplay(building);
 
     if (onAssigneeChange) onAssigneeChange();
+
+    // Persist to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      const member = teamMembers.find(m => m.name === assigneeName);
+      persistAssignee(buildingId, member?.id || null, assigneeName, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist assignee:', err));
+    }
   }
 }
 
@@ -1028,6 +1076,12 @@ function updateBuildingDueDate(buildingId, newDueDate) {
     renderDueDateDisplay(building);
 
     if (onDueDateChange) onDueDateChange();
+
+    // Persist to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      persistDueDate(buildingId, newDueDate, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist due date:', err));
+    }
   }
 }
 
@@ -1093,6 +1147,12 @@ export function submitComment() {
   input.value = '';
 
   renderDetailPanel(building);
+
+  // Persist to Supabase
+  if (!window.isDemoMode && isAuthenticated()) {
+    persistComment(state.selectedBuildingId, text, getCurrentUserId(), getCurrentUserName())
+      .catch(err => console.error('Failed to persist comment:', err));
+  }
 }
 
 export function cancelComment() {
@@ -1267,32 +1327,48 @@ function handleImageUpload(files) {
     building.images = [];
   }
 
-  // Process each file (mock - in real app would upload to server)
-  Array.from(files).forEach(file => {
-    // Validate file size
-    if (file.size > 10 * 1024 * 1024) {
-      alert('Datei zu gross (max. 10MB)');
-      return;
-    }
-
-    // Create object URL for preview (in real app, use server URL)
-    const url = URL.createObjectURL(file);
-    building.images.push({
-      id: Date.now() + Math.random(),
-      url: url,
-      filename: file.name,
-      uploadDate: new Date().toISOString(),
-      uploadedBy: currentUser
+  if (!window.isDemoMode && isAuthenticated()) {
+    // Upload to Supabase Storage
+    Array.from(files).forEach(file => {
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Datei zu gross (max. 5MB)');
+        return;
+      }
+      persistImage(state.selectedBuildingId, file, getCurrentUserId(), getCurrentUserName())
+        .then(imageObj => {
+          building.images.push(imageObj);
+          building.lastUpdate = new Date().toISOString();
+          building.lastUpdateBy = currentUser;
+          currentImageIndex = building.images.length - 1;
+          renderImageWidget(building);
+        })
+        .catch(err => {
+          console.error('Failed to upload image:', err);
+          alert('Bild-Upload fehlgeschlagen.');
+        });
     });
-  });
+  } else {
+    // Demo mode: use local blob URLs
+    Array.from(files).forEach(file => {
+      if (file.size > 10 * 1024 * 1024) {
+        alert('Datei zu gross (max. 10MB)');
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      building.images.push({
+        id: Date.now() + Math.random(),
+        url: url,
+        filename: file.name,
+        uploadDate: new Date().toISOString(),
+        uploadedBy: currentUser
+      });
+    });
 
-  // Update timestamps
-  building.lastUpdate = new Date().toISOString();
-  building.lastUpdateBy = currentUser;
-
-  // Jump to last uploaded image
-  currentImageIndex = building.images.length - 1;
-  renderImageWidget(building);
+    building.lastUpdate = new Date().toISOString();
+    building.lastUpdateBy = currentUser;
+    currentImageIndex = building.images.length - 1;
+    renderImageWidget(building);
+  }
 }
 
 function deleteCurrentImage() {

@@ -5,6 +5,8 @@
 
 import { state, buildings, getFilteredBuildings, tableVisible, currentUser, getFieldDisplayValue } from './state.js';
 import { updateMapMarkers } from './map.js';
+import { updateBuildingStatus as persistStatus } from './supabase.js';
+import { getCurrentUserId, getCurrentUserName, isAuthenticated } from './auth.js';
 
 // Drag state
 let draggedCard = null;
@@ -238,6 +240,12 @@ function handleDrop(e) {
     building.kanbanStatus = newStatus;
     building.lastUpdate = new Date().toISOString();
     building.lastUpdateBy = currentUser;
+
+    // Persist to Supabase
+    if (!window.isDemoMode && isAuthenticated()) {
+      persistStatus(building.id, newStatus, getCurrentUserId(), getCurrentUserName())
+        .catch(err => console.error('Failed to persist status:', err));
+    }
 
     renderKanbanBoard();
     updateMapMarkers();
