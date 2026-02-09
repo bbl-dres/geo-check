@@ -1389,6 +1389,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     showPasswordResetModal();
   }
 
+  // Show login landing immediately (prevents blank screen while auth resolves)
+  showLoginLanding();
+
   // Initialize authentication
   let user = null;
   try {
