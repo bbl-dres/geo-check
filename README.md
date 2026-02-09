@@ -1,6 +1,6 @@
 # Geo-Check
 
-A prototype web application for validating and managing property data. Built for the Federal Office for Buildings and Logistics (BBL).
+A prototype web application for validating and managing property data.
 
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
