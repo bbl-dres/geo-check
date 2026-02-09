@@ -374,7 +374,8 @@ function setupLayerClickHandlers(selectBuildingFn) {
       if (err) return;
       map.easeTo({
         center: features[0].geometry.coordinates,
-        zoom: zoom
+        zoom: zoom,
+        duration: 400
       });
     });
   });
@@ -650,11 +651,22 @@ export function selectMarker(buildingId) {
     map.setFilter('selected-point-halo', ['==', ['get', 'id'], buildingId]);
   }
 
-  // Fly to building
-  map.flyTo({
-    center: [building.mapLng, building.mapLat],
-    zoom: Math.max(map.getZoom(), 16)
-  });
+  // Navigate to building — speed depends on distance
+  const target = [building.mapLng, building.mapLat];
+  const targetZoom = Math.max(map.getZoom(), 14);
+  const bounds = map.getBounds();
+  const inView = bounds.contains(target);
+
+  if (inView && map.getZoom() >= 12) {
+    // Already visible and zoomed in — quick pan, no zoom change
+    map.easeTo({ center: target, duration: 300 });
+  } else if (inView) {
+    // In view but zoomed out — fast ease with zoom
+    map.easeTo({ center: target, zoom: targetZoom, duration: 500 });
+  } else {
+    // Off-screen — fly but with higher speed
+    map.flyTo({ center: target, zoom: targetZoom, speed: 3, maxDuration: 1500 });
+  }
 }
 
 export function deselectAllMarkers() {
