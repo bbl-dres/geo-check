@@ -4,7 +4,7 @@
 -- PostgreSQL schema for Supabase migration
 -- Uses JSONB fields for flexible data structures (Three-Value Pattern)
 --
--- Version: 1.2
+-- Version: 1.3
 -- Last updated: 2026-02-09
 -- Compatible with: Supabase (PostgreSQL 15+)
 -- ============================================================================
@@ -59,14 +59,6 @@ DROP TABLE IF EXISTS ref_gbaup CASCADE;
 DROP TABLE IF EXISTS ref_gstat CASCADE;
 DROP TABLE IF EXISTS ref_cantons CASCADE;
 
--- Custom types
-DROP TYPE IF EXISTS event_type CASCADE;
-DROP TYPE IF EXISTS error_level CASCADE;
-DROP TYPE IF EXISTS portfolio_type CASCADE;
-DROP TYPE IF EXISTS priority_level CASCADE;
-DROP TYPE IF EXISTS kanban_status CASCADE;
-DROP TYPE IF EXISTS user_role CASCADE;
-
 -- Functions
 DROP FUNCTION IF EXISTS update_updated_at CASCADE;
 DROP FUNCTION IF EXISTS sync_assignee_name CASCADE;
@@ -83,28 +75,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "postgis";  -- For future spatial queries
 
 -- ============================================================================
--- CUSTOM TYPES (ENUMS)
--- ============================================================================
-
--- User roles
-CREATE TYPE user_role AS ENUM ('Admin', 'Bearbeiter', 'Leser');
-
--- Building workflow status
-CREATE TYPE kanban_status AS ENUM ('backlog', 'inprogress', 'clarification', 'done');
-
--- Task priority
-CREATE TYPE priority_level AS ENUM ('low', 'medium', 'high');
-
--- Building portfolio type
-CREATE TYPE portfolio_type AS ENUM ('Büro', 'Wohnen', 'Öffentlich', 'Industrie', 'Bildung');
-
--- Error severity level
-CREATE TYPE error_level AS ENUM ('error', 'warning', 'info');
-
--- Event type
-CREATE TYPE event_type AS ENUM ('comment', 'assignment', 'detection', 'status', 'correction');
-
--- ============================================================================
 -- TABLES
 -- ============================================================================
 
@@ -116,7 +86,7 @@ CREATE TABLE users (
     name            VARCHAR(100) NOT NULL,
     initials        CHAR(2) NOT NULL,
     email           VARCHAR(255) UNIQUE,
-    role            user_role NOT NULL DEFAULT 'Leser',
+    role            VARCHAR(50) NOT NULL DEFAULT 'Leser',
     avatar_url      TEXT,
     last_login      TIMESTAMPTZ,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -142,11 +112,11 @@ CREATE TABLE buildings (
 
     -- Display fields
     name            VARCHAR(255) NOT NULL,
-    portfolio       portfolio_type NOT NULL,
+    portfolio       VARCHAR(50) NOT NULL,
 
     -- Workflow fields
-    priority        priority_level NOT NULL DEFAULT 'medium',
-    kanban_status   kanban_status NOT NULL DEFAULT 'backlog',
+    priority        VARCHAR(20) NOT NULL DEFAULT 'medium',
+    kanban_status   VARCHAR(20) NOT NULL DEFAULT 'backlog',
     due_date        DATE,
 
     -- Assignment (dual-field pattern for FK + denormalized display)
@@ -237,7 +207,7 @@ CREATE TABLE rules (
     attribute       JSONB NOT NULL,  -- String or array of strings
     operator        VARCHAR(50) NOT NULL,
     value           JSONB,  -- Operator-specific expected value
-    severity        error_level NOT NULL DEFAULT 'warning',
+    severity        VARCHAR(20) NOT NULL DEFAULT 'warning',
     message         TEXT NOT NULL,
     enabled         BOOLEAN NOT NULL DEFAULT TRUE,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
@@ -258,7 +228,7 @@ CREATE TABLE errors (
     building_id     VARCHAR(20) NOT NULL REFERENCES buildings(id) ON DELETE CASCADE,
     check_id        VARCHAR(50) NOT NULL REFERENCES rules(id) ON DELETE CASCADE,
     description     TEXT NOT NULL,
-    level           error_level NOT NULL,
+    level           VARCHAR(20) NOT NULL,
     field           VARCHAR(50),  -- Affected field name (optional)
     detected_at     TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     resolved_at     TIMESTAMPTZ,
@@ -307,7 +277,7 @@ CREATE TABLE events (
     building_id     VARCHAR(20) NOT NULL REFERENCES buildings(id) ON DELETE CASCADE,
     user_id         INTEGER REFERENCES users(id) ON DELETE SET NULL,
     user_name       VARCHAR(100) NOT NULL,  -- Denormalized, 'System' for auto-generated
-    type            event_type NOT NULL,
+    type            VARCHAR(50) NOT NULL,
     action          VARCHAR(100) NOT NULL,  -- German label
     details         TEXT,
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
