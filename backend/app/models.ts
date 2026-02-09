@@ -26,7 +26,6 @@ export interface Building {
   kanbanStatus: string;
   dueDate: string | null;
   inGwr: boolean;
-  gwrEgid: string;
   mapLat: number;
   mapLng: number;
   // Source comparison fields

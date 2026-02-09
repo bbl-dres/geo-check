@@ -496,7 +496,7 @@ function renderEgidRow(building, isEditMode) {
   if (!field) return '';
 
   const sapValue = field.sap || '';
-  const gwrValue = building.gwrEgid || field.gwr || '';
+  const gwrValue = field.gwr || '';
   const korrekturValue = field.korrektur || '';
 
   const displayValue = getFieldDisplayValue(field);
@@ -512,7 +512,7 @@ function renderEgidRow(building, isEditMode) {
         <td class="col-attr">${getDataLabel('egid')}</td>
         <td class="col-sap ref-locked">${sapValue}</td>
         <td class="col-gwr edit-cell">
-          <input type="text" class="edit-input" id="edit-gwrEgid" data-field="gwrEgid" value="${gwrValue}" placeholder="Gebäudenummer eingeben">
+          <input type="text" class="edit-input" id="edit-egid-gwr" data-field="egid" value="${gwrValue}" placeholder="Gebäudenummer eingeben">
           <button type="button" class="btn-gwr-lookup" id="btn-gwr-lookup" title="GWR-Daten abrufen">
             <i data-lucide="search" class="icon-sm"></i>
           </button>
@@ -540,7 +540,7 @@ function renderEgidRow(building, isEditMode) {
 function setupEditModeHandlers(building) {
   // GWR EGID lookup button
   const lookupBtn = document.getElementById('btn-gwr-lookup');
-  const egidInput = document.getElementById('edit-gwrEgid');
+  const egidInput = document.getElementById('edit-egid-gwr');
 
   if (lookupBtn && egidInput) {
     lookupBtn.addEventListener('click', async () => {
@@ -564,7 +564,7 @@ function setupEditModeHandlers(building) {
 
         // Populate GWR column values in the building object (temporary for edit mode)
         // These will be saved when user clicks "Speichern"
-        building.gwrEgid = egid;
+        if (building.egid) building.egid.gwr = egid;
 
         // Update field GWR values from API response
         const fieldsToUpdate = ['plz', 'ort', 'strasse', 'hausnummer', 'kanton', 'gemeinde', 'egrid', 'gkat', 'gklas', 'gbaup', 'garea'];
@@ -671,9 +671,8 @@ export function enterEditMode() {
       state.originalBuildingData[field] = JSON.parse(JSON.stringify(building[field]));
     }
   });
-  // Also store inGwr and gwrEgid
+  // Also store inGwr
   state.originalBuildingData.inGwr = building.inGwr;
-  state.originalBuildingData.gwrEgid = building.gwrEgid;
   state.originalBuildingData.mapLat = building.mapLat;
   state.originalBuildingData.mapLng = building.mapLng;
 
@@ -730,10 +729,10 @@ export function exitEditMode(save) {
       building.inGwr = val === 'true' ? true : val === 'false' ? false : null;
     }
 
-    // Save gwrEgid from the GWR column input
-    const gwrEgidInput = document.getElementById('edit-gwrEgid');
-    if (gwrEgidInput) {
-      building.gwrEgid = gwrEgidInput.value.trim();
+    // Save egid GWR value from the GWR column input
+    const egidGwrInput = document.getElementById('edit-egid-gwr');
+    if (egidGwrInput && building.egid) {
+      building.egid.gwr = egidGwrInput.value.trim();
     }
 
     // Save edited korrektur values
@@ -792,9 +791,8 @@ export function exitEditMode(save) {
           building[field] = state.originalBuildingData[field];
         }
       });
-      // Restore inGwr, gwrEgid, and map coordinates
+      // Restore inGwr and map coordinates
       building.inGwr = state.originalBuildingData.inGwr;
-      building.gwrEgid = state.originalBuildingData.gwrEgid;
       building.mapLat = state.originalBuildingData.mapLat;
       building.mapLng = state.originalBuildingData.mapLng;
     }

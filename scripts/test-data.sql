@@ -52,7 +52,7 @@ SELECT setval('users_id_seq', (SELECT MAX(id) FROM users));
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1080/2020/AA',
@@ -67,7 +67,6 @@ INSERT INTO buildings (
     '2026-01-27T14:30:00Z',
     'M. Keller',
     TRUE,
-    '302045678',
     47.5656,
     9.3744,
     'TG',
@@ -78,7 +77,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1080/2021/AB',
@@ -93,7 +92,6 @@ INSERT INTO buildings (
     '2026-01-23T09:15:00Z',
     'System',
     TRUE,
-    '1456789',
     47.6512,
     9.1756,
     'TG',
@@ -104,7 +102,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1090/3010/AC',
@@ -119,7 +117,6 @@ INSERT INTO buildings (
     '2026-01-28T11:45:00Z',
     'S. Brunner',
     TRUE,
-    '1892345',
     47.4237,
     9.368,
     'SG',
@@ -130,7 +127,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1100/4050/AD',
@@ -145,7 +142,6 @@ INSERT INTO buildings (
     '2026-01-30T08:00:00Z',
     'T. Weber',
     TRUE,
-    '3456789',
     47.3834,
     8.5397,
     'ZH',
@@ -156,7 +152,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1110/5020/AE',
@@ -171,7 +167,6 @@ INSERT INTO buildings (
     '2026-01-25T16:20:00Z',
     'T. Weber',
     TRUE,
-    '5678901',
     46.948,
     7.4474,
     'BE',
@@ -182,7 +177,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1120/6030/AF',
@@ -197,7 +192,6 @@ INSERT INTO buildings (
     '2026-01-20T10:00:00Z',
     'System',
     TRUE,
-    '9012999',
     46.8499,
     9.5329,
     'GR',
@@ -208,7 +202,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1100/4051/AG',
@@ -223,7 +217,6 @@ INSERT INTO buildings (
     '2026-01-26T13:10:00Z',
     'A. Meier',
     TRUE,
-    '2345678',
     47.4979,
     8.7246,
     'ZH',
@@ -234,7 +227,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1080/2022/AH',
@@ -249,7 +242,6 @@ INSERT INTO buildings (
     '2026-01-29T17:45:00Z',
     'M. Keller',
     TRUE,
-    '4567890',
     47.5533,
     8.8987,
     'TG',
@@ -260,7 +252,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1130/7010/AI',
@@ -275,7 +267,6 @@ INSERT INTO buildings (
     '2026-01-30T09:30:00Z',
     'S. Brunner',
     TRUE,
-    '6789012',
     47.548,
     7.5896,
     'BS',
@@ -286,7 +277,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1140/8020/AJ',
@@ -301,7 +292,6 @@ INSERT INTO buildings (
     '2026-01-28T15:00:00Z',
     'M. Keller',
     TRUE,
-    '7890123',
     47.0502,
     8.3093,
     'LU',
@@ -312,7 +302,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1150/9030/AK',
@@ -327,7 +317,6 @@ INSERT INTO buildings (
     '2026-01-16T08:30:00Z',
     'System',
     TRUE,
-    '8901234',
     46.2138,
     6.149,
     'GE',
@@ -338,7 +327,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1160/1040/AL',
@@ -353,7 +342,6 @@ INSERT INTO buildings (
     '2026-01-24T12:15:00Z',
     'S. Brunner',
     TRUE,
-    '9012345',
     46.005,
     8.952,
     'TI',
@@ -364,7 +352,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1170/2050/AM',
@@ -379,7 +367,6 @@ INSERT INTO buildings (
     '2026-01-29T10:00:00Z',
     'A. Meier',
     TRUE,
-    '1234567',
     47.3925,
     8.0444,
     'AG',
@@ -390,7 +377,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1180/3060/AN',
@@ -405,7 +392,6 @@ INSERT INTO buildings (
     '2026-01-28T16:30:00Z',
     'T. Weber',
     TRUE,
-    '2345678',
     47.2088,
     7.5378,
     'SO',
@@ -416,7 +402,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1190/4070/AO',
@@ -431,7 +417,6 @@ INSERT INTO buildings (
     '2026-01-27T09:15:00Z',
     'M. Keller',
     TRUE,
-    '3456789',
     46.758,
     7.629,
     'BE',
@@ -442,7 +427,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1200/5080/AP',
@@ -457,7 +442,6 @@ INSERT INTO buildings (
     '2026-01-30T11:00:00Z',
     'S. Brunner',
     TRUE,
-    '4567890',
     47.1368,
     7.2467,
     'BE',
@@ -468,7 +452,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1210/6090/AQ',
@@ -483,7 +467,6 @@ INSERT INTO buildings (
     '2026-01-22T14:45:00Z',
     'System',
     TRUE,
-    '5678901',
     47.6961,
     8.635,
     'SH',
@@ -494,7 +477,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1220/7100/AR',
@@ -509,7 +492,6 @@ INSERT INTO buildings (
     '2026-01-30T08:30:00Z',
     'M. Keller',
     TRUE,
-    '6789012',
     47.1724,
     8.5179,
     'ZG',
@@ -520,7 +502,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1230/8110/AS',
@@ -535,7 +517,6 @@ INSERT INTO buildings (
     '2026-01-29T15:20:00Z',
     'T. Weber',
     TRUE,
-    '7890124',
     46.992,
     6.931,
     'NE',
@@ -546,7 +527,7 @@ INSERT INTO buildings (
 INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     '1240/9120/AT',
@@ -561,7 +542,6 @@ INSERT INTO buildings (
     '2026-01-18T10:00:00Z',
     'System',
     TRUE,
-    '8901234',
     46.2333,
     7.3592,
     'VS',

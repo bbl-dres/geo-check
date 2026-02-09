@@ -89,7 +89,6 @@ CREATE TABLE buildings (
 
     -- GWR linking
     in_gwr          BOOLEAN NOT NULL DEFAULT FALSE,
-    gwr_egid        VARCHAR(9),  -- 1-9 digits, validated by CHECK
 
     -- Denormalized filter columns (derived from comparison_data for query performance)
     kanton          CHAR(2),  -- 2-letter canton code, indexed for filtering
@@ -115,7 +114,6 @@ CREATE TABLE buildings (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     -- Constraints
-    CONSTRAINT valid_egid CHECK (gwr_egid IS NULL OR gwr_egid ~ '^[1-9][0-9]{0,8}$'),
     CONSTRAINT valid_lat CHECK (map_lat IS NULL OR (map_lat >= 45.81 AND map_lat <= 47.81)),
     CONSTRAINT valid_lng CHECK (map_lng IS NULL OR (map_lng >= 5.95 AND map_lng <= 10.49)),
     CONSTRAINT valid_confidence CHECK (
@@ -132,7 +130,6 @@ CREATE INDEX idx_buildings_status ON buildings(kanban_status);
 CREATE INDEX idx_buildings_priority ON buildings(priority);
 CREATE INDEX idx_buildings_portfolio ON buildings(portfolio);
 CREATE INDEX idx_buildings_confidence ON buildings(CAST(confidence->>'total' AS int));
-CREATE INDEX idx_buildings_gwr_egid ON buildings(gwr_egid) WHERE gwr_egid IS NOT NULL;
 CREATE INDEX idx_buildings_coords ON buildings(map_lat, map_lng) WHERE map_lat IS NOT NULL;
 CREATE INDEX idx_buildings_kanton ON buildings(kanton) WHERE kanton IS NOT NULL;
 CREATE INDEX idx_buildings_due_date ON buildings(due_date) WHERE due_date IS NOT NULL;

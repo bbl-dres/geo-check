@@ -89,7 +89,6 @@ erDiagram
         string kanbanStatus "Workflow status"
         date dueDate "ISO date"
         boolean inGwr "GWR registered"
-        string gwrEgid "GWR building ID"
         float mapLat "Display latitude"
         float mapLng "Display longitude"
         string kanton "Canton code (denorm)"
@@ -225,7 +224,6 @@ The primary entity representing a federal building record.
 | `lastUpdate` | string | Yes | | | ISO 8601 timestamp |
 | `lastUpdateBy` | string | Yes | | | Last editor name or "System" |
 | `inGwr` | boolean | Yes | | | Whether building exists in GWR |
-| `gwrEgid` | string | No | | | GWR building identifier (EGID) for linking |
 | `mapLat` | number | Yes | | | WGS84 latitude for map display (derived) |
 | `mapLng` | number | Yes | | | WGS84 longitude for map display (derived) |
 | `images` | array | No | | | Attached building photographs |
@@ -286,7 +284,6 @@ The primary entity representing a federal building record.
   "lastUpdateBy": "M. Keller",
 
   "inGwr": true,
-  "gwrEgid": "302045678",
   "mapLat": 47.5656,
   "mapLng": 9.3744,
 
