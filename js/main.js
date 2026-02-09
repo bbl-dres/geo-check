@@ -787,10 +787,15 @@ function setupRunChecksButton() {
 
   if (runBtn) {
     runBtn.addEventListener('click', async () => {
-      // Get auth token (use session JWT if logged in, otherwise anon key)
+      // Get auth token – a valid session JWT is required for Edge Functions
       const supabase = getSupabase();
       const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token || SUPABASE_KEY;
+
+      if (!session?.access_token) {
+        alert('Bitte melden Sie sich an, um Prüfungen auszuführen.');
+        return;
+      }
+      const accessToken = session.access_token;
 
       // Disable button during run
       runBtn.disabled = true;
