@@ -56,12 +56,12 @@
         },
         {
           "id": "ID-007",
-          "name": "Mehrere GWR-Gebäude",
-          "description": "Ein SAP-Datensatz ist mit mehreren GWR-Gebäuden verknüpft (1:N)",
-          "attribute": "inGwr",
+          "name": "Mehrfache Gebäudenummern",
+          "description": "Prüft ob der Gebäudename oder die Hausnummer mehrere Nummern enthält (z.B. 12, 14, 16 oder 3-5)",
+          "attribute": ["name", "hausnummer"],
           "operator": "check",
           "severity": "info",
-          "message": "Mehrere GWR-Gebäude mit einem SAP-Objekt verknüpft"
+          "message": "Gebäudename oder Hausnummer enthält mehrere Nummern — möglicherweise mehrere Gebäude in einem SAP-Datensatz"
         }
       ]
     },

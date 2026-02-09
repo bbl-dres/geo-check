@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe: Konfidenz Gauge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* === Reset & base (matches geo-check tokens) === */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-family: 'Source Sans 3', system-ui, sans-serif;
+      --color-critical: #dc2626;
+      --color-warning: #d97706;
+      --color-success: #059669;
+      --text-primary: #1a202c;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --bg-surface: #ffffff;
+      --bg-muted: #f1f5f9;
+      --border-default: #e2e8f0;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 24px;
+      --radius-md: 6px;
+      --radius-sm: 4px;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: #f8fafc;
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      color: var(--text-primary);
+    }
+
+    /* === Wireframe container (simulates detail panel width) === */
+    .panel {
+      width: 400px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 12px 16px 0;
+    }
+
+    /* === Accordion header (matches existing) === */
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+
+    .accordion-header svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+    }
+
+    .accordion-content {
+      padding: 0 16px 16px;
+    }
+
+    /* ============================================
+       CURRENT DESIGN (for comparison)
+       ============================================ */
+    .confidence-container-old {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .confidence-total-old {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-critical);
+    }
+
+    .confidence-bars-old {
+      flex: 1;
+    }
+
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .bar-label {
+      width: 50px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-muted);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .bar-fill.critical { background: var(--color-critical); }
+    .bar-fill.warning { background: var(--color-warning); }
+    .bar-fill.ok { background: var(--color-success); }
+
+    .bar-value {
+      width: 35px;
+      font-size: 13px;
+      text-align: right;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================
+       NEW DESIGN: Gauge + Dimensions
+       ============================================ */
+
+    /* --- Gauge --- */
+    .gauge-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--space-lg);
+    }
+
+    .gauge-svg {
+      width: 180px;
+      height: 105px;
+    }
+
+    .gauge-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* --- Dimension rows --- */
+    .dimensions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .dim-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .dim-icon {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 10px;
+      color: white;
+      font-weight: 700;
+    }
+
+    .dim-icon.ok { background: var(--color-success); }
+    .dim-icon.warning { background: var(--color-warning); }
+    .dim-icon.critical { background: var(--color-critical); }
+    .dim-icon.empty { background: var(--text-muted); }
+
+    .dim-label {
+      font-size: 13px;
+      color: var(--text-primary);
+      width: 110px;
+      flex-shrink: 0;
+    }
+
+    /* --- Variant D: Minimal --- */
+    .minimal-score {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: var(--space-md);
+    }
+
+    .minimal-score-value {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .minimal-score-value.critical { color: var(--color-critical); }
+    .minimal-score-value.warning { color: var(--color-warning); }
+    .minimal-score-value.ok { color: var(--color-success); }
+
+    .minimal-score-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .minimal-track {
+      height: 6px;
+      background: var(--bg-muted);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: var(--space-lg);
+    }
+
+    .minimal-track-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .minimal-dims {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .minimal-dim {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 0;
+    }
+
+    .minimal-dim-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .minimal-dim-dot.critical { background: var(--color-critical); }
+    .minimal-dim-dot.warning { background: var(--color-warning); }
+    .minimal-dim-dot.ok { background: var(--color-success); }
+    .minimal-dim-dot.empty { background: var(--border-default); }
+
+    .minimal-dim-name {
+      font-size: 13px;
+      color: var(--text-primary);
+      flex: 1;
+    }
+
+    .minimal-dim-val {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .minimal-hints {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .minimal-hints span {
+      color: var(--text-secondary);
+    }
+
+    .dim-bar-track {
+      flex: 1;
+      height: 5px;
+      background: var(--bg-muted);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .dim-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .dim-bar-fill.ok { background: var(--color-success); }
+    .dim-bar-fill.warning { background: var(--color-warning); }
+    .dim-bar-fill.critical { background: var(--color-critical); }
+    .dim-bar-fill.empty { background: var(--text-muted); }
+
+    .dim-value {
+      font-size: 12px;
+      color: var(--text-secondary);
+      width: 30px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .dim-weight {
+      font-size: 10px;
+      color: var(--text-muted);
+      width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* --- Explanation chips --- */
+    .explanations {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .explanation-row {
+      display: flex;
+      align-items: start;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .explanation-icon {
+      flex-shrink: 0;
+      margin-top: 1px;
+      font-size: 12px;
+    }
+
+    .explanation-icon.negative { color: var(--color-critical); }
+    .explanation-icon.positive { color: var(--color-success); }
+    .explanation-icon.neutral { color: var(--color-warning); }
+
+    /* --- Separator --- */
+    .sep {
+      border: none;
+      border-top: 1px solid var(--border-default);
+      margin: var(--space-md) 0;
+    }
+
+    /* --- Legend --- */
+    .legend {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-lg);
+      margin-top: 2px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.critical { background: var(--color-critical); }
+    .legend-dot.warning { background: var(--color-warning); }
+    .legend-dot.ok { background: var(--color-success); }
+
+    /* --- Header label --- */
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==========================================
+       LEFT: Current design (for comparison)
+       ========================================== -->
+  <div class="panel">
+    <p class="panel-label">Aktuell (Ist-Zustand)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+      <div class="confidence-container-old">
+        <div class="confidence-total-old">49%</div>
+        <div class="confidence-bars-old">
+          <div class="bar-row">
+            <span class="bar-label">Georef</span>
+            <div class="bar-track"><div class="bar-fill ok" style="width:100%"></div></div>
+            <span class="bar-value">100%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">SAP</span>
+            <div class="bar-track"><div class="bar-fill critical" style="width:29%"></div></div>
+            <span class="bar-value">29%</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-label">GWR</span>
+            <div class="bar-track"><div class="bar-fill critical" style="width:24%"></div></div>
+            <span class="bar-value">24%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding: 12px 16px; background: #fffbeb; border-top: 1px solid var(--border-default);">
+      <p style="font-size: 12px; color: var(--color-warning); font-weight: 600; margin-bottom: 4px;">Probleme mit dem aktuellen Design:</p>
+      <ul style="font-size: 11px; color: var(--text-secondary); padding-left: 16px; line-height: 1.6;">
+        <li>SAP & GWR messen fast dasselbe</li>
+        <li>Benutzer versteht "Georef 100%" nicht</li>
+        <li>Keine Erklärung <em>warum</em> der Score niedrig ist</li>
+        <li>Alle Felder gleich gewichtet</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       RIGHT: New design (gauge + dimensions)
+       ========================================== -->
+  <div class="panel">
+    <p class="panel-label">Neu (Vorschlag)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+
+      <!-- Gauge chart -->
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 200 110">
+          <!-- Background arc segments: critical / warning / ok -->
+          <!-- Critical: 0% to 50% → 180° to 90° -->
+          <path d="M 15 100 A 85 85 0 0 1 100 15" fill="none" stroke="#fecaca" stroke-width="14" stroke-linecap="round"/>
+          <!-- Warning: 50% to 80% → 90° to 36° -->
+          <path d="M 100 15 A 85 85 0 0 1 168.4 48.2" fill="none" stroke="#fef3c7" stroke-width="14" stroke-linecap="round"/>
+          <!-- OK: 80% to 100% → 36° to 0° -->
+          <path d="M 168.4 48.2 A 85 85 0 0 1 185 100" fill="none" stroke="#d1fae5" stroke-width="14" stroke-linecap="round"/>
+
+          <!-- Filled arc (value = 49%) — goes from 180° to ~91.8° -->
+          <path d="M 15 100 A 85 85 0 0 1 101.5 15" fill="none" stroke="var(--color-critical)" stroke-width="14" stroke-linecap="round"/>
+
+          <!-- Needle tick mark -->
+          <line x1="101" y1="18" x2="101" y2="28" stroke="var(--text-primary)" stroke-width="2.5" stroke-linecap="round"/>
+
+          <!-- Center value -->
+          <text x="100" y="82" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="32" font-weight="700" fill="var(--color-critical)">49%</text>
+          <text x="100" y="100" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="11" fill="var(--text-muted)">Datenqualität</text>
+
+          <!-- Scale labels -->
+          <text x="10" y="110" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)">0</text>
+          <text x="96" y="8" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)">50</text>
+          <text x="184" y="110" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)" text-anchor="end">100</text>
+        </svg>
+
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot critical"></div>Kritisch</div>
+          <div class="legend-item"><div class="legend-dot warning"></div>Warnung</div>
+          <div class="legend-item"><div class="legend-dot ok"></div>OK</div>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- Dimension breakdown -->
+      <div class="dimensions">
+        <div class="dim-row">
+          <div class="dim-icon critical">!</div>
+          <span class="dim-label">Identifikation</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill critical" style="width: 0%"></div></div>
+          <span class="dim-value">0%</span>
+          <span class="dim-weight">30%</span>
+        </div>
+        <div class="dim-row">
+          <div class="dim-icon warning">!</div>
+          <span class="dim-label">Adresse</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill warning" style="width: 50%"></div></div>
+          <span class="dim-value">50%</span>
+          <span class="dim-weight">30%</span>
+        </div>
+        <div class="dim-row">
+          <div class="dim-icon ok">&#10003;</div>
+          <span class="dim-label">Lage</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill ok" style="width: 100%"></div></div>
+          <span class="dim-value">100%</span>
+          <span class="dim-weight">20%</span>
+        </div>
+        <div class="dim-row">
+          <div class="dim-icon warning">!</div>
+          <span class="dim-label">Klassifikation</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill warning" style="width: 60%"></div></div>
+          <span class="dim-value">60%</span>
+          <span class="dim-weight">10%</span>
+        </div>
+        <div class="dim-row">
+          <div class="dim-icon empty">?</div>
+          <span class="dim-label">Bemessungen</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill empty" style="width: 0%"></div></div>
+          <span class="dim-value">—</span>
+          <span class="dim-weight">10%</span>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- Explanations: why this score? -->
+      <div class="explanations">
+        <div class="explanation-row">
+          <span class="explanation-icon negative">&#x2716;</span>
+          <span>EGID fehlt — Gebäude kann nicht mit GWR verknüpft werden</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon negative">&#x2716;</span>
+          <span>Strasse weicht ab (SAP: «Hauptstr.» ↔ GWR: «Hauptstrasse»)</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon positive">&#10004;</span>
+          <span>Koordinaten stimmen überein (Abweichung &lt; 5m)</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon neutral">&#x25CF;</span>
+          <span>Bemessungen: Keine Daten in beiden Quellen</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       VARIANT C: Clean — no status icons
+       ========================================== -->
+  <div class="panel">
+    <p class="panel-label">Variante C (ohne Icons)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+
+      <!-- Gauge chart (same) -->
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 200 110">
+          <path d="M 15 100 A 85 85 0 0 1 100 15" fill="none" stroke="#fecaca" stroke-width="14" stroke-linecap="round"/>
+          <path d="M 100 15 A 85 85 0 0 1 168.4 48.2" fill="none" stroke="#fef3c7" stroke-width="14" stroke-linecap="round"/>
+          <path d="M 168.4 48.2 A 85 85 0 0 1 185 100" fill="none" stroke="#d1fae5" stroke-width="14" stroke-linecap="round"/>
+          <path d="M 15 100 A 85 85 0 0 1 101.5 15" fill="none" stroke="var(--color-critical)" stroke-width="14" stroke-linecap="round"/>
+          <line x1="101" y1="18" x2="101" y2="28" stroke="var(--text-primary)" stroke-width="2.5" stroke-linecap="round"/>
+          <text x="100" y="82" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="32" font-weight="700" fill="var(--color-critical)">49%</text>
+          <text x="100" y="100" text-anchor="middle" font-family="Source Sans 3, sans-serif" font-size="11" fill="var(--text-muted)">Datenqualität</text>
+          <text x="10" y="110" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)">0</text>
+          <text x="96" y="8" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)">50</text>
+          <text x="184" y="110" font-family="Source Sans 3, sans-serif" font-size="9" fill="var(--text-muted)" text-anchor="end">100</text>
+        </svg>
+
+        <div class="legend">
+          <div class="legend-item"><div class="legend-dot critical"></div>Kritisch</div>
+          <div class="legend-item"><div class="legend-dot warning"></div>Warnung</div>
+          <div class="legend-item"><div class="legend-dot ok"></div>OK</div>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- Dimension breakdown — no icons, color only on bar -->
+      <div class="dimensions">
+        <div class="dim-row">
+          <span class="dim-label">Identifikation</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill critical" style="width: 0%"></div></div>
+          <span class="dim-value">0%</span>
+          <span class="dim-weight">30%</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-label">Adresse</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill warning" style="width: 50%"></div></div>
+          <span class="dim-value">50%</span>
+          <span class="dim-weight">30%</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-label">Lage</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill ok" style="width: 100%"></div></div>
+          <span class="dim-value">100%</span>
+          <span class="dim-weight">20%</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-label">Klassifikation</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill warning" style="width: 60%"></div></div>
+          <span class="dim-value">60%</span>
+          <span class="dim-weight">10%</span>
+        </div>
+        <div class="dim-row">
+          <span class="dim-label">Bemessungen</span>
+          <div class="dim-bar-track"><div class="dim-bar-fill empty" style="width: 0%"></div></div>
+          <span class="dim-value">—</span>
+          <span class="dim-weight">10%</span>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- Explanations -->
+      <div class="explanations">
+        <div class="explanation-row">
+          <span class="explanation-icon negative">&#x2716;</span>
+          <span>EGID fehlt — Gebäude kann nicht mit GWR verknüpft werden</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon negative">&#x2716;</span>
+          <span>Strasse weicht ab (SAP: «Hauptstr.» ↔ GWR: «Hauptstrasse»)</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon positive">&#10004;</span>
+          <span>Koordinaten stimmen überein (Abweichung &lt; 5m)</span>
+        </div>
+        <div class="explanation-row">
+          <span class="explanation-icon neutral">&#x25CF;</span>
+          <span>Bemessungen: Keine Daten in beiden Quellen</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==========================================
+       VARIANT D: Minimal — no gauge, no icons
+       ========================================== -->
+  <div class="panel">
+    <p class="panel-label">Variante D (Minimal)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+
+      <!-- Big number + single bar -->
+      <div class="minimal-score">
+        <div class="minimal-score-value critical">49%</div>
+        <div class="minimal-score-label">Datenqualität</div>
+      </div>
+      <div class="minimal-track">
+        <div class="minimal-track-fill" style="width: 49%; background: var(--color-critical);"></div>
+      </div>
+
+      <!-- Dimension list — just dots, names, values -->
+      <div class="minimal-dims">
+        <div class="minimal-dim">
+          <div class="minimal-dim-dot critical"></div>
+          <span class="minimal-dim-name">Identifikation</span>
+          <span class="minimal-dim-val">0%</span>
+        </div>
+        <div class="minimal-dim">
+          <div class="minimal-dim-dot warning"></div>
+          <span class="minimal-dim-name">Adresse</span>
+          <span class="minimal-dim-val">50%</span>
+        </div>
+        <div class="minimal-dim">
+          <div class="minimal-dim-dot ok"></div>
+          <span class="minimal-dim-name">Lage</span>
+          <span class="minimal-dim-val">100%</span>
+        </div>
+        <div class="minimal-dim">
+          <div class="minimal-dim-dot warning"></div>
+          <span class="minimal-dim-name">Klassifikation</span>
+          <span class="minimal-dim-val">60%</span>
+        </div>
+        <div class="minimal-dim">
+          <div class="minimal-dim-dot empty"></div>
+          <span class="minimal-dim-name">Bemessungen</span>
+          <span class="minimal-dim-val">—</span>
+        </div>
+      </div>
+
+      <hr class="sep">
+
+      <!-- Just plain text hints -->
+      <div class="minimal-hints">
+        <span>EGID fehlt</span> · Strasse weicht ab · <span>Koordinaten OK</span>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>
