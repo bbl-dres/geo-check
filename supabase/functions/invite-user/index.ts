@@ -77,7 +77,7 @@ serve(async (req) => {
 
     const { data, error } = await adminClient.auth.admin.inviteUserByEmail(email, {
       data: { role },
-      redirectTo: `${req.headers.get('origin') || Deno.env.get('SITE_URL')}`
+      redirectTo: Deno.env.get('SITE_URL')!
     })
 
     if (error) {

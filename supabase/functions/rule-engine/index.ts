@@ -73,13 +73,13 @@ app.post("/check/:id{.+}", async (c) => {
     const result = await checkBuilding(buildingId);
 
     if (!result) {
-      return c.json({ error: `Gebäude '${buildingId}' nicht gefunden` }, 404);
+      return c.json({ error: "Gebäude nicht gefunden" }, 404);
     }
 
     return c.json(result);
   } catch (err) {
     console.error("check failed:", err);
-    return c.json({ error: true, message: (err as Error).message }, 500);
+    return c.json({ error: true, message: "Interner Serverfehler bei der Prüfung" }, 500);
   }
 });
 
@@ -121,7 +121,7 @@ app.post("/check-all", async (c) => {
     return c.json(summary);
   } catch (err) {
     console.error("check-all failed:", err);
-    return c.json({ error: true, message: (err as Error).message }, 500);
+    return c.json({ error: true, message: "Interner Serverfehler bei der Massenprüfung" }, 500);
   }
 });
 

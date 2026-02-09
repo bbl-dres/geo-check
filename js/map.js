@@ -465,8 +465,8 @@ export function getOrCreateEditMarker(buildingId) {
   const el = document.createElement('div');
   el.className = 'mapbox-marker-wrapper';
   el.innerHTML = `<div class="custom-marker-container">
-                    <div class="custom-marker ${confidenceClass}" data-id="${building.id}"></div>
-                    <span class="marker-label">${building.id}</span>
+                    <div class="custom-marker ${confidenceClass}" data-id="${escapeHtml(building.id)}"></div>
+                    <span class="marker-label">${escapeHtml(building.id)}</span>
                   </div>`;
 
   editMarker = new mapboxgl.Marker({ element: el, anchor: 'center' })
@@ -1051,7 +1051,7 @@ export function setupLayerIdentify() {
                 .setHTML(`<div class="identify-popup">
                   <strong>${config.name}</strong>
                   <div class="identify-content">
-                    <p>Feature gefunden (ID: ${feature.id || feature.featureId || 'N/A'})</p>
+                    <p>Feature gefunden (ID: ${escapeHtml(String(feature.id || feature.featureId || 'N/A'))})</p>
                   </div>
                 </div>`)
                 .addTo(map);

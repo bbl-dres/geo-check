@@ -397,20 +397,20 @@ export function renderTableView(preFiltered = null) {
       const isChecked = selectedIds.has(building.id);
 
       return `
-        <tr class="table-row ${state.selectedBuildingId === building.id ? 'selected' : ''}" data-id="${building.id}">
+        <tr class="table-row ${state.selectedBuildingId === building.id ? 'selected' : ''}" data-id="${escapeHtml(building.id)}">
           <td class="col-checkbox">
-            <input type="checkbox" class="table-row-checkbox" data-id="${building.id}" ${isChecked ? 'checked' : ''}>
+            <input type="checkbox" class="table-row-checkbox" data-id="${escapeHtml(building.id)}" ${isChecked ? 'checked' : ''}>
           </td>
           <td data-col="priority">${getPriorityLabel(building.priority)}</td>
           <td data-col="id">
             <div class="table-cell-id">
               <span class="priority-indicator ${confidenceClass}"></span>
-              <span class="building-id">${building.id}</span>
+              <span class="building-id">${escapeHtml(building.id)}</span>
             </div>
           </td>
           <td data-col="name">${escapeHtml(building.name || '')}</td>
-          <td data-col="kanton">${getFieldDisplayValue(building.kanton)}</td>
-          <td data-col="portfolio">${building.portfolio || '<span class="text-muted">—</span>'}</td>
+          <td data-col="kanton">${escapeHtml(getFieldDisplayValue(building.kanton))}</td>
+          <td data-col="portfolio">${escapeHtml(building.portfolio || '—')}</td>
           <td data-col="status">
             <span class="status-badge status-${building.kanbanStatus || 'backlog'}">${statusLabel}</span>
           </td>

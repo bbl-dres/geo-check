@@ -75,14 +75,14 @@ export function renderKanbanBoard(preFiltered = null) {
         : `<span class="placeholder-badge">Fällig...</span>`;
 
       return `
-        <div class="kanban-card" draggable="true" data-building-id="${building.id}">
+        <div class="kanban-card" draggable="true" data-building-id="${escapeHtml(building.id)}">
           <div class="kanban-card-header">
-            <span class="kanban-card-id">${building.id}</span>
+            <span class="kanban-card-id">${escapeHtml(building.id)}</span>
             ${priorityIcon}
           </div>
           <div class="kanban-card-title">${escapeHtml(building.name)}</div>
           <div class="kanban-card-meta">
-            <span class="kanban-card-location">${getFieldDisplayValue(building.kanton)}</span>
+            <span class="kanban-card-location">${escapeHtml(getFieldDisplayValue(building.kanton))}</span>
             <span class="kanban-card-confidence ${confidenceClass}">${confTotal != null ? confTotal + '%' : '–'}</span>
           </div>
           <div class="kanban-card-footer">

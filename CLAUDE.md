@@ -1,341 +1,132 @@
 # CLAUDE.md - Geo-Check Codebase Guide
 
-This document provides comprehensive information for developers and AI assistants working with the geo-check codebase.
-
 ## Project Overview
 
-**Geo-Check** is a Swiss federal building data quality management tool. It helps validate and correct building records by comparing data from multiple sources (GEOREF, SAP RE-FX, GWR).
+**Geo-Check** is a Swiss federal building data quality tool (BBL). It validates building records by comparing GEOREF, SAP RE-FX, and GWR data sources, computing confidence scores, and tracking corrections.
 
-**Key Users:** Project managers tracking data quality initiative progress
+**Language:** German UI, Swiss locale (`de-CH`). **License:** MIT.
 
-**Language:** German UI, Swiss locale formatting (`de-CH`)
+## Architecture
 
----
+Three layers:
 
-## Project Structure
+1. **Frontend SPA** (`index.html` + `js/`) — Vanilla ES6 modules, no build step. Talks to Supabase directly for auth/data.
+2. **Supabase** — PostgreSQL with RLS, Auth, Storage (`building-images` bucket), Realtime, Edge Functions.
+3. **Backend API** (`backend/`) — Deno + Hono rule engine. Runs validation rules against buildings and writes results to Supabase.
+
+### Key Directories
 
 ```
-geo-check/
-├── index.html              # Single-page application (all HTML)
-├── css/
-│   ├── tokens.css          # Design system tokens
-│   └── styles.css          # Component styles (~4,800 lines)
-├── js/
-│   ├── main.js             # App initialization & orchestration
-│   ├── state.js            # Global state & filtering
-│   ├── map.js              # Mapbox GL integration
-│   ├── detail-panel.js     # Building detail sidebar
-│   ├── data-table.js       # Table view with pagination
-│   ├── kanban.js           # Kanban board & drag-drop
-│   ├── statistics.js       # Stats & ApexCharts
-│   └── search.js           # Swisstopo location search
-├── data/
-│   ├── buildings.json      # Building records
-│   ├── users.json          # Team members
-│   ├── events.json         # Activity log
-│   ├── comments.json       # Building comments
-│   ├── errors.json         # Validation errors
-│   └── rules.json          # Validation rules
-└── assets/                 # SVG logos
+js/                     # Frontend ES6 modules (12 files)
+  main.js               # App init, tab switching, orchestration
+  state.js              # Centralized state, filters, escapeHtml()
+  map.js                # Mapbox GL JS integration
+  detail-panel.js       # Building detail sidebar (edit mode, data comparison)
+  data-table.js         # Paginated table view
+  kanban.js             # Drag-drop kanban board
+  statistics.js         # ApexCharts dashboards
+  auth.js               # Supabase Auth (email+password, invite flow)
+  supabase.js           # Supabase client, all DB queries
+  search.js             # Swisstopo location search
+  icons.js              # Batched Lucide icon refresh
+  xlsx-loader.js        # On-demand SheetJS loading for export
+backend/                # Deno + Hono rule engine API (TypeScript)
+  app/main.ts           # Server entry point (port 8787)
+  app/config.ts         # Environment config (SUPABASE_URL, SERVICE_ROLE_KEY)
+  app/db.ts             # Supabase client for backend
+  app/engine/           # Rule registry, runner, confidence scoring
+  app/rules/            # Rule definitions (address, geometry, identification)
+  app/routes/           # HTTP routes (health, check, rules)
+supabase/
+  config.toml           # Edge function config (verify_jwt = false)
+  functions/invite-user/ # Admin-only user invitation (service role key)
+  functions/rule-engine/ # Edge function mirror of backend rule engine
+docs/                   # DATABASE.md (schema), EDGE-FUNCTIONS.md, RULES.md
+scripts/Upsert.fmw      # FME workspace for bulk data upsert
+data/                   # Demo/fallback JSON files (not used when Supabase is connected)
 ```
 
----
-
-## Technology Stack
-
-- **Vanilla JavaScript (ES6 Modules)** - No frameworks
-- **Mapbox GL JS v3.3.0** - Interactive maps
-- **ApexCharts** - Data visualization (CDN)
-- **Lucide Icons** - Icon system via `data-lucide` attributes
-- **Source Sans 3** - Google Fonts typography
-
-**No build pipeline required** - Static file serving only
-
----
-
-## Running the Project
+## Running
 
 ```bash
-# Python
-python -m http.server 8000
+# Frontend — any static server
+npx serve                    # or: python -m http.server 8000
 
-# Node.js
-npx serve
+# Backend rule engine
+cd backend && deno task dev  # watch mode, port 8787
+
+# Edge functions (requires Supabase CLI)
+supabase functions serve
 ```
 
-Open http://localhost:8000
+**Required env vars for backend:** `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (no fallback — app throws if missing).
 
----
+## Tech Stack
 
-## Architecture Patterns
+| Layer    | Technology                                |
+|----------|-------------------------------------------|
+| Frontend | Vanilla JS (ES6 modules), no framework    |
+| Maps     | Mapbox GL JS v3.3.0                       |
+| Charts   | ApexCharts v5.3.6 (CDN)                   |
+| Icons    | Lucide v0.563.0 (CDN)                     |
+| Export   | SheetJS/XLSX v0.18.5 (CDN, lazy-loaded)   |
+| Auth/DB  | Supabase JS v2.95.3 (CDN)                 |
+| Backend  | Deno + Hono v4.6.0 (TypeScript)           |
+| Database | Supabase PostgreSQL with RLS              |
+| CI/CD    | GitHub Actions (edge function deploy)     |
+| ETL      | FME (scripts/Upsert.fmw)                 |
 
-### State Management (`js/state.js`)
+## Data Model
 
-Centralized state object:
-```javascript
-export const state = {
-  selectedBuildingId: null,
-  activeFilters: { high, medium, low, myTasks },
-  filterKanton: [],
-  filterConfidence: [],
-  filterPortfolio: [],
-  filterStatus: [],
-  filterAssignee: [],
-  currentTab: 'karte',
-  editMode: false
-};
-```
+**Three-Value Pattern (TVP):** Every building field stores `{sap, gwr, korrektur, match}` as JSONB. Canonical value: `korrektur > gwr > sap`. See `docs/DATABASE.md` for full schema.
 
-**Key exports:**
-- `buildings[]` - Main dataset
-- `getFilteredBuildings()` - Apply all filters
-- `updateURL()` / `parseURL()` - URL state sync
-- `setupMultiSelectFilter()` - Dropdown filter setup
+**Building object** has ~50 TVP fields across: address, identifiers (egid, egrid), classification (gkat, gklas), measurements (garea, parcel_area), and coordinates.
 
-### Module Communication
+**Confidence scoring** (0-100%) weighs 5 dimensions: Identifikation 30%, Adresse 30%, Lage 20%, Klassifikation 10%, Bemessungen 10%.
 
-Modules communicate via callbacks set in `main.js`:
+## State Management (`js/state.js`)
+
+Centralized `state` object with filters. Modules communicate via callbacks set in `main.js`:
 ```javascript
 setKanbanCallbacks({ onSelectBuilding, onDataChange });
 setDetailPanelCallbacks({ onStatusChange, onAssigneeChange });
-setTableCallbacks({ onSelectBuilding });
 ```
 
-### Tab Switching & Scroll Behavior
+**URL sync:** All filters serialize to URL params (`?tab=karte&id=...&kanton=TG,ZH`). `pushState()` on change, `parseURL()` on load.
 
-**Map tab (`karte`):** App mode - no page scroll, map fills viewport
+## Security Conventions
 
-**Other tabs:** Page scroll mode - body scrolls naturally
+- **HTML escaping:** Always use `escapeHtml()` (exported from `state.js`) when inserting DB values into innerHTML/template literals. This applies to data attributes too.
+- **CSP:** Meta tag in `index.html`. `unsafe-eval` kept for ApexCharts; `unsafe-inline` in `style-src` only (Mapbox needs it).
+- **SRI:** All CDN scripts have `integrity` + `crossorigin="anonymous"` attributes — including dynamically loaded scripts (`xlsx-loader.js`).
+- **Backend errors:** Never expose raw `Error.message` in API responses. Log details server-side, return generic German messages to clients.
+- **Supabase keys:** Anon key is safe for client. Service role key is backend-only (no empty fallback).
 
-```javascript
-// Toggled in switchTab()
-const pageScrollTabs = ['statistik', 'aufgaben', 'settings'];
-document.body.classList.toggle('page-scroll-tab', pageScrollTabs.includes(tabId));
-```
+## CSS Design Tokens (`css/tokens.css`)
 
----
+Key colors: `--swiss-red: #d8232a`, `--federal-blue: #1a365d`, `--color-critical/warning/success` for confidence levels. Source colors: `--type-geo` (indigo), `--type-sap` (cyan), `--type-gwr` (green).
 
-## CSS Design System
+Responsive breakpoints at bottom of `styles.css`: 1440px, 1280px, 1024px, **900px** (key: kanban stacks, panel repositions), 600px.
 
-### Design Tokens (`css/tokens.css`)
+## Common Patterns
 
-**Colors:**
-```css
---swiss-red: #d8232a;
---federal-blue: #1a365d;
---color-critical: #dc2626;    /* < 50% confidence */
---color-warning: #d97706;     /* 50-80% confidence */
---color-success: #059669;     /* >= 80% confidence */
-```
+- **Lucide icons:** Call `scheduleLucideRefresh()` (from `icons.js`) after any DOM update that adds `data-lucide` elements. It batches via `requestAnimationFrame`.
+- **Tab switching:** Map tab = no body scroll; other tabs (`statistik`, `aufgaben`, `settings`) = page scroll via `.page-scroll-tab` class.
+- **Chart filters:** `chartFilters` state is isolated from main filters. Click chart segments to filter, "Zurücksetzen" to clear.
+- **Supabase SDK:** Loaded via CDN `<script>`, not import. Access via `window.supabase` in `supabase.js`.
 
-**Data Source Colors:**
-```css
---type-geo: #6366f1;      /* GEOREF */
---type-sap: #0891b2;      /* SAP */
---type-gwr: #059669;      /* GWR */
---type-address: #7c3aed;  /* Address */
-```
+## Deployment
 
-**Typography:**
-```css
---font-base: 14px;    /* Body text (WCAG AA minimum) */
---font-sm: 13px;      /* Labels, badges */
---font-lg: 17px;      /* Section titles */
---font-2xl: 28px;     /* Stat values */
-```
-
-**Spacing (4px base):**
-```css
---space-sm: 8px;
---space-md: 12px;
---space-lg: 16px;
---space-xl: 24px;
-```
-
-### Responsive Breakpoints
-
-| Breakpoint | Behavior |
-|------------|----------|
-| ≤1440px | Stat cards: 3 columns |
-| ≤1280px | Detail panel: 380px width |
-| ≤1024px | Charts: single column, filters wrap |
-| ≤900px | **Kanban stacks vertically**, detail panel below content |
-| ≤600px | Detail panel: 60vh height, stat cards: 1 column |
-
-### Key CSS Classes
-
-```css
-.page-scroll-tab          /* Body class for page-level scrolling */
-.btn-primary/.btn-ghost   /* Button variants */
-.filter-chip.active       /* Active filter state */
-.kanban-card.selected     /* Selected card highlight */
-.detail-panel.visible     /* Show detail sidebar */
-```
-
----
-
-## Data Structures
-
-### Building Object
-
-```javascript
-{
-  id: "1080/2020/AA",           // SAP ID format
-  name: "Romanshorn, Friedrichshafnerstrasse",
-  lat: 47.5656,
-  lng: 9.3744,
-  kanton: "TG",                 // 2-letter canton code
-  portfolio: "Büro",            // Büro, Wohnen, Öffentlich, Industrie, Bildung
-  priority: "medium",           // low, medium, high
-  confidence: {
-    total: 67,                  // 0-100 percentage
-    georef: 67,
-    sap: 100,
-    gwr: 100
-  },
-  assignee: "M. Keller",        // null if unassigned
-  kanbanStatus: "inprogress",   // backlog, inprogress, clarification, done
-  dueDate: "2026-02-15",        // ISO date or null
-  data: {                       // Source comparison
-    address: { sap: "...", gwr: "...", match: true },
-    plz: { sap: "8590", gwr: "8590", match: true }
-  }
-}
-```
-
----
-
-## Filter System
-
-### Priority Filters (Quick Access)
-- `high`, `medium`, `low` - Priority levels
-- `my-tasks` - Current user's assignments (M. Keller)
-
-### Multi-Select Filters
-- **Kanton:** TG, ZH, BE, etc.
-- **Confidence:** critical (<50%), warning (50-80%), ok (>=80%)
-- **Portfolio:** Büro, Wohnen, etc.
-- **Status:** backlog, inprogress, clarification, done
-- **Assignee:** Team members or "Nicht zugewiesen" (empty string)
-
-### Chart Filters (Isolated)
-Statistics charts have their own filter state (`chartFilters`) separate from main filters. Click chart segments to filter, use "Zurücksetzen" to clear.
-
----
-
-## URL State Synchronization
-
-All filters are serialized to URL parameters:
-```
-?tab=karte&id=1080/2020/AA&filters=high&kanton=TG,ZH&confidence=critical
-```
-
-- `pushState()` on changes - supports browser back/forward
-- `parseURL()` on load - restores full state
-
----
-
-## Key Implementation Details
-
-### Detail Panel
-- Resizable via drag handle
-- Accordion sections (some open by default)
-- Edit mode enables marker dragging
-- Comments submitted via form
-
-### Kanban Board
-- 4 columns: Backlog → In Bearbeitung → Abklärung → Erledigt
-- Drag-and-drop changes `kanbanStatus`
-- Updates `lastUpdate` and `lastUpdateBy` on drop
-
-### ApexCharts Integration
-6 charts with cross-filtering:
-1. Confidence Distribution (bar)
-2. Status Distribution (donut)
-3. Errors by Source (horizontal bar)
-4. Due Dates (bar)
-5. Tasks per Assignee (horizontal bar)
-6. Priority Distribution (donut)
-
-Colors match CSS tokens:
-```javascript
-chartColors.confidence.critical = '#dc2626'  // --color-critical
-chartColors.status.done = '#059669'          // --color-success
-```
-
----
-
-## Naming Conventions
-
-### CSS Classes
-```
-.component-name           /* Root element */
-.component-name-child     /* Child element */
-.component-name.modifier  /* State modifier */
-```
-
-### Data Attributes
-```html
-data-tab="karte"                    <!-- Tab navigation -->
-data-filter="high"                  <!-- Filter type -->
-data-building-id="1080/2020/AA"     <!-- Record reference -->
-data-lucide="search"                <!-- Icon name -->
-```
-
-### German Labels
-- Tabs: Karte, Aufgaben, Statistik, Einstellungen & Export
-- Status: Backlog, In Bearbeitung, Abklärung, Erledigt
-- Actions: Speichern, Abbrechen, Suchen
-- Dates: Swiss format `dd.mm.yyyy`
-
----
-
-## Common Tasks
-
-### Adding a New Filter
-1. Add state property in `state.js`
-2. Add filter logic in `getFilteredBuildings()`
-3. Add HTML for dropdown in `index.html`
-4. Call `setupMultiSelectFilter()` in `main.js`
-5. Add URL serialization in `updateURL()` / `parseURL()`
-
-### Adding a New Chart
-1. Add chart instance in `statistics.js` charts object
-2. Create render function `renderNewChart(filtered)`
-3. Call from `updateStatistik()`
-4. Add container in `index.html`
-5. Optionally add chart filter in `chartFilters`
-
-### Modifying Breakpoints
-Edit media queries at bottom of `css/styles.css`:
-- ≤1440px, ≤1280px, ≤1024px, ≤900px, ≤600px
-
----
-
-## Performance Notes
-
-- **Lucide icons:** Call `lucide.createIcons()` after DOM updates
-- **Search:** Debounced 300ms
-- **Table:** Paginated (100/500/1000 rows)
-- **Map resize:** Delayed 50ms during panel drag
-- **Filters:** Run on every change, keep filter logic efficient
-
----
-
-## External APIs
-
-- **Swisstopo Search:** `https://api3.geo.admin.ch/rest/services/api/SearchServer` (no auth)
-- **Mapbox:** Requires access token in `map.js`
-- **WMS Layers:** ÖREB cadastral, GWR building status from swisstopo
-
----
+- **Frontend:** GitHub Pages at `https://bbl-dres.github.io/geo-check/`
+- **Edge functions:** Auto-deployed on push to `main` when `supabase/functions/**` changes (`.github/workflows/deploy-edge-functions.yml`)
+- **Backend API:** Manual deployment (Deno runtime)
 
 ## Testing
 
-No test framework configured. Manual testing:
-1. Start local server
-2. Test all tabs and filters
-3. Test responsive breakpoints (900px is key)
-4. Test URL state persistence (refresh, back/forward)
-5. Test kanban drag-drop
-6. Test chart click filtering
+No automated tests. Manual testing checklist:
+1. All tabs and filters work
+2. URL state persists across refresh/back/forward
+3. Kanban drag-drop updates status
+4. Chart click filtering
+5. Responsive layout at 900px breakpoint
+6. Detail panel edit mode + save

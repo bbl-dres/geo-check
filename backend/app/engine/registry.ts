@@ -64,7 +64,7 @@ export async function runAllRules(
       console.error(`Rule ${rule.id} failed for building ${building.id}:`, err);
       errors.push({
         checkId: rule.id,
-        description: `Regelprüfung fehlgeschlagen: ${(err as Error).message}`,
+        description: "Regelprüfung fehlgeschlagen",
         level: "warning",
         field: rule.field,
       });
