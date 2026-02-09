@@ -1,6 +1,6 @@
 # DATABASE.md - Geo-Check Data Model
 
-This document defines the conceptual data model for the Geo-Check application. It serves as the authoritative reference for data structures, field definitions, and code lists.
+> **This document is the authoritative source of truth for the Geo-Check data model.** All data structures, field definitions, PostgreSQL column types, and code lists are defined here. The SQL implementation in `DATABASE.sql` must conform to this specification. When discrepancies exist, this document takes precedence.
 
 ---
 
@@ -43,22 +43,29 @@ flowchart TB
 | **Cadastre** | Official parcel and building geometry data | No (reference) |
 | **Value** | Canonical verified value maintained by BBL | Yes |
 
-### Three-Value Pattern
+### Three-Value Pattern (TVP)
 
-Each comparable field follows this structure:
+Each comparable field is stored as **its own JSONB column** in PostgreSQL. Every TVP column contains the same four keys:
 
 ```json
 {
-  "fieldName": {
-    "sap": "...",       // SAP RE-FX value (read-only reference)
-    "gwr": "...",       // GWR value (read-only reference)
-    "korrektur": "...", // Manual correction value (editable, empty if no correction)
-    "match": false      // Whether SAP and GWR values match
-  }
+  "sap": "...",       // SAP RE-FX value (read-only reference)
+  "gwr": "...",       // GWR value (read-only reference)
+  "korrektur": "...", // Manual correction value (editable, empty if no correction)
+  "match": false      // Whether SAP and GWR values match
 }
 ```
 
-**Note:** The `korrektur` field is empty by default. When a user verifies and corrects a value, the correction is stored in `korrektur`. The canonical value is determined by: `korrektur` if set, otherwise the GWR value (preferred source).
+**PostgreSQL storage:** Each TVP field (e.g. `strasse`, `plz`, `egid`) maps to an individual `JSONB` column in the `buildings` table. This allows direct column-level queries, indexes, and Supabase API filtering without JSONB path operators.
+
+**Example query:**
+```sql
+SELECT id, name, strasse->>'gwr' AS strasse_gwr
+FROM buildings
+WHERE kanton->>'sap' = 'TG' AND (plz->>'match')::boolean = false;
+```
+
+**Canonical value derivation:** `korrektur` if set, otherwise `gwr` (preferred source), otherwise `sap`.
 
 ---
 
@@ -89,10 +96,31 @@ erDiagram
         string kanbanStatus "Workflow status"
         date dueDate "ISO date"
         boolean inGwr "GWR registered"
-        float mapLat "Display latitude"
-        float mapLng "Display longitude"
-        string kanton "Canton code (denorm)"
-        jsonb comparison_data "Three-Value Pattern fields"
+        jsonb country "TVP Address"
+        jsonb kanton "TVP Address"
+        jsonb gemeinde "TVP Address"
+        jsonb bfsNr "TVP Address"
+        jsonb plz "TVP Address"
+        jsonb ort "TVP Address"
+        jsonb strasse "TVP Address"
+        jsonb hausnummer "TVP Address"
+        jsonb zusatz "TVP Address"
+        jsonb egid "TVP Identifier"
+        jsonb egrid "TVP Identifier"
+        jsonb lat "TVP Identifier"
+        jsonb lng "TVP Identifier"
+        jsonb gkat "TVP Classification"
+        jsonb gklas "TVP Classification"
+        jsonb gstat "TVP Classification"
+        jsonb gbaup "TVP Classification"
+        jsonb gbauj "TVP Classification"
+        jsonb gastw "TVP Measurement"
+        jsonb ganzwhg "TVP Measurement"
+        jsonb garea "TVP Measurement"
+        jsonb parcelArea "TVP Measurement"
+        string kantonCode "Canton code (derived)"
+        float mapLat "Display latitude (derived)"
+        float mapLng "Display longitude (derived)"
         jsonb images "Attached photos"
     }
 
@@ -210,54 +238,60 @@ The primary entity representing a federal building record.
 
 ### 2.1 Attributes
 
-| Attribute | Type | Required | SAP | GWR | Description |
-|-----------|------|----------|:---:|:---:|-------------|
-| **Top-Level (Metadata)** |||||
-| `id` | string | Yes | X | | SAP RE-FX property ID (format: `XXXX/YYYY/ZZ`) |
-| `name` | string | Yes | X | | SAP Name (City, Street) from RE-FX |
-| `portfolio` | string | Yes | X | | Building type from SAP RE-FX: Büro, Wohnen, Öffentlich, Industrie, Bildung |
-| `priority` | string | Yes | | | Task priority: low, medium, high |
-| `confidence` | object | Yes | | | Confidence scores per source |
-| `assignee` | string | No | | | Assigned team member name (null if unassigned) |
-| `kanbanStatus` | string | Yes | | | Workflow status |
-| `dueDate` | string | No | | | ISO 8601 date |
-| `lastUpdate` | string | Yes | | | ISO 8601 timestamp |
-| `lastUpdateBy` | string | Yes | | | Last editor name or "System" |
-| `inGwr` | boolean | Yes | | | Whether building exists in GWR |
-| `mapLat` | number | Yes | | | WGS84 latitude for map display (derived) |
-| `mapLng` | number | Yes | | | WGS84 longitude for map display (derived) |
-| `images` | array | No | | | Attached building photographs |
-| **Address Fields** (Three-Value Pattern) |||||
-| `country` | TVP | Yes | X | | ISO country code (CH) |
-| `kanton` | TVP | Yes | X | | 2-letter canton code (derived from GGDENR) |
-| `gemeinde` | TVP | Yes | X | GGDENR | Municipality name (from BFS number) |
-| `bfsNr` | TVP | No | X | GGDENR | BFS municipality number (4-digit) |
-| `plz` | TVP | Yes | X | DPLZ4 | 4-digit postal code (Postleitzahl) |
-| `ort` | TVP | Yes | X | DPLZ4+DPLZZ | Postal locality (derived) |
-| `strasse` | TVP | Yes | X | STRNAME | Street name (Strassenbezeichnung) |
-| `hausnummer` | TVP | No | X | DEINR | House number (Eingangsnummer) |
-| `zusatz` | TVP | No | X | DPLZZ | Address supplement |
-| **Building Identifiers** (Three-Value Pattern) |||||
-| `egid` | TVP | No | X | EGID | GWR building identifier |
-| `egrid` | TVP | No | X | GEGRID | E-GRID parcel identifier |
-| `lat` | TVP | Yes | X | GKODN | WGS84 latitude (GWR: LV95 N-coordinate, converted) |
-| `lng` | TVP | Yes | X | GKODE | WGS84 longitude (GWR: LV95 E-coordinate, converted) |
-| **Building Classification** (Three-Value Pattern) |||||
-| `gkat` | TVP | No | X | GKAT | Building category (SAP: mapped from own classification) |
-| `gklas` | TVP | No | X | GKLAS | Building class (SAP: mapped from own classification) |
-| `gstat` | TVP | No | X | GSTAT | Building status (Gebäudestatus) |
-| `gbaup` | TVP | No | X | GBAUP | Construction period (Bauperiode) |
-| `gbauj` | TVP | No | X | GBAUJ | Construction year (Baujahr) |
-| **Bemessungen** (Three-Value Pattern) |||||
-| `gastw` | TVP | No | X | GASTW | Number of floors (Anzahl Geschosse) |
-| `ganzwhg` | TVP | No | X | | Number of dwellings (Anzahl Wohnungen) |
-| `garea` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
-| `parcelArea` | TVP | No | X | ÖREB | Parcel area in m² (via Swisstopo API by EGID) |
+| Attribute | PostgreSQL Column | Type | Required | SAP | GWR | Description |
+|-----------|-------------------|------|----------|:---:|:---:|-------------|
+| **Top-Level (Metadata)** ||||||
+| `id` | `id VARCHAR(20) PK` | string | Yes | X | | SAP RE-FX property ID (format: `XXXX/YYYY/ZZ`) |
+| `name` | `name VARCHAR(255)` | string | Yes | X | | SAP Name (City, Street) from RE-FX |
+| `portfolio` | `portfolio VARCHAR(50)` | string | Yes | X | | Building type from SAP RE-FX |
+| `priority` | `priority VARCHAR(20)` | string | Yes | | | Task priority: low, medium, high |
+| `confidence` | `confidence JSONB` | object | Yes | | | Confidence scores per source |
+| `assigneeId` | `assignee_id INTEGER FK` | number | No | | | Foreign key to users table |
+| `assignee` | `assignee VARCHAR(100)` | string | No | | | Assigned team member name (denormalized) |
+| `kanbanStatus` | `kanban_status VARCHAR(20)` | string | Yes | | | Workflow status |
+| `dueDate` | `due_date DATE` | string | No | | | ISO 8601 date |
+| `lastUpdate` | `last_update TIMESTAMPTZ` | string | Yes | | | ISO 8601 timestamp |
+| `lastUpdateBy` | `last_update_by VARCHAR(100)` | string | Yes | | | Last editor name or "System" |
+| `inGwr` | `in_gwr BOOLEAN` | boolean | Yes | | | Whether building exists in GWR |
+| `images` | `images JSONB` | array | No | | | Attached building photographs |
+| **Address Fields** — each column is `JSONB {sap, gwr, korrektur, match}` ||||||
+| `country` | `country JSONB` | TVP | Yes | X | | ISO country code (CH) |
+| `kanton` | `kanton JSONB` | TVP | Yes | X | | 2-letter canton code (derived from GGDENR) |
+| `gemeinde` | `gemeinde JSONB` | TVP | Yes | X | GGDENR | Municipality name (from BFS number) |
+| `bfsNr` | `bfs_nr JSONB` | TVP | No | X | GGDENR | BFS municipality number (4-digit) |
+| `plz` | `plz JSONB` | TVP | Yes | X | DPLZ4 | 4-digit postal code (Postleitzahl) |
+| `ort` | `ort JSONB` | TVP | Yes | X | DPLZ4+DPLZZ | Postal locality (derived) |
+| `strasse` | `strasse JSONB` | TVP | Yes | X | STRNAME | Street name (Strassenbezeichnung) |
+| `hausnummer` | `hausnummer JSONB` | TVP | No | X | DEINR | House number (Eingangsnummer) |
+| `zusatz` | `zusatz JSONB` | TVP | No | X | DPLZZ | Address supplement |
+| **Building Identifiers** — each column is `JSONB {sap, gwr, korrektur, match}` ||||||
+| `egid` | `egid JSONB` | TVP | No | X | EGID | GWR building identifier |
+| `egrid` | `egrid JSONB` | TVP | No | X | GEGRID | E-GRID parcel identifier |
+| `lat` | `lat JSONB` | TVP | Yes | X | GKODN | WGS84 latitude (GWR: LV95 N-coordinate, converted) |
+| `lng` | `lng JSONB` | TVP | Yes | X | GKODE | WGS84 longitude (GWR: LV95 E-coordinate, converted) |
+| **Building Classification** — each column is `JSONB {sap, gwr, korrektur, match}` ||||||
+| `gkat` | `gkat JSONB` | TVP | No | X | GKAT | Building category (SAP: mapped from own classification) |
+| `gklas` | `gklas JSONB` | TVP | No | X | GKLAS | Building class (SAP: mapped from own classification) |
+| `gstat` | `gstat JSONB` | TVP | No | X | GSTAT | Building status (Gebäudestatus) |
+| `gbaup` | `gbaup JSONB` | TVP | No | X | GBAUP | Construction period (Bauperiode) |
+| `gbauj` | `gbauj JSONB` | TVP | No | X | GBAUJ | Construction year (Baujahr) |
+| **Bemessungen** — each column is `JSONB {sap, gwr, korrektur, match}` ||||||
+| `gastw` | `gastw JSONB` | TVP | No | X | GASTW | Number of floors (Anzahl Geschosse) |
+| `ganzwhg` | `ganzwhg JSONB` | TVP | No | X | | Number of dwellings (Anzahl Wohnungen) |
+| `garea` | `garea JSONB` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
+| `parcelArea` | `parcel_area JSONB` | TVP | No | X | ÖREB | Parcel area in m² (via Swisstopo API by EGID) |
+| **Derived Columns** (auto-populated via triggers) ||||||
+| `kantonCode` | `kanton_code CHAR(2)` | string | — | | | Derived from `kanton` TVP (korrektur > gwr > sap) |
+| `mapLat` | `map_lat DOUBLE PRECISION` | number | — | | | Derived from `lat` TVP (korrektur > gwr > sap) |
+| `mapLng` | `map_lng DOUBLE PRECISION` | number | — | | | Derived from `lng` TVP (korrektur > gwr > sap) |
 
 **Legend:**
-- **TVP** = Three-Value Pattern (contains `sap`, `gwr`, `korrektur`, `match` properties)
+- **TVP** = Three-Value Pattern — stored as individual `JSONB` column containing `{sap, gwr, korrektur, match}`
 - **SAP/GWR columns**: Official field code from that source, empty if not available
 - **ÖREB** = Cadastre data retrieved via [Swisstopo API](https://api3.geo.admin.ch/) using EGID
+- **Derived columns** are auto-populated by PostgreSQL triggers and should not be set directly
+
+**JSON-to-SQL column name mapping:** `bfsNr` → `bfs_nr`, `parcelArea` → `parcel_area`, `kanbanStatus` → `kanban_status`, `dueDate` → `due_date`, `lastUpdate` → `last_update`, `lastUpdateBy` → `last_update_by`, `inGwr` → `in_gwr`, `assigneeId` → `assignee_id`, `mapLat` → `map_lat`, `mapLng` → `map_lng`, `kantonCode` → `kanton_code`
 
 **GWR Reference:** [Merkmalskatalog 4.3](https://www.housing-stat.ch/catalog/de/4.3/final)
 
@@ -322,7 +356,7 @@ The primary entity representing a federal building record.
 }
 ```
 
-**Note:** Comparison fields are stored at the top level of the building object, not nested in a `data` object.
+**Note:** In JSON, comparison fields are stored at the top level of the building object. In PostgreSQL, each comparison field maps to its own `JSONB` column (not nested inside a single JSONB blob). The derived columns (`kanton_code`, `map_lat`, `map_lng`) are auto-populated by triggers and do not appear in the JSON.
 
 ### 2.3 Confidence Object
 
@@ -379,17 +413,17 @@ flowchart TB
 
 Fields are categorized by importance for daily verification tasks:
 
-| Field | German | Example | Priority | Description |
-|-------|--------|---------|----------|-------------|
-| `plz` | PLZ | "8590" | **Primary** | 4-digit Swiss postal code |
-| `ort` | Ort | "Romanshorn" | **Primary** | Postal locality name (can differ from Gemeinde) |
-| `strasse` | Strasse | "Hauptstrasse" | **Primary** | Street name without house number |
-| `hausnummer` | Hausnr. | "12" | **Primary** | House/building number (may include letters: "12a") |
-| `country` | Land | "CH" | Secondary | ISO 3166-1 alpha-2 country code. Required for border cases. |
-| `kanton` | Kanton | "TG" | Secondary | 2-letter canton abbreviation |
-| `gemeinde` | Gemeinde | "Romanshorn" | Secondary | Official municipality name |
-| `bfsNr` | BFS-Nr. | "4436" | Secondary | Official 4-digit BFS municipality number (Gemeindenummer) |
-| `zusatz` | Zusatz | "Eingang B" | Secondary | Address supplement (entrance, floor, c/o, etc.) |
+| Field | PostgreSQL Column | German | Example | Priority | Description |
+|-------|-------------------|--------|---------|----------|-------------|
+| `plz` | `plz JSONB` | PLZ | "8590" | **Primary** | 4-digit Swiss postal code |
+| `ort` | `ort JSONB` | Ort | "Romanshorn" | **Primary** | Postal locality name (can differ from Gemeinde) |
+| `strasse` | `strasse JSONB` | Strasse | "Hauptstrasse" | **Primary** | Street name without house number |
+| `hausnummer` | `hausnummer JSONB` | Hausnr. | "12" | **Primary** | House/building number (may include letters: "12a") |
+| `country` | `country JSONB` | Land | "CH" | Secondary | ISO 3166-1 alpha-2 country code. Required for border cases. |
+| `kanton` | `kanton JSONB` | Kanton | "TG" | Secondary | 2-letter canton abbreviation |
+| `gemeinde` | `gemeinde JSONB` | Gemeinde | "Romanshorn" | Secondary | Official municipality name |
+| `bfsNr` | `bfs_nr JSONB` | BFS-Nr. | "4436" | Secondary | Official 4-digit BFS municipality number (Gemeindenummer) |
+| `zusatz` | `zusatz JSONB` | Zusatz | "Eingang B" | Secondary | Address supplement (entrance, floor, c/o, etc.) |
 
 **BFS Municipality Number:**
 - 4-digit code uniquely identifying each Swiss municipality
@@ -416,12 +450,12 @@ In Switzerland, the official municipality (Gemeinde) and postal locality (Ort) c
 
 ### 4.1 Identifiers
 
-| Field | Description | Example | Priority |
-|-------|-------------|---------|----------|
-| `egid` | Eidgenössischer Gebäudeidentifikator (GWR building ID) | "2340212" | **Primary** |
-| `egrid` | Eidgenössischer Grundstücksidentifikator (E-GRID parcel ID) | "CH336583840978" | Secondary |
-| `lat` | WGS84 latitude | "47.5656" | **Primary** |
-| `lng` | WGS84 longitude | "9.3744" | **Primary** |
+| Field | PostgreSQL Column | Description | Example | Priority |
+|-------|-------------------|-------------|---------|----------|
+| `egid` | `egid JSONB` | Eidgenössischer Gebäudeidentifikator (GWR building ID) | "2340212" | **Primary** |
+| `egrid` | `egrid JSONB` | Eidgenössischer Grundstücksidentifikator (E-GRID parcel ID) | "CH336583840978" | Secondary |
+| `lat` | `lat JSONB` | WGS84 latitude | "47.5656" | **Primary** |
+| `lng` | `lng JSONB` | WGS84 longitude | "9.3744" | **Primary** |
 
 **EGID Format:**
 - 1 to 9 digits, no leading zeros
@@ -449,10 +483,10 @@ In Switzerland, the official municipality (Gemeinde) and postal locality (Ort) c
 
 The building entity stores coordinates in two places for different purposes:
 
-| Field | Purpose | Source |
-|-------|---------|--------|
-| `lat`/`lng` (Three-Value Pattern) | Data comparison between SAP and GWR | Raw values from each system |
-| `mapLat`/`mapLng` (top-level) | Canonical display coordinates for map | Derived (see below) |
+| Field | PostgreSQL Column | Purpose | Source |
+|-------|-------------------|---------|--------|
+| `lat`/`lng` | `lat JSONB` / `lng JSONB` | Data comparison between SAP and GWR | Raw values from each system |
+| `mapLat`/`mapLng` | `map_lat DOUBLE PRECISION` / `map_lng DOUBLE PRECISION` | Canonical display coordinates for map | Derived via trigger (see below) |
 
 **Coordinate Derivation Logic:**
 
@@ -473,12 +507,12 @@ The building entity stores coordinates in two places for different purposes:
 
 ### 4.3 Bemessungen (Measurements)
 
-| Field | Unit | Source | Description |
-|-------|------|--------|-------------|
-| `gastw` | count | SAP/GWR | Number of floors (Anzahl Geschosse) |
-| `ganzwhg` | count | SAP/GWR | Number of dwellings (Anzahl Wohnungen) |
-| `garea` | m² | GWR | Building footprint (Gebäudefläche) |
-| `parcelArea` | m² | ÖREB | Total parcel area (via Swisstopo API by EGID) |
+| Field | PostgreSQL Column | Unit | Source | Description |
+|-------|-------------------|------|--------|-------------|
+| `gastw` | `gastw JSONB` | count | SAP/GWR | Number of floors (Anzahl Geschosse) |
+| `ganzwhg` | `ganzwhg JSONB` | count | SAP/GWR | Number of dwellings (Anzahl Wohnungen) |
+| `garea` | `garea JSONB` | m² | GWR | Building footprint (Gebäudefläche) |
+| `parcelArea` | `parcel_area JSONB` | m² | ÖREB | Total parcel area (via Swisstopo API by EGID) |
 
 These measurements help validate building data:
 - Floor count discrepancy may indicate different building or measurement method
@@ -578,14 +612,16 @@ Detailed building classification (EUROSTAT-based):
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | number | Unique user identifier |
-| `name` | string | Full display name |
-| `initials` | string | 2-letter abbreviation |
-| `role` | string | Permission level |
-| `openTasks` | number | Count of assigned buildings |
-| `lastLogin` | string | ISO 8601 timestamp |
+| Attribute | PostgreSQL Column | Type | Description |
+|-----------|-------------------|------|-------------|
+| `id` | `id SERIAL PK` | number | Unique user identifier |
+| `name` | `name VARCHAR(100)` | string | Full display name |
+| `initials` | `initials CHAR(2)` | string | 2-letter abbreviation |
+| `email` | `email VARCHAR(255) UNIQUE` | string | User email address |
+| `role` | `role VARCHAR(50)` | string | Permission level |
+| `openTasks` | — (computed via view) | number | Count of assigned buildings |
+| `lastLogin` | `last_login TIMESTAMPTZ` | string | ISO 8601 timestamp |
+| `authUserId` | `auth_user_id UUID FK` | string | Link to Supabase auth.users |
 
 | Role | German | Description |
 |------|--------|-------------|
@@ -613,15 +649,17 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Unique error identifier (format: `err-{id/→-}-{seq}`, e.g. `err-1080-2020-AA-001`) |
-| `checkId` | string | Validation rule reference (e.g., GEO-012) |
-| `description` | string | Human-readable error description |
-| `level` | string | Severity level |
-| `field` | string | Field that triggered the error (optional) |
-| `detectedAt` | string | ISO 8601 timestamp when error was detected |
-| `resolvedAt` | string | ISO 8601 timestamp when resolved (null if open) |
+| Attribute | PostgreSQL Column | Type | Description |
+|-----------|-------------------|------|-------------|
+| `id` | `id VARCHAR(50) PK` | string | Unique error identifier (format: `err-{id/→-}-{seq}`) |
+| `buildingId` | `building_id VARCHAR(20) FK` | string | Reference to building |
+| `checkId` | `check_id VARCHAR(50) FK` | string | Validation rule reference (e.g., GEO-012) |
+| `description` | `description TEXT` | string | Human-readable error description |
+| `level` | `level VARCHAR(20)` | string | Severity level |
+| `field` | `field VARCHAR(50)` | string | Field that triggered the error (optional) |
+| `detectedAt` | `detected_at TIMESTAMPTZ` | string | ISO 8601 timestamp when error was detected |
+| `resolvedAt` | `resolved_at TIMESTAMPTZ` | string | ISO 8601 timestamp when resolved (null if open) |
+| `resolvedById` | `resolved_by_id INTEGER FK` | number | User who resolved the error |
 
 | Level | German | Description |
 |-------|--------|-------------|
@@ -648,14 +686,15 @@ Comments are stored in `comments.json` as an object keyed by building ID.
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Unique comment identifier (format: `cmt-{id/→-}-{seq}`, e.g. `cmt-1080-2020-AA-001`) |
-| `author` | string | User display name or "System" |
-| `authorId` | number | User ID reference (null for system comments) |
-| `timestamp` | string | ISO 8601 timestamp |
-| `text` | string | Comment content |
-| `system` | boolean | Auto-generated vs user comment |
+| Attribute | PostgreSQL Column | Type | Description |
+|-----------|-------------------|------|-------------|
+| `id` | `id VARCHAR(50) PK` | string | Unique comment identifier (format: `cmt-{id/→-}-{seq}`) |
+| `buildingId` | `building_id VARCHAR(20) FK` | string | Reference to building |
+| `author` | `author VARCHAR(100)` | string | User display name or "System" (denormalized) |
+| `authorId` | `author_id INTEGER FK` | number | User ID reference (null for system comments) |
+| `timestamp` | `created_at TIMESTAMPTZ` | string | ISO 8601 timestamp |
+| `text` | `text TEXT` | string | Comment content |
+| `system` | `is_system BOOLEAN` | boolean | Auto-generated vs user comment |
 
 **Display Format:** Timestamps are displayed in Swiss format (`dd.mm.yyyy HH:mm`) in the UI but stored as ISO 8601.
 
@@ -675,15 +714,16 @@ Events are stored in `events.json` as an array of activity records.
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | number | Unique event identifier |
-| `buildingId` | string | Reference to building |
-| `type` | string | Event category |
-| `action` | string | German action label |
-| `user` | string | Actor name or "System" |
-| `timestamp` | string | ISO 8601 timestamp (without Z suffix) |
-| `details` | string | Detailed description |
+| Attribute | PostgreSQL Column | Type | Description |
+|-----------|-------------------|------|-------------|
+| `id` | `id SERIAL PK` | number | Unique event identifier |
+| `buildingId` | `building_id VARCHAR(20) FK` | string | Reference to building |
+| `userId` | `user_id INTEGER FK` | number | User ID reference |
+| `user` | `user_name VARCHAR(100)` | string | Actor name or "System" (denormalized) |
+| `type` | `type VARCHAR(50)` | string | Event category |
+| `action` | `action VARCHAR(100)` | string | German action label |
+| `timestamp` | `created_at TIMESTAMPTZ` | string | ISO 8601 timestamp |
+| `details` | `details TEXT` | string | Detailed description |
 
 | Event Type | German Action | Description |
 |------------|---------------|-------------|
@@ -707,13 +747,16 @@ Images are stored as an array within each Building object.
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Unique image identifier (format: `img-XXX`) |
-| `url` | string | Full URL to image resource |
-| `filename` | string | Original uploaded filename |
-| `uploadDate` | string | ISO 8601 timestamp |
-| `uploadedBy` | string | User name who uploaded |
+| Attribute | PostgreSQL | Type | Description |
+|-----------|------------|------|-------------|
+| `id` | JSONB key `id` | string | Unique image identifier (format: `img-XXX`) |
+| `url` | JSONB key `url` | string | Full URL to image resource (or Supabase storage path) |
+| `filename` | JSONB key `filename` | string | Original uploaded filename |
+| `uploadDate` | JSONB key `uploadDate` | string | ISO 8601 timestamp |
+| `uploadedBy` | JSONB key `uploadedBy` | string | User name who uploaded (denormalized) |
+| `uploadedById` | JSONB key `uploadedById` | number | User ID reference |
+
+**Storage:** Images are embedded as a JSONB array in the `buildings.images` column. Actual image files are stored in the Supabase `building-images` storage bucket.
 
 ### 7.6 Validation Rule
 
@@ -731,16 +774,18 @@ Validation rules are organized in rule sets defined in `rules.json`.
 }
 ```
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `id` | string | Unique rule identifier |
-| `name` | string | Short German name |
-| `description` | string | Full description |
-| `attribute` | string/array | Field(s) to validate |
-| `operator` | string | Validation operator type |
-| `value` | any | Expected value (optional) |
-| `severity` | string | error, warning, info |
-| `message` | string | Error message template |
+| Attribute | PostgreSQL Column | Type | Description |
+|-----------|-------------------|------|-------------|
+| `id` | `id VARCHAR(50) PK` | string | Unique rule identifier |
+| `ruleSetId` | `rule_set_id VARCHAR(50) FK` | string | Reference to rule set |
+| `name` | `name VARCHAR(100)` | string | Short German name |
+| `description` | `description TEXT` | string | Full description |
+| `attribute` | `attribute JSONB` | string/array | Field(s) to validate |
+| `operator` | `operator VARCHAR(50)` | string | Validation operator type |
+| `value` | `value JSONB` | any | Expected value (optional) |
+| `severity` | `severity VARCHAR(20)` | string | error, warning, info |
+| `message` | `message TEXT` | string | Error message template |
+| `enabled` | `enabled BOOLEAN` | boolean | Whether rule is active |
 
 **Available Operators:**
 
@@ -978,12 +1023,12 @@ The following tables have realtime subscriptions enabled for collaborative editi
 
 For query performance, some fields are denormalized and auto-derived via triggers:
 
-| Column | Source | Trigger |
-|--------|--------|---------|
-| `buildings.kanton` | `comparison_data->'kanton'` | `tr_buildings_derive_kanton` |
-| `buildings.map_lat` | `comparison_data->'lat'` | `tr_buildings_derive_coords` |
-| `buildings.map_lng` | `comparison_data->'lng'` | `tr_buildings_derive_coords` |
-| `buildings.assignee` | `users.name` | `tr_users_name_sync` |
+| Column | PostgreSQL Type | Source | Trigger |
+|--------|-----------------|--------|---------|
+| `buildings.kanton_code` | `CHAR(2)` | `kanton JSONB` column | `tr_buildings_derive_kanton` |
+| `buildings.map_lat` | `DOUBLE PRECISION` | `lat JSONB` column | `tr_buildings_derive_coords` |
+| `buildings.map_lng` | `DOUBLE PRECISION` | `lng JSONB` column | `tr_buildings_derive_coords` |
+| `buildings.assignee` | `VARCHAR(100)` | `users.name` | `tr_users_name_sync` |
 
 **Derivation priority:** `korrektur` > `gwr` > `sap`
 
@@ -998,5 +1043,5 @@ For query performance, some fields are denormalized and auto-derived via trigger
 
 ---
 
-*Document version: 2.4*
-*Last updated: 2026-02-02*
+*Document version: 3.0*
+*Last updated: 2026-02-09*

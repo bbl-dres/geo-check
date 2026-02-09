@@ -55,6 +55,11 @@ DROP TABLE IF EXISTS buildings CASCADE;
 DROP TABLE IF EXISTS users CASCADE;
 
 -- Reference tables
+DROP TABLE IF EXISTS ref_gheiz CASCADE;
+DROP TABLE IF EXISTS ref_gwaerzh1 CASCADE;
+DROP TABLE IF EXISTS ref_genh1 CASCADE;
+DROP TABLE IF EXISTS ref_gklas CASCADE;
+DROP TABLE IF EXISTS ref_gkat CASCADE;
 DROP TABLE IF EXISTS ref_gbaup CASCADE;
 DROP TABLE IF EXISTS ref_gstat CASCADE;
 DROP TABLE IF EXISTS ref_cantons CASCADE;
@@ -126,20 +131,50 @@ CREATE TABLE buildings (
     -- GWR linking
     in_gwr          BOOLEAN NOT NULL DEFAULT FALSE,
 
-    -- Denormalized filter columns (derived from comparison_data for query performance)
-    kanton          CHAR(2),  -- 2-letter canton code, indexed for filtering
-
-    -- Canonical map coordinates (derived from comparison fields)
-    map_lat         DOUBLE PRECISION,
-    map_lng         DOUBLE PRECISION,
-
     -- Confidence scores (JSONB: {total, georef, sap, gwr})
     confidence      JSONB NOT NULL DEFAULT '{"total": 0, "georef": 0, "sap": 0, "gwr": 0}',
 
-    -- Comparison fields using Three-Value Pattern
-    -- Each field: {sap, gwr, korrektur, match}
-    -- Stored as JSONB for flexibility
-    comparison_data JSONB NOT NULL DEFAULT '{}',
+    -- ----------------------------------------------------------------
+    -- Comparison fields — Three-Value Pattern (TVP)
+    -- Each column: JSONB {sap, gwr, korrektur, match}
+    -- ----------------------------------------------------------------
+
+    -- Address fields
+    country         JSONB NOT NULL DEFAULT '{}',
+    kanton          JSONB NOT NULL DEFAULT '{}',
+    gemeinde        JSONB NOT NULL DEFAULT '{}',
+    bfs_nr          JSONB NOT NULL DEFAULT '{}',  -- DATABASE.md: bfsNr
+    plz             JSONB NOT NULL DEFAULT '{}',
+    ort             JSONB NOT NULL DEFAULT '{}',
+    strasse         JSONB NOT NULL DEFAULT '{}',
+    hausnummer      JSONB NOT NULL DEFAULT '{}',
+    zusatz          JSONB NOT NULL DEFAULT '{}',
+
+    -- Building identifiers
+    egid            JSONB NOT NULL DEFAULT '{}',
+    egrid           JSONB NOT NULL DEFAULT '{}',
+    lat             JSONB NOT NULL DEFAULT '{}',
+    lng             JSONB NOT NULL DEFAULT '{}',
+
+    -- Building classification
+    gkat            JSONB NOT NULL DEFAULT '{}',
+    gklas           JSONB NOT NULL DEFAULT '{}',
+    gstat           JSONB NOT NULL DEFAULT '{}',
+    gbaup           JSONB NOT NULL DEFAULT '{}',
+    gbauj           JSONB NOT NULL DEFAULT '{}',
+
+    -- Bemessungen (measurements)
+    gastw           JSONB NOT NULL DEFAULT '{}',
+    ganzwhg         JSONB NOT NULL DEFAULT '{}',
+    garea           JSONB NOT NULL DEFAULT '{}',
+    parcel_area     JSONB NOT NULL DEFAULT '{}',  -- DATABASE.md: parcelArea
+
+    -- ----------------------------------------------------------------
+    -- Denormalized columns (derived via triggers for query performance)
+    -- ----------------------------------------------------------------
+    kanton_code     CHAR(2),      -- Derived from kanton TVP (korrektur > gwr > sap)
+    map_lat         DOUBLE PRECISION,  -- Derived from lat TVP
+    map_lng         DOUBLE PRECISION,  -- Derived from lng TVP
 
     -- Embedded images array (JSONB)
     images          JSONB NOT NULL DEFAULT '[]',
@@ -167,18 +202,15 @@ CREATE INDEX idx_buildings_priority ON buildings(priority);
 CREATE INDEX idx_buildings_portfolio ON buildings(portfolio);
 CREATE INDEX idx_buildings_confidence ON buildings(CAST(confidence->>'total' AS int));
 CREATE INDEX idx_buildings_coords ON buildings(map_lat, map_lng) WHERE map_lat IS NOT NULL;
-CREATE INDEX idx_buildings_kanton ON buildings(kanton) WHERE kanton IS NOT NULL;
+CREATE INDEX idx_buildings_kanton ON buildings(kanton_code) WHERE kanton_code IS NOT NULL;
 CREATE INDEX idx_buildings_due_date ON buildings(due_date) WHERE due_date IS NOT NULL;
-
--- GIN index for JSONB queries
-CREATE INDEX idx_buildings_comparison_gin ON buildings USING GIN (comparison_data);
 
 -- Full-text search index for building name
 CREATE INDEX idx_buildings_name_search ON buildings USING GIN (to_tsvector('german', name));
 
 COMMENT ON TABLE buildings IS 'Federal building records with multi-source data comparison';
 COMMENT ON COLUMN buildings.id IS 'SAP property ID (format: XXXX/YYYY/ZZ)';
-COMMENT ON COLUMN buildings.comparison_data IS 'JSONB object with Three-Value Pattern fields (country, kanton, gemeinde, etc.)';
+COMMENT ON COLUMN buildings.kanton_code IS 'Denormalized 2-letter canton code derived from kanton TVP via trigger';
 COMMENT ON COLUMN buildings.images IS 'JSONB array of image objects [{id, url, filename, uploadDate, uploadedBy, uploadedById}]';
 
 -- ----------------------------------------------------------------------------
@@ -409,63 +441,39 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ----------------------------------------------------------------------------
--- Derive kanton from comparison data (for filtering performance)
+-- Derive kanton_code from kanton TVP column (for filtering performance)
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION derive_kanton()
 RETURNS TRIGGER AS $$
-DECLARE
-    v_kanton CHAR(2);
-    v_kanton_data JSONB;
 BEGIN
-    v_kanton_data := NEW.comparison_data->'kanton';
-
     -- Priority: korrektur > gwr > sap
-    IF v_kanton_data IS NOT NULL THEN
-        v_kanton := COALESCE(
-            NULLIF(v_kanton_data->>'korrektur', ''),
-            NULLIF(v_kanton_data->>'gwr', ''),
-            NULLIF(v_kanton_data->>'sap', '')
-        );
-    END IF;
-
-    NEW.kanton := v_kanton;
+    NEW.kanton_code := COALESCE(
+        NULLIF(NEW.kanton->>'korrektur', ''),
+        NULLIF(NEW.kanton->>'gwr', ''),
+        NULLIF(NEW.kanton->>'sap', '')
+    );
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- ----------------------------------------------------------------------------
--- Derive map coordinates from comparison data
+-- Derive map_lat/map_lng from lat/lng TVP columns
 -- ----------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION derive_map_coordinates()
 RETURNS TRIGGER AS $$
-DECLARE
-    v_lat DOUBLE PRECISION;
-    v_lng DOUBLE PRECISION;
-    v_lat_data JSONB;
-    v_lng_data JSONB;
 BEGIN
-    v_lat_data := NEW.comparison_data->'lat';
-    v_lng_data := NEW.comparison_data->'lng';
-
     -- Priority: korrektur > gwr > sap
-    IF v_lat_data IS NOT NULL THEN
-        v_lat := COALESCE(
-            NULLIF(v_lat_data->>'korrektur', '')::DOUBLE PRECISION,
-            NULLIF(v_lat_data->>'gwr', '')::DOUBLE PRECISION,
-            NULLIF(v_lat_data->>'sap', '')::DOUBLE PRECISION
-        );
-    END IF;
+    NEW.map_lat := COALESCE(
+        NULLIF(NEW.lat->>'korrektur', '')::DOUBLE PRECISION,
+        NULLIF(NEW.lat->>'gwr', '')::DOUBLE PRECISION,
+        NULLIF(NEW.lat->>'sap', '')::DOUBLE PRECISION
+    );
 
-    IF v_lng_data IS NOT NULL THEN
-        v_lng := COALESCE(
-            NULLIF(v_lng_data->>'korrektur', '')::DOUBLE PRECISION,
-            NULLIF(v_lng_data->>'gwr', '')::DOUBLE PRECISION,
-            NULLIF(v_lng_data->>'sap', '')::DOUBLE PRECISION
-        );
-    END IF;
-
-    NEW.map_lat := v_lat;
-    NEW.map_lng := v_lng;
+    NEW.map_lng := COALESCE(
+        NULLIF(NEW.lng->>'korrektur', '')::DOUBLE PRECISION,
+        NULLIF(NEW.lng->>'gwr', '')::DOUBLE PRECISION,
+        NULLIF(NEW.lng->>'sap', '')::DOUBLE PRECISION
+    );
 
     RETURN NEW;
 END;
@@ -489,13 +497,14 @@ CREATE TRIGGER tr_users_name_sync
     AFTER UPDATE ON users
     FOR EACH ROW EXECUTE FUNCTION sync_assignee_name();
 
--- Auto-derive map coordinates and kanton from comparison_data
+-- Auto-derive map coordinates from lat/lng TVP columns
 CREATE TRIGGER tr_buildings_derive_coords
-    BEFORE INSERT OR UPDATE OF comparison_data ON buildings
+    BEFORE INSERT OR UPDATE OF lat, lng ON buildings
     FOR EACH ROW EXECUTE FUNCTION derive_map_coordinates();
 
+-- Auto-derive kanton_code from kanton TVP column
 CREATE TRIGGER tr_buildings_derive_kanton
-    BEFORE INSERT OR UPDATE OF comparison_data ON buildings
+    BEFORE INSERT OR UPDATE OF kanton ON buildings
     FOR EACH ROW EXECUTE FUNCTION derive_kanton();
 
 -- ============================================================================
@@ -721,6 +730,127 @@ INSERT INTO ref_gbaup (code, name_de) VALUES
 (8024, '2021-2025'),
 (8025, 'Nach 2025');
 
+-- Building category codes (GKAT)
+CREATE TABLE ref_gkat (
+    code    INTEGER PRIMARY KEY,
+    name_de VARCHAR(80) NOT NULL
+);
+
+INSERT INTO ref_gkat (code, name_de) VALUES
+(1010, 'Provisorische Unterkunft'),
+(1020, 'Gebäude mit ausschliesslicher Wohnnutzung'),
+(1021, 'Einfamilienhaus'),
+(1025, 'Mehrfamilienhaus'),
+(1030, 'Andere Wohngebäude (mit Nebennutzung)'),
+(1040, 'Gebäude mit teilweiser Wohnnutzung'),
+(1060, 'Gebäude ohne Wohnnutzung'),
+(1080, 'Sonderbau');
+
+-- Building class codes (GKLAS)
+CREATE TABLE ref_gklas (
+    code    INTEGER PRIMARY KEY,
+    name_de VARCHAR(100) NOT NULL
+);
+
+INSERT INTO ref_gklas (code, name_de) VALUES
+(1110, 'Gebäude mit einer Wohnung'),
+(1121, 'Gebäude mit zwei Wohnungen'),
+(1122, 'Gebäude mit drei oder mehr Wohnungen'),
+(1130, 'Wohngebäude für Gemeinschaften'),
+(1211, 'Hotelgebäude'),
+(1212, 'Andere Gebäude für kurzfristige Beherbergung'),
+(1220, 'Bürogebäude'),
+(1230, 'Gross- und Einzelhandelsgebäude'),
+(1231, 'Restaurants und Bars'),
+(1241, 'Gebäude des Verkehrs- und Nachrichtenwesens'),
+(1242, 'Garagengebäude'),
+(1251, 'Industriegebäude'),
+(1252, 'Behälter, Silos und Lagergebäude'),
+(1261, 'Gebäude für Kultur- und Freizeitzwecke'),
+(1262, 'Museen und Bibliotheken'),
+(1263, 'Schul- und Hochschulgebäude, Forschungseinrichtungen'),
+(1264, 'Krankenhäuser und Facheinrichtungen des Gesundheitswesens'),
+(1265, 'Sporthallen'),
+(1271, 'Landwirtschaftliche Betriebsgebäude'),
+(1272, 'Kirchen und sonstige Kultgebäude'),
+(1273, 'Denkmäler oder unter Denkmalschutz stehende Bauwerke'),
+(1274, 'Sonstige Hochbauten, anderweitig nicht genannt'),
+(1275, 'Andere Gebäude für die kollektive Unterkunft'),
+(1276, 'Gebäude für die Tierhaltung'),
+(1277, 'Gebäude für den Pflanzenbau'),
+(1278, 'Andere landwirtschaftliche Gebäude');
+
+-- Energy source for heating codes (GENH1)
+CREATE TABLE ref_genh1 (
+    code    INTEGER PRIMARY KEY,
+    name_de VARCHAR(80) NOT NULL
+);
+
+INSERT INTO ref_genh1 (code, name_de) VALUES
+(7500, 'Keine'),
+(7501, 'Luft'),
+(7510, 'Erdwärme (generisch)'),
+(7511, 'Erdwärmesonde'),
+(7512, 'Erdregister'),
+(7513, 'Wasser (Grundwasser, Oberflächenwasser, Abwasser)'),
+(7520, 'Gas'),
+(7530, 'Heizöl'),
+(7540, 'Holz (generisch)'),
+(7541, 'Holz (Stückholz)'),
+(7542, 'Holz (Pellets)'),
+(7543, 'Holz (Schnitzel)'),
+(7550, 'Abwärme (innerhalb des Gebäudes)'),
+(7560, 'Elektrizität'),
+(7570, 'Sonne (thermisch)'),
+(7580, 'Fernwärme (generisch)'),
+(7581, 'Fernwärme (Hochtemperatur)'),
+(7582, 'Fernwärme (Niedertemperatur)'),
+(7598, 'Unbestimmt'),
+(7599, 'Andere');
+
+-- Heat generator codes (GWAERZH1)
+CREATE TABLE ref_gwaerzh1 (
+    code    INTEGER PRIMARY KEY,
+    name_de VARCHAR(80) NOT NULL
+);
+
+INSERT INTO ref_gwaerzh1 (code, name_de) VALUES
+(7400, 'Kein Wärmeerzeuger'),
+(7410, 'Wärmepumpe für ein Gebäude'),
+(7411, 'Wärmepumpe für mehrere Gebäude'),
+(7420, 'Thermische Solaranlage für ein Gebäude'),
+(7421, 'Thermische Solaranlage für mehrere Gebäude'),
+(7430, 'Heizkessel (generisch) für ein Gebäude'),
+(7431, 'Heizkessel (generisch) für mehrere Gebäude'),
+(7432, 'Heizkessel nicht kondensierend für ein Gebäude'),
+(7433, 'Heizkessel nicht kondensierend für mehrere Gebäude'),
+(7434, 'Heizkessel kondensierend für ein Gebäude'),
+(7435, 'Heizkessel kondensierend für mehrere Gebäude'),
+(7436, 'Ofen'),
+(7440, 'Wärmekraftkopplungsanlage für ein Gebäude'),
+(7441, 'Wärmekraftkopplungsanlage für mehrere Gebäude'),
+(7450, 'Elektrospeicher-Zentralheizung für ein Gebäude'),
+(7451, 'Elektrospeicher-Zentralheizung für mehrere Gebäude'),
+(7452, 'Elektro direkt'),
+(7460, 'Wärmetauscher (inkl. Fernwärme) für ein Gebäude'),
+(7461, 'Wärmetauscher (inkl. Fernwärme) für mehrere Gebäude'),
+(7499, 'Andere');
+
+-- Heating type codes (GHEIZ)
+CREATE TABLE ref_gheiz (
+    code    INTEGER PRIMARY KEY,
+    name_de VARCHAR(80) NOT NULL
+);
+
+INSERT INTO ref_gheiz (code, name_de) VALUES
+(7100, 'Keine Heizung'),
+(7101, 'Einzelofenheizung'),
+(7102, 'Etagenheizung'),
+(7103, 'Zentralheizung für das Gebäude'),
+(7104, 'Zentralheizung für mehrere Gebäude'),
+(7105, 'Öffentliche Fernwärmeversorgung'),
+(7109, 'Andere Heizungsart');
+
 -- ============================================================================
 -- SUPABASE STORAGE
 -- ============================================================================
@@ -793,10 +923,12 @@ Migration from JSON files to Supabase:
    - Link via auth_user_id
 
 2. BUILDINGS (buildings.json → buildings table)
-   - Transform flat comparison fields into comparison_data JSONB
+   - Each TVP field (country, kanton, strasse, etc.) maps to its own JSONB column
+   - camelCase JSON keys map to snake_case SQL columns: bfsNr → bfs_nr, parcelArea → parcel_area
    - Map assignee names to assignee_id via user lookup
    - Images array stays as JSONB
-   - kanton column auto-derived via trigger from comparison_data
+   - kanton_code CHAR(2) auto-derived via trigger from kanton JSONB column
+   - map_lat/map_lng auto-derived via trigger from lat/lng JSONB columns
 
 3. ERRORS (errors.json → errors table)
    - Flatten keyed object to rows with building_id
@@ -815,12 +947,32 @@ Migration from JSON files to Supabase:
    - Extract ruleSets to rule_sets table
    - Extract rules with rule_set_id reference
 
-Example building comparison_data structure:
-{
-  "country": {"sap": "CH", "gwr": "CH", "korrektur": "", "match": true},
-  "kanton": {"sap": "TG", "gwr": "TG", "korrektur": "", "match": true},
-  "gemeinde": {"sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true},
-  "bfsNr": {"sap": "4436", "gwr": "4436", "korrektur": "", "match": true},
-  ...
-}
+Example TVP column values (each column is a JSONB object):
+  country     = {"sap": "CH", "gwr": "CH", "korrektur": "", "match": true}
+  kanton      = {"sap": "TG", "gwr": "TG", "korrektur": "", "match": true}
+  gemeinde    = {"sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true}
+  bfs_nr      = {"sap": "4436", "gwr": "4436", "korrektur": "", "match": true}
+  plz         = {"sap": "8590", "gwr": "8590", "korrektur": "", "match": true}
+  ort         = {"sap": "Romanshorn", "gwr": "Romanshorn", "korrektur": "", "match": true}
+  strasse     = {"sap": "Friedrichshafnerstr.", "gwr": "Friedrichshafnerstrasse", "korrektur": "", "match": false}
+  hausnummer  = {"sap": "", "gwr": "", "korrektur": "", "match": true}
+  zusatz      = {"sap": "", "gwr": "", "korrektur": "", "match": true}
+  egid        = {"sap": "", "gwr": "302045678", "korrektur": "", "match": false}
+  egrid       = {"sap": "", "gwr": "CH336583840978", "korrektur": "", "match": false}
+  lat         = {"sap": "", "gwr": "47.5656", "korrektur": "", "match": false}
+  lng         = {"sap": "", "gwr": "9.3744", "korrektur": "", "match": false}
+  gkat        = {"sap": "1060", "gwr": "1060", "korrektur": "", "match": true}
+  gklas       = {"sap": "1220", "gwr": "1220", "korrektur": "", "match": true}
+  gstat       = {"sap": "1004", "gwr": "1004", "korrektur": "", "match": true}
+  gbaup       = {"sap": "8014", "gwr": "8014", "korrektur": "", "match": true}
+  gbauj       = {"sap": "", "gwr": "1965", "korrektur": "", "match": false}
+  gastw       = {"sap": "3", "gwr": "3", "korrektur": "", "match": true}
+  ganzwhg     = {"sap": "0", "gwr": "0", "korrektur": "", "match": true}
+  garea       = {"sap": "", "gwr": "485", "korrektur": "", "match": false}
+  parcel_area = {"sap": "1250", "gwr": "1275", "korrektur": "", "match": false}
+
+JSON-to-SQL column name mapping:
+  bfsNr       → bfs_nr
+  parcelArea  → parcel_area
+  kanton (denormalized CHAR) → kanton_code
 */
