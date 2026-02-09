@@ -39,7 +39,8 @@ function getChartFilteredBuildings(preFiltered = null) {
   // Apply chart-specific filters (aligned with main filters: 50/80 thresholds)
   if (chartFilters.confidence) {
     filtered = filtered.filter(b => {
-      const conf = b.confidence.total;
+      const conf = b.confidence?.total;
+      if (conf == null) return false;
       if (chartFilters.confidence === 'critical') return conf < 50;
       if (chartFilters.confidence === 'warning') return conf >= 50 && conf < 80;
       if (chartFilters.confidence === 'ok') return conf >= 80;
@@ -232,11 +233,12 @@ export function updateStatistik(preFiltered = null) {
   const doneCount = filtered.filter(b => b.kanbanStatus === 'done').length;
   const progressPct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
-  const avgConfidence = filtered.length > 0
-    ? Math.round(filtered.reduce((sum, b) => sum + b.confidence.total, 0) / filtered.length)
+  const withConfidence = filtered.filter(b => b.confidence?.total != null);
+  const avgConfidence = withConfidence.length > 0
+    ? Math.round(withConfidence.reduce((sum, b) => sum + b.confidence.total, 0) / withConfidence.length)
     : 0;
 
-  const criticalCount = filtered.filter(b => b.confidence.total < 50).length;
+  const criticalCount = filtered.filter(b => b.confidence?.total != null && b.confidence.total < 50).length;
   const inProgressCount = filtered.filter(b => b.kanbanStatus === 'inprogress').length;
   const unassignedCount = filtered.filter(b => !b.assignee).length;
 
@@ -274,7 +276,8 @@ export function updateStatistik(preFiltered = null) {
 function renderConfidenceChart(filtered) {
   const confBuckets = { critical: 0, warning: 0, ok: 0 };
   filtered.forEach(b => {
-    const conf = b.confidence.total;
+    const conf = b.confidence?.total;
+    if (conf == null) return;
     if (conf < 50) confBuckets.critical++;
     else if (conf < 80) confBuckets.warning++;
     else confBuckets.ok++;
