@@ -1,0 +1,92 @@
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|Current FME version: FME 2025.0.3.0 (20250602 - Build 25241 - WIN64)
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|System Time: 20260209090941 UTC
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME_HOME is 'C:\Program Files\FME\'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Form (floating)
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|Permanent License.
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|Machine host name is: DESKTOP-BIEK64S
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|OS Locale Name     : en_CH
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|OS Locale Encoding : windows-1252
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|Process Encoding   : UTF-8
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME API version: '4.0 20240722'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: FME_BASE is 'no'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: FME_MF_DIR is 'C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts/'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: FME_MF_NAME is 'Upsert.fmw'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: FME_PRODUCT_NAME is 'FME(R) 2025.0.3.0'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|Operating System: Microsoft Windows 10 64-bit  (Build 19045)
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Platform: WIN64
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|System Status: 110.99 GB of disk space available in the FME temporary folder (C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770621556916_19736\fmetmp_9)
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|System Status: 31.72 GB of physical memory available
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|System Status: 126.88 GB of virtual memory available
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|START - ProcessID: 26648, peak process memory usage: 41724 kB, current process memory usage: 41716 kB
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: Command line arguments are `C:\Program Files\FME\fme.exe' `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts\wb-xlate-1770628180428_19736' `--FME_LAUNCH_VIEWER_APP' `WORKBENCH' `LOG_STANDARDOUT' `YES' `LOG_TIMINGS' `YES' `LogCountServerName' `51629' `LOG_STANDARDOUT' `No' `WORKBENCH_LOG_SERVER' `51546'
+2026-02-09 10:09:40|   0.0|  0.0|INFORM|FME Configuration: Connection Storage: 'C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\'
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for formats are : C:\Program Files\FME\datasources;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Formats;C:\Users\DavidRasner\Documents\FME\Formats
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for transformers are : C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\Packages\25241-win64\transformers;C:\Program Files\FME\transformers;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Transformers
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for coordinate systems are : C:\Users\DavidRasner\Documents\FME\CoordinateSystems
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for coordinate system exceptions are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemExceptions
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for coordinate system grid overrides are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemGridOverrides
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for CS-MAP transformation exceptions are : C:\Users\DavidRasner\Documents\FME\CsmapTransformationExceptions
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Shared folders for transformer categories are : C:\Users\DavidRasner\Documents\FME\TransformerCategories
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: Current working folder is `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts'
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: Temporary folder is `C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770621556916_19736\fmetmp_9', set from environment variable `FME_TEMP'
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: Cache folder is 'C:\Users\DAVIDR~1\AppData\Local\Temp'
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: FME_HOME is `C:\Program Files\FME\'
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: Start freeing memory when the process exceeds 95.16 GB
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|FME Configuration: Stop freeing memory when the process is below 71.37 GB
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Creating writer for format: 
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Creating reader for format: 
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|MULTI_READER(MULTI_READER): Will fail with first member reader failure
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Using Multi Reader with keyword `MULTI_READER' to read multiple datasets
+2026-02-09 10:09:41|   0.0|  0.0|INFORM|Using MultiWriter with keyword `MULTI_DEST' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-09 10:09:41|   0.1|  0.1|INFORM|Emptying factory pipeline
+2026-02-09 10:09:41|   0.2|  0.1|STATS |Restoring 1 feature(s) from FME feature store file `C:\Users\DAVIDR~1\AppData\Local\Temp\wb-cache-Upsert-OzIyJI\Main_AttributeKeeper -1 11 fo 0 OUTPUT  0  8fcea9e3d1c654c6f8da85bbd13df7c6a8697eb0.ffs'
+2026-02-09 10:09:41|   0.2|  0.0|INFORM|Creating writer for format: 
+2026-02-09 10:09:41|   0.2|  0.0|INFORM|Using MultiWriter with keyword `FeatureWriter' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-09 10:09:41|   0.3|  0.1|INFORM|FME Configuration: Using connection values from 'Supabase Geo-Check' for FeatureWriter_0
+2026-02-09 10:09:41|   0.3|  0.0|INFORM|Creating writer for format: PostGIS
+2026-02-09 10:09:41|   0.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for writer named `POSTGIS'
+2026-02-09 10:09:41|   0.3|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-09 10:09:41|   0.3|  0.0|INFORM|Writer `FeatureWriter_0' of type `POSTGIS' using group definition keyword `FeatureWriter_0_DEF'
+2026-02-09 10:09:41|   0.3|  0.0|INFORM|Opening POSTGIS writer for dataset 'postgres'...
+2026-02-09 10:09:41|   0.4|  0.1|INFORM|PostGIS client encoding: 'UTF8'
+2026-02-09 10:09:41|   0.4|  0.0|INFORM|PostgreSQL 17.6 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2026-02-09 10:09:41|   0.4|  0.0|INFORM|3.3 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
+2026-02-09 10:09:41|   0.4|  0.0|WARN  |POSTGIS Writer: Bulk Insert is set to Yes, but a conflicting Feature Operation has been detected. Feature type 'buildings' has a Feature Operation of 'Upsert'. Bulk Insert is now being set to No, which can cause insert operations to be much slower
+2026-02-09 10:09:41|   0.4|  0.0|INFORM|POSTGIS writer: Splitting bulk features into individual features
+2026-02-09 10:09:41|   0.4|  0.0|INFORM|Testing for the existence of table 'public.buildings'...
+2026-02-09 10:09:42|   0.4|  0.0|INFORM|Using existing table 'public.buildings'
+2026-02-09 10:09:42|   0.5|  0.1|WARN  |POSTGIS Writer: The column 'gwregid' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'maplat' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'maplng' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'country' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'gemeinde' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'bfsnr' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'plz' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'ort' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'strasse' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'hausnummer' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'zusatz' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'egid' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'egrid' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'lat' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |POSTGIS Writer: The column 'lng' does not exist on the table 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|WARN  |PostGIS writer: Couldn't find spatial column "geom" in table public.buildings - will write non-spatial data only
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|POSTGIS Writer: Creating 'Insert' feature type processor for feature type 'buildings'
+2026-02-09 10:09:42|   0.5|  0.0|ERROR |Error executing SQL command ('insert into "public"."buildings"("id","name","portfolio","kanton") values (E'1086/1228/AA',E'Heimiswil\, Ried',E'Infrastruktur',E'{ ') on conflict ("id") do update set "id"=excluded."id","name"=excluded."name","portfolio"=excluded."portfolio","kanton"=excluded."kanton"'): 'ERROR:  invalid input value for enum portfolio_type: "Infrastruktur"
+LINE 1: ...ton") values (E'1086/1228/AA',E'Heimiswil\, Ried',E'Infrastr...
+                                                        ...'
+2026-02-09 10:09:42|   0.5|  0.0|ERROR |POSTGIS writer: An error has occurred. Check the logfile above for details
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|Successfully closed POSTGIS database writer
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|Feature output statistics for `POSTGIS' writer using keyword `FeatureWriter_0':
+2026-02-09 10:09:42|   0.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-09 10:09:42|   0.5|  0.0|STATS |                               Features Written
+2026-02-09 10:09:42|   0.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-09 10:09:42|   0.5|  0.0|STATS |buildings                                                                    1
+2026-02-09 10:09:42|   0.5|  0.0|STATS |==============================================================================
+2026-02-09 10:09:42|   0.5|  0.0|STATS |Total Features Written                                                       1
+2026-02-09 10:09:42|   0.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|Translation FAILED with 2 error(s) and 17 warning(s) (0 feature(s) output)
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|FME Session Duration: 1.3 seconds. (CPU: 0.2s user, 0.3s system)
+2026-02-09 10:09:42|   0.5|  0.0|INFORM|END - ProcessID: 26648, peak process memory usage: 63620 kB, current process memory usage: 63580 kB
