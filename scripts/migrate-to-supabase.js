@@ -100,7 +100,7 @@ buildings.forEach(building => {
     sql += `INSERT INTO buildings (
     id, name, portfolio, priority, confidence,
     assignee_id, assignee, kanban_status, due_date,
-    last_update, last_update_by, in_gwr, gwr_egid,
+    last_update, last_update_by, in_gwr,
     map_lat, map_lng, kanton, comparison_data, images
 ) VALUES (
     ${esc(building.id)},
@@ -115,7 +115,6 @@ buildings.forEach(building => {
     ${building.lastUpdate ? esc(building.lastUpdate) : 'NOW()'},
     ${esc(building.lastUpdateBy || 'System')},
     ${building.inGwr ? 'TRUE' : 'FALSE'},
-    ${building.gwrEgid ? esc(building.gwrEgid) : 'NULL'},
     ${building.mapLat || 'NULL'},
     ${building.mapLng || 'NULL'},
     ${kantonValue ? esc(kantonValue) : 'NULL'},

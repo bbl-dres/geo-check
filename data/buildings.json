@@ -16,7 +16,6 @@
     "lastUpdate": "2026-01-27T14:30:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "302045678",
     "mapLat": 47.5656,
     "mapLng": 9.3744,
     "country": {
@@ -192,7 +191,6 @@
     "lastUpdate": "2026-01-23T09:15:00Z",
     "lastUpdateBy": "System",
     "inGwr": true,
-    "gwrEgid": "1456789",
     "mapLat": 47.6512,
     "mapLng": 9.1756,
     "country": {
@@ -354,7 +352,6 @@
     "lastUpdate": "2026-01-28T11:45:00Z",
     "lastUpdateBy": "S. Brunner",
     "inGwr": true,
-    "gwrEgid": "1892345",
     "mapLat": 47.4237,
     "mapLng": 9.368,
     "country": {
@@ -507,7 +504,6 @@
     "lastUpdate": "2026-01-30T08:00:00Z",
     "lastUpdateBy": "T. Weber",
     "inGwr": true,
-    "gwrEgid": "3456789",
     "mapLat": 47.3834,
     "mapLng": 8.5397,
     "country": {
@@ -660,7 +656,6 @@
     "lastUpdate": "2026-01-25T16:20:00Z",
     "lastUpdateBy": "T. Weber",
     "inGwr": true,
-    "gwrEgid": "5678901",
     "mapLat": 46.948,
     "mapLng": 7.4474,
     "country": {
@@ -813,7 +808,6 @@
     "lastUpdate": "2026-01-20T10:00:00Z",
     "lastUpdateBy": "System",
     "inGwr": true,
-    "gwrEgid": "9012999",
     "mapLat": 46.8499,
     "mapLng": 9.5329,
     "country": {
@@ -966,7 +960,6 @@
     "lastUpdate": "2026-01-26T13:10:00Z",
     "lastUpdateBy": "A. Meier",
     "inGwr": true,
-    "gwrEgid": "2345678",
     "mapLat": 47.4979,
     "mapLng": 8.7246,
     "country": {
@@ -1119,7 +1112,6 @@
     "lastUpdate": "2026-01-29T17:45:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "4567890",
     "mapLat": 47.5533,
     "mapLng": 8.8987,
     "country": {
@@ -1272,7 +1264,6 @@
     "lastUpdate": "2026-01-30T09:30:00Z",
     "lastUpdateBy": "S. Brunner",
     "inGwr": true,
-    "gwrEgid": "6789012",
     "mapLat": 47.548,
     "mapLng": 7.5896,
     "country": {
@@ -1425,7 +1416,6 @@
     "lastUpdate": "2026-01-28T15:00:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "7890123",
     "mapLat": 47.0502,
     "mapLng": 8.3093,
     "country": {
@@ -1578,7 +1568,6 @@
     "lastUpdate": "2026-01-16T08:30:00Z",
     "lastUpdateBy": "System",
     "inGwr": true,
-    "gwrEgid": "8901234",
     "mapLat": 46.2138,
     "mapLng": 6.149,
     "country": {
@@ -1731,7 +1720,6 @@
     "lastUpdate": "2026-01-24T12:15:00Z",
     "lastUpdateBy": "S. Brunner",
     "inGwr": true,
-    "gwrEgid": "9012345",
     "mapLat": 46.005,
     "mapLng": 8.952,
     "country": {
@@ -1884,7 +1872,6 @@
     "lastUpdate": "2026-01-29T10:00:00Z",
     "lastUpdateBy": "A. Meier",
     "inGwr": true,
-    "gwrEgid": "1234567",
     "mapLat": 47.3925,
     "mapLng": 8.0444,
     "country": {
@@ -2037,7 +2024,6 @@
     "lastUpdate": "2026-01-28T16:30:00Z",
     "lastUpdateBy": "T. Weber",
     "inGwr": true,
-    "gwrEgid": "2345678",
     "mapLat": 47.2088,
     "mapLng": 7.5378,
     "country": {
@@ -2190,7 +2176,6 @@
     "lastUpdate": "2026-01-27T09:15:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "3456789",
     "mapLat": 46.758,
     "mapLng": 7.629,
     "country": {
@@ -2343,7 +2328,6 @@
     "lastUpdate": "2026-01-30T11:00:00Z",
     "lastUpdateBy": "S. Brunner",
     "inGwr": true,
-    "gwrEgid": "4567890",
     "mapLat": 47.1368,
     "mapLng": 7.2467,
     "country": {
@@ -2496,7 +2480,6 @@
     "lastUpdate": "2026-01-22T14:45:00Z",
     "lastUpdateBy": "System",
     "inGwr": true,
-    "gwrEgid": "5678901",
     "mapLat": 47.6961,
     "mapLng": 8.635,
     "country": {
@@ -2649,7 +2632,6 @@
     "lastUpdate": "2026-01-30T08:30:00Z",
     "lastUpdateBy": "M. Keller",
     "inGwr": true,
-    "gwrEgid": "6789012",
     "mapLat": 47.1724,
     "mapLng": 8.5179,
     "country": {
@@ -2802,7 +2784,6 @@
     "lastUpdate": "2026-01-29T15:20:00Z",
     "lastUpdateBy": "T. Weber",
     "inGwr": true,
-    "gwrEgid": "7890124",
     "mapLat": 46.992,
     "mapLng": 6.931,
     "country": {
@@ -2955,7 +2936,6 @@
     "lastUpdate": "2026-01-18T10:00:00Z",
     "lastUpdateBy": "System",
     "inGwr": true,
-    "gwrEgid": "8901234",
     "mapLat": 46.2333,
     "mapLng": 7.3592,
     "country": {

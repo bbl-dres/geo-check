@@ -3,7 +3,6 @@
  *
  * Changes:
  * - Add inGwr (boolean): true if building has GWR data
- * - Add gwrEgid (string): EGID for GWR lookup (from egid.gwr)
  * - Add mapLat/mapLng (number): coordinates for map display (from lat.value/lng.value)
  * - Rename field.value → field.korrektur (set to empty string)
  */
@@ -29,9 +28,6 @@ function migrateBuilding(building) {
   const mapLat = building.lat && building.lat.value ? parseFloat(building.lat.value) : null;
   const mapLng = building.lng && building.lng.value ? parseFloat(building.lng.value) : null;
 
-  // Extract EGID for GWR lookup
-  const gwrEgid = building.egid && building.egid.gwr ? building.egid.gwr : '';
-
   // Create new building object with new fields at the top
   const migrated = {
     id: building.id,
@@ -47,7 +43,6 @@ function migrateBuilding(building) {
 
     // NEW FIELDS
     inGwr: hasGwrData,
-    gwrEgid: gwrEgid,
     mapLat: mapLat,
     mapLng: mapLng
   };
@@ -85,5 +80,5 @@ const migratedBuildings = buildings.map(migrateBuilding);
 fs.writeFileSync(outputPath, JSON.stringify(migratedBuildings, null, 2));
 
 console.log(`Migrated ${migratedBuildings.length} buildings`);
-console.log('New fields added: inGwr, gwrEgid, mapLat, mapLng');
+console.log('New fields added: inGwr, mapLat, mapLng');
 console.log('Field structure changed: value → korrektur (set to empty)');

@@ -193,7 +193,6 @@ function transformBuildingsFromDB(buildings, comments, errors) {
             lastUpdate: b.last_update,
             lastUpdateBy: b.last_update_by,
             inGwr: b.in_gwr,
-            gwrEgid: b.gwr_egid,
             mapLat: b.map_lat,
             mapLng: b.map_lng,
             kanton: b.kanton,
