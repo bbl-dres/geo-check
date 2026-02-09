@@ -14,7 +14,7 @@
  *   GET  /rule-engine/             - Redirect to Swagger UI
  */
 
-import { Hono } from "https://deno.land/x/hono@v4.4.0/mod.ts";
+import { Hono } from "npm:hono@4.4.0";
 import { checkBuilding, checkBuildingsChunk } from "./engine/runner.ts";
 import { getRegisteredRules } from "./engine/registry.ts";
 
