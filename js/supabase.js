@@ -51,6 +51,27 @@ export function getSupabase() {
 // =============================================================================
 
 /**
+ * Fetch all rows from a table, paginating past the 1000-row default limit.
+ * Returns { data, error } matching the Supabase query result shape.
+ */
+async function fetchAllRows(client, table, pageSize = 1000) {
+    let allData = [];
+    let from = 0;
+    while (true) {
+        const { data, error } = await client
+            .from(table)
+            .select('*')
+            .range(from, from + pageSize - 1);
+        if (error) return { data: null, error };
+        if (!data || data.length === 0) break;
+        allData = allData.concat(data);
+        if (data.length < pageSize) break; // last page
+        from += pageSize;
+    }
+    return { data: allData, error: null };
+}
+
+/**
  * Load all application data from Supabase
  * Replaces the JSON file fetches in main.js
  */
@@ -59,6 +80,7 @@ export async function loadAllData() {
     if (!client) throw new Error('Supabase client not initialized');
 
     // Fetch all data in parallel
+    // Note: Supabase default limit is 1000 rows. Use .range() for larger tables.
     const [
         buildingsResult,
         usersResult,
@@ -68,11 +90,11 @@ export async function loadAllData() {
         rulesResult,
         ruleSetsResult
     ] = await Promise.all([
-        client.from('buildings').select('*'),
+        fetchAllRows(client, 'buildings'),
         client.from('users').select('*'),
-        client.from('events').select('*').order('created_at', { ascending: false }),
-        client.from('comments').select('*').order('created_at', { ascending: false }),
-        client.from('errors').select('*'),
+        client.from('events').select('*').order('created_at', { ascending: false }).range(0, 9999),
+        client.from('comments').select('*').order('created_at', { ascending: false }).range(0, 49999),
+        fetchAllRows(client, 'errors'),
         client.from('rules').select('*'),
         client.from('rule_sets').select('*')
     ]);
@@ -168,7 +190,7 @@ export async function fetchEventsForExport() {
 
 /**
  * Transform buildings from DB format to app format
- * Enriches with comments and errors, flattens comparison_data
+ * Maps snake_case DB columns to camelCase, enriches with comments and errors
  */
 function transformBuildingsFromDB(buildings, comments, errors) {
     // Key comments and errors by building_id for quick lookup
@@ -176,9 +198,6 @@ function transformBuildingsFromDB(buildings, comments, errors) {
     const errorsByBuilding = keyByBuildingId(errors);
 
     return buildings.map(b => {
-        // Flatten comparison_data fields to top level (app expects this)
-        const comparisonFields = b.comparison_data || {};
-
         // Transform to app format
         const building = {
             id: b.id,
@@ -195,11 +214,31 @@ function transformBuildingsFromDB(buildings, comments, errors) {
             inGwr: b.in_gwr,
             mapLat: b.map_lat,
             mapLng: b.map_lng,
-            kanton: b.kanton,
             images: b.images || [],
 
-            // Spread comparison fields to top level
-            ...comparisonFields,
+            // Source comparison fields (individual JSONB columns)
+            country: b.country,
+            kanton: b.kanton,
+            gemeinde: b.gemeinde,
+            bfsNr: b.bfs_nr,
+            plz: b.plz,
+            ort: b.ort,
+            strasse: b.strasse,
+            hausnummer: b.hausnummer,
+            zusatz: b.zusatz,
+            egid: b.egid,
+            egrid: b.egrid,
+            lat: b.lat,
+            lng: b.lng,
+            gkat: b.gkat,
+            gklas: b.gklas,
+            gstat: b.gstat,
+            gbaup: b.gbaup,
+            gbauj: b.gbauj,
+            gastw: b.gastw,
+            ganzwhg: b.ganzwhg,
+            garea: b.garea,
+            parcelArea: b.parcel_area,
 
             // Attach related data
             comments: transformCommentsForBuilding(commentsByBuilding[b.id] || []),
@@ -389,16 +428,25 @@ export async function updateBuildingDueDate(buildingId, newDueDate, userId, user
 /**
  * Update building comparison data (corrections)
  */
+/** Map camelCase app field names to snake_case DB column names */
+const FIELD_TO_COLUMN = {
+    bfsNr: 'bfs_nr',
+    parcelArea: 'parcel_area'
+};
+
 export async function updateBuildingComparisonData(buildingId, comparisonData, userId, userName) {
     const client = getSupabase();
 
+    // Map camelCase keys to snake_case DB columns
+    const updatePayload = { last_update: new Date().toISOString(), last_update_by: userName };
+    for (const [key, value] of Object.entries(comparisonData)) {
+        const column = FIELD_TO_COLUMN[key] || key;
+        updatePayload[column] = value;
+    }
+
     const { error } = await client
         .from('buildings')
-        .update({
-            comparison_data: comparisonData,
-            last_update: new Date().toISOString(),
-            last_update_by: userName
-        })
+        .update(updatePayload)
         .eq('id', buildingId);
 
     if (error) throw error;
@@ -406,6 +454,59 @@ export async function updateBuildingComparisonData(buildingId, comparisonData, u
     // Log event
     await logEvent(buildingId, 'correction', 'Korrektur angewendet', userId, userName,
         'Datenkorrektur gespeichert');
+}
+
+/**
+ * Update a building's GWR fields from Swisstopo API data.
+ * Updates each JSONB column's gwr value and recalculates match.
+ * @param {string} buildingId
+ * @param {Object} building - Current building data (from state)
+ * @param {Object|null} gwrData - Mapped GWR values (null = not found in GWR)
+ */
+export async function updateBuildingGwrFields(buildingId, building, gwrData) {
+    const client = getSupabase();
+
+    if (!gwrData) {
+        // Not found in GWR — set in_gwr = false
+        await client.from('buildings').update({ in_gwr: false }).eq('id', buildingId);
+        return;
+    }
+
+    // Fields to update: map app camelCase key → DB snake_case column
+    const fieldMap = {
+        egid: 'egid', egrid: 'egrid', plz: 'plz', ort: 'ort',
+        strasse: 'strasse', hausnummer: 'hausnummer', gemeinde: 'gemeinde',
+        bfsNr: 'bfs_nr', kanton: 'kanton', country: 'country', zusatz: 'zusatz',
+        gstat: 'gstat', gkat: 'gkat', gklas: 'gklas', gbaup: 'gbaup',
+        gbauj: 'gbauj', gastw: 'gastw', ganzwhg: 'ganzwhg', garea: 'garea',
+        parcelArea: 'parcel_area', lat: 'lat', lng: 'lng'
+    };
+
+    const update = { in_gwr: true };
+
+    for (const [appKey, dbCol] of Object.entries(fieldMap)) {
+        const current = building[appKey];
+        const gwrVal = gwrData[appKey] ?? '';
+
+        if (current && typeof current === 'object' && 'sap' in current) {
+            const sap = current.sap || '';
+            const korrektur = current.korrektur || '';
+            const gwr = String(gwrVal);
+            // Match: both empty = true, otherwise exact string comparison
+            const match = (!sap && !gwr) || sap === gwr;
+            update[dbCol] = { sap, gwr, korrektur, match };
+        }
+    }
+
+    const { error } = await client
+        .from('buildings')
+        .update(update)
+        .eq('id', buildingId);
+
+    if (error) {
+        console.error(`GWR update failed for ${buildingId}:`, error);
+        throw error;
+    }
 }
 
 /**

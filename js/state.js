@@ -354,6 +354,7 @@ export function getDataLabel(key) {
     country: 'Land',
     kanton: 'Kanton',
     gemeinde: 'Gemeinde',
+    bfsNr: 'BFS-Nr.',
     plz: 'PLZ',
     ort: 'Ort',
     strasse: 'Strasse',
@@ -362,13 +363,18 @@ export function getDataLabel(key) {
     // Identifiers
     egid: 'EGID',
     egrid: 'E-GRID',
-    // Area (abbreviated to avoid line breaks)
+    // Area
     parcelArea: 'Grundstückfl.',
     garea: 'Gebäudefl.',
     // Building classification
     gkat: 'Gebäudekat.',
     gklas: 'Gebäudekl.',
+    gstat: 'Gebäudestatus',
     gbaup: 'Bauperiode',
+    gbauj: 'Baujahr',
+    // Measurements
+    gastw: 'Geschosse',
+    ganzwhg: 'Wohnungen',
     // Coordinates
     lat: 'Breitengrad',
     lng: 'Längengrad'
