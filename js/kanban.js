@@ -58,8 +58,8 @@ export function renderKanbanBoard(preFiltered = null) {
 
     container.innerHTML = visible.map(building => {
       // Use confidence-based colors for consistency across the app
-      const confidenceClass = building.confidence.total < 50 ? 'critical' :
-                              building.confidence.total < 80 ? 'warning' : 'ok';
+      const confTotal = building.confidence?.total;
+      const confidenceClass = confTotal == null ? 'unknown' : confTotal < 50 ? 'critical' : confTotal < 80 ? 'warning' : 'ok';
 
       // Priority icon with arrow
       const priorityIcon = getPriorityIcon(building.priority);
@@ -83,7 +83,7 @@ export function renderKanbanBoard(preFiltered = null) {
           <div class="kanban-card-title">${escapeHtml(building.name)}</div>
           <div class="kanban-card-meta">
             <span class="kanban-card-location">${getFieldDisplayValue(building.kanton)}</span>
-            <span class="kanban-card-confidence ${confidenceClass}">${building.confidence.total}%</span>
+            <span class="kanban-card-confidence ${confidenceClass}">${confTotal != null ? confTotal + '%' : '–'}</span>
           </div>
           <div class="kanban-card-footer">
             ${dueDateHtml}

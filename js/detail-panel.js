@@ -199,11 +199,11 @@ export function renderDetailPanel(building) {
   document.getElementById('detail-sap-id').textContent = building.id;
 
   // Confidence — Bars Layout
-  const total = building.confidence.total;
-  const totalClass = total < 50 ? 'critical' : total < 80 ? 'warning' : 'ok';
+  const total = building.confidence?.total;
+  const totalClass = total == null ? 'unknown' : total < 50 ? 'critical' : total < 80 ? 'warning' : 'ok';
 
   const totalEl = document.getElementById('confidence-total');
-  totalEl.textContent = total + '%';
+  totalEl.textContent = total != null ? total + '%' : '–';
   totalEl.className = 'conf-total ' + totalClass;
 
   // Dimension bars

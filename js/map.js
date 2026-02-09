@@ -136,6 +136,7 @@ const layerConfigs = {
 // GeoJSON Conversion
 // ========================================
 export function getConfidenceClass(confidence) {
+  if (confidence == null) return 'unknown';
   if (confidence < 50) return 'critical';
   if (confidence < 80) return 'warning';
   return 'ok';
@@ -150,8 +151,8 @@ function buildingsToGeoJSON(buildingsList) {
         type: 'Feature',
         properties: {
           id: b.id,
-          confidence: b.confidence.total,
-          confidenceClass: getConfidenceClass(b.confidence.total)
+          confidence: b.confidence?.total ?? null,
+          confidenceClass: getConfidenceClass(b.confidence?.total)
         },
         geometry: {
           type: 'Point',
@@ -245,6 +246,7 @@ function addBuildingLayers() {
         'critical', '#dc2626',
         'warning', '#d97706',
         'ok', '#059669',
+        'unknown', '#1a365d',
         '#888888'
       ],
       'circle-radius': [
@@ -271,6 +273,7 @@ function addBuildingLayers() {
         'critical', '#dc2626',
         'warning', '#d97706',
         'ok', '#059669',
+        'unknown', '#1a365d',
         '#888888'
       ],
       'circle-radius': [
@@ -443,7 +446,7 @@ export function getOrCreateEditMarker(buildingId) {
   const building = buildings.find(b => b.id === buildingId);
   if (!building) return null;
 
-  const confidenceClass = getConfidenceClass(building.confidence.total);
+  const confidenceClass = getConfidenceClass(building.confidence?.total);
   const el = document.createElement('div');
   el.className = 'mapbox-marker-wrapper';
   el.innerHTML = `<div class="custom-marker-container">
