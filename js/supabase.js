@@ -87,16 +87,14 @@ export async function loadAllData() {
         eventsResult,
         commentsResult,
         errorsResult,
-        rulesResult,
-        ruleSetsResult
+        rulesJsonResult
     ] = await Promise.all([
         fetchAllRows(client, 'buildings'),
         client.from('users').select('*'),
         client.from('events').select('*').order('created_at', { ascending: false }).range(0, 9999),
         client.from('comments').select('*').order('created_at', { ascending: false }).range(0, 49999),
         fetchAllRows(client, 'errors'),
-        client.from('rules').select('*'),
-        client.from('rule_sets').select('*')
+        fetch('data/rules.json').then(r => r.json()).catch(() => null)
     ]);
 
     // Check for errors
@@ -105,9 +103,7 @@ export async function loadAllData() {
         usersResult.error,
         eventsResult.error,
         commentsResult.error,
-        errorsResult.error,
-        rulesResult.error,
-        ruleSetsResult.error
+        errorsResult.error
     ].filter(Boolean);
 
     if (errors.length > 0) {
@@ -124,16 +120,7 @@ export async function loadAllData() {
 
     const teamMembers = transformUsersFromDB(usersResult.data);
     const eventsData = transformEventsFromDB(eventsResult.data);
-    // Rules: use DB data if available, otherwise fall back to data/rules.json
-    let rulesConfig = transformRulesFromDB(ruleSetsResult.data, rulesResult.data);
-    if (!rulesConfig.ruleSets || rulesConfig.ruleSets.length === 0) {
-        try {
-            const rulesRes = await fetch('data/rules.json');
-            rulesConfig = await rulesRes.json();
-        } catch (_e) {
-            // rules.json not available, keep empty config
-        }
-    }
+    const rulesConfig = rulesJsonResult;
 
     // Also return raw keyed data for backwards compatibility
     const commentsData = keyByBuildingId(commentsResult.data);
