@@ -1613,10 +1613,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupUserDropdown();
   setupDemoButton();
 
-  // Check if user arrived via password reset or invite link
-  if (isPasswordRecoveryMode()) {
-    showPasswordResetModal();
-  }
+  // Password recovery/invite is handled in onAuthStateChange (PASSWORD_RECOVERY event)
 
   // Show login landing immediately (prevents blank screen while auth resolves)
   showLoginLanding();
@@ -1642,6 +1639,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Skip the initial SIGNED_IN if we already handled it below
     if (event === 'SIGNED_IN' && initialLoadDone) {
+      // Check if this is an invite link (user needs to set password)
+      if (isPasswordRecoveryMode()) {
+        showPasswordResetModal();
+        return;
+      }
       // This is a fresh sign-in (not the initial session replay)
       showApp();
       hideAppError();
@@ -1655,6 +1657,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       renderRules();
       renderUsersTable();
       if (map) setTimeout(() => map.resize(), 100);
+    } else if (event === 'PASSWORD_RECOVERY') {
+      // User arrived via reset or invite link — session is now ready
+      showPasswordResetModal();
     } else if (event === 'SIGNED_OUT') {
       showLoginLanding();
       setData({ buildings: [], teamMembers: [], eventsData: {}, commentsData: {}, errorsData: {}, rulesConfig: null });

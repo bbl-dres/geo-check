@@ -4213,6 +4213,20 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   border: 1px solid var(--color-success);
 }
 
+.pw-match-hint {
+  font-size: var(--font-sm);
+  margin-top: var(--space-sm);
+  min-height: 20px;
+}
+
+.pw-match-hint.pw-match-ok {
+  color: var(--color-success);
+}
+
+.pw-match-hint.pw-match-error {
+  color: var(--color-critical);
+}
+
 .forgot-password-link {
   display: block;
   margin-top: var(--space-md);

@@ -1061,9 +1061,9 @@
 
             <label class="modal-label">Rolle</label>
             <select name="role" class="modal-select">
-              <option value="reader">Leser - Nur Ansicht</option>
-              <option value="editor" selected>Bearbeiter - Kann Daten bearbeiten</option>
-              <option value="admin">Admin - Voller Zugriff</option>
+              <option value="Leser">Leser - Nur Ansicht</option>
+              <option value="Bearbeiter" selected>Bearbeiter - Kann Daten bearbeiten</option>
+              <option value="Admin">Admin - Voller Zugriff</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -1210,12 +1210,14 @@
           <div class="password-reset-error" id="password-reset-error" style="display: none;"></div>
           <div class="password-reset-success" id="password-reset-success" style="display: none;"></div>
           <label class="modal-label">Neues Passwort</label>
-          <input type="password" name="password" class="modal-input" placeholder="Mindestens 6 Zeichen" required autocomplete="new-password" minlength="6">
+          <input type="password" name="password" class="modal-input" id="pw-reset-password" placeholder="Mindestens 6 Zeichen" required autocomplete="new-password" minlength="6">
           <label class="modal-label">Passwort bestätigen</label>
-          <input type="password" name="password-confirm" class="modal-input" placeholder="Passwort wiederholen" required autocomplete="new-password">
+          <input type="password" name="password-confirm" class="modal-input" id="pw-reset-confirm" placeholder="Passwort wiederholen" required autocomplete="new-password">
+          <div class="pw-match-hint" id="pw-match-hint"></div>
         </div>
         <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Passwort speichern</button>
+          <button type="button" class="btn btn-ghost" id="pw-reset-cancel">Abbrechen</button>
+          <button type="submit" class="btn btn-primary" id="pw-reset-submit">Passwort speichern</button>
         </div>
       </form>
     </div>
