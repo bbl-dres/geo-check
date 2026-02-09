@@ -15,17 +15,19 @@
  */
 
 import { Hono } from "https://deno.land/x/hono@v4.4.0/mod.ts";
-import { cors } from "https://deno.land/x/hono@v4.4.0/middleware.ts";
 import { checkBuilding, checkBuildingsChunk } from "./engine/runner.ts";
 import { getRegisteredRules } from "./engine/registry.ts";
 
 // Ensure rules are registered
 import "./rules/mod.ts";
 
-const app = new Hono().basePath("/rule-engine");
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, content-type, x-client-info, apikey",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+};
 
-// CORS — allow calls from GitHub Pages and localhost
-app.use("*", cors());
+const app = new Hono().basePath("/rule-engine");
 
 // ── Health ────────────────────────────────────────────────────────
 app.get("/health", (c) => {
@@ -360,4 +362,21 @@ app.get("/doc", (c) => {
 // Root redirect to docs
 app.get("/", (c) => c.redirect("/rule-engine/doc"));
 
-Deno.serve(app.fetch);
+Deno.serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  const response = await app.fetch(req);
+
+  // Add CORS headers to every response
+  const newHeaders = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    newHeaders.set(key, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    headers: newHeaders,
+  });
+});
