@@ -259,7 +259,7 @@ COMMENT ON COLUMN rules.operator IS 'Validation operator: exists, matches, in, b
 CREATE TABLE errors (
     id              VARCHAR(50) PRIMARY KEY,  -- Format: err-{buildingId}-{seq}
     building_id     VARCHAR(20) NOT NULL REFERENCES buildings(id) ON DELETE CASCADE,
-    check_id        VARCHAR(50) NOT NULL REFERENCES rules(id) ON DELETE CASCADE,
+    check_id        VARCHAR(50) NOT NULL,  -- Rule ID (e.g. ID-001, ADR-006) — no FK, rules defined in data/rules.json
     description     TEXT NOT NULL,
     level           VARCHAR(20) NOT NULL,
     field           VARCHAR(50),  -- Affected field name (optional)

@@ -428,35 +428,31 @@ export async function updateBuildingComparisonData(buildingId, comparisonData, u
         'Datenkorrektur gespeichert');
 }
 
+// GWR field map: app camelCase key → DB snake_case column
+// Only includes fields returned by the Swisstopo GWR API.
+// Excluded: zusatz (not in API), parcelArea (comes from ÖREB, not GWR)
+const GWR_FIELD_MAP = {
+    egid: 'egid', egrid: 'egrid', plz: 'plz', ort: 'ort',
+    strasse: 'strasse', hausnummer: 'hausnummer', gemeinde: 'gemeinde',
+    bfsNr: 'bfs_nr', kanton: 'kanton', country: 'country',
+    gstat: 'gstat', gkat: 'gkat', gklas: 'gklas', gbaup: 'gbaup',
+    gbauj: 'gbauj', gastw: 'gastw', ganzwhg: 'ganzwhg', garea: 'garea',
+    lat: 'lat', lng: 'lng'
+};
+
 /**
- * Update a building's GWR fields from Swisstopo API data.
- * Updates each JSONB column's gwr value and recalculates match.
+ * Build a DB update row for a building's GWR fields (pure, no HTTP).
  * @param {string} buildingId
  * @param {Object} building - Current building data (from state)
  * @param {Object|null} gwrData - Mapped GWR values (null = not found in GWR)
+ * @returns {Object} Row object with id + updated columns
  */
-export async function updateBuildingGwrFields(buildingId, building, gwrData) {
-    const client = getSupabase();
+export function buildGwrUpdateRow(buildingId, building, gwrData) {
+    const row = { id: buildingId, in_gwr: !!gwrData };
 
-    if (!gwrData) {
-        // Not found in GWR — set in_gwr = false
-        await client.from('buildings').update({ in_gwr: false }).eq('id', buildingId);
-        return;
-    }
+    if (!gwrData) return row;
 
-    // Fields to update: map app camelCase key → DB snake_case column
-    const fieldMap = {
-        egid: 'egid', egrid: 'egrid', plz: 'plz', ort: 'ort',
-        strasse: 'strasse', hausnummer: 'hausnummer', gemeinde: 'gemeinde',
-        bfsNr: 'bfs_nr', kanton: 'kanton', country: 'country', zusatz: 'zusatz',
-        gstat: 'gstat', gkat: 'gkat', gklas: 'gklas', gbaup: 'gbaup',
-        gbauj: 'gbauj', gastw: 'gastw', ganzwhg: 'ganzwhg', garea: 'garea',
-        parcelArea: 'parcel_area', lat: 'lat', lng: 'lng'
-    };
-
-    const update = { in_gwr: true };
-
-    for (const [appKey, dbCol] of Object.entries(fieldMap)) {
+    for (const [appKey, dbCol] of Object.entries(GWR_FIELD_MAP)) {
         const current = building[appKey];
         const gwrVal = gwrData[appKey] ?? '';
 
@@ -464,21 +460,42 @@ export async function updateBuildingGwrFields(buildingId, building, gwrData) {
             const sap = current.sap || '';
             const korrektur = current.korrektur || '';
             const gwr = String(gwrVal);
-            // Match: both empty = true, otherwise exact string comparison
             const match = (!sap && !gwr) || sap === gwr;
-            update[dbCol] = { sap, gwr, korrektur, match };
+            row[dbCol] = { sap, gwr, korrektur, match };
         }
     }
 
+    return row;
+}
+
+/**
+ * Batch-update multiple buildings' GWR fields in a single upsert.
+ * @param {Object[]} rows - Array of row objects from buildGwrUpdateRow()
+ */
+export async function batchUpdateBuildingGwrFields(rows) {
+    if (rows.length === 0) return;
+    const client = getSupabase();
+
     const { error } = await client
         .from('buildings')
-        .update(update)
-        .eq('id', buildingId);
+        .upsert(rows, { onConflict: 'id' });
 
     if (error) {
-        console.error(`GWR update failed for ${buildingId}:`, error);
+        console.error(`GWR batch update failed (${rows.length} rows):`, error);
         throw error;
     }
+}
+
+/**
+ * Update a single building's GWR fields from Swisstopo API data.
+ * Kept for single-building updates (e.g. detail panel refresh).
+ * @param {string} buildingId
+ * @param {Object} building - Current building data (from state)
+ * @param {Object|null} gwrData - Mapped GWR values (null = not found in GWR)
+ */
+export async function updateBuildingGwrFields(buildingId, building, gwrData) {
+    const row = buildGwrUpdateRow(buildingId, building, gwrData);
+    await batchUpdateBuildingGwrFields([row]);
 }
 
 /**
