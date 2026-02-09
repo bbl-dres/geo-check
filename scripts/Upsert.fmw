@@ -4,7 +4,7 @@
 #        "C:\Program Files\FME\fme.exe" C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts\Upsert.fmw
 #          --FME_LAUNCH_VIEWER_APP "YES"
 #    
-#!   A0_PREVIEW_IMAGE="data:image/png;base64,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"
+#!   A0_PREVIEW_IMAGE="data:image/png;base64,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"
 #!   ARCGIS_COMPATIBILITY="ARCGIS_AUTO"
 #!   ATTR_TYPE_ENCODING="SDF"
 #!   BEGIN_PYTHON=""
@@ -13,8 +13,8 @@
 #!   DESCRIPTION=""
 #!   DESTINATION="NONE"
 #!   DESTINATION_ROUTING_FILE=""
-#!   DOC_EXTENTS="3917.44 1590.92"
-#!   DOC_TOP_LEFT="-351.243 -2583.7"
+#!   DOC_EXTENTS="4830.59 845.951"
+#!   DOC_TOP_LEFT="-2566.06 -2301.59"
 #!   END_PYTHON=""
 #!   END_TCL=""
 #!   EXPLICIT_BOOKMARK_ORDER="false"
@@ -31,7 +31,7 @@
 #!   HISTORY=""
 #!   IGNORE_READER_FAILURE="No"
 #!   LAST_SAVE_BUILD="FME(R) 2025.0.3.0 (20250602 - Build 25241 - WIN64)"
-#!   LAST_SAVE_DATE="2026-02-09T18:33:29"
+#!   LAST_SAVE_DATE="2026-02-09T19:52:40"
 #!   LOG_FILE=""
 #!   LOG_MAX_RECORDED_FEATURES="200"
 #!   MARKDOWN_DESCRIPTION=""
@@ -50,7 +50,7 @@
 #!   TITLE=""
 #!   USAGE=""
 #!   USE_MARKDOWN=""
-#!   VIEW_POSITION="-3476.27 -991.745"
+#!   VIEW_POSITION="-3579.58 -105.889"
 #!   WARN_INVALID_XFORM_PARAM="Yes"
 #!   WORKSPACE_VERSION="1"
 #!   ZOOM_SCALE="121"
@@ -92,10 +92,10 @@
 #! <COMMENT
 #!   IDENTIFIER="16"
 #!   COMMENT_VALUE="&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;&#10;&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;&#10;p, li { white-space: pre-wrap; }&#10;hr { height: 1px; border-width: 0; }&#10;li.unchecked::marker { content: &quot;\2610&quot;; }&#10;li.checked::marker { content: &quot;\2612&quot;; }&#10;&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;&#10;&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Upsert&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"
-#!   POSITION="3130.1965912221103 -1087.6870967056775"
-#!   TOP_LEFT="3130.1965912221103 -1087.6870967056775"
-#!   BOTTOM_RIGHT="3566.1867792489907 -1088.6870967056775"
-#!   BOUNDING_RECT="3130.1965912221103 -1087.6870967056775 435.99018802688028 1"
+#!   POSITION="1828.5306820010342 -2107.8419263531478"
+#!   TOP_LEFT="1828.5306820010342 -2107.8419263531478"
+#!   BOTTOM_RIGHT="2264.5208700279145 -2108.8419263531478"
+#!   BOUNDING_RECT="1828.5306820010342 -2107.8419263531478 435.99018802688028 1"
 #!   ORDER="500000000001832.13"
 #!   FOLLOW_ANCHOR="true"
 #!   INFO_NODE="false"
@@ -115,8 +115,8 @@
 #!   IDENTIFIER="2"
 #!   TYPE="FeatureReader"
 #!   VERSION="15"
-#!   POSITION="249.04691195672308 -1439.1931109393738"
-#!   BOUNDING_RECT="249.04691195672308 -1439.1931109393738 436 65"
+#!   POSITION="-1824.8374632506652 -1545.0825995863263"
+#!   BOUNDING_RECT="-1824.8374632506652 -1545.0825995863263 436 65"
 #!   ORDER="500000000000001"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -289,8 +289,8 @@
 #!   IDENTIFIER="3"
 #!   TYPE="Creator"
 #!   VERSION="7"
-#!   POSITION="249.04691195672308 -992.77852282655067"
-#!   BOUNDING_RECT="249.04691195672308 -992.77852282655067 436 65"
+#!   POSITION="-2566.0638837793331 -1731.4222729004155"
+#!   BOUNDING_RECT="-2566.0638837793331 -1731.4222729004155 436 65"
 #!   ORDER="500000000000002"
 #!   PARMS_EDITED="false"
 #!   ENABLED="true"
@@ -315,8 +315,8 @@
 #!   IDENTIFIER="5"
 #!   TYPE="AttributeCreator"
 #!   VERSION="10"
-#!   POSITION="1850.2767672304813 -1317.5964205923049"
-#!   BOUNDING_RECT="1850.2767672304813 -1317.5964205923049 436 65"
+#!   POSITION="251.60375570697738 -1686.918295629237"
+#!   BOUNDING_RECT="251.60375570697738 -1686.918295629237 436 65"
 #!   ORDER="500000000000003"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -413,7 +413,7 @@
 #!     <XFORM_ATTR ATTR_NAME="gis_wg84_lat" IS_USER_CREATED="false" FEAT_INDEX="0" />
 #!     <XFORM_PARM PARM_NAME="ATTRIBUTE_GRP" PARM_VALUE=""/>
 #!     <XFORM_PARM PARM_NAME="ATTRIBUTE_HANDLING" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="ATTR_TABLE" PARM_VALUE="&quot;&quot; id SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_techplz&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  name SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  portfolio SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_portfolio&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  gwrEgid SET_TO True varchar&lt;openparen&gt;4&lt;closeparen&gt;  mapLat SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_wg84_lat&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  mapLng SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_wg84_lon&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  country SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_land&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  kanton SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_region&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  gemeinde SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  bfsNr SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  plz SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_plz&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  ort SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_ort&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  strasse SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_strasse&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  hausnummer SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_hausnr&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  zusatz SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  egid SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  egrid SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egrid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  lat SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_wg84_lat&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  lng SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_wg84_lon&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;"/>
+#!     <XFORM_PARM PARM_NAME="ATTR_TABLE" PARM_VALUE="&quot;&quot; id SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_techplz&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  name SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  portfolio SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_bbl_portfolio&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  gwrEgid SET_TO &quot;FME_CONDITIONAL:DEFAULT_VALUE&apos;_FME_NO_OP_&apos;BOOL_OP;OR;COMPOSITE_TEST;1;TEST gis_av_egid ATTRIBUTE_HAS_A_VALUE _FME_BLANK_STRING_&apos;true&apos;FME_NUM_CONDITIONS2___&quot; varchar&lt;openparen&gt;200&lt;closeparen&gt;  mapLat SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_wg84_lat&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  mapLng SET_TO &lt;at&gt;Value&lt;openparen&gt;gis_wg84_lon&lt;closeparen&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  country SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_land&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  kanton SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_region&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  gemeinde SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  bfsNr SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  plz SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_plz&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  ort SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_ort&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  strasse SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_strasse&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  hausnummer SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_adr_hausnr&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  zusatz SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;56&lt;closeparen&gt;  egid SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  egrid SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_av_egrid&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  lat SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_wg84_lat&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;  lng SET_TO &lt;opencurly&gt;&lt;space&gt;&lt;quote&gt;sap&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;at&gt;Value&lt;openparen&gt;gis_wg84_lon&lt;closeparen&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;gwr&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;korrektur&lt;quote&gt;:&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&lt;comma&gt;&lt;space&gt;&lt;quote&gt;match&lt;quote&gt;:&lt;space&gt;true&lt;space&gt;&lt;closecurly&gt; varchar&lt;openparen&gt;200&lt;closeparen&gt;"/>
 #!     <XFORM_PARM PARM_NAME="MULTI_FEATURE_MODE" PARM_VALUE="NO"/>
 #!     <XFORM_PARM PARM_NAME="NULL_ATTR_MODE" PARM_VALUE="NO_OP"/>
 #!     <XFORM_PARM PARM_NAME="NULL_ATTR_VALUE" PARM_VALUE="&lt;Unused&gt;"/>
@@ -428,8 +428,8 @@
 #!   IDENTIFIER="7"
 #!   TYPE="FeatureWriter"
 #!   VERSION="0"
-#!   POSITION="3130.1965912221103 -1216.4377842125525"
-#!   BOUNDING_RECT="3130.1965912221103 -1216.4377842125525 436 65"
+#!   POSITION="1828.5306820010342 -2236.592613860023"
+#!   BOUNDING_RECT="1828.5306820010342 -2236.592613860023 436 65"
 #!   ORDER="500000000000004"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -489,8 +489,8 @@
 #!   IDENTIFIER="11"
 #!   TYPE="AttributeKeeper"
 #!   VERSION="3"
-#!   POSITION="1850.2767672304813 -1714.8931819896716"
-#!   BOUNDING_RECT="1850.2767672304813 -1714.8931819896716 436 65"
+#!   POSITION="251.60375570697738 -2084.2150570266035"
+#!   BOUNDING_RECT="251.60375570697738 -2084.2150570266035 436 65"
 #!   ORDER="500000000001827.13"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -530,8 +530,8 @@
 #!   IDENTIFIER="12"
 #!   TYPE="BulkAttributeRenamer"
 #!   VERSION="5"
-#!   POSITION="1039.3440711266621 -1317.5964205923049"
-#!   BOUNDING_RECT="1039.3440711266621 -1317.5964205923049 481.5625 65"
+#!   POSITION="-794.35195178398021 -1455.6414064140638"
+#!   BOUNDING_RECT="-794.35195178398021 -1455.6414064140638 481.5625 65"
 #!   ORDER="500000000001828.13"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -626,8 +626,8 @@
 #!   IDENTIFIER="17"
 #!   TYPE="TestFilter"
 #!   VERSION="3"
-#!   POSITION="1084.9065711266621 -1714.8931819896716"
-#!   BOUNDING_RECT="1084.9065711266621 -1714.8931819896716 436 65"
+#!   POSITION="-849.51359952132543 -1797.5386365433903"
+#!   BOUNDING_RECT="-849.51359952132543 -1797.5386365433903 658.39598586584998 65"
 #!   ORDER="500000000001829.13"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -843,7 +843,7 @@
 #!     <XFORM_ATTR ATTR_NAME="gis_y" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #!     <XFORM_ATTR ATTR_NAME="gis_wg84_lon" IS_USER_CREATED="false" FEAT_INDEX="2" />
 #!     <XFORM_ATTR ATTR_NAME="gis_wg84_lat" IS_USER_CREATED="false" FEAT_INDEX="2" />
-#!     <OUTPUT_FEAT NAME="&lt;lt&gt;UNFILTERED&lt;gt&gt;"/>
+#!     <OUTPUT_FEAT NAME="&lt;at&gt;Value&lt;openparen&gt;gis_adr_land&lt;closeparen&gt;&lt;space&gt;NOT_=&lt;space&gt;Schweiz"/>
 #!     <FEAT_COLLAPSED COLLAPSED="3"/>
 #!     <XFORM_ATTR ATTR_NAME="gis_objectid" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #!     <XFORM_ATTR ATTR_NAME="gis_bbl_techplz" IS_USER_CREATED="false" FEAT_INDEX="3" />
@@ -913,12 +913,152 @@
 #!     <XFORM_ATTR ATTR_NAME="gis_y" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #!     <XFORM_ATTR ATTR_NAME="gis_wg84_lon" IS_USER_CREATED="false" FEAT_INDEX="3" />
 #!     <XFORM_ATTR ATTR_NAME="gis_wg84_lat" IS_USER_CREATED="false" FEAT_INDEX="3" />
+#!     <OUTPUT_FEAT NAME="&lt;at&gt;Value&lt;openparen&gt;gis_bbl_techplz&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;GR"/>
+#!     <FEAT_COLLAPSED COLLAPSED="4"/>
+#!     <XFORM_ATTR ATTR_NAME="gis_objectid" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_techplz" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_we" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_teilobj" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_bezeichnung" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_land" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_region" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_ort" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_plz" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_strasse" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_hausnr" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_concat" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_egid" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_egrid" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_status" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_eigentm_art" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_objstrat" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_mietem" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbauj" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_verkaufsjahr" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_portfolio" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_portfolio_grp" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_anschwrt" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_buchwrt" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbdart1" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbdart2" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bfs_gklas" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bfs_gkat" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_objverantw" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_prtfverantw" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gfog" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gfug" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_source" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ngf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_nf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_hnf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_nnf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ff" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_vf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ebf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gv" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gvog" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gvug" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_source" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_og" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_ug" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_source" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_ggf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_gsf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_uf" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_source" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_bauzn_bez" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_bauzn_nutz" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_globalid" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_ao_id" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_ao_source" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_label" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_search" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_googlemaps" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_gwr" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_oreb" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_globalid_1" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_x" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_y" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_wg84_lon" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <XFORM_ATTR ATTR_NAME="gis_wg84_lat" IS_USER_CREATED="false" FEAT_INDEX="4" />
+#!     <OUTPUT_FEAT NAME="&lt;lt&gt;UNFILTERED&lt;gt&gt;"/>
+#!     <FEAT_COLLAPSED COLLAPSED="5"/>
+#!     <XFORM_ATTR ATTR_NAME="gis_objectid" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_techplz" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_we" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_teilobj" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_bezeichnung" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_land" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_region" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_ort" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_plz" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_strasse" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_hausnr" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_adr_concat" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_egid" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_egrid" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_status" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_eigentm_art" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_objstrat" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_mietem" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbauj" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_verkaufsjahr" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_portfolio" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_portfolio_grp" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_anschwrt" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_buchwrt" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbdart1" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_gbdart2" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bfs_gklas" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bfs_gkat" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_objverantw" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_bbl_prtfverantw" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gfog" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_gfug" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_source" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ngf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_nf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_hnf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_nnf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ff" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_vf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_garea_ebf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gv" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gvog" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_gvug" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gvol_source" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_og" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_ug" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_gastw_source" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_ggf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_gsf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_uf" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_larea_source" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_bauzn_bez" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_av_bauzn_nutz" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_globalid" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_ao_id" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_ao_source" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_label" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_search" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_googlemaps" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_gwr" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_url_oreb" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_globalid_1" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_x" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_y" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_wg84_lon" IS_USER_CREATED="false" FEAT_INDEX="5" />
+#!     <XFORM_ATTR ATTR_NAME="gis_wg84_lat" IS_USER_CREATED="false" FEAT_INDEX="5" />
 #!     <XFORM_PARM PARM_NAME="ADVANCED_GROUP" PARM_VALUE=""/>
 #!     <XFORM_PARM PARM_NAME="DEFAULT_VALUE" PARM_VALUE="&lt;lt&gt;UNFILTERED&lt;gt&gt;"/>
 #!     <XFORM_PARM PARM_NAME="PASSED_TEST_GROUP_OUTPUT" PARM_VALUE="FIRST"/>
 #!     <XFORM_PARM PARM_NAME="PRESERVE_FEATURE_ORDER" PARM_VALUE="PER_OUTPUT_PORT"/>
 #!     <XFORM_PARM PARM_NAME="TESTLISTGRP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="TEST_LIST" PARM_VALUE="&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,CASE_INSENSITIVE_TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_bbl_bezeichnung&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;CONTAINS&lt;space&gt;ABGA&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;ABGA,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,CASE_INSENSITIVE_TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_bbl_bezeichnung&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;CONTAINS&lt;space&gt;L&lt;lt&gt;u00d6&lt;gt&gt;VM&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;L&lt;u00d6&gt;VM,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,TEST&lt;space&gt;gis_bbl_bezeichnung&lt;space&gt;NOT_ATTRIBUTE_HAS_A_VALUE&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&quot;,gis_bbl_bezeichnung&lt;space&gt;NOT_ATTRIBUTE_HAS_A_VALUE"/>
+#!     <XFORM_PARM PARM_NAME="TEST_LIST" PARM_VALUE="&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,CASE_INSENSITIVE_TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_bbl_bezeichnung&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;CONTAINS&lt;space&gt;ABGA&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;ABGA,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,CASE_INSENSITIVE_TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_bbl_bezeichnung&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;CONTAINS&lt;space&gt;L&lt;lt&gt;u00d6&lt;gt&gt;VM&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_bbl_bezeichnung&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;L&lt;u00d6&gt;VM,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,TEST&lt;space&gt;gis_bbl_bezeichnung&lt;space&gt;NOT_ATTRIBUTE_HAS_A_VALUE&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&quot;,gis_bbl_bezeichnung&lt;space&gt;NOT_ATTRIBUTE_HAS_A_VALUE,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_adr_land&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;NOT_=&lt;space&gt;Schweiz&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_adr_land&lt;closeparen&gt;&lt;space&gt;NOT_=&lt;space&gt;Schweiz,&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,CASE_INSENSITIVE_TEST&lt;space&gt;&lt;lt&gt;at&lt;gt&gt;Value&lt;lt&gt;openparen&lt;gt&gt;gis_bbl_techplz&lt;lt&gt;closeparen&lt;gt&gt;&lt;space&gt;CONTAINS&lt;space&gt;GR&quot;,&lt;at&gt;Value&lt;openparen&gt;gis_bbl_techplz&lt;closeparen&gt;&lt;space&gt;CONTAINS&lt;space&gt;GR"/>
 #!     <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
 #!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="TestFilter"/>
 #! </TRANSFORMER>
@@ -926,8 +1066,8 @@
 #!   IDENTIFIER="14"
 #!   TYPE="AttributeManager"
 #!   VERSION="5"
-#!   POSITION="2414.796875241479 -1782.0426138145679"
-#!   BOUNDING_RECT="2414.796875241479 -1782.0426138145679 436 65"
+#!   POSITION="816.12386371797515 -2151.3644888515"
+#!   BOUNDING_RECT="816.12386371797515 -2151.3644888515 436 65"
 #!   ORDER="500000000001830.13"
 #!   PARMS_EDITED="true"
 #!   ENABLED="true"
@@ -968,397 +1108,12 @@
 #!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="AttributeManager"/>
 #!     <XFORM_PARM PARM_NAME="NULL_ATTR_MODE_DISPLAY" PARM_IS_LOOKUP="true" PARM_VALUE="No Substitution"/>
 #! </TRANSFORMER>
-#! <TRANSFORMER
-#!   IDENTIFIER="22"
-#!   TYPE="FeatureReader"
-#!   VERSION="15"
-#!   POSITION="281.51107957360568 -2184.9392047639485"
-#!   BOUNDING_RECT="281.51107957360568 -2184.9392047639485 472.625 65"
-#!   ORDER="500000000001833.13"
-#!   PARMS_EDITED="true"
-#!   ENABLED="true"
-#!   LAST_PARM_EDIT="25241"
-#! >
-#!     <OUTPUT_FEAT NAME="&lt;SCHEMA&gt;"/>
-#!     <FEAT_COLLAPSED COLLAPSED="0"/>
-#!     <XFORM_ATTR ATTR_NAME="_creation_instance" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="fme_feature_type_name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="attribute{}.name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="attribute{}.fme_data_type" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="attribute{}.native_data_type" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="fme_format_short_name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="fme_format_long_name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="fme_schema_handling" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <OUTPUT_FEAT NAME="public.buildings"/>
-#!     <FEAT_COLLAPSED COLLAPSED="1"/>
-#!     <XFORM_ATTR ATTR_NAME="id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="name" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="portfolio" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="priority" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanban_status" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="due_date" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee_id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="in_gwr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="confidence" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="country" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gemeinde" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="bfs_nr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="plz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ort" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="strasse" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="hausnummer" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="zusatz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egrid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gkat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gklas" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gstat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbaup" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbauj" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gastw" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ganzwhg" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="garea" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="parcel_area" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton_code" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="images" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update_by" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="created_at" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <OUTPUT_FEAT NAME="&lt;OTHER&gt;"/>
-#!     <FEAT_COLLAPSED COLLAPSED="2"/>
-#!     <OUTPUT_FEAT NAME="INITIATOR"/>
-#!     <FEAT_COLLAPSED COLLAPSED="3"/>
-#!     <XFORM_ATTR ATTR_NAME="_creation_instance" IS_USER_CREATED="false" FEAT_INDEX="3" />
-#!     <XFORM_ATTR ATTR_NAME="_matched_records" IS_USER_CREATED="false" FEAT_INDEX="3" />
-#!     <OUTPUT_FEAT NAME="&lt;REJECTED&gt;"/>
-#!     <FEAT_COLLAPSED COLLAPSED="4"/>
-#!     <XFORM_ATTR ATTR_NAME="_creation_instance" IS_USER_CREATED="false" FEAT_INDEX="4" />
-#!     <XFORM_ATTR ATTR_NAME="_reader_error" IS_USER_CREATED="false" FEAT_INDEX="4" />
-#!     <XFORM_PARM PARM_NAME="ATTRIBUTES" PARM_VALUE="public.buildings,&quot;id,name,portfolio,priority,kanban_status,due_date,assignee_id,assignee,in_gwr,confidence,country,kanton,gemeinde,bfs_nr,plz,ort,strasse,hausnummer,zusatz,egid,egrid,lat,lng,gkat,gklas,gstat,gbaup,gbauj,gastw,ganzwhg,garea,parcel_area,kanton_code,map_lat,map_lng,images,last_update,last_update_by,created_at&quot;"/>
-#!     <XFORM_PARM PARM_NAME="ATTRIBUTE_TYPES" PARM_VALUE="public.buildings,&quot;varchar(20),varchar(255),varchar(50),varchar(20),varchar(20),date,int32,varchar(100),logical,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,json,varchar(50),real64,real64,json,datetime,varchar(100),datetime&quot;"/>
-#!     <XFORM_PARM PARM_NAME="ATTRS_TO_EXPOSE" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="ATTR_ACCUM_MODE" PARM_VALUE="Only Use Result"/>
-#!     <XFORM_PARM PARM_NAME="ATTR_CONFLICT_RES" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="ATTR_IGNORE_NULLS" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="ATTR_PREFIX" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="AVAILABLE_FEATURE_TYPES" PARM_VALUE="public.buildings"/>
-#!     <XFORM_PARM PARM_NAME="CACHE_TIMEOUT_HRS" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="CLIP_TO_ENVELOPE" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="COMBINE_GEOM" PARM_VALUE="Use Result"/>
-#!     <XFORM_PARM PARM_NAME="CONSTRAINTS_GROUP" PARM_VALUE="FME_DISCLOSURE_OPEN"/>
-#!     <XFORM_PARM PARM_NAME="COORDSYS" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="DATASET" PARM_VALUE="Supabase&lt;space&gt;Geo-Check"/>
-#!     <XFORM_PARM PARM_NAME="DYNGROUP_0" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="ENABLE_CACHE" PARM_VALUE="NO"/>
-#!     <XFORM_PARM PARM_NAME="FEATURETYPES" PARM_VALUE="public.buildings"/>
-#!     <XFORM_PARM PARM_NAME="FORCE_REFRESH_OUTPUTS" PARM_VALUE="on_parm_change"/>
-#!     <XFORM_PARM PARM_NAME="FORMAT" PARM_VALUE="POSTGRES"/>
-#!     <XFORM_PARM PARM_NAME="FORMAT_ATTRIBUTE_TYPES" PARM_VALUE="public.buildings,"/>
-#!     <XFORM_PARM PARM_NAME="FORMAT_DIRECTIVES" PARM_VALUE="METAFILE,POSTGRES"/>
-#!     <XFORM_PARM PARM_NAME="FORMAT_PARAMS" PARM_VALUE="POSTGRES_CREATE_FEATURE_TABLES_FROM_DATA,&quot;OPTIONAL NO_EDIT TEXT&quot;,POSTGRES&lt;space&gt;,POSTGRES_TABLELIST,&quot;IGNORE TEXT&quot;,POSTGRES&lt;space&gt;Tables:,POSTGRES_BEGIN_SQL,&quot;OPTIONAL TEXT_EDIT_SQL_CFG_ENCODED MODE,SQL;FORMAT,POSTGRES&quot;,POSTGRES&lt;space&gt;SQL&lt;space&gt;To&lt;space&gt;Run&lt;space&gt;Before&lt;space&gt;Read,POSTGRES_END_SQL,&quot;OPTIONAL TEXT_EDIT_SQL_CFG_ENCODED MODE,SQL;FORMAT,POSTGRES&quot;,POSTGRES&lt;space&gt;SQL&lt;space&gt;To&lt;space&gt;Run&lt;space&gt;After&lt;space&gt;Read,POSTGRES_WHERE_CLAUSE,&quot;OPTIONAL TEXT_EDIT_SQL_CFG_ENCODED MODE,WHERE;FORMAT,POSTGRES&quot;,POSTGRES&lt;space&gt;WHERE&lt;space&gt;Clause:,POSTGRES_SCHEMAS_FOR_TABLE_LISTING,&quot;IGNORE TEXT&quot;,POSTGRES&lt;space&gt;Schemas&lt;space&gt;for&lt;space&gt;Tables:,POSTGRES_POSTGRES_EXPOSE_FORMAT_ATTRS,&quot;OPTIONAL LITERAL EXPOSED_ATTRS POSTGRES%Source&quot;,POSTGRES&lt;space&gt;Additional&lt;space&gt;Attributes&lt;space&gt;to&lt;space&gt;Expose:,POSTGRES_QUERY_FEATURE_TYPES_FOR_MERGE_FILTERS,&quot;OPTIONAL NO_EDIT TEXT&quot;,POSTGRES&lt;space&gt;,POSTGRES_EXPOSE_ATTRS_GROUP,&quot;OPTIONAL DISCLOSUREGROUP POSTGRES_EXPOSE_FORMAT_ATTRS&quot;,POSTGRES&lt;space&gt;Schema&lt;space&gt;Attributes,POSTGRES_ADVANCED,&quot;OPTIONAL DISCLOSUREGROUP FEATURES_PER_FETCH%BEGIN_SQL%END_SQL&quot;,POSTGRES&lt;space&gt;Advanced,POSTGRES_FEATURES_PER_FETCH,&quot;OPTIONAL FLOAT&quot;,POSTGRES&lt;space&gt;Number&lt;space&gt;Of&lt;space&gt;Records&lt;space&gt;To&lt;space&gt;Fetch&lt;space&gt;At&lt;space&gt;A&lt;space&gt;Time,POSTGRES_READ_TIME_WITH_TIMEZONE,&quot;OPTIONAL NO_EDIT TEXT&quot;,POSTGRES&lt;space&gt;,POSTGRES_NAMED_CONNECTION,&quot;IGNORE TEXT&quot;,POSTGRES&lt;space&gt;Connection:"/>
-#!     <XFORM_PARM PARM_NAME="FTTR_SEPARATOR" PARM_VALUE="SPACE"/>
-#!     <XFORM_PARM PARM_NAME="GENERIC_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="GEOMETRY_TYPES" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="INITIATOR_FIRST_OUTPUT" PARM_VALUE="default"/>
-#!     <XFORM_PARM PARM_NAME="INTERACT" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="MAX_FEATURES" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="MERGE_HANDLING_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="ORDER_RESULTS" PARM_VALUE="No"/>
-#!     <XFORM_PARM PARM_NAME="OUTPUTPORTS_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="OUTPUT_ADD_SCHEMA_ATTRIBUTES" PARM_VALUE="NO"/>
-#!     <XFORM_PARM PARM_NAME="OUTPUT_FEATURES_DISPLAY" PARM_VALUE="Schema and Data Features"/>
-#!     <XFORM_PARM PARM_NAME="OUTPUT_FEATURES_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="OUTPUT_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="OUTPUT_PORTS_MODE" PARM_VALUE="PORTS_FROM_FTTR"/>
-#!     <XFORM_PARM PARM_NAME="PORTS_FROM_FTTR" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_ADVANCED" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_BEGIN_SQL" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_CREATE_FEATURE_TABLES_FROM_DATA" PARM_VALUE="Yes"/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_END_SQL" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_EXPOSE_ATTRS_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_FEATURES_PER_FETCH" PARM_VALUE="10000"/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_NAMED_CONNECTION" PARM_VALUE="Supabase&lt;space&gt;Geo-Check"/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_POSTGRES_EXPOSE_FORMAT_ATTRS" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_QUERY_FEATURE_TYPES_FOR_MERGE_FILTERS" PARM_VALUE="Yes"/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_READ_TIME_WITH_TIMEZONE" PARM_VALUE="Yes"/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_SCHEMAS_FOR_TABLE_LISTING" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_TABLELIST" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="POSTGRES_WHERE_CLAUSE" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="READER_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="READ_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="SELECTED_PORTS" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="SINGLE_PORT" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="SUPPORTED_SPATIAL_INTERACTIONS" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="WHERE" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="FeatureReader_2"/>
-#! </TRANSFORMER>
-#! <TRANSFORMER
-#!   IDENTIFIER="23"
-#!   TYPE="Creator"
-#!   VERSION="7"
-#!   POSITION="-351.24318185330617 -2283.0806820464895"
-#!   BOUNDING_RECT="-351.24318185330617 -2283.0806820464895 436 65"
-#!   ORDER="500000000001835.13"
-#!   PARMS_EDITED="false"
-#!   ENABLED="true"
-#!   LAST_PARM_EDIT="25241"
-#! >
-#!     <OUTPUT_FEAT NAME="CREATED"/>
-#!     <FEAT_COLLAPSED COLLAPSED="0"/>
-#!     <XFORM_ATTR ATTR_NAME="_creation_instance" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_PARM PARM_NAME="ATEND" PARM_VALUE="no"/>
-#!     <XFORM_PARM PARM_NAME="COORDSYS" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="CRE_ATTR" PARM_VALUE="_creation_instance"/>
-#!     <XFORM_PARM PARM_NAME="GEOJSON" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="GEOM" PARM_VALUE="&lt;lt&gt;?xml&lt;space&gt;version=&lt;quote&gt;1.0&lt;quote&gt;&lt;space&gt;encoding=&lt;quote&gt;US_ASCII&lt;quote&gt;&lt;space&gt;standalone=&lt;quote&gt;no&lt;quote&gt;&lt;space&gt;?&lt;gt&gt;&lt;lt&gt;geometry&lt;space&gt;dimension=&lt;quote&gt;2&lt;quote&gt;&lt;gt&gt;&lt;lt&gt;null&lt;solidus&gt;&lt;gt&gt;&lt;lt&gt;&lt;solidus&gt;geometry&lt;gt&gt;"/>
-#!     <XFORM_PARM PARM_NAME="GEOMTYPE" PARM_VALUE="Geometry Object"/>
-#!     <XFORM_PARM PARM_NAME="NUM" PARM_VALUE="1"/>
-#!     <XFORM_PARM PARM_NAME="OAN_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="PARAMETERS_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="Creator_2"/>
-#! </TRANSFORMER>
-#! <TRANSFORMER
-#!   IDENTIFIER="25"
-#!   TYPE="TestFilter"
-#!   VERSION="3"
-#!   POSITION="1696.8144888060453 -2518.7022729731425"
-#!   BOUNDING_RECT="1696.8144888060453 -2518.7022729731425 436 65"
-#!   ORDER="500000000001836.13"
-#!   PARMS_EDITED="true"
-#!   ENABLED="true"
-#!   LAST_PARM_EDIT="25241"
-#! >
-#!     <OUTPUT_FEAT NAME="egid_gwr&lt;space&gt;ATTRIBUTE_HAS_A_VALUE"/>
-#!     <FEAT_COLLAPSED COLLAPSED="0"/>
-#!     <XFORM_ATTR ATTR_NAME="id" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="portfolio" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="priority" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanban_status" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="due_date" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="assignee_id" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="assignee" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="in_gwr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="confidence" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="country" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanton" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gemeinde" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="bfs_nr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="plz" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="ort" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="strasse" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="hausnummer" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="zusatz" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egrid" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="lat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="lng" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gkat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gklas" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gstat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gbaup" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gbauj" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gastw" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="ganzwhg" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="garea" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="parcel_area" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanton_code" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="map_lat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="map_lng" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="images" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="last_update" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="last_update_by" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="created_at" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid_gwr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid_sap" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <OUTPUT_FEAT NAME="&lt;lt&gt;UNFILTERED&lt;gt&gt;"/>
-#!     <FEAT_COLLAPSED COLLAPSED="1"/>
-#!     <XFORM_ATTR ATTR_NAME="id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="name" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="portfolio" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="priority" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanban_status" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="due_date" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee_id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="in_gwr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="confidence" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="country" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gemeinde" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="bfs_nr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="plz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ort" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="strasse" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="hausnummer" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="zusatz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egrid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gkat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gklas" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gstat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbaup" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbauj" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gastw" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ganzwhg" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="garea" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="parcel_area" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton_code" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="images" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update_by" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="created_at" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid_gwr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid_sap" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_PARM PARM_NAME="ADVANCED_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="DEFAULT_VALUE" PARM_VALUE="&lt;lt&gt;UNFILTERED&lt;gt&gt;"/>
-#!     <XFORM_PARM PARM_NAME="PASSED_TEST_GROUP_OUTPUT" PARM_VALUE="FIRST"/>
-#!     <XFORM_PARM PARM_NAME="PRESERVE_FEATURE_ORDER" PARM_VALUE="PER_OUTPUT_PORT"/>
-#!     <XFORM_PARM PARM_NAME="TESTLISTGRP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="TEST_LIST" PARM_VALUE="&quot;BOOL_OP,OR,COMPOSITE_TEST,&quot;&quot;&quot;&quot;&quot;&quot;1&quot;&quot;&quot;&quot;&quot;&quot;,TEST_CLAUSE,TEST&lt;space&gt;egid_gwr&lt;space&gt;ATTRIBUTE_HAS_A_VALUE&lt;space&gt;&lt;quote&gt;&lt;quote&gt;&quot;,egid_gwr&lt;space&gt;ATTRIBUTE_HAS_A_VALUE"/>
-#!     <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="TestFilter_2"/>
-#! </TRANSFORMER>
-#! <TRANSFORMER
-#!   IDENTIFIER="27"
-#!   TYPE="JSONExtractor"
-#!   VERSION="6"
-#!   POSITION="942.6747160033583 -2458.7022729731425"
-#!   BOUNDING_RECT="942.6747160033583 -2458.7022729731425 436 65"
-#!   ORDER="500000000001837.13"
-#!   PARMS_EDITED="true"
-#!   ENABLED="true"
-#!   LAST_PARM_EDIT="25241"
-#! >
-#!     <OUTPUT_FEAT NAME="EVALUATED"/>
-#!     <FEAT_COLLAPSED COLLAPSED="0"/>
-#!     <XFORM_ATTR ATTR_NAME="id" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="name" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="portfolio" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="priority" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanban_status" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="due_date" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="assignee_id" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="assignee" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="in_gwr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="confidence" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="country" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanton" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gemeinde" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="bfs_nr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="plz" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="ort" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="strasse" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="hausnummer" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="zusatz" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egrid" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="lat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="lng" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gkat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gklas" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gstat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gbaup" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gbauj" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="gastw" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="ganzwhg" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="garea" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="parcel_area" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="kanton_code" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="map_lat" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="map_lng" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="images" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="last_update" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="last_update_by" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="created_at" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid_gwr" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <XFORM_ATTR ATTR_NAME="egid_sap" IS_USER_CREATED="false" FEAT_INDEX="0" />
-#!     <OUTPUT_FEAT NAME="&lt;REJECTED&gt;"/>
-#!     <FEAT_COLLAPSED COLLAPSED="1"/>
-#!     <XFORM_ATTR ATTR_NAME="id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="name" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="portfolio" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="priority" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanban_status" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="due_date" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee_id" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="assignee" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="in_gwr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="confidence" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="country" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gemeinde" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="bfs_nr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="plz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ort" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="strasse" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="hausnummer" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="zusatz" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egrid" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gkat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gklas" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gstat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbaup" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gbauj" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="gastw" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="ganzwhg" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="garea" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="parcel_area" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="kanton_code" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lat" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="map_lng" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="images" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="last_update_by" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="created_at" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="fme_rejection_code" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid_gwr" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_ATTR ATTR_NAME="egid_sap" IS_USER_CREATED="false" FEAT_INDEX="1" />
-#!     <XFORM_PARM PARM_NAME="EXTRACT_QUERY_TABLE" PARM_VALUE="egid_gwr json&lt;openbracket&gt;&lt;quote&gt;gwr&lt;quote&gt;&lt;closebracket&gt; egid_sap json&lt;openbracket&gt;&lt;quote&gt;sap&lt;quote&gt;&lt;closebracket&gt;"/>
-#!     <XFORM_PARM PARM_NAME="FILEPATH_OR_URL" PARM_VALUE="&lt;Unused&gt;"/>
-#!     <XFORM_PARM PARM_NAME="INPUT_SETTINGS_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="JSON_DOCUMENT" PARM_VALUE="&lt;at&gt;Value&lt;openparen&gt;egid&lt;closeparen&gt;"/>
-#!     <XFORM_PARM PARM_NAME="QUERY_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="READ_FROM_FILE" PARM_VALUE="NO"/>
-#!     <XFORM_PARM PARM_NAME="TRANSFORMER_GROUP" PARM_VALUE=""/>
-#!     <XFORM_PARM PARM_NAME="XFORMER_NAME" PARM_VALUE="JSONExtractor"/>
-#! </TRANSFORMER>
 #! </TRANSFORMERS>
 #! <FEAT_LINKS>
 #! <FEAT_LINK
 #!   IDENTIFIER="4"
 #!   SOURCE_NODE="3"
 #!   TARGET_NODE="2"
-#!   SOURCE_PORT_DESC="fo 0 CREATED"
-#!   TARGET_PORT_DESC="fi 0 INITIATOR"
-#!   ENABLED="true"
-#!   EXECUTION_IDX="0"
-#!   HIDDEN="false"
-#!   COLOUR="0.050980392156862744,0.050980392156862744,0.047058823529411764,1"
-#!   PEN_WIDTH="4"
-#!   PEN_STYLE="1"
-#!   LINK_STYLE_NAME="&lt;Default&gt;"
-#!   EXTRA_POINTS=""
-#! />
-#! <FEAT_LINK
-#!   IDENTIFIER="24"
-#!   SOURCE_NODE="23"
-#!   TARGET_NODE="22"
 #!   SOURCE_PORT_DESC="fo 0 CREATED"
 #!   TARGET_PORT_DESC="fi 0 INITIATOR"
 #!   ENABLED="true"
@@ -1434,22 +1189,7 @@
 #!   IDENTIFIER="26"
 #!   SOURCE_NODE="17"
 #!   TARGET_NODE="5"
-#!   SOURCE_PORT_DESC="fo 3 &lt;lt&gt;lt&lt;gt&gt;UNFILTERED&lt;lt&gt;gt&lt;gt&gt;"
-#!   TARGET_PORT_DESC="fi 0 "
-#!   ENABLED="true"
-#!   EXECUTION_IDX="0"
-#!   HIDDEN="false"
-#!   COLOUR="0.050980392156862744,0.050980392156862744,0.047058823529411764,1"
-#!   PEN_WIDTH="4"
-#!   PEN_STYLE="1"
-#!   LINK_STYLE_NAME="&lt;Default&gt;"
-#!   EXTRA_POINTS=""
-#! />
-#! <FEAT_LINK
-#!   IDENTIFIER="29"
-#!   SOURCE_NODE="27"
-#!   TARGET_NODE="25"
-#!   SOURCE_PORT_DESC="fo 0 EVALUATED"
+#!   SOURCE_PORT_DESC="fo 5 &lt;lt&gt;lt&lt;gt&gt;UNFILTERED&lt;lt&gt;gt&lt;gt&gt;"
 #!   TARGET_PORT_DESC="fi 0 "
 #!   ENABLED="true"
 #!   EXECUTION_IDX="0"
@@ -1465,21 +1205,6 @@
 #!   SOURCE_NODE="2"
 #!   TARGET_NODE="12"
 #!   SOURCE_PORT_DESC="fo 1 BBL&lt;lt&gt;space&lt;gt&gt;Objekt"
-#!   TARGET_PORT_DESC="fi 0 "
-#!   ENABLED="true"
-#!   EXECUTION_IDX="0"
-#!   HIDDEN="false"
-#!   COLOUR="0.050980392156862744,0.050980392156862744,0.047058823529411764,1"
-#!   PEN_WIDTH="4"
-#!   PEN_STYLE="1"
-#!   LINK_STYLE_NAME="&lt;Default&gt;"
-#!   EXTRA_POINTS=""
-#! />
-#! <FEAT_LINK
-#!   IDENTIFIER="28"
-#!   SOURCE_NODE="22"
-#!   TARGET_NODE="27"
-#!   SOURCE_PORT_DESC="fo 1 public.buildings"
 #!   TARGET_PORT_DESC="fi 0 "
 #!   ENABLED="true"
 #!   EXECUTION_IDX="0"
@@ -1544,35 +1269,7 @@ FACTORY_DEF {$(Creator_GEOJSON)} CreationFactory    FACTORY_NAME { Creator_GEOJS
 FACTORY_DEF {*} TeeFactory    FACTORY_NAME { Creator_Cloner }    INPUT FEATURE_TYPE _____CREATED______        @Tcl2(Creator_CoordSysRemover)        @CoordSys()    NUMBER_OF_COPIES { 1 }    COPY_NUMBER_ATTRIBUTE { "_creation_instance" }    OUTPUT { FEATURE_TYPE Creator_CREATED        fme_feature_type Creator         }
 FACTORY_DEF * BranchingFactory   FACTORY_NAME "Creator_CREATED Brancher -1 4"   INPUT FEATURE_TYPE Creator_CREATED   TARGET_FACTORY "$(WB_CURRENT_CONTEXT)_CREATOR_BRANCH_TARGET"   MAXIMUM_COUNT None   OUTPUT PASSED FEATURE_TYPE *
 # -------------------------------------------------------------------------
-Tcl2 proc Creator_2_CoordSysRemover {} {   global FME_CoordSys;   set FME_CoordSys {}; }
-MACRO Creator_2_XML     NOT_ACTIVATED
-MACRO Creator_2_GEOJSON NOT_ACTIVATED
-INCLUDE [ if { {Geometry Object} == {Geometry Object} } {            puts {MACRO Creator_2_XML *} } ]
-INCLUDE [ if { {Geometry Object} == {GeoJSON} } {            puts {MACRO Creator_2_GEOJSON *} } ]
-FACTORY_DEF {$(Creator_2_XML)} CreationFactory    FACTORY_NAME { Creator_2_XML_Creator }    CREATE_AT_END { no }    OUTPUT { FEATURE_TYPE _____CREATED______        @Geometry(FROM_ENCODED_STRING,<lt>?xml<space>version=<quote>1.0<quote><space>encoding=<quote>US_ASCII<quote><space>standalone=<quote>no<quote><space>?<gt><lt>geometry<space>dimension=<quote>2<quote><gt><lt>null<solidus><gt><lt><solidus>geometry<gt>) }
-FACTORY_DEF {$(Creator_2_GEOJSON)} CreationFactory    FACTORY_NAME { Creator_2_GEOJSON_Creator }    CREATE_AT_END { no }    OUTPUT { FEATURE_TYPE _____CREATED______ 	   @SupplyAttributes(ENCODED,__GeoJSONCreatorTemp__,<Unused>)        @JSONGeometry(FROM_ATTRIBUTE,GEOJSON,__GeoJSONCreatorTemp__, PREFER_ERROR_OVER_REJECTION) 	   @RemoveAttributes(__GeoJSONCreatorTemp__) }
-FACTORY_DEF {*} TeeFactory    FACTORY_NAME { Creator_2_Cloner }    INPUT FEATURE_TYPE _____CREATED______        @Tcl2(Creator_2_CoordSysRemover)        @CoordSys()    NUMBER_OF_COPIES { 1 }    COPY_NUMBER_ATTRIBUTE { "_creation_instance" }    OUTPUT { FEATURE_TYPE Creator_2_CREATED        fme_feature_type Creator_2         }
-FACTORY_DEF * BranchingFactory   FACTORY_NAME "Creator_2_CREATED Brancher -1 24"   INPUT FEATURE_TYPE Creator_2_CREATED   TARGET_FACTORY "$(WB_CURRENT_CONTEXT)_CREATOR_BRANCH_TARGET"   MAXIMUM_COUNT None   OUTPUT PASSED FEATURE_TYPE *
-# -------------------------------------------------------------------------
 FACTORY_DEF * TeeFactory   FACTORY_NAME "$(WB_CURRENT_CONTEXT)_CREATOR_BRANCH_TARGET"   INPUT FEATURE_TYPE *  OUTPUT FEATURE_TYPE *
-# -------------------------------------------------------------------------
-MACRO FeatureReader_2_OUTPUT_PORTS_ENCODED public.buildings
-MACRO FeatureReader_2_DIRECTIVES ADVANCED,,BEGIN_SQL,,CREATE_FEATURE_TABLES_FROM_DATA,Yes,END_SQL,,EXPOSE_ATTRS_GROUP,,FEATURES_PER_FETCH,10000,NAMED_CONNECTION,Supabase<lt>space<gt>Geo-Check,POSTGRES_EXPOSE_FORMAT_ATTRS,,QUERY_FEATURE_TYPES_FOR_MERGE_FILTERS,Yes,READ_TIME_WITH_TIMEZONE,Yes,SCHEMAS_FOR_TABLE_LISTING,,TABLELIST,,WHERE_CLAUSE,
-# Always provide an INTERACTION, otherwise the factory defaults to ENVELOPE_INTERSECTS
-INCLUDE [if { ( {<Unused>} == {<Unused>} ) || ( {($INTERACT)} == {} ) } {             puts {MACRO FCTQUERY_INTERACTION_LINE FCTQUERY_INTERACTION NONE};          } else {             puts {MACRO FCTQUERY_INTERACTION_LINE FCTQUERY_INTERACTION "<Unused>"};          }         ]
-# Consolidate the attribute merge options to what the factory expects
-DEFAULT_MACRO FeatureReader_2_COMBINE_ATTRS
-INCLUDE [       if { {RESULT_ONLY} == {MERGE} } {          puts "MACRO FeatureReader_2_COMBINE_ATTRS <Unused>";       } else {          puts "MACRO FeatureReader_2_COMBINE_ATTRS RESULT_ONLY";       };    ]
-INCLUDE [    puts {DEFAULT_MACRO FeatureReaderDataset_FeatureReader_2 Supabase<space>Geo-Check}; ]
-FACTORY_DEF {*} QueryFactory    FACTORY_NAME { FeatureReader_2 }    INPUT  FEATURE_TYPE Creator_2_CREATED    $(FCTQUERY_INTERACTION_LINE)    CLIP_TO_INITIATOR_ENVELOPE { "<Unused>" }    COMBINE_ATTRIBUTES  { $(FeatureReader_2_COMBINE_ATTRS) }    IGNORE_NULLS        { <Unused> }    REJECT_POINTS       { YES }    QUERYFCT_ATTRIBUTE_PREFIX { <Unused> }    COMBINE_GEOMETRY    { RESULT_ONLY }    ENABLE_CACHE        { NO }    QUERYFCT_TABLE_SEPARATOR { SPACE }    READER_TYPE         { POSTGRES  }    READER_DATASET      { "$(FeatureReaderDataset_FeatureReader_2)" }    QUERYFCT_IDS        { "public.buildings" }    QUERYFCT_IDS_FORMAT WWJD_PARTS    READER_DIRECTIVES   { METAFILE,POSTGRES }    QUERYFCT_OUTPUT     { "BASED_ON_CONNECTIONS" }    QUERYFCT_ADD_SCHEMA { "NO" }    QUERYFCT_INITIATOR_FIRST_OUTPUT { "default" }    QUERYFCT_DEDUPE_GEOM YES    CONTINUE_ON_READER_ERROR YES    ORDER_RESULTS { "No" }    QUERYFCT_RESULT_TAGS { $(FeatureReader_2_OUTPUT_PORTS_ENCODED) }    QUERYFCT_SET_FME_FEATURE_TYPE YES    QUERYFCT_SET_FME_META_ATTRS YES    READER_PARAMS_WWJD     { $(FeatureReader_2_DIRECTIVES) }    TREAT_READER_PARAM_AMPERSANDS_AS_LITERALS YES    HONOR_INITIATOR_COORDSYS YES    OUTPUT public.buildings FEATURE_TYPE FeatureReader_2_public.buildings
-# -------------------------------------------------------------------------
-FACTORY_DEF {*} JSONQueryFactory    FACTORY_NAME { JSONExtractor }    INPUT  FEATURE_TYPE FeatureReader_2_public.buildings    MODE EXTRACT    JSON_DOCUMENT { "@EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>egid<closeparen>,JSONExtractor)" }    READ_FROM_FILE { NO }    FILEPATH_OR_URL { "<Unused>" }    QUERIES { egid_gwr json<openbracket><quote>gwr<quote><closebracket> egid_sap json<openbracket><quote>sap<quote><closebracket> }    OUTPUT { EVALUATED FEATURE_TYPE JSONExtractor_EVALUATED        }    OUTPUT { REJECTED FEATURE_TYPE JSONExtractor_<REJECTED>        }
-FACTORY_DEF * TeeFactory   FACTORY_NAME "JSONExtractor <REJECTED> Transformer Output Nuker"   INPUT FEATURE_TYPE JSONExtractor_<REJECTED>
-# -------------------------------------------------------------------------
-FACTORY_DEF {*} TeeFactory    FACTORY_NAME { TestFilter_2_INPUT }    INPUT  FEATURE_TYPE JSONExtractor_EVALUATED    OUTPUT { FEATURE_TYPE TestFilter_2_INPUTLINE }
-FACTORY_DEF {*} TestFactory FACTORY_NAME { TestFilter_2 } INPUT FEATURE_TYPE TestFilter_2_INPUTLINE FEATURE_TABLE_SHIM_SUPPORT Yes PASSED_TEST_GROUP_OUTPUT FIRST TEST_GROUP TEST { egid_gwr ATTRIBUTE_HAS_A_VALUE "" ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_0 FEATURE_TYPE TestFilter_2_egid_gwr<space>ATTRIBUTE_HAS_A_VALUE OUTPUT FAILED FEATURE_TYPE TestFilter_2_<lt>UNFILTERED<gt>
-FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter_2 egid_gwr<space>ATTRIBUTE_HAS_A_VALUE Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_2_egid_gwr<space>ATTRIBUTE_HAS_A_VALUE
-FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter_2 <lt>UNFILTERED<gt> Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_2_<lt>UNFILTERED<gt>
 # -------------------------------------------------------------------------
 MACRO FeatureReader_OUTPUT_PORTS_ENCODED BBL<space>Objekt
 MACRO FeatureReader_DIRECTIVES ADVANCED,,ALLOW_DOLLAR_SIGNS,YES,APPLY_FILTERS,No,CASE_SENSITIVE_FEATURE_TYPES,YES,CONFIGURATION_DATASET,,CREATE_FEATURE_TABLES_FROM_DATA,Yes,EXCEL_COL_NAMES,YES,EXPAND_MERGED_CELLS,Yes,EXPANDED_DATES_SCANNING,No,EXPOSE_ATTRS_GROUP,,FORCE_DATETIME,NO,QUERY_FEATURE_TYPES_FOR_MERGE_FILTERS,Yes,READ_BLANK_AS,Null,READ_FORM_CONTROLS,NONE,READ_RASTER_MODE,None,REPLACE_ONLY_NEWLINES_CARRIAGE_RETURNS,YES,SCAN_FOR_GEOMETRIC_TYPES,Yes,SCAN_MAX_FEATURES,1000,SCHEMA,,SCHEMA_HANDLING_REVISION,2,SKIP_EMPTY_ROWS,YES,STRIP_SHEETNAME_SPACES,YES,TABLELIST,,TRIM_ATTR_NAME_CHARACTERS,,TRIM_ATTR_NAME_WHITESPACE,Yes,USE_CUSTOM_SCHEMA,NO,XLSXR_EXPOSE_FORMAT_ATTRS,
@@ -1587,19 +1284,21 @@ FACTORY_DEF {*} QueryFactory    FACTORY_NAME { FeatureReader }    INPUT  FEATURE
 FACTORY_DEF {*} TeeFactory    FACTORY_NAME { BulkAttributeRenamer }    INPUT  FEATURE_TYPE FeatureReader_BBL<space>Objekt    OUTPUT { FEATURE_TYPE BulkAttributeRenamer_OUTPUT        @RenameAttributes(PATTERN_REPLACE, ADDPREFIX, <Unused>, "<Unused>", "gis_", "<Unused>", "<Unused>", "-_", "RENAME", "NONPROTECTEDFME")         }
 # -------------------------------------------------------------------------
 FACTORY_DEF {*} TeeFactory    FACTORY_NAME { TestFilter_INPUT }    INPUT  FEATURE_TYPE BulkAttributeRenamer_OUTPUT    OUTPUT { FEATURE_TYPE TestFilter_INPUTLINE }
-FACTORY_DEF {*} TestFactory FACTORY_NAME { TestFilter } INPUT FEATURE_TYPE TestFilter_INPUTLINE FEATURE_TABLE_SHIM_SUPPORT Yes PASSED_TEST_GROUP_OUTPUT FIRST TEST_GROUP CASE_INSENSITIVE_TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_bbl_bezeichnung<closeparen>,TestFilter) CONTAINS ABGA ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_0 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>ABGA TEST_GROUP CASE_INSENSITIVE_TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_bbl_bezeichnung<closeparen>,TestFilter) CONTAINS L<u00d6>VM ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_1 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>L<u00d6>VM TEST_GROUP TEST { gis_bbl_bezeichnung NOT_ATTRIBUTE_HAS_A_VALUE "" ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_2 FEATURE_TYPE TestFilter_gis_bbl_bezeichnung<space>NOT_ATTRIBUTE_HAS_A_VALUE OUTPUT FAILED FEATURE_TYPE TestFilter_<lt>UNFILTERED<gt>
+FACTORY_DEF {*} TestFactory FACTORY_NAME { TestFilter } INPUT FEATURE_TYPE TestFilter_INPUTLINE FEATURE_TABLE_SHIM_SUPPORT Yes PASSED_TEST_GROUP_OUTPUT FIRST TEST_GROUP CASE_INSENSITIVE_TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_bbl_bezeichnung<closeparen>,TestFilter) CONTAINS ABGA ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_0 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>ABGA TEST_GROUP CASE_INSENSITIVE_TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_bbl_bezeichnung<closeparen>,TestFilter) CONTAINS L<u00d6>VM ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_1 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>L<u00d6>VM TEST_GROUP TEST { gis_bbl_bezeichnung NOT_ATTRIBUTE_HAS_A_VALUE "" ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_2 FEATURE_TYPE TestFilter_gis_bbl_bezeichnung<space>NOT_ATTRIBUTE_HAS_A_VALUE TEST_GROUP TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_adr_land<closeparen>,TestFilter) NOT_= Schweiz ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_3 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_adr_land<closeparen><space>NOT_=<space>Schweiz TEST_GROUP CASE_INSENSITIVE_TEST { @EvaluateExpression(FDIV,STRING_ENCODED,<at>Value<openparen>gis_bbl_techplz<closeparen>,TestFilter) CONTAINS GR ENCODED } BOOLEAN_OPERATOR OR COMPOSITE_TEST_EXPR "1" OUTPUT PASSED_4 FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_techplz<closeparen><space>CONTAINS<space>GR OUTPUT FAILED FEATURE_TYPE TestFilter_<lt>UNFILTERED<gt>
 FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter <at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>ABGA Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>ABGA
 FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter <at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>L<u00d6>VM Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_bezeichnung<closeparen><space>CONTAINS<space>L<u00d6>VM
 FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter gis_bbl_bezeichnung<space>NOT_ATTRIBUTE_HAS_A_VALUE Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_gis_bbl_bezeichnung<space>NOT_ATTRIBUTE_HAS_A_VALUE
+FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter <at>Value<openparen>gis_adr_land<closeparen><space>NOT_=<space>Schweiz Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_<at>Value<openparen>gis_adr_land<closeparen><space>NOT_=<space>Schweiz
+FACTORY_DEF * TeeFactory   FACTORY_NAME "TestFilter <at>Value<openparen>gis_bbl_techplz<closeparen><space>CONTAINS<space>GR Transformer Output Nuker"   INPUT FEATURE_TYPE TestFilter_<at>Value<openparen>gis_bbl_techplz<closeparen><space>CONTAINS<space>GR
 # -------------------------------------------------------------------------
-FACTORY_DEF {*} AttrSetFactory    FACTORY_NAME { AttributeCreator }    COMMAND_PARM_EVALUATION SINGLE_PASS    INPUT  FEATURE_TYPE TestFilter_<lt>UNFILTERED<gt>    MULTI_FEATURE_MODE { NO }    NULL_ATTR_MODE { NO_OP }    ATTRSET_CREATE_DIRECTIVES _PROPAGATE_MISSING_FDIV    NUM_OF_COLUMNS 5    ATTR_ACTION { "" "id" "SET_TO" "<at>Value<openparen>gis_bbl_techplz<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "name" "SET_TO" "<at>Value<openparen>gis_bbl_bezeichnung<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "portfolio" "SET_TO" "<at>Value<openparen>gis_bbl_portfolio<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "gwrEgid" "SET_TO" "True" "varchar<openparen>4<closeparen>" }      ATTR_ACTION { "" "mapLat" "SET_TO" "<at>Value<openparen>gis_wg84_lat<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "mapLng" "SET_TO" "<at>Value<openparen>gis_wg84_lon<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "country" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_land<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "kanton" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_region<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "gemeinde" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "bfsNr" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "plz" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_plz<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "ort" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_ort<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "strasse" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_strasse<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "hausnummer" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_hausnr<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "zusatz" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "egid" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_av_egid<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><at>Value<openparen>gis_av_egid<closeparen><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "egrid" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_av_egrid<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "lat" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_wg84_lat<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "lng" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_wg84_lon<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }    OUTPUT { OUTPUT FEATURE_TYPE AttributeCreator_OUTPUT        }
+FACTORY_DEF {*} AttrSetFactory    FACTORY_NAME { AttributeCreator }    COMMAND_PARM_EVALUATION SINGLE_PASS    INPUT  FEATURE_TYPE TestFilter_<lt>UNFILTERED<gt>    MULTI_FEATURE_MODE { NO }    NULL_ATTR_MODE { NO_OP }    ATTRSET_CREATE_DIRECTIVES _PROPAGATE_MISSING_FDIV    NUM_OF_COLUMNS 5    ATTR_ACTION { "" "id" "SET_TO" "<at>Value<openparen>gis_bbl_techplz<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "name" "SET_TO" "<at>Value<openparen>gis_bbl_bezeichnung<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "portfolio" "SET_TO" "<at>Value<openparen>gis_bbl_portfolio<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "gwrEgid" "SET_TO" "FME_CONDITIONAL:DEFAULT_VALUE'_FME_NO_OP_'BOOL_OP;OR;COMPOSITE_TEST;1;TEST gis_av_egid ATTRIBUTE_HAS_A_VALUE _FME_BLANK_STRING_'true'FME_NUM_CONDITIONS2___" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "mapLat" "SET_TO" "<at>Value<openparen>gis_wg84_lat<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "mapLng" "SET_TO" "<at>Value<openparen>gis_wg84_lon<closeparen>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "country" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_land<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "kanton" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_region<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "gemeinde" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "bfsNr" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "plz" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_plz<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "ort" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_ort<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "strasse" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_strasse<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "hausnummer" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_adr_hausnr<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "zusatz" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>56<closeparen>" }      ATTR_ACTION { "" "egid" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_av_egid<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><at>Value<openparen>gis_av_egid<closeparen><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "egrid" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_av_egrid<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "lat" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_wg84_lat<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }      ATTR_ACTION { "" "lng" "SET_TO" "<opencurly><space><quote>sap<quote>:<space><quote><at>Value<openparen>gis_wg84_lon<closeparen><quote><comma><space><quote>gwr<quote>:<space><quote><quote><comma><space><quote>korrektur<quote>:<space><quote><quote><comma><space><quote>match<quote>:<space>true<space><closecurly>" "varchar<openparen>200<closeparen>" }    OUTPUT { OUTPUT FEATURE_TYPE AttributeCreator_OUTPUT        }
 # -------------------------------------------------------------------------
 FACTORY_DEF {*} AttributeKeeperFactory    FACTORY_NAME { AttributeKeeper }    INPUT  FEATURE_TYPE AttributeCreator_OUTPUT    KEEP_ATTRS { bfsNr,country,egid,egrid,gemeinde,gwrEgid,hausnummer,id,kanton,lat,lng,mapLat,mapLng,name,ort,plz,portfolio,strasse,zusatz }    KEEP_LISTS {  }    KEEP_FME_ATTRIBUTES Yes    BUILD_FEATURE_TABLES { NO }    OUTPUT_ON_ATTRIBUTE_CHANGE { <Unused> }    OUTPUT { OUTPUT FEATURE_TYPE AttributeKeeper_OUTPUT        }
 # -------------------------------------------------------------------------
 FACTORY_DEF {*} AttrSetFactory    COMMAND_PARM_EVALUATION SINGLE_PASS    FACTORY_NAME { AttributeManager }    INPUT  FEATURE_TYPE AttributeKeeper_OUTPUT    MULTI_FEATURE_MODE { NO }    NULL_ATTR_MODE { NO_OP }    ATTRSET_CREATE_DIRECTIVES _PROPAGATE_MISSING_FDIV    ACTION_COLUMN 4    DEF_VAL_COLUMN 2    NUM_OF_COLUMNS 5    MISSING_INPUT_ATTR_HANDLING RENAME_SET_VALUE REMOVE    OUTPUT { OUTPUT FEATURE_TYPE AttributeManager_OUTPUT        }
 # -------------------------------------------------------------------------
 INCLUDE [    puts {DEFAULT_MACRO FeatureWriterDataset_FeatureWriter Supabase<space>Geo-Check}; ]
-FACTORY_DEF {*} WriterFactory    COMMAND_PARM_EVALUATION SINGLE_PASS    FEATURE_TABLE_SHIM_SUPPORT INPUT_SPEC_ONLY    FLUSH_WHEN_GROUPS_CHANGE { <Unused> }    FACTORY_NAME { FeatureWriter }    WRITER_TYPE { POSTGIS }    WRITER_DATASET { "$(FeatureWriterDataset_FeatureWriter)" }    WRITER_SETTINGS { "RUNTIME_MACROS,SPLIT_MULTIGEOMETRIES<comma>No<comma>STRICT_TEMPORAL_TYPE_HANDLING<comma>Yes<comma>NAMED_CONNECTION<comma>Supabase<lt>space<gt>Geo-Check<comma>SPATIAL_COLUMN_TYPE<comma>geometry<comma>SPATIAL_COLUMN_NAME<comma>geom<comma>GENERIC_GEOMETRY<comma>yes<comma>COORDINATE_SYSTEM_GRANULARITY<comma>FEATURE_TYPE<comma>CASE_CONTROL_FT_NAMES<comma>none<comma>CASE_CONTROL_ATTR_NAMES<comma>lower<comma>ADVANCED<comma>FME_DISCLOSURE_OPEN<comma>BULK_COPY<comma>YES<comma>ALWAYS_CREATE_FEATURE_TYPES<comma>NO<comma>MISSING_ATTRIBUTE_BEHAVIOUR<comma><lt>Unused<gt><comma>START_TRANSACTION<comma>0<comma>TRANSACTION_INTERVAL<comma>1000<comma>BEGIN_SQL<comma><comma>END_SQL<comma>,METAFILE,POSTGIS" }    WRITER_METAFILE { "ATTRIBUTE_CASE,LOWER,ATTRIBUTE_INVALID_CHARS,.<space>%-#<openbracket><closebracket><quote><openparen><closeparen>!?*<apos><amp>+<backslash><solidus>,ATTRIBUTE_LENGTH,63,ATTR_TYPE_MAP,bool<comma>fme_boolean<comma>char<openparen>width<closeparen><comma>fme_char<openparen>width<closeparen><comma>varchar<openparen>width<closeparen><comma>fme_varchar<openparen>width<closeparen><comma>varchar<comma>fme_buffer<comma>text<comma>fme_buffer<comma>xml<comma>fme_xml<comma>json<comma>fme_json<comma>jsonb<comma>fme_json<comma>bytea<comma>fme_binarybuffer<comma>bytea<comma>fme_varbinary<openparen>width<closeparen><comma>bytea<comma>fme_binary<openparen>width<closeparen><comma>int2<comma>fme_int16<comma>int2<comma>fme_int8<comma>int2<comma>fme_uint8<comma>int4<comma>fme_int32<comma>int4<comma>fme_uint16<comma>int8<comma>fme_int64<comma>int8<comma>fme_uint32<comma><quote>numeric<openparen>width<comma>decimal<closeparen><quote><comma><quote>fme_decimal<openparen>width<comma>decimal<closeparen><quote><comma><quote>numeric<openparen>20<comma>0<closeparen><quote><comma>fme_uint64<comma>oid<comma>fme_uint32<comma>serial<comma>fme_int32<comma>float4<comma>fme_real32<comma>money<comma>fme_real32<comma>float8<comma>fme_real64<comma>date<comma>fme_date<comma>time<comma>fme_time<comma>timetz<comma>fme_time<comma>timestamp<comma>fme_datetime<comma>timestamptz<comma>fme_datetime<comma>uuid<comma>fme_buffer<comma>bit<openparen>width<closeparen><comma>fme_char<openparen>width<closeparen><comma>varbit<comma>fme_buffer<comma>varbit<openparen>width<closeparen><comma>fme_varchar<openparen>width<closeparen>,DEST_ILLEGAL_ATTR_LIST,,FEATURE_TYPE_CASE,ANY,FEATURE_TYPE_INVALID_CHARS,<quote><space><quote>,FEATURE_TYPE_LENGTH,63,FEATURE_TYPE_LENGTH_INCLUDES_PREFIX,false,FEATURE_TYPE_RESERVED_WORDS,,FORMAT_METAFILE,$(FME_HOME_ENCODED)metafile<backslash>POSTGIS.fmf,FORMAT_NAME,POSTGIS,GEOM_MAP,postgis_multipoint<comma>fme_point<comma>postgis_point<comma>fme_point<comma>postgis_multilinestring<comma>fme_line<comma>postgis_multicurve<comma>fme_line<comma>postgis_linestring<comma>fme_line<comma>postgis_multilinestring<comma>fme_line<comma>postgis_circularstring<comma>fme_line<comma>postgis_compoundcurve<comma>fme_line<comma>postgis_multipolygon<comma>fme_polygon<comma>postgis_multisurface<comma>fme_polygon<comma>postgis_polygon<comma>fme_polygon<comma>postgis_multipolygon<comma>fme_polygon<comma>postgis_curvepolygon<comma>fme_polygon<comma>postgis_multipolygon<comma>fme_rectangle<comma>postgis_multipolygon<comma>fme_rounded_rectangle<comma>postgis_multipoint<comma>fme_text<comma>postgis_multipolygon<comma>fme_ellipse<comma>postgis_multilinestring<comma>fme_arc<comma>postgis_triangle<comma>fme_polygon<comma>postgis_polyhedralsurface<comma>fme_surface<comma>postgis_polyhedralsurface<comma>fme_solid<comma>postgis_tin<comma>fme_surface<comma>postgis_none<comma>fme_no_geom<comma>postgis_geometry<comma>fme_no_geom<comma>postgis_geometrycollection<comma>fme_collection<comma>postgis_multipolygon<comma>fme_raster<comma>postgis_multipolygon<comma>fme_point_cloud<comma>postgis_multipolygon<comma>fme_voxel_grid,READER_ATTR_INDEX_TYPES,BTree<comma>RTree<comma>Hash<comma>PrimaryKey<comma>Unique,READER_FORMAT_TYPE,,READER_USES_DEF,yes,SOURCE,no,SUPPORTS_FEAT_TYPE_FANOUT,yes,SUPPORTS_MULTI_GEOM,yes,WORKBENCH_CANNED_SCHEMA,,WRITER,POSTGIS,WRITER_ATTR_INDEX_TYPES,BTree<comma>RTree<comma>Hash<comma>PrimaryKey<comma>Unique,WRITER_DEFLINE_PARMS,<quote>GUI<space>NAMEDGROUP<space>fme_configuration_group<space>fme_configuration_common_group%fme_spatial_group%fme_advanced_group%oracle_advanced_group<space>Table<quote><comma><comma><quote>GUI<space>NAMEDGROUP<space>fme_configuration_common_group<space>fme_feature_operation%fme_table_handling%mie_pack%oracle_model%fme_update_geometry%fme_selection_group%fme_table_creation_group<space>General<quote><comma><comma><quote>GUI<space>ACTIVECHOICE_LOOKUP<space>fme_feature_operation<space>Insert<comma>INSERT<comma>fme_update_geometry<comma>fme_selection_group<comma>mie_pack%Update<comma>UPDATE<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN%Upsert<comma>UPSERT<comma>fme_where_builder_clause<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN%Delete<comma>DELETE<comma>++fme_table_handling+USE_EXISTING<comma>fme_update_geometry<comma>++fme_selection_group+FME_DISCLOSURE_OPEN<comma>fme_spatial_group<comma>fme_advanced_group<comma>oracle_sequenced_cols%<lt>at<gt>Value<lt>openparen<gt>fme_db_operation<lt>closeparen<gt><comma>MULTIPLE<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN<space>Feature<space>Operation<quote><comma>INSERT<comma><quote>GUI<space>ACTIVECHOICE_LOOKUP<space>fme_table_handling<space>Use<lt>space<gt>Existing<comma>USE_EXISTING<comma>fme_table_creation_group%Create<lt>space<gt>If<lt>space<gt>Needed<comma>CREATE_IF_MISSING%Drop<lt>space<gt>and<lt>space<gt>Create<comma>DROP_CREATE%Truncate<lt>space<gt>Existing<comma>TRUNCATE_EXISTING<comma>fme_table_creation_group<space>Table<space>Handling<quote><comma>CREATE_IF_MISSING<comma><quote>GUI<space>WHOLE_LINE<space>LOOKUP_CHOICE<space>fme_update_geometry<space>Yes<comma>YES%No<comma>NO<space>Update<space>Spatial<space>Column<openparen>s<closeparen><quote><comma>YES<comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_selection_group<space>fme_selection_method<space>Row<space>Selection<quote><comma><comma><quote>GUI<space>WHOLE_LINE<space>RADIOPARAMETERGROUP<space>fme_selection_method<space>fme_match_columns<comma>MATCH_COLUMNS%fme_where_builder_clause<comma>BUILDER<space>Row<space>Selection<space>Method<quote><comma>MATCH_COLUMNS<comma><quote>GUI<space>WHOLE_LINE<space>ATTRLIST_COMMAS<space>fme_match_columns<space><quote><quote><quote><quote><space>Match<space>Columns<quote><comma><comma><quote>GUI<space>WHOLE_LINE<space>TEXT_EDIT_SQL_CFG_OR_ATTR<space>fme_where_builder_clause<space>MODE<comma>WHERE<space>WHERE<space>Clause<quote><comma><comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_table_creation_group<space>postgis_create_with_oids%postgis_create_spatial_index%postgis_spatial_index_name<space>Table<space>Creation<quote><comma><comma><quote>GUI<space>CHOICE_ENCODED<space>postgis_create_with_oids<space>YES<lt>space<gt><openparen>Ignored<lt>space<gt>in<lt>space<gt>PostgreSQL<lt>space<gt>12<lt>space<gt>or<lt>space<gt>higher<closeparen>%NO<space>Create<space>With<space>OIDs<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_create_spatial_index<space>GiST%SP-GiST%BRIN%NONE<space>Spatial<space>Index<space>Type<quote><comma>GiST<comma><quote>GUI<space>OPTIONAL<space>WHOLE_LINE<space>TEXT<space>postgis_spatial_index_name<space>Spatial<space>Index<space>Name<quote><comma><comma><quote>GUI<space>NAMEDGROUP<space>fme_spatial_group<space>postgis_spatial_column_type%postgis_spatial_column%postgis_srid<space>Spatial<quote><comma><comma><quote>GUI<space>LOOKUP_CHOICE<space>postgis_spatial_column_type<space>Geometry<comma>geometry%Geography<comma>geography<space>Spatial<space>Type<quote><comma>geometry<comma><quote>GUI<space>OPTIONAL<space>WHOLE_LINE<space>TEXT<space>postgis_spatial_column<space>Spatial<space>Column<quote><comma>geom<comma><quote>GUI<space>OPTIONAL<space>FLOAT<space>postgis_srid<space>Spatial<space>Column<space>SRID<quote><comma><comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_advanced_group<space>postgis_clustering%postgis_vacuum_analyze%postgis_allow_serial_writing<space>Advanced<quote><comma><comma><quote>GUI<space>CHOICE<space>postgis_clustering<space>YES%NO<space>Enable<space>Clustering<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_vacuum_analyze<space>YES%NO<space>Vacuum<space>Analyze<space>Table<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_allow_serial_writing<space>YES%NO<space>Allow<space>Serial<space>Column<space>Writing<quote><comma>NO,WRITER_DEF_LINE_TEMPLATE,<opencurly>FME_GEN_GROUP_NAME<closecurly><comma>postgis_type<comma>postgis_geometry<comma>postgis_mode<comma><quote><quote><quote><quote><quote><quote><comma>postgis_sql_key_columns<comma><quote><quote><quote><quote><quote><quote><comma>postgis_drop_table<comma><quote><quote><quote><quote><quote><quote><comma>postgis_truncate_table<comma><quote><quote><quote><quote><quote><quote><comma>fme_feature_operation<comma>INSERT<comma>fme_table_handling<comma>CREATE_IF_MISSING<comma>fme_selection_method<comma>MATCH_COLUMNS<comma>fme_match_columns<comma><quote><quote><quote><quote><quote><quote><comma>fme_where_builder_clause<comma><quote><quote><quote><quote><quote><quote><comma>fme_update_geometry<comma>YES<comma>postgis_create_with_oids<comma>NO<comma>postgis_create_spatial_index<comma>GiST<comma>postgis_spatial_index_name<comma><quote><quote><quote><quote><quote><quote><comma>postgis_spatial_column_type<comma>geometry<comma>postgis_spatial_column<comma>geom<comma>postgis_srid<comma><quote><quote><quote><quote><quote><quote><comma>postgis_vacuum_analyze<comma>no<comma>postgis_allow_serial_writing<comma>NO,WRITER_FORMAT_PARAMETER,NETWORK_AUTHENTICATION<comma>NO<comma>NETWORK_PROXY<comma>NO<comma>ADVANCED_PARMS<comma>POSTGIS_IN_SCHEMAS_FOR_TABLE_LISTING<comma>FEATURE_TYPE_NAME<comma>Table<comma>FEATURE_TYPE_DEFAULT_NAME<comma>Table1<comma>SUPPORTS_SCHEMA_IN_FEATURE_TYPE_NAME<comma>YES<comma>ATTRIBUTE_READING<comma>DEFLINE_ATTRS<comma>ATTRIBUTE_READING_HISTORIC<comma>ALL<comma>PARAMS_TO_NOT_PROPAGATE_ON_INSPECT<comma><quote>BEGIN_SQL<space>END_SQL<quote><comma>SUPPORTS_ORDERED_FEATURE_TYPE_READING<comma>yes<comma>READER_SPATIAL_NAME_EXPECTED<comma>YES<comma>READER_SPATIAL_TYPE_EXPECTED<comma>YES<comma>ADVANCED_PARMS<comma><quote>POSTGIS_IN_FEATURES_PER_FETCH<space>POSTGIS_IN_BEGIN_SQL<space>POSTGIS_IN_END_SQL<space>POSTGIS_IN_SEARCH_METHOD<space>POSTGIS_OUT_BULK_COPY<space>POSTGIS_OUT_ALWAYS_CREATE_FEATURE_TYPES<space>POSTGIS_OUT_MISSING_ATTRIBUTE_BEHAVIOUR<space>POSTGIS_OUT_INSERT_TEXT_GEOMETRY<space>POSTGIS_OUT_START_TRANSACTION<space>POSTGIS_OUT_TRANSACTION_INTERVAL<space>POSTGIS_OUT_BEGIN_SQL<space>POSTGIS_OUT_END_SQL<quote>,WRITER_FORMAT_TYPE,,WRITER_HAS_DEFLINE_ATTRS,yes,WRITER_USES_DEF,yes" }    WRITER_FEATURE_TYPES { "buildings:Output,ftp_feature_type_name,buildings,ftp_writer,POSTGIS,ftp_dynamic_schema,no,ftp_dynamic_feature_type_name_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_geometry_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_schema_def_name_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_schema_sources,<lt>lt<gt>Unused<lt>gt<gt>,ftp_attribute_source,0,ftp_user_attributes,id<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>name<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>portfolio<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>gwregid<comma>varchar<lt>openparen<gt>4<lt>closeparen<gt><comma>maplat<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>maplng<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>country<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>kanton<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>gemeinde<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>bfsnr<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>plz<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>ort<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>strasse<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>hausnummer<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>zusatz<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>egid<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>egrid<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>lat<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>lng<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt>,ftp_user_attribute_values,<comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma>,ftp_format_parameters,fme_configuration_group<comma><comma>fme_configuration_common_group<comma><comma>fme_feature_operation<comma>UPSERT<comma>fme_table_handling<comma>USE_EXISTING<comma>fme_update_geometry<comma>YES<comma>fme_selection_group<comma>FME_DISCLOSURE_OPEN<comma>fme_selection_method<comma>MATCH_COLUMNS<comma>fme_match_columns<comma>id<comma>fme_where_builder_clause<comma><lt>lt<gt>Unused<lt>gt<gt><comma>fme_table_creation_group<comma><comma>postgis_create_with_oids<comma>NO<comma>postgis_create_spatial_index<comma>GiST<comma>postgis_spatial_index_name<comma><lt>lt<gt>Unused<lt>gt<gt><comma>fme_spatial_group<comma><comma>postgis_spatial_column_type<comma>geometry<comma>postgis_spatial_column<comma>geom<comma>postgis_srid<comma><comma>fme_advanced_group<comma><comma>postgis_clustering<comma>NO<comma>postgis_vacuum_analyze<comma>NO<comma>postgis_allow_serial_writing<comma>NO" }    WRITER_PARAMS { "ADVANCED,FME_DISCLOSURE_OPEN,ALWAYS_CREATE_FEATURE_TYPES,NO,BEGIN_SQL,,BULK_COPY,YES,CASE_CONTROL_ATTR_NAMES,lower,CASE_CONTROL_FT_NAMES,none,COORDINATE_SYSTEM_GRANULARITY,FEATURE_TYPE,END_SQL,,GENERIC_GEOMETRY,yes,NAMED_CONNECTION,Supabase<lt>space<gt>Geo-Check,SPATIAL_COLUMN_NAME,geom,SPATIAL_COLUMN_TYPE,geometry,SPLIT_MULTIGEOMETRIES,No,START_TRANSACTION,0,STRICT_TEMPORAL_TYPE_HANDLING,Yes,TRANSACTION_INTERVAL,1000" }    DATASET_ATTR { "_dataset" }    FEATURE_TYPE_LIST_ATTR { "_feature_types" }    TOTAL_FEATURES_WRITTEN_ATTR { "_total_features_written" }    OUTPUT_PORTS { "" }    INPUT Output FEATURE_TYPE AttributeManager_OUTPUT  @FeatureType(ENCODED,@EvaluateExpression(FDIV,STRING_ENCODED,buildings,FeatureWriter)) @CopyAttributes(ENCODED,gwregid,gwrEgid,maplat,mapLat,maplng,mapLng,bfsnr,bfsNr)
+FACTORY_DEF {*} WriterFactory    COMMAND_PARM_EVALUATION SINGLE_PASS    FEATURE_TABLE_SHIM_SUPPORT INPUT_SPEC_ONLY    FLUSH_WHEN_GROUPS_CHANGE { <Unused> }    FACTORY_NAME { FeatureWriter }    WRITER_TYPE { POSTGIS }    WRITER_DATASET { "$(FeatureWriterDataset_FeatureWriter)" }    WRITER_SETTINGS { "RUNTIME_MACROS,SPLIT_MULTIGEOMETRIES<comma>No<comma>STRICT_TEMPORAL_TYPE_HANDLING<comma>Yes<comma>NAMED_CONNECTION<comma>Supabase<lt>space<gt>Geo-Check<comma>SPATIAL_COLUMN_TYPE<comma>geometry<comma>SPATIAL_COLUMN_NAME<comma>geom<comma>GENERIC_GEOMETRY<comma>yes<comma>COORDINATE_SYSTEM_GRANULARITY<comma>FEATURE_TYPE<comma>CASE_CONTROL_FT_NAMES<comma>none<comma>CASE_CONTROL_ATTR_NAMES<comma>lower<comma>ADVANCED<comma>FME_DISCLOSURE_OPEN<comma>BULK_COPY<comma>YES<comma>ALWAYS_CREATE_FEATURE_TYPES<comma>NO<comma>MISSING_ATTRIBUTE_BEHAVIOUR<comma><lt>Unused<gt><comma>START_TRANSACTION<comma>0<comma>TRANSACTION_INTERVAL<comma>1000<comma>BEGIN_SQL<comma><comma>END_SQL<comma>,METAFILE,POSTGIS" }    WRITER_METAFILE { "ATTRIBUTE_CASE,LOWER,ATTRIBUTE_INVALID_CHARS,.<space>%-#<openbracket><closebracket><quote><openparen><closeparen>!?*<apos><amp>+<backslash><solidus>,ATTRIBUTE_LENGTH,63,ATTR_TYPE_MAP,bool<comma>fme_boolean<comma>char<openparen>width<closeparen><comma>fme_char<openparen>width<closeparen><comma>varchar<openparen>width<closeparen><comma>fme_varchar<openparen>width<closeparen><comma>varchar<comma>fme_buffer<comma>text<comma>fme_buffer<comma>xml<comma>fme_xml<comma>json<comma>fme_json<comma>jsonb<comma>fme_json<comma>bytea<comma>fme_binarybuffer<comma>bytea<comma>fme_varbinary<openparen>width<closeparen><comma>bytea<comma>fme_binary<openparen>width<closeparen><comma>int2<comma>fme_int16<comma>int2<comma>fme_int8<comma>int2<comma>fme_uint8<comma>int4<comma>fme_int32<comma>int4<comma>fme_uint16<comma>int8<comma>fme_int64<comma>int8<comma>fme_uint32<comma><quote>numeric<openparen>width<comma>decimal<closeparen><quote><comma><quote>fme_decimal<openparen>width<comma>decimal<closeparen><quote><comma><quote>numeric<openparen>20<comma>0<closeparen><quote><comma>fme_uint64<comma>oid<comma>fme_uint32<comma>serial<comma>fme_int32<comma>float4<comma>fme_real32<comma>money<comma>fme_real32<comma>float8<comma>fme_real64<comma>date<comma>fme_date<comma>time<comma>fme_time<comma>timetz<comma>fme_time<comma>timestamp<comma>fme_datetime<comma>timestamptz<comma>fme_datetime<comma>uuid<comma>fme_buffer<comma>bit<openparen>width<closeparen><comma>fme_char<openparen>width<closeparen><comma>varbit<comma>fme_buffer<comma>varbit<openparen>width<closeparen><comma>fme_varchar<openparen>width<closeparen>,DEST_ILLEGAL_ATTR_LIST,,FEATURE_TYPE_CASE,ANY,FEATURE_TYPE_INVALID_CHARS,<quote><space><quote>,FEATURE_TYPE_LENGTH,63,FEATURE_TYPE_LENGTH_INCLUDES_PREFIX,false,FEATURE_TYPE_RESERVED_WORDS,,FORMAT_METAFILE,$(FME_HOME_ENCODED)metafile<backslash>POSTGIS.fmf,FORMAT_NAME,POSTGIS,GEOM_MAP,postgis_multipoint<comma>fme_point<comma>postgis_point<comma>fme_point<comma>postgis_multilinestring<comma>fme_line<comma>postgis_multicurve<comma>fme_line<comma>postgis_linestring<comma>fme_line<comma>postgis_multilinestring<comma>fme_line<comma>postgis_circularstring<comma>fme_line<comma>postgis_compoundcurve<comma>fme_line<comma>postgis_multipolygon<comma>fme_polygon<comma>postgis_multisurface<comma>fme_polygon<comma>postgis_polygon<comma>fme_polygon<comma>postgis_multipolygon<comma>fme_polygon<comma>postgis_curvepolygon<comma>fme_polygon<comma>postgis_multipolygon<comma>fme_rectangle<comma>postgis_multipolygon<comma>fme_rounded_rectangle<comma>postgis_multipoint<comma>fme_text<comma>postgis_multipolygon<comma>fme_ellipse<comma>postgis_multilinestring<comma>fme_arc<comma>postgis_triangle<comma>fme_polygon<comma>postgis_polyhedralsurface<comma>fme_surface<comma>postgis_polyhedralsurface<comma>fme_solid<comma>postgis_tin<comma>fme_surface<comma>postgis_none<comma>fme_no_geom<comma>postgis_geometry<comma>fme_no_geom<comma>postgis_geometrycollection<comma>fme_collection<comma>postgis_multipolygon<comma>fme_raster<comma>postgis_multipolygon<comma>fme_point_cloud<comma>postgis_multipolygon<comma>fme_voxel_grid,READER_ATTR_INDEX_TYPES,BTree<comma>RTree<comma>Hash<comma>PrimaryKey<comma>Unique,READER_FORMAT_TYPE,,READER_USES_DEF,yes,SOURCE,no,SUPPORTS_FEAT_TYPE_FANOUT,yes,SUPPORTS_MULTI_GEOM,yes,WORKBENCH_CANNED_SCHEMA,,WRITER,POSTGIS,WRITER_ATTR_INDEX_TYPES,BTree<comma>RTree<comma>Hash<comma>PrimaryKey<comma>Unique,WRITER_DEFLINE_PARMS,<quote>GUI<space>NAMEDGROUP<space>fme_configuration_group<space>fme_configuration_common_group%fme_spatial_group%fme_advanced_group%oracle_advanced_group<space>Table<quote><comma><comma><quote>GUI<space>NAMEDGROUP<space>fme_configuration_common_group<space>fme_feature_operation%fme_table_handling%mie_pack%oracle_model%fme_update_geometry%fme_selection_group%fme_table_creation_group<space>General<quote><comma><comma><quote>GUI<space>ACTIVECHOICE_LOOKUP<space>fme_feature_operation<space>Insert<comma>INSERT<comma>fme_update_geometry<comma>fme_selection_group<comma>mie_pack%Update<comma>UPDATE<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN%Upsert<comma>UPSERT<comma>fme_where_builder_clause<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN%Delete<comma>DELETE<comma>++fme_table_handling+USE_EXISTING<comma>fme_update_geometry<comma>++fme_selection_group+FME_DISCLOSURE_OPEN<comma>fme_spatial_group<comma>fme_advanced_group<comma>oracle_sequenced_cols%<lt>at<gt>Value<lt>openparen<gt>fme_db_operation<lt>closeparen<gt><comma>MULTIPLE<comma>++fme_table_handling+USE_EXISTING<comma>++fme_selection_group+FME_DISCLOSURE_OPEN<space>Feature<space>Operation<quote><comma>INSERT<comma><quote>GUI<space>ACTIVECHOICE_LOOKUP<space>fme_table_handling<space>Use<lt>space<gt>Existing<comma>USE_EXISTING<comma>fme_table_creation_group%Create<lt>space<gt>If<lt>space<gt>Needed<comma>CREATE_IF_MISSING%Drop<lt>space<gt>and<lt>space<gt>Create<comma>DROP_CREATE%Truncate<lt>space<gt>Existing<comma>TRUNCATE_EXISTING<comma>fme_table_creation_group<space>Table<space>Handling<quote><comma>CREATE_IF_MISSING<comma><quote>GUI<space>WHOLE_LINE<space>LOOKUP_CHOICE<space>fme_update_geometry<space>Yes<comma>YES%No<comma>NO<space>Update<space>Spatial<space>Column<openparen>s<closeparen><quote><comma>YES<comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_selection_group<space>fme_selection_method<space>Row<space>Selection<quote><comma><comma><quote>GUI<space>WHOLE_LINE<space>RADIOPARAMETERGROUP<space>fme_selection_method<space>fme_match_columns<comma>MATCH_COLUMNS%fme_where_builder_clause<comma>BUILDER<space>Row<space>Selection<space>Method<quote><comma>MATCH_COLUMNS<comma><quote>GUI<space>WHOLE_LINE<space>ATTRLIST_COMMAS<space>fme_match_columns<space><quote><quote><quote><quote><space>Match<space>Columns<quote><comma><comma><quote>GUI<space>WHOLE_LINE<space>TEXT_EDIT_SQL_CFG_OR_ATTR<space>fme_where_builder_clause<space>MODE<comma>WHERE<space>WHERE<space>Clause<quote><comma><comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_table_creation_group<space>postgis_create_with_oids%postgis_create_spatial_index%postgis_spatial_index_name<space>Table<space>Creation<quote><comma><comma><quote>GUI<space>CHOICE_ENCODED<space>postgis_create_with_oids<space>YES<lt>space<gt><openparen>Ignored<lt>space<gt>in<lt>space<gt>PostgreSQL<lt>space<gt>12<lt>space<gt>or<lt>space<gt>higher<closeparen>%NO<space>Create<space>With<space>OIDs<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_create_spatial_index<space>GiST%SP-GiST%BRIN%NONE<space>Spatial<space>Index<space>Type<quote><comma>GiST<comma><quote>GUI<space>OPTIONAL<space>WHOLE_LINE<space>TEXT<space>postgis_spatial_index_name<space>Spatial<space>Index<space>Name<quote><comma><comma><quote>GUI<space>NAMEDGROUP<space>fme_spatial_group<space>postgis_spatial_column_type%postgis_spatial_column%postgis_srid<space>Spatial<quote><comma><comma><quote>GUI<space>LOOKUP_CHOICE<space>postgis_spatial_column_type<space>Geometry<comma>geometry%Geography<comma>geography<space>Spatial<space>Type<quote><comma>geometry<comma><quote>GUI<space>OPTIONAL<space>WHOLE_LINE<space>TEXT<space>postgis_spatial_column<space>Spatial<space>Column<quote><comma>geom<comma><quote>GUI<space>OPTIONAL<space>FLOAT<space>postgis_srid<space>Spatial<space>Column<space>SRID<quote><comma><comma><quote>GUI<space>DISCLOSUREGROUP<space>fme_advanced_group<space>postgis_clustering%postgis_vacuum_analyze%postgis_allow_serial_writing<space>Advanced<quote><comma><comma><quote>GUI<space>CHOICE<space>postgis_clustering<space>YES%NO<space>Enable<space>Clustering<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_vacuum_analyze<space>YES%NO<space>Vacuum<space>Analyze<space>Table<quote><comma>NO<comma><quote>GUI<space>CHOICE<space>postgis_allow_serial_writing<space>YES%NO<space>Allow<space>Serial<space>Column<space>Writing<quote><comma>NO,WRITER_DEF_LINE_TEMPLATE,<opencurly>FME_GEN_GROUP_NAME<closecurly><comma>postgis_type<comma>postgis_geometry<comma>postgis_mode<comma><quote><quote><quote><quote><quote><quote><comma>postgis_sql_key_columns<comma><quote><quote><quote><quote><quote><quote><comma>postgis_drop_table<comma><quote><quote><quote><quote><quote><quote><comma>postgis_truncate_table<comma><quote><quote><quote><quote><quote><quote><comma>fme_feature_operation<comma>INSERT<comma>fme_table_handling<comma>CREATE_IF_MISSING<comma>fme_selection_method<comma>MATCH_COLUMNS<comma>fme_match_columns<comma><quote><quote><quote><quote><quote><quote><comma>fme_where_builder_clause<comma><quote><quote><quote><quote><quote><quote><comma>fme_update_geometry<comma>YES<comma>postgis_create_with_oids<comma>NO<comma>postgis_create_spatial_index<comma>GiST<comma>postgis_spatial_index_name<comma><quote><quote><quote><quote><quote><quote><comma>postgis_spatial_column_type<comma>geometry<comma>postgis_spatial_column<comma>geom<comma>postgis_srid<comma><quote><quote><quote><quote><quote><quote><comma>postgis_vacuum_analyze<comma>no<comma>postgis_allow_serial_writing<comma>NO,WRITER_FORMAT_PARAMETER,NETWORK_AUTHENTICATION<comma>NO<comma>NETWORK_PROXY<comma>NO<comma>ADVANCED_PARMS<comma>POSTGIS_IN_SCHEMAS_FOR_TABLE_LISTING<comma>FEATURE_TYPE_NAME<comma>Table<comma>FEATURE_TYPE_DEFAULT_NAME<comma>Table1<comma>SUPPORTS_SCHEMA_IN_FEATURE_TYPE_NAME<comma>YES<comma>ATTRIBUTE_READING<comma>DEFLINE_ATTRS<comma>ATTRIBUTE_READING_HISTORIC<comma>ALL<comma>PARAMS_TO_NOT_PROPAGATE_ON_INSPECT<comma><quote>BEGIN_SQL<space>END_SQL<quote><comma>SUPPORTS_ORDERED_FEATURE_TYPE_READING<comma>yes<comma>READER_SPATIAL_NAME_EXPECTED<comma>YES<comma>READER_SPATIAL_TYPE_EXPECTED<comma>YES<comma>ADVANCED_PARMS<comma><quote>POSTGIS_IN_FEATURES_PER_FETCH<space>POSTGIS_IN_BEGIN_SQL<space>POSTGIS_IN_END_SQL<space>POSTGIS_IN_SEARCH_METHOD<space>POSTGIS_OUT_BULK_COPY<space>POSTGIS_OUT_ALWAYS_CREATE_FEATURE_TYPES<space>POSTGIS_OUT_MISSING_ATTRIBUTE_BEHAVIOUR<space>POSTGIS_OUT_INSERT_TEXT_GEOMETRY<space>POSTGIS_OUT_START_TRANSACTION<space>POSTGIS_OUT_TRANSACTION_INTERVAL<space>POSTGIS_OUT_BEGIN_SQL<space>POSTGIS_OUT_END_SQL<quote>,WRITER_FORMAT_TYPE,,WRITER_HAS_DEFLINE_ATTRS,yes,WRITER_USES_DEF,yes" }    WRITER_FEATURE_TYPES { "buildings:Output,ftp_feature_type_name,buildings,ftp_writer,POSTGIS,ftp_dynamic_schema,no,ftp_dynamic_feature_type_name_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_geometry_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_schema_def_name_type,DYN_SCHEMA_PROP_AUTO,ftp_dynamic_schema_sources,<lt>lt<gt>Unused<lt>gt<gt>,ftp_attribute_source,0,ftp_user_attributes,id<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>name<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>portfolio<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>gwregid<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>maplat<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>maplng<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>country<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>kanton<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>gemeinde<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>bfsnr<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>plz<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>ort<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>strasse<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>hausnummer<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>zusatz<comma>varchar<lt>openparen<gt>56<lt>closeparen<gt><comma>egid<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>egrid<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>lat<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt><comma>lng<comma>varchar<lt>openparen<gt>200<lt>closeparen<gt>,ftp_user_attribute_values,<comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma><comma>,ftp_format_parameters,fme_configuration_group<comma><comma>fme_configuration_common_group<comma><comma>fme_feature_operation<comma>UPSERT<comma>fme_table_handling<comma>USE_EXISTING<comma>fme_update_geometry<comma>YES<comma>fme_selection_group<comma>FME_DISCLOSURE_OPEN<comma>fme_selection_method<comma>MATCH_COLUMNS<comma>fme_match_columns<comma>id<comma>fme_where_builder_clause<comma><lt>lt<gt>Unused<lt>gt<gt><comma>fme_table_creation_group<comma><comma>postgis_create_with_oids<comma>NO<comma>postgis_create_spatial_index<comma>GiST<comma>postgis_spatial_index_name<comma><lt>lt<gt>Unused<lt>gt<gt><comma>fme_spatial_group<comma><comma>postgis_spatial_column_type<comma>geometry<comma>postgis_spatial_column<comma>geom<comma>postgis_srid<comma><comma>fme_advanced_group<comma><comma>postgis_clustering<comma>NO<comma>postgis_vacuum_analyze<comma>NO<comma>postgis_allow_serial_writing<comma>NO" }    WRITER_PARAMS { "ADVANCED,FME_DISCLOSURE_OPEN,ALWAYS_CREATE_FEATURE_TYPES,NO,BEGIN_SQL,,BULK_COPY,YES,CASE_CONTROL_ATTR_NAMES,lower,CASE_CONTROL_FT_NAMES,none,COORDINATE_SYSTEM_GRANULARITY,FEATURE_TYPE,END_SQL,,GENERIC_GEOMETRY,yes,NAMED_CONNECTION,Supabase<lt>space<gt>Geo-Check,SPATIAL_COLUMN_NAME,geom,SPATIAL_COLUMN_TYPE,geometry,SPLIT_MULTIGEOMETRIES,No,START_TRANSACTION,0,STRICT_TEMPORAL_TYPE_HANDLING,Yes,TRANSACTION_INTERVAL,1000" }    DATASET_ATTR { "_dataset" }    FEATURE_TYPE_LIST_ATTR { "_feature_types" }    TOTAL_FEATURES_WRITTEN_ATTR { "_total_features_written" }    OUTPUT_PORTS { "" }    INPUT Output FEATURE_TYPE AttributeManager_OUTPUT  @FeatureType(ENCODED,@EvaluateExpression(FDIV,STRING_ENCODED,buildings,FeatureWriter)) @CopyAttributes(ENCODED,gwregid,gwrEgid,maplat,mapLat,maplng,mapLng,bfsnr,bfsNr)
 # -------------------------------------------------------------------------
 
 FACTORY_DEF * RoutingFactory FACTORY_NAME "Destination Feature Type Routing Correlator"   COMMAND_PARM_EVALUATION SINGLE_PASS   INPUT FEATURE_TYPE *   FEATURE_TYPE_ATTRIBUTE __wb_out_feat_type__   OUTPUT ROUTED FEATURE_TYPE *    OUTPUT NOT_ROUTED FEATURE_TYPE __nuke_me__ @Tcl2("FME_StatMessage 818059 [FME_GetAttribute fme_template_feature_type] 818060 818061 fme_warn")
