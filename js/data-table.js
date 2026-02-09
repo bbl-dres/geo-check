@@ -391,7 +391,8 @@ export function renderTableView(preFiltered = null) {
   } else {
     tbody.innerHTML = paginatedBuildings.map(building => {
       // Use confidence-based colors for consistency across the app
-      const confidenceClass = building.confidence.total < 50 ? 'critical' : building.confidence.total < 80 ? 'warning' : 'ok';
+      const confTotal = building.confidence?.total;
+      const confidenceClass = confTotal == null ? 'unknown' : confTotal < 50 ? 'critical' : confTotal < 80 ? 'warning' : 'ok';
       const statusLabel = getStatusLabel(building.kanbanStatus);
       const isChecked = selectedIds.has(building.id);
 
@@ -414,8 +415,8 @@ export function renderTableView(preFiltered = null) {
             <span class="status-badge status-${building.kanbanStatus || 'backlog'}">${statusLabel}</span>
           </td>
           <td data-col="confidence">
-            <span class="confidence-value ${building.confidence.total < 50 ? 'critical' : building.confidence.total < 80 ? 'warning' : 'ok'}">
-              ${building.confidence.total}%
+            <span class="confidence-value ${confidenceClass}">
+              ${confTotal != null ? confTotal + '%' : '–'}
             </span>
           </td>
           <td data-col="errors">
@@ -520,7 +521,7 @@ function exportCSV(buildings) {
     `"${(b.name || '').replace(/"/g, '""')}"`,
     getFieldDisplayValue(b.kanton) || '',
     getStatusLabel(b.kanbanStatus),
-    b.confidence.total,
+    b.confidence?.total ?? '',
     b.priority || 'medium',
     b.assignee || '',
     b.lastUpdate || ''
@@ -538,7 +539,7 @@ async function exportXLSX(buildings) {
     b.name || '',
     getFieldDisplayValue(b.kanton) || '',
     getStatusLabel(b.kanbanStatus),
-    b.confidence.total,
+    b.confidence?.total ?? '',
     b.priority || 'medium',
     b.assignee || '',
     b.lastUpdate || ''
@@ -557,7 +558,7 @@ function exportGeoJSON(buildings) {
       name: b.name,
       kanton: getFieldDisplayValue(b.kanton) || '',
       status: b.kanbanStatus,
-      confidence: b.confidence.total,
+      confidence: b.confidence?.total ?? null,
       priority: b.priority,
       assignee: b.assignee
     },

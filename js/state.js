@@ -178,7 +178,7 @@ export function getFilteredBuildings() {
   // Confidence filter
   if (state.filterConfidence.length > 0) {
     filtered = filtered.filter(b => {
-      const conf = b.confidence.total;
+      const conf = b.confidence?.total;
       return state.filterConfidence.some(range => {
         if (range === 'critical') return conf < 50;
         if (range === 'warning') return conf >= 50 && conf < 80;
