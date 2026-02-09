@@ -24,16 +24,15 @@
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
 
   <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@0.563.0/dist/umd/lucide.min.js"></script>
+  <script defer src="https://unpkg.com/lucide@0.563.0/dist/umd/lucide.min.js"></script>
 
   <!-- ApexCharts -->
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts@5.3.6"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@5.3.6"></script>
 
   <!-- Supabase JS -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.95.3"></script>
 
-  <!-- SheetJS for Excel export -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- SheetJS loaded on-demand by js/xlsx-loader.js -->
 
   <!-- CSS -->
   <link rel="stylesheet" href="css/tokens.css">
@@ -787,7 +786,7 @@
           <i data-lucide="loader" class="icon-lg spinner"></i>
           <p>API-Dokumentation wird geladen...</p>
         </div>
-        <iframe id="api-iframe" title="API Documentation"></iframe>
+        <div id="swagger-ui" style="display:none"></div>
       </div>
     </div>
 

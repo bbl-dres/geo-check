@@ -3,6 +3,7 @@
 // Kanban board rendering and drag-drop
 // ========================================
 
+import { scheduleLucideRefresh } from './icons.js';
 import { state, buildings, getFilteredBuildings, tableVisible, currentUser, getFieldDisplayValue, escapeHtml, formatDueDate, getDueDateClass } from './state.js';
 import { updateMapMarkers } from './map.js';
 import { updateBuildingStatus as persistStatus } from './supabase.js';
@@ -24,8 +25,8 @@ export function setCallbacks(callbacks) {
 // ========================================
 // Render Kanban Board
 // ========================================
-export function renderKanbanBoard() {
-  const filtered = getFilteredBuildings();
+export function renderKanbanBoard(preFiltered = null) {
+  const filtered = preFiltered || getFilteredBuildings();
 
   const columns = {
     backlog: filtered.filter(b => b.kanbanStatus === 'backlog' || !b.kanbanStatus),
@@ -84,7 +85,7 @@ export function renderKanbanBoard() {
   setupKanbanCardHandlers();
 
   // Refresh icons
-  if (typeof lucide !== 'undefined') lucide.createIcons();
+  scheduleLucideRefresh();
 }
 
 // ========================================
