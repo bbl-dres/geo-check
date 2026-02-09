@@ -83,7 +83,7 @@ erDiagram
     USER ||--o{ EVENT : "triggers"
     USER ||--o{ COMMENT : "writes"
     RULESET ||--|{ RULE : "contains"
-    RULE ||--o{ ERROR : "produces"
+    RULE ..o{ ERROR : "references"
 
     BUILDING {
         string id PK "SAP ID (XXXX/YYYY/ZZ)"
@@ -208,7 +208,7 @@ erDiagram
 | User → Event | 1:N | A user can trigger multiple events |
 | User → Comment | 1:N | A user can write multiple comments |
 | RuleSet → Rule | 1:N | A rule set contains multiple validation rules |
-| Rule → Error | 1:N | A rule can produce errors on multiple buildings |
+| Rule → Error | 1:N | A rule can produce errors on multiple buildings (logical reference via `check_id`, no FK — rules defined in `data/rules.json`) |
 
 ### Referential Integrity Pattern
 
@@ -653,7 +653,7 @@ Errors are stored in `errors.json` as an object keyed by building ID.
 |-----------|-------------------|------|-------------|
 | `id` | `id VARCHAR(50) PK` | string | Unique error identifier (format: `err-{id/→-}-{seq}`) |
 | `buildingId` | `building_id VARCHAR(20) FK` | string | Reference to building |
-| `checkId` | `check_id VARCHAR(50) FK` | string | Validation rule reference (e.g., GEO-012) |
+| `checkId` | `check_id VARCHAR(50)` | string | Validation rule ID (e.g., GEO-002) — no FK, rules defined in `data/rules.json` |
 | `description` | `description TEXT` | string | Human-readable error description |
 | `level` | `level VARCHAR(20)` | string | Severity level |
 | `field` | `field VARCHAR(50)` | string | Field that triggered the error (optional) |
