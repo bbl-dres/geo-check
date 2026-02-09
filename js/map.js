@@ -446,6 +446,21 @@ export function getOrCreateEditMarker(buildingId) {
   const building = buildings.find(b => b.id === buildingId);
   if (!building) return null;
 
+  // Hide the GeoJSON layers for this building so only the DOM marker is visible
+  if (map.getLayer('unclustered-point')) {
+    map.setFilter('unclustered-point', [
+      'all',
+      ['!', ['has', 'point_count']],
+      ['!=', ['get', 'id'], buildingId]
+    ]);
+  }
+  if (map.getLayer('selected-point')) {
+    map.setFilter('selected-point', ['==', ['get', 'id'], '']);
+  }
+  if (map.getLayer('selected-point-halo')) {
+    map.setFilter('selected-point-halo', ['==', ['get', 'id'], '']);
+  }
+
   const confidenceClass = getConfidenceClass(building.confidence?.total);
   const el = document.createElement('div');
   el.className = 'mapbox-marker-wrapper';
@@ -467,6 +482,20 @@ export function removeEditMarker() {
     editMarker.remove();
     editMarker = null;
     editMarkerId = null;
+  }
+
+  // Restore filters to show all points again
+  if (map && map.getLayer('unclustered-point')) {
+    map.setFilter('unclustered-point', ['!', ['has', 'point_count']]);
+  }
+  // Re-apply selection highlight if a building is still selected
+  if (map && state.selectedBuildingId) {
+    if (map.getLayer('selected-point')) {
+      map.setFilter('selected-point', ['==', ['get', 'id'], state.selectedBuildingId]);
+    }
+    if (map.getLayer('selected-point-halo')) {
+      map.setFilter('selected-point-halo', ['==', ['get', 'id'], state.selectedBuildingId]);
+    }
   }
 }
 

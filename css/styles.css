@@ -2624,12 +2624,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .egid-row .edit-input {
   width: 100%;
-  padding-right: 36px;
+  padding-right: 40px;
 }
 
 .btn-gwr-lookup {
   position: absolute;
-  right: 8px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
@@ -5572,3 +5572,43 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
     justify-content: center;
   }
 }
+
+/* ========================================
+   Toast Notifications
+   ======================================== */
+#toast-container {
+  position: fixed;
+  bottom: var(--space-xl);
+  right: var(--space-xl);
+  z-index: 10000;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-sm);
+  pointer-events: none;
+}
+
+.toast {
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 8px;
+  font-size: var(--font-sm);
+  font-weight: 500;
+  color: #fff;
+  background: var(--federal-blue);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: auto;
+  max-width: 360px;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-ok { background: var(--color-success); }
+.toast-warning { background: var(--color-warning); }
+.toast-critical { background: var(--color-critical); }
+.toast-unknown { background: var(--federal-blue); }
+.toast-error { background: var(--color-critical); }
