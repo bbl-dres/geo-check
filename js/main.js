@@ -19,7 +19,8 @@ import {
   setCurrentUser,
   eventsData,
   errorsData,
-  rulesConfig
+  rulesConfig,
+  escapeHtml
 } from './state.js';
 
 // Supabase integration
@@ -519,7 +520,7 @@ async function initAPITab() {
     loading.innerHTML = `
       <i data-lucide="alert-circle" class="icon-lg"></i>
       <p>API-Dokumentation konnte nicht geladen werden.</p>
-      <p style="font-size: var(--font-sm); color: var(--text-muted)">${err.message}</p>
+      <p style="font-size: var(--font-sm); color: var(--text-muted)">${escapeHtml(err.message)}</p>
       <button class="btn btn-ghost btn-sm" style="margin-top: var(--space-md)">
         <i data-lucide="refresh-cw" class="icon-sm"></i> Erneut versuchen
       </button>`;
@@ -697,15 +698,15 @@ function renderRules() {
       const operatorDisplay = operatorLabels[rule.operator] || rule.operator;
       return `
         <tr class="rules-table-row">
-          <td class="rules-table-cell rules-table-id">${rule.id}</td>
+          <td class="rules-table-cell rules-table-id">${escapeHtml(rule.id)}</td>
           <td class="rules-table-cell">
-            <span class="rule-name">${rule.name}</span>
-            <span class="rule-description">${rule.description}</span>
+            <span class="rule-name">${escapeHtml(rule.name)}</span>
+            <span class="rule-description">${escapeHtml(rule.description)}</span>
           </td>
-          <td class="rules-table-cell"><code class="rule-field">${fieldDisplay}</code></td>
-          <td class="rules-table-cell">${operatorDisplay}</td>
-          <td class="rules-table-cell">${sev.label}</td>
-          <td class="rules-table-cell">${rule.message || ''}</td>
+          <td class="rules-table-cell"><code class="rule-field">${escapeHtml(fieldDisplay)}</code></td>
+          <td class="rules-table-cell">${escapeHtml(operatorDisplay)}</td>
+          <td class="rules-table-cell">${escapeHtml(sev.label)}</td>
+          <td class="rules-table-cell">${escapeHtml(rule.message || '')}</td>
         </tr>
       `;
     }).join('');
@@ -714,17 +715,17 @@ function renderRules() {
     const enabledClass = ruleSet.enabled ? 'enabled' : 'disabled';
 
     return `
-      <div class="rule-set" data-ruleset-id="${ruleSet.id}">
+      <div class="rule-set" data-ruleset-id="${escapeHtml(ruleSet.id)}">
         <button class="rule-set-header" type="button">
           <div class="rule-set-info">
-            <span class="rule-set-name">${ruleSet.name}</span>
+            <span class="rule-set-name">${escapeHtml(ruleSet.name)}</span>
             <span class="rule-set-count">${ruleSet.rules.length} Regeln</span>
             <span class="rule-set-status ${enabledClass}">${enabledStatus}</span>
           </div>
           <i data-lucide="chevron-down" class="icon-sm rule-set-chevron"></i>
         </button>
         <div class="rule-set-content">
-          <p class="rule-set-description">${ruleSet.description}</p>
+          <p class="rule-set-description">${escapeHtml(ruleSet.description)}</p>
           <table class="rules-table">
             <colgroup>
               <col class="col-id">
@@ -825,8 +826,8 @@ function renderUsersTable() {
       <tr>
         <td>
           <div class="user-cell">
-            <div class="user-avatar-small">${user.initials}</div>
-            <span>${user.name}</span>
+            <div class="user-avatar-small">${escapeHtml(user.initials)}</div>
+            <span>${escapeHtml(user.name)}</span>
           </div>
         </td>
         <td>${roleCell}</td>

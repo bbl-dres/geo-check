@@ -13,6 +13,8 @@ export async function ensureXLSX() {
   loadPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = XLSX_CDN;
+    script.integrity = 'sha384-vtjasyidUo0kW94K5MXDXntzOJpQgBKXmE7e2Ga4LG0skTTLeBi97eFAXsqewJjw';
+    script.crossOrigin = 'anonymous';
     script.onload = resolve;
     script.onerror = () => reject(new Error('SheetJS konnte nicht geladen werden'));
     document.head.appendChild(script);

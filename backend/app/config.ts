@@ -12,7 +12,7 @@ function env(key: string, fallback?: string): string {
 
 export const config = {
   supabaseUrl: env("SUPABASE_URL", "https://acjpfhljskbkyugnslgj.supabase.co"),
-  supabaseServiceKey: env("SUPABASE_SERVICE_ROLE_KEY", ""),
+  supabaseServiceKey: env("SUPABASE_SERVICE_ROLE_KEY"),
   port: parseInt(env("PORT", "8787")),
   swissTopoBaseUrl: "https://api3.geo.admin.ch/rest/services/api/SearchServer",
 };

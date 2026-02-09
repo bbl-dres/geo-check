@@ -245,8 +245,8 @@ export function renderDetailPanel(building) {
       const levelLabel = error.level === 'error' ? 'Fehler' : error.level === 'warning' ? 'Warnung' : 'Info';
       return `
         <tr>
-          <td>${error.checkId}</td>
-          <td>${error.description}</td>
+          <td>${escapeHtml(error.checkId)}</td>
+          <td>${escapeHtml(error.description)}</td>
           <td class="level-${error.level}">${levelLabel}</td>
         </tr>
       `;
@@ -449,14 +449,14 @@ export function renderDataComparison(building) {
       // In edit mode: SAP and GWR are read-only, Korrektur is editable
       const isKorrekturEditable = KORREKTUR_EDITABLE_FIELDS.includes(key);
       const korrekturCell = isKorrekturEditable
-        ? `<input type="text" class="edit-input" data-field="${key}" data-column="korrektur" value="${korrekturValue}">`
-        : `<span class="edit-locked">${korrekturValue}</span>`;
+        ? `<input type="text" class="edit-input" data-field="${key}" data-column="korrektur" value="${escapeHtml(korrekturValue)}">`
+        : `<span class="edit-locked">${escapeHtml(korrekturValue)}</span>`;
 
       return `
         <tr class="data-row edit-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}">
           <td class="col-attr">${getDataLabel(key)}</td>
-          <td class="col-sap ref-locked">${sapValue}</td>
-          <td class="col-gwr ref-locked">${gwrValue}</td>
+          <td class="col-sap ref-locked">${escapeHtml(sapValue)}</td>
+          <td class="col-gwr ref-locked">${escapeHtml(gwrValue)}</td>
           <td class="col-korrektur edit-cell">${korrekturCell}</td>
           <td class="col-match"></td>
         </tr>
@@ -466,9 +466,9 @@ export function renderDataComparison(building) {
       return `
         <tr class="data-row${isSecondary ? ' secondary-field' : ''}${hiddenClass}">
           <td class="col-attr">${getDataLabel(key)}</td>
-          <td class="col-sap">${sapValue}</td>
-          <td class="col-gwr">${gwrValue}</td>
-          <td class="col-korrektur">${korrekturValue}</td>
+          <td class="col-sap">${escapeHtml(sapValue)}</td>
+          <td class="col-gwr">${escapeHtml(gwrValue)}</td>
+          <td class="col-korrektur">${escapeHtml(korrekturValue)}</td>
           <td class="col-match">${matchIcon}</td>
         </tr>
       `;
@@ -544,14 +544,14 @@ function renderEgidRow(building, isEditMode) {
     return `
       <tr class="data-row edit-row egid-row">
         <td class="col-attr">${getDataLabel('egid')}</td>
-        <td class="col-sap ref-locked">${sapValue}</td>
+        <td class="col-sap ref-locked">${escapeHtml(sapValue)}</td>
         <td class="col-gwr edit-cell">
-          <input type="text" class="edit-input" id="edit-egid-gwr" data-field="egid" value="${gwrValue}" placeholder="Gebäudenummer eingeben">
+          <input type="text" class="edit-input" id="edit-egid-gwr" data-field="egid" value="${escapeHtml(gwrValue)}" placeholder="Gebäudenummer eingeben">
           <button type="button" class="btn-gwr-lookup" id="btn-gwr-lookup" title="GWR-Daten abrufen">
             <i data-lucide="search" class="icon-sm"></i>
           </button>
         </td>
-        <td class="col-korrektur ref-locked">${korrekturValue || '—'}</td>
+        <td class="col-korrektur ref-locked">${escapeHtml(korrekturValue || '—')}</td>
         <td class="col-match"></td>
       </tr>
     `;
@@ -559,9 +559,9 @@ function renderEgidRow(building, isEditMode) {
     return `
       <tr class="data-row egid-row">
         <td class="col-attr">${getDataLabel('egid')}</td>
-        <td class="col-sap">${sapValue}</td>
-        <td class="col-gwr">${gwrValue}</td>
-        <td class="col-korrektur">${korrekturValue}</td>
+        <td class="col-sap">${escapeHtml(sapValue)}</td>
+        <td class="col-gwr">${escapeHtml(gwrValue)}</td>
+        <td class="col-korrektur">${escapeHtml(korrekturValue)}</td>
         <td class="col-match">${matchIcon}</td>
       </tr>
     `;

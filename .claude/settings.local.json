@@ -53,7 +53,11 @@
       "Bash(for sym in state buildings getFilteredBuildings updateURL escapeHtml)",
       "WebFetch(domain:github.com)",
       "WebFetch(domain:supabase.com)",
-      "WebFetch(domain:unpkg.com)"
+      "WebFetch(domain:unpkg.com)",
+      "Bash(openssl dgst:*)",
+      "Bash(openssl base64:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
