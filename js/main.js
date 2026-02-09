@@ -1390,7 +1390,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Initialize authentication
-  const user = await initAuth();
+  let user = null;
+  try {
+    user = await initAuth();
+  } catch (err) {
+    console.error('Auth initialization failed:', err);
+  }
 
   // Setup auth state change handler
   onAuthStateChange(async (event, session, appUser) => {

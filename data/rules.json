@@ -172,7 +172,7 @@
           "unit": "meters",
           "severity": "warning",
           "message": "SAP- und GWR-Koordinaten weichen um {value}m ab"
-        },
+        }
       ]
     }
   ],
