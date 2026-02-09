@@ -1,6 +1,6 @@
 // ========================================
 // Map Module
-// Mapbox GL JS map, markers, basemaps, layers
+// Mapbox GL JS map, clustering, basemaps, layers
 // ========================================
 
 import { state, buildings, getFilteredBuildings, updateURL } from './state.js';
@@ -8,9 +8,8 @@ import { state, buildings, getFilteredBuildings, updateURL } from './state.js';
 // Mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRyYXNuZXI1IiwiYSI6ImNtMm5yamVkdjA5MDcycXMyZ2I2MHRhamgifQ.m651j7WIX7MyxNh8KIQ1Gg';
 
-// Map instance and markers
+// Map instance
 export let map = null;
-export let markers = {};
 
 // Basemap state
 let currentBasemap = 'grey';
@@ -18,7 +17,7 @@ let currentBasemap = 'grey';
 // Overlay layers state
 const activeOverlayLayers = new Set();
 
-// Markers visibility state
+// Buildings layer visibility state
 let markersVisible = true;
 
 // Context menu state
@@ -30,17 +29,34 @@ let identifyController = null;
 // Popup instance for layer identify
 let identifyPopup = null;
 
-// Pending marker click handler (set before markers are ready)
+// Pending click handler (set before layers are ready)
 let pendingClickHandler = null;
 
-// Pending initial selection (set before markers are ready)
+// Pending initial selection (set before layers are ready)
 let pendingSelection = null;
 
-// Flag to track if markers have been created
+// Flag to track if building layers have been created
 let markersReady = false;
 
 // Flag to track if a filter update is pending
 let pendingFilterUpdate = false;
+
+// Stored click handler for re-attaching after style changes
+let storedClickHandler = null;
+
+// Edit marker (single DOM marker for drag-edit mode)
+let editMarker = null;
+let editMarkerId = null;
+
+// Building layer IDs for easy reference
+const BUILDING_LAYERS = [
+  'selected-point-halo',
+  'clusters',
+  'cluster-count',
+  'unclustered-point',
+  'selected-point',
+  'unclustered-label'
+];
 
 // ========================================
 // Coordinate Conversion (WGS84 to LV95)
@@ -116,20 +132,320 @@ const layerConfigs = {
 };
 
 // ========================================
+// GeoJSON Conversion
+// ========================================
+export function getConfidenceClass(confidence) {
+  if (confidence < 50) return 'critical';
+  if (confidence < 80) return 'warning';
+  return 'ok';
+}
+
+function buildingsToGeoJSON(buildingsList) {
+  return {
+    type: 'FeatureCollection',
+    features: buildingsList
+      .filter(b => b.mapLng && b.mapLat)
+      .map(b => ({
+        type: 'Feature',
+        properties: {
+          id: b.id,
+          confidence: b.confidence.total,
+          confidenceClass: getConfidenceClass(b.confidence.total)
+        },
+        geometry: {
+          type: 'Point',
+          coordinates: [b.mapLng, b.mapLat]
+        }
+      }))
+  };
+}
+
+// ========================================
+// Building Layers (Source + Clustered Layers)
+// ========================================
+function addBuildingLayers() {
+  const filtered = markersVisible ? getFilteredBuildings() : [];
+
+  map.addSource('buildings-source', {
+    type: 'geojson',
+    data: buildingsToGeoJSON(filtered),
+    cluster: true,
+    clusterMaxZoom: 11,
+    clusterRadius: 40
+  });
+
+  // 1. Selected point halo (outer glow ring)
+  map.addLayer({
+    id: 'selected-point-halo',
+    type: 'circle',
+    source: 'buildings-source',
+    filter: ['==', ['get', 'id'], ''],
+    paint: {
+      'circle-radius': [
+        'interpolate', ['linear'], ['zoom'],
+        8, 12,
+        12, 16,
+        16, 20
+      ],
+      'circle-color': 'transparent',
+      'circle-stroke-width': 3,
+      'circle-stroke-color': '#1a365d'
+    }
+  });
+
+  // 2. Cluster circles
+  map.addLayer({
+    id: 'clusters',
+    type: 'circle',
+    source: 'buildings-source',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': '#1a365d',
+      'circle-radius': [
+        'step',
+        ['get', 'point_count'],
+        16,    // radius for count < 50
+        50, 20,  // radius for count < 200
+        200, 26  // radius for count >= 200
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff'
+    }
+  });
+
+  // 3. Cluster count labels
+  map.addLayer({
+    id: 'cluster-count',
+    type: 'symbol',
+    source: 'buildings-source',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+      'text-size': 13,
+      'text-allow-overlap': true
+    },
+    paint: {
+      'text-color': '#ffffff'
+    }
+  });
+
+  // 4. Unclustered point circles (confidence-colored)
+  map.addLayer({
+    id: 'unclustered-point',
+    type: 'circle',
+    source: 'buildings-source',
+    filter: ['!', ['has', 'point_count']],
+    paint: {
+      'circle-color': [
+        'match',
+        ['get', 'confidenceClass'],
+        'critical', '#dc2626',
+        'warning', '#d97706',
+        'ok', '#059669',
+        '#888888'
+      ],
+      'circle-radius': [
+        'interpolate', ['linear'], ['zoom'],
+        8, 5,
+        12, 8,
+        16, 11
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff'
+    }
+  });
+
+  // 5. Selected point highlight (above normal points)
+  map.addLayer({
+    id: 'selected-point',
+    type: 'circle',
+    source: 'buildings-source',
+    filter: ['==', ['get', 'id'], ''],
+    paint: {
+      'circle-color': [
+        'match',
+        ['get', 'confidenceClass'],
+        'critical', '#dc2626',
+        'warning', '#d97706',
+        'ok', '#059669',
+        '#888888'
+      ],
+      'circle-radius': [
+        'interpolate', ['linear'], ['zoom'],
+        8, 7,
+        12, 11,
+        16, 14
+      ],
+      'circle-stroke-width': 3,
+      'circle-stroke-color': '#1a365d'
+    }
+  });
+
+  // 6. Unclustered labels (building IDs at high zoom)
+  map.addLayer({
+    id: 'unclustered-label',
+    type: 'symbol',
+    source: 'buildings-source',
+    filter: ['!', ['has', 'point_count']],
+    minzoom: 14,
+    layout: {
+      'text-field': ['get', 'id'],
+      'text-font': ['DIN Pro Medium', 'Arial Unicode MS Bold'],
+      'text-size': 12,
+      'text-offset': [0, -1.5],
+      'text-anchor': 'bottom',
+      'text-allow-overlap': false
+    },
+    paint: {
+      'text-color': '#1a1a1a',
+      'text-halo-color': 'rgba(255, 255, 255, 0.95)',
+      'text-halo-width': 2
+    }
+  });
+}
+
+function removeBuildingLayers() {
+  BUILDING_LAYERS.forEach(layerId => {
+    if (map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  });
+  if (map.getSource('buildings-source')) {
+    map.removeSource('buildings-source');
+  }
+}
+
+function readdBuildingLayers() {
+  if (!markersReady) return;
+  if (map.getSource('buildings-source')) return;
+
+  addBuildingLayers();
+
+  // Re-apply selection if any
+  if (state.selectedBuildingId) {
+    map.setFilter('selected-point', ['==', ['get', 'id'], state.selectedBuildingId]);
+    map.setFilter('selected-point-halo', ['==', ['get', 'id'], state.selectedBuildingId]);
+  }
+
+  // Re-apply visibility
+  if (!markersVisible) {
+    setBuildingLayersVisibility('none');
+  }
+
+  // Re-attach click handlers
+  if (storedClickHandler) {
+    setupLayerClickHandlers(storedClickHandler);
+  }
+}
+
+function setBuildingLayersVisibility(visibility) {
+  BUILDING_LAYERS.forEach(layerId => {
+    if (map.getLayer(layerId)) {
+      map.setLayoutProperty(layerId, 'visibility', visibility);
+    }
+  });
+}
+
+// ========================================
+// Layer Click & Hover Handlers
+// ========================================
+function setupLayerClickHandlers(selectBuildingFn) {
+  // Click on unclustered point → select building
+  map.on('click', 'unclustered-point', (e) => {
+    if (!e.features || e.features.length === 0) return;
+    const id = e.features[0].properties.id;
+    selectBuildingFn(id);
+  });
+
+  // Click on selected-point layer (already selected)
+  map.on('click', 'selected-point', (e) => {
+    if (!e.features || e.features.length === 0) return;
+    const id = e.features[0].properties.id;
+    selectBuildingFn(id);
+  });
+
+  // Click on cluster → zoom to expand
+  map.on('click', 'clusters', (e) => {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+    if (!features.length) return;
+    const clusterId = features[0].properties.cluster_id;
+    map.getSource('buildings-source').getClusterExpansionZoom(clusterId, (err, zoom) => {
+      if (err) return;
+      map.easeTo({
+        center: features[0].geometry.coordinates,
+        zoom: zoom
+      });
+    });
+  });
+
+  // Cursor changes
+  map.on('mouseenter', 'unclustered-point', () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+  map.on('mouseleave', 'unclustered-point', () => {
+    map.getCanvas().style.cursor = '';
+  });
+  map.on('mouseenter', 'clusters', () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+  map.on('mouseleave', 'clusters', () => {
+    map.getCanvas().style.cursor = '';
+  });
+  map.on('mouseenter', 'selected-point', () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+  map.on('mouseleave', 'selected-point', () => {
+    map.getCanvas().style.cursor = '';
+  });
+}
+
+// ========================================
+// Edit Marker (for drag-edit in detail panel)
+// ========================================
+export function getOrCreateEditMarker(buildingId) {
+  if (editMarker && editMarkerId === buildingId) {
+    return editMarker;
+  }
+
+  removeEditMarker();
+
+  const building = buildings.find(b => b.id === buildingId);
+  if (!building) return null;
+
+  const confidenceClass = getConfidenceClass(building.confidence.total);
+  const el = document.createElement('div');
+  el.className = 'mapbox-marker-wrapper';
+  el.innerHTML = `<div class="custom-marker-container">
+                    <div class="custom-marker ${confidenceClass}" data-id="${building.id}"></div>
+                    <span class="marker-label">${building.id}</span>
+                  </div>`;
+
+  editMarker = new mapboxgl.Marker({ element: el, anchor: 'center' })
+    .setLngLat([building.mapLng, building.mapLat])
+    .addTo(map);
+  editMarkerId = buildingId;
+
+  return editMarker;
+}
+
+export function removeEditMarker() {
+  if (editMarker) {
+    editMarker.remove();
+    editMarker = null;
+    editMarkerId = null;
+  }
+}
+
+// ========================================
 // Map Initialization
 // ========================================
 export function initMap() {
-  // Define bounds for Switzerland with European context
-  const switzerlandBounds = [
-    [5.5, 45.5],   // Southwest [lng, lat]
-    [11.0, 48.5]   // Northeast [lng, lat]
-  ];
-
   map = new mapboxgl.Map({
     container: 'map',
     style: basemapConfigs[currentBasemap].style,
-    center: [8.3, 47.0], // [lng, lat]
-    zoom: 8,
+    center: [8.2, 46.8],
+    zoom: 7.8,
     minZoom: 3,
     maxZoom: 22
   });
@@ -140,55 +456,42 @@ export function initMap() {
 
   // Add controls after map loads
   map.on('load', () => {
-    // Add zoom control (without compass since rotation is disabled)
     const nav = new mapboxgl.NavigationControl({ showCompass: false });
     map.addControl(nav, 'top-right');
 
-    // Add home button to the navigation control container
     addHomeButton();
 
-    // Add scale control
     map.addControl(new mapboxgl.ScaleControl({ unit: 'metric' }), 'bottom-left');
 
-    // Create markers for all buildings
-    buildings.forEach(building => {
-      const marker = createMarker(building);
-      markers[building.id] = marker;
-    });
-
-    // Mark markers as ready
+    // Add building layers with clustering
+    addBuildingLayers();
     markersReady = true;
 
-    // Apply pending click handler if set
+    // Apply pending click handler
     if (pendingClickHandler) {
-      applyMarkerClickHandlers(pendingClickHandler);
+      storedClickHandler = pendingClickHandler;
+      setupLayerClickHandlers(pendingClickHandler);
       pendingClickHandler = null;
     }
 
-    // Apply pending initial selection if set
+    // Apply pending initial selection
     if (pendingSelection) {
       selectMarker(pendingSelection);
       pendingSelection = null;
     }
 
-    // Apply pending filter update if set
+    // Apply pending filter update
     if (pendingFilterUpdate) {
       pendingFilterUpdate = false;
       updateMapMarkers();
     }
 
-    // Setup label visibility based on zoom
-    updateLabelVisibility();
-
     // Re-add any active overlay layers after style load
     readdOverlayLayers();
 
-    // Hide POI layers (shops, restaurants, etc.)
+    // Hide POI layers
     hidePoiLayers();
   });
-
-  // Show/hide marker labels based on zoom level
-  map.on('zoom', updateLabelVisibility);
 
   // Update zoom button states based on current zoom
   map.on('zoom', updateZoomButtonStates);
@@ -198,6 +501,7 @@ export function initMap() {
   map.on('style.load', () => {
     readdOverlayLayers();
     hidePoiLayers();
+    readdBuildingLayers();
   });
 }
 
@@ -208,10 +512,8 @@ function hidePoiLayers() {
   const style = map.getStyle();
   if (!style || !style.layers) return;
 
-  // Find and hide POI-related layers
   style.layers.forEach(layer => {
     const id = layer.id.toLowerCase();
-    // Hide POI icons and labels
     if (id.includes('poi') ||
         id.includes('shop') ||
         id.includes('store') ||
@@ -251,15 +553,6 @@ function addHomeButton() {
 }
 
 // ========================================
-// Label Visibility
-// ========================================
-function updateLabelVisibility() {
-  const mapContainer = document.getElementById('map');
-  const zoom = map.getZoom();
-  mapContainer.classList.toggle('show-labels', zoom >= 15);
-}
-
-// ========================================
 // Zoom Button States
 // ========================================
 function updateZoomButtonStates() {
@@ -282,73 +575,39 @@ function updateZoomButtonStates() {
 }
 
 // ========================================
-// Marker Functions
+// Building Marker Functions (GeoJSON-based)
 // ========================================
 
-// Get confidence class based on total confidence value
-// This provides consistent colors across markers, table, and detail panel
-export function getConfidenceClass(confidence) {
-  if (confidence < 50) return 'critical';
-  if (confidence < 80) return 'warning';
-  return 'ok';
-}
-
-export function createMarker(building) {
-  const confidenceClass = getConfidenceClass(building.confidence.total);
-  const el = document.createElement('div');
-  el.className = 'mapbox-marker-wrapper';
-  el.innerHTML = `<div class="custom-marker-container">
-                    <div class="custom-marker ${confidenceClass}" data-id="${building.id}"></div>
-                    <span class="marker-label">${building.id}</span>
-                  </div>`;
-
-  const marker = new mapboxgl.Marker({
-    element: el,
-    anchor: 'center'
-  })
-    .setLngLat([building.mapLng, building.mapLat])
-    .addTo(map);
-
-  return marker;
-}
-
 /**
- * Recreate all markers from current buildings data.
+ * Recreate all building layers from current buildings data.
  * Call this when data is reloaded (e.g., after sign in).
  */
 export function recreateMarkers(clickHandler = null) {
-  // Don't recreate if map isn't ready
   if (!map) return;
 
-  // Remove existing markers
-  Object.values(markers).forEach(marker => marker.remove());
-  markers = {};
+  removeEditMarker();
+  removeBuildingLayers();
   markersReady = false;
 
-  // Create new markers from current buildings data
-  buildings.forEach(building => {
-    const marker = createMarker(building);
-    markers[building.id] = marker;
-  });
+  addBuildingLayers();
 
-  // Apply click handler if provided
   if (clickHandler) {
-    applyMarkerClickHandlers(clickHandler);
+    storedClickHandler = clickHandler;
+    setupLayerClickHandlers(clickHandler);
+  } else if (storedClickHandler) {
+    setupLayerClickHandlers(storedClickHandler);
   } else if (pendingClickHandler) {
-    applyMarkerClickHandlers(pendingClickHandler);
+    storedClickHandler = pendingClickHandler;
+    setupLayerClickHandlers(pendingClickHandler);
     pendingClickHandler = null;
   }
 
-  // Mark as ready and apply any pending updates
   markersReady = true;
 
   if (pendingFilterUpdate) {
     pendingFilterUpdate = false;
     updateMapMarkers();
   }
-
-  // Update label visibility
-  updateLabelVisibility();
 }
 
 export function zoomToVisibleMarkers() {
@@ -362,52 +621,36 @@ export function zoomToVisibleMarkers() {
 }
 
 export function updateMapMarkers() {
-  // If markers aren't ready yet, defer the update
   if (!markersReady) {
     pendingFilterUpdate = true;
     return;
   }
 
-  const filtered = getFilteredBuildings();
-  const filteredIds = new Set(filtered.map(b => b.id));
+  const source = map.getSource('buildings-source');
+  if (!source) return;
 
-  Object.entries(markers).forEach(([id, marker]) => {
-    const el = marker.getElement();
-    // Only show if markers are visible globally AND the marker passes filter
-    if (markersVisible && filteredIds.has(id)) {
-      el.style.display = '';
-    } else {
-      el.style.display = 'none';
-    }
-  });
+  const filtered = markersVisible ? getFilteredBuildings() : [];
+  source.setData(buildingsToGeoJSON(filtered));
 }
 
 export function selectMarker(buildingId) {
   const building = buildings.find(b => b.id === buildingId);
   if (!building) return;
 
-  // If markers aren't ready yet, store selection for later
-  if (Object.keys(markers).length === 0) {
+  if (!markersReady) {
     pendingSelection = buildingId;
     return;
   }
 
-  // Update marker elements
-  Object.entries(markers).forEach(([markerId, marker]) => {
-    const el = marker.getElement();
-    const markerDiv = el.querySelector('.custom-marker');
-    const isSelected = markerId === buildingId;
+  // Update selection layer filters
+  if (map.getLayer('selected-point')) {
+    map.setFilter('selected-point', ['==', ['get', 'id'], buildingId]);
+  }
+  if (map.getLayer('selected-point-halo')) {
+    map.setFilter('selected-point-halo', ['==', ['get', 'id'], buildingId]);
+  }
 
-    if (isSelected) {
-      markerDiv.classList.add('selected');
-      el.style.zIndex = '100';
-    } else {
-      markerDiv.classList.remove('selected');
-      el.style.zIndex = '';
-    }
-  });
-
-  // Fly to marker
+  // Fly to building
   map.flyTo({
     center: [building.mapLng, building.mapLat],
     zoom: Math.max(map.getZoom(), 16)
@@ -415,27 +658,23 @@ export function selectMarker(buildingId) {
 }
 
 export function deselectAllMarkers() {
-  Object.values(markers).forEach(marker => {
-    const el = marker.getElement();
-    const markerDiv = el.querySelector('.custom-marker');
-    if (markerDiv) {
-      markerDiv.classList.remove('selected');
-    }
-    el.style.zIndex = '';
-  });
+  if (map.getLayer('selected-point')) {
+    map.setFilter('selected-point', ['==', ['get', 'id'], '']);
+  }
+  if (map.getLayer('selected-point-halo')) {
+    map.setFilter('selected-point-halo', ['==', ['get', 'id'], '']);
+  }
+  removeEditMarker();
 }
 
 export function setMarkersVisible(visible) {
   markersVisible = visible;
-  Object.values(markers).forEach(marker => {
-    const el = marker.getElement();
-    if (visible) {
-      // Re-apply filter visibility
-      updateMapMarkers();
-    } else {
-      el.style.display = 'none';
-    }
-  });
+  if (visible) {
+    setBuildingLayersVisibility('visible');
+    updateMapMarkers();
+  } else {
+    setBuildingLayersVisibility('none');
+  }
 }
 
 export function getMarkersVisible() {
@@ -514,13 +753,11 @@ export function setupLayerWidget() {
   const header = panel.querySelector('.layer-widget-header');
   const checkboxes = panel.querySelectorAll('.layer-item input[type="checkbox"]');
 
-  // Trigger button expands the widget
   trigger.addEventListener('click', (e) => {
     e.stopPropagation();
     widget.classList.remove('collapsed');
   });
 
-  // Header collapses the widget
   if (header) {
     header.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -532,7 +769,6 @@ export function setupLayerWidget() {
     checkbox.addEventListener('change', () => {
       const layerId = checkbox.dataset.layer;
 
-      // Handle buildings layer specially (it's the markers, not a WMS layer)
       if (layerId === 'buildings') {
         setMarkersVisible(checkbox.checked);
         return;
@@ -563,7 +799,6 @@ export function setupLayerWidget() {
 // Overlay Layers (WMS)
 // ========================================
 function getWmsTileUrl(config) {
-  // Build WMS GetMap URL with bbox placeholder for Mapbox
   const params = new URLSearchParams({
     SERVICE: 'WMS',
     VERSION: '1.3.0',
@@ -583,20 +818,18 @@ export function addOverlayLayer(layerId) {
   const config = layerConfigs[layerId];
   if (!config) return;
 
-  // Track active layers
   activeOverlayLayers.add(layerId);
 
-  // Check if source already exists
   if (map.getSource(config.sourceId)) return;
 
-  // Add WMS as raster source
   map.addSource(config.sourceId, {
     type: 'raster',
     tiles: [getWmsTileUrl(config)],
     tileSize: 256
   });
 
-  // Add layer
+  // Add WMS layer below building layers so buildings stay on top
+  const firstBuildingLayer = BUILDING_LAYERS.find(id => map.getLayer(id));
   map.addLayer({
     id: config.layerId,
     type: 'raster',
@@ -604,34 +837,29 @@ export function addOverlayLayer(layerId) {
     paint: {
       'raster-opacity': 0.7
     }
-  });
+  }, firstBuildingLayer || undefined);
 }
 
 export function removeOverlayLayer(layerId) {
   const config = layerConfigs[layerId];
   if (!config) return;
 
-  // Remove from tracking
   activeOverlayLayers.delete(layerId);
 
-  // Remove layer if exists
   if (map.getLayer(config.layerId)) {
     map.removeLayer(config.layerId);
   }
 
-  // Remove source if exists
   if (map.getSource(config.sourceId)) {
     map.removeSource(config.sourceId);
   }
 }
 
 function readdOverlayLayers() {
-  // Re-add all active overlay layers after style change
   activeOverlayLayers.forEach(layerId => {
     const config = layerConfigs[layerId];
     if (!config) return;
 
-    // Add source if not exists
     if (!map.getSource(config.sourceId)) {
       map.addSource(config.sourceId, {
         type: 'raster',
@@ -640,8 +868,8 @@ function readdOverlayLayers() {
       });
     }
 
-    // Add layer if not exists
     if (!map.getLayer(config.layerId)) {
+      const firstBuildingLayer = BUILDING_LAYERS.find(id => map.getLayer(id));
       map.addLayer({
         id: config.layerId,
         type: 'raster',
@@ -649,7 +877,7 @@ function readdOverlayLayers() {
         paint: {
           'raster-opacity': 0.7
         }
-      });
+      }, firstBuildingLayer || undefined);
     }
   });
 }
@@ -661,36 +889,33 @@ export function setupLayerIdentify() {
   identifyPopup = new mapboxgl.Popup({ maxWidth: '400px' });
 
   map.on('click', async (e) => {
-    // Close any existing popup first
     identifyPopup.remove();
 
     if (activeOverlayLayers.size === 0) return;
 
-    // Check if we clicked on a marker (let marker handle it)
-    const markerEl = e.originalEvent.target.closest('.mapbox-marker-wrapper');
-    if (markerEl) return;
+    // Check if we clicked on a building feature (let building handler handle it)
+    const buildingFeatures = map.queryRenderedFeatures(e.point, {
+      layers: BUILDING_LAYERS.filter(id => map.getLayer(id))
+    });
+    if (buildingFeatures.length > 0) return;
 
     if (identifyController) {
       identifyController.abort();
     }
     identifyController = new AbortController();
 
-    // Show loading indicator
     identifyPopup
       .setLngLat(e.lngLat)
       .setHTML('<div class="identify-popup"><em>Laden...</em></div>')
       .addTo(map);
 
-    // Convert click location to LV95 coordinates
     const lv95 = wgs84ToLV95(e.lngLat.lat, e.lngLat.lng);
 
-    // Get map bounds in LV95
     const bounds = map.getBounds();
     const sw = wgs84ToLV95(bounds.getSouth(), bounds.getWest());
     const ne = wgs84ToLV95(bounds.getNorth(), bounds.getEast());
     const mapExtent = `${sw.E},${sw.N},${ne.E},${ne.N}`;
 
-    // Get canvas dimensions
     const canvas = map.getCanvas();
     const imageDisplay = `${canvas.width},${canvas.height},96`;
 
@@ -701,12 +926,10 @@ export function setupLayerIdentify() {
         const config = layerConfigs[layerId];
         if (!config) continue;
 
-        // Use swisstopo REST API for identify
-        // See: https://docs.geo.admin.ch/access-data/identify-features.html
         const params = new URLSearchParams({
           geometry: `${lv95.E},${lv95.N}`,
           geometryType: 'esriGeometryPoint',
-          sr: '2056', // LV95 coordinate system (required - API defaults to LV03)
+          sr: '2056',
           imageDisplay: imageDisplay,
           mapExtent: mapExtent,
           tolerance: '10',
@@ -728,7 +951,6 @@ export function setupLayerIdentify() {
             const feature = data.results[0];
             const props = feature.properties || feature.attributes || {};
 
-            // Build popup content from properties
             const content = Object.entries(props)
               .filter(([k, v]) => v !== null && v !== '' && !k.startsWith('objectid') && k !== 'id')
               .slice(0, 12)
@@ -748,7 +970,6 @@ export function setupLayerIdentify() {
               featureFound = true;
               break;
             } else {
-              // Show feature even if no filterable properties
               identifyPopup
                 .setLngLat(e.lngLat)
                 .setHTML(`<div class="identify-popup">
@@ -765,7 +986,6 @@ export function setupLayerIdentify() {
         }
       }
 
-      // If no features were found for any layer, show message
       if (!featureFound && identifyPopup.isOpen()) {
         const layerNames = [...activeOverlayLayers]
           .map(id => layerConfigs[id]?.name || id)
@@ -847,7 +1067,6 @@ export function setupLayerInfoButtons() {
 
       if (!modal || !modalBody) return;
 
-      // Handle buildings layer with custom legend
       if (layerId === 'buildings') {
         modal.classList.add('visible');
         modalTitle.textContent = 'Gebäude';
@@ -855,13 +1074,11 @@ export function setupLayerInfoButtons() {
         return;
       }
 
-      // Show modal with loading state
       modal.classList.add('visible');
       modalBody.innerHTML = '<div class="layer-info-loading">Laden...</div>';
       modalTitle.textContent = layerConfigs[layerId]?.name || layerId;
 
       try {
-        // Fetch layer legend from swisstopo API
         const response = await fetch(`https://api3.geo.admin.ch/rest/services/api/MapServer/${layerId}/legend?lang=de`);
 
         if (response.ok) {
@@ -876,7 +1093,6 @@ export function setupLayerInfoButtons() {
     });
   });
 
-  // Close modal handlers
   const modal = document.getElementById('layer-info-modal');
   const closeBtn = document.getElementById('layer-info-modal-close');
 
@@ -957,9 +1173,7 @@ export function setupContextMenu() {
     navigator.clipboard.writeText(coordsText).then(() => {
       contextMenuCoords.classList.add('copied');
       setTimeout(hideContextMenu, 500);
-    }).catch(() => {
-      // Clipboard API failed - silent fallback
-    });
+    }).catch(() => {});
   });
 
   contextMenuShare.addEventListener('click', function() {
@@ -1042,25 +1256,13 @@ export function setupContextMenu() {
 // ========================================
 // Marker Click Handler Setup
 // ========================================
-function applyMarkerClickHandlers(selectBuildingFn) {
-  Object.entries(markers).forEach(([id, marker]) => {
-    const el = marker.getElement();
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      selectBuildingFn(id);
-    });
-  });
-}
-
 export function setupMarkerClickHandlers(selectBuildingFn) {
-  // Store reference for context menu
   window.selectBuilding = selectBuildingFn;
+  storedClickHandler = selectBuildingFn;
 
-  // If markers already exist, apply handlers immediately
-  if (Object.keys(markers).length > 0) {
-    applyMarkerClickHandlers(selectBuildingFn);
+  if (markersReady) {
+    setupLayerClickHandlers(selectBuildingFn);
   } else {
-    // Store handler for later application after markers are created
     pendingClickHandler = selectBuildingFn;
   }
 }

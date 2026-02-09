@@ -54,7 +54,6 @@ import {
 
 import {
   map,
-  markers,
   initMap,
   updateMapMarkers,
   recreateMarkers,
@@ -866,7 +865,18 @@ function setupRunChecksButton() {
         alert(`Prüfung abgeschlossen: ${totalBuildings} Gebäude geprüft, ${totalErrors} Fehler gefunden.`);
 
         // Reload data to reflect updated confidence/errors
-        await loadDataFromSupabase();
+        const data = await loadDataFromSupabase();
+        setData(data);
+
+        // Re-render all views with fresh data
+        recreateMarkers(selectBuilding);
+        applyFilters();
+
+        // Refresh detail panel if a building is selected
+        if (state.selectedBuildingId) {
+          const updatedBuilding = buildings.find(b => b.id === state.selectedBuildingId);
+          if (updatedBuilding) renderDetailPanel(updatedBuilding);
+        }
 
       } catch (err) {
         console.error('Rule engine check failed:', err);
