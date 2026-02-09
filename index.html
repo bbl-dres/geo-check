@@ -753,12 +753,16 @@
                   <span class="workflow-description">Exportiert alle aktuellen Validierungsfehler als Excel-Datei.</span>
                 </div>
               </div>
-              <div class="workflow-meta">
+              <div class="workflow-actions">
                 <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-errors-time">27.01.2026, 09:15</span></span>
                 <button class="btn btn-ghost btn-sm workflow-run-btn" id="export-errors">
                   <i data-lucide="download" class="icon-sm"></i>
                   Exportieren
                 </button>
+              </div>
+              <div class="workflow-progress" id="progress-export-errors" hidden>
+                <div class="workflow-progress-track"><div class="workflow-progress-fill"></div></div>
+                <span class="workflow-progress-text"></span>
               </div>
             </div>
             <div class="workflow-item">

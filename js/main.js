@@ -1327,19 +1327,48 @@ async function downloadXLSX(filename, sheetData, sheetName) {
  */
 async function exportErrorsReport() {
   const btn = document.getElementById('export-errors');
-  if (btn) {
-    btn.disabled = true;
-    btn.textContent = 'Exportieren...';
+  const item = btn?.closest('.workflow-item');
+  const progressEl = document.getElementById('progress-export-errors');
+  const progressFill = progressEl?.querySelector('.workflow-progress-fill');
+  const progressText = progressEl?.querySelector('.workflow-progress-text');
+
+  function setRunning(running) {
+    if (btn) {
+      btn.disabled = running;
+      if (running) {
+        btn.innerHTML = '<span class="spinner"></span> Exportieren...';
+      } else {
+        btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
+        scheduleLucideRefresh();
+      }
+    }
+    if (item) item.classList.toggle('running', running);
+    if (progressEl) progressEl.hidden = !running;
   }
+
+  function updateProgress(loaded, total) {
+    const pct = total > 0 ? Math.round((loaded / total) * 100) : 0;
+    if (progressFill) progressFill.style.width = `${pct}%`;
+    if (progressText) progressText.textContent = `${loaded.toLocaleString('de-CH')} / ${total.toLocaleString('de-CH')} Fehler geladen (${pct}%)`;
+  }
+
+  setRunning(true);
+  updateProgress(0, 0);
 
   try {
     let sourceErrors;
     let buildingMap = {};
 
     if (isAuthenticated() && !window.isDemoMode) {
-      const { errors, buildings: buildingsList } = await fetchErrorsForExport();
+      console.group('📊 Fehlerbericht Export');
+      console.log('Fetching errors with pagination...');
+      const { errors, buildings: buildingsList } = await fetchErrorsForExport((loaded, total) => {
+        updateProgress(loaded, total);
+        console.log(`  Loaded ${loaded} / ${total} errors`);
+      });
       sourceErrors = errors;
       buildingsList.forEach(b => { buildingMap[b.id] = b; });
+      console.log('All errors fetched, building Excel file...');
     } else {
       sourceErrors = errorsData;
       buildings.forEach(b => { buildingMap[b.id] = b; });
@@ -1366,6 +1395,8 @@ async function exportErrorsReport() {
 
     if (rows.length === 0) {
       alert('Keine Fehler zum Exportieren vorhanden.');
+      console.log('No errors to export.');
+      console.groupEnd();
       return;
     }
 
@@ -1373,27 +1404,18 @@ async function exportErrorsReport() {
     const timestamp = new Date().toISOString().slice(0, 10);
     await downloadXLSX(`Fehlerbericht_${timestamp}.xlsx`, [headers, ...rows], 'Fehlerbericht');
 
+    console.log(`Export complete: ${rows.length.toLocaleString('de-CH')} rows written.`);
+    console.groupEnd();
+
     // Update last run timestamp
     const timestampEl = document.getElementById('workflow-errors-time');
-    if (timestampEl) {
-      const now = new Date();
-      timestampEl.textContent = now.toLocaleString('de-CH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      }).replace(',', ',');
-    }
+    if (timestampEl) timestampEl.textContent = formatNowSwiss();
   } catch (error) {
     console.error('Error exporting errors report:', error);
+    console.groupEnd?.();
     alert('Export fehlgeschlagen. Bitte versuchen Sie es erneut.');
   } finally {
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<i data-lucide="download" class="icon-sm"></i>\n                  Exportieren';
-      scheduleLucideRefresh();
-    }
+    setRunning(false);
   }
 }
 

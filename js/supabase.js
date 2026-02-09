@@ -54,7 +54,7 @@ export function getSupabase() {
  * Fetch all rows from a table, paginating past the 1000-row default limit.
  * Returns { data, error } matching the Supabase query result shape.
  */
-async function fetchAllRows(client, table, pageSize = 1000) {
+async function fetchAllRowsInternal(client, table, pageSize = 1000) {
     let allData = [];
     let from = 0;
     while (true) {
@@ -89,11 +89,11 @@ export async function loadAllData() {
         errorsResult,
         rulesJsonResult
     ] = await Promise.all([
-        fetchAllRows(client, 'buildings'),
+        fetchAllRowsInternal(client, 'buildings'),
         client.from('users').select('*'),
         client.from('events').select('*').order('created_at', { ascending: false }).range(0, 9999),
         client.from('comments').select('*').order('created_at', { ascending: false }).range(0, 49999),
-        fetchAllRows(client, 'errors'),
+        fetchAllRowsInternal(client, 'errors'),
         fetch('data/rules.json').then(r => r.json()).catch(() => null)
     ]);
 
@@ -150,20 +150,61 @@ export async function loadAllData() {
  * Fetch fresh errors data for CSV export
  * Returns { errors (keyed by building_id), buildings (id + name list) }
  */
-export async function fetchErrorsForExport() {
+/**
+ * Fetch all rows from a table, paginating past the 1000-row limit.
+ * @param {string} table - Table name
+ * @param {string} select - Select clause
+ * @param {function} [onProgress] - Optional callback(fetched, estimatedTotal)
+ * @returns {Array} All rows
+ */
+export async function fetchAllRows(table, select = '*', onProgress) {
     const client = getSupabase();
     if (!client) throw new Error('Supabase client not initialized');
 
-    const [errorsResult, buildingsResult] = await Promise.all([
-        client.from('errors').select('*'),
+    const PAGE_SIZE = 1000;
+    let allRows = [];
+    let offset = 0;
+    let hasMore = true;
+
+    // Get count first for progress reporting
+    let total = 0;
+    if (onProgress) {
+        const { count } = await client.from(table).select('id', { count: 'exact', head: true });
+        total = count || 0;
+        onProgress(0, total);
+    }
+
+    while (hasMore) {
+        const { data, error } = await client
+            .from(table)
+            .select(select)
+            .range(offset, offset + PAGE_SIZE - 1);
+
+        if (error) throw error;
+
+        allRows = allRows.concat(data);
+        offset += PAGE_SIZE;
+        hasMore = data.length === PAGE_SIZE;
+
+        if (onProgress) onProgress(allRows.length, total);
+    }
+
+    return allRows;
+}
+
+export async function fetchErrorsForExport(onProgress) {
+    const client = getSupabase();
+    if (!client) throw new Error('Supabase client not initialized');
+
+    const [errors, buildingsResult] = await Promise.all([
+        fetchAllRows('errors', '*', onProgress),
         client.from('buildings').select('id, name')
     ]);
 
-    if (errorsResult.error) throw errorsResult.error;
     if (buildingsResult.error) throw buildingsResult.error;
 
     return {
-        errors: keyByBuildingId(errorsResult.data),
+        errors: keyByBuildingId(errors),
         buildings: buildingsResult.data
     };
 }
