@@ -25,6 +25,7 @@ import {
   initSupabase,
   getSupabase,
   SUPABASE_URL,
+  SUPABASE_KEY,
   loadAllData as loadDataFromSupabase,
   fetchErrorsForExport,
   fetchEventsForExport,
@@ -800,13 +801,10 @@ function setupRunChecksButton() {
 
   if (runBtn) {
     runBtn.addEventListener('click', async () => {
-      // Get auth token
+      // Get auth token (use session JWT if logged in, otherwise anon key)
       const supabase = getSupabase();
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        alert('Nicht authentifiziert. Bitte erneut anmelden.');
-        return;
-      }
+      const accessToken = session?.access_token || SUPABASE_KEY;
 
       // Disable button during run
       runBtn.disabled = true;
@@ -827,7 +825,8 @@ function setupRunChecksButton() {
             {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${session.access_token}`,
+                'Authorization': `Bearer ${accessToken}`,
+                'apikey': SUPABASE_KEY,
                 'Content-Type': 'application/json'
               }
             }
