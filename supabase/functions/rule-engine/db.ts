@@ -31,16 +31,6 @@ export async function getBuilding(id: string): Promise<Building | null> {
   return data as Building;
 }
 
-/** Fetch all buildings */
-export async function getAllBuildings(): Promise<Building[]> {
-  const { data, error } = await getClient()
-    .from("buildings")
-    .select("*");
-
-  if (error || !data) return [];
-  return data as Building[];
-}
-
 /** Fetch a chunk of buildings with offset/limit */
 export async function getBuildingsChunk(
   offset: number,
@@ -48,55 +38,134 @@ export async function getBuildingsChunk(
 ): Promise<{ buildings: Building[]; total: number }> {
   const db = getClient();
 
-  // Get total count
-  const { count } = await db
-    .from("buildings")
-    .select("*", { count: "exact", head: true });
+  // Get total count and chunk in parallel
+  const [countResult, chunkResult] = await Promise.all([
+    db.from("buildings").select("*", { count: "exact", head: true }),
+    db.from("buildings").select("*").order("id").range(offset, offset + limit - 1),
+  ]);
 
-  // Get chunk
-  const { data, error } = await db
-    .from("buildings")
-    .select("*")
-    .order("id")
-    .range(offset, offset + limit - 1);
-
-  if (error || !data) return { buildings: [], total: count ?? 0 };
-  return { buildings: data as Building[], total: count ?? 0 };
+  const total = countResult.count ?? 0;
+  if (chunkResult.error || !chunkResult.data) return { buildings: [], total };
+  return { buildings: chunkResult.data as Building[], total };
 }
 
-/** Write check results: update errors and confidence for a building */
-export async function writeCheckResults(
-  buildingId: string,
-  errors: ValidationError[],
-  confidence: { total: number; sap: number; gwr: number; georef: number },
+/** Find EGIDs that appear on more than one building (across entire dataset) */
+export async function getDuplicateEgids(): Promise<Set<string>> {
+  const db = getClient();
+  // Fetch all building IDs and their resolved EGID
+  // We need raw data since EGID is JSONB with sap/gwr/korrektur
+  const { data, error } = await db
+    .from("buildings")
+    .select("id, egid");
+
+  if (error || !data) return new Set();
+
+  // Resolve EGID per building: korrektur → gwr → sap
+  const egidToIds = new Map<string, string[]>();
+  for (const row of data) {
+    const sf = row.egid as { korrektur?: string; gwr?: string; sap?: string } | null;
+    if (!sf) continue;
+    const resolved = sf.korrektur || sf.gwr || sf.sap || "";
+    if (!resolved) continue;
+    const ids = egidToIds.get(resolved) || [];
+    ids.push(row.id);
+    egidToIds.set(resolved, ids);
+  }
+
+  // Collect EGIDs used by more than one building
+  const duplicates = new Set<string>();
+  for (const [egid, ids] of egidToIds) {
+    if (ids.length > 1) duplicates.add(egid);
+  }
+  return duplicates;
+}
+
+/** Find coordinates that appear on more than one building (across entire dataset) */
+export async function getDuplicateCoords(): Promise<Set<string>> {
+  const db = getClient();
+  const { data, error } = await db
+    .from("buildings")
+    .select("id, lat, lng");
+
+  if (error || !data) return new Set();
+
+  // Build coord key → building IDs map
+  const coordToIds = new Map<string, string[]>();
+  for (const row of data) {
+    const latSf = row.lat as { korrektur?: string; gwr?: string; sap?: string } | null;
+    const lngSf = row.lng as { korrektur?: string; gwr?: string; sap?: string } | null;
+    if (!latSf || !lngSf) continue;
+    const lat = latSf.korrektur || latSf.gwr || latSf.sap || "";
+    const lng = lngSf.korrektur || lngSf.gwr || lngSf.sap || "";
+    if (!lat || !lng) continue;
+    // Round to 5 decimals (~1m precision) to catch near-duplicates
+    const latR = parseFloat(lat);
+    const lngR = parseFloat(lng);
+    if (isNaN(latR) || isNaN(lngR)) continue;
+    const key = `${latR.toFixed(5)},${lngR.toFixed(5)}`;
+    const ids = coordToIds.get(key) || [];
+    ids.push(row.id);
+    coordToIds.set(key, ids);
+  }
+
+  // Return set of building IDs that share coordinates
+  const duplicateBuildings = new Set<string>();
+  for (const [_key, ids] of coordToIds) {
+    if (ids.length > 1) {
+      for (const id of ids) duplicateBuildings.add(id);
+    }
+  }
+  return duplicateBuildings;
+}
+
+/** Batch write check results for multiple buildings at once */
+export async function writeCheckResultsBatch(
+  results: {
+    buildingId: string;
+    errors: ValidationError[];
+    confidence: { total: number; sap: number; gwr: number; georef: number };
+  }[],
 ): Promise<void> {
   const db = getClient();
+  const buildingIds = results.map((r) => r.buildingId);
 
-  // Delete existing errors for this building
+  // 1. Delete all existing errors for these buildings in one call
   await db
     .from("errors")
     .delete()
-    .eq("building_id", buildingId);
+    .in("building_id", buildingIds);
 
-  // Insert new errors
-  if (errors.length > 0) {
-    const idPrefix = "err-" + buildingId.replace(/\//g, "-");
-    const rows = errors.map((e, i) => ({
-      id: `${idPrefix}-${String(i + 1).padStart(3, "0")}`,
-      building_id: buildingId,
-      check_id: e.checkId,
-      description: e.description,
-      level: e.level,
-      field: e.field ?? null,
-      detected_at: new Date().toISOString(),
-    }));
-
-    await db.from("errors").insert(rows);
+  // 2. Collect all new error rows
+  const allErrorRows: Record<string, unknown>[] = [];
+  for (const r of results) {
+    if (r.errors.length === 0) continue;
+    const idPrefix = "err-" + r.buildingId.replace(/\//g, "-");
+    for (let i = 0; i < r.errors.length; i++) {
+      const e = r.errors[i];
+      allErrorRows.push({
+        id: `${idPrefix}-${String(i + 1).padStart(3, "0")}`,
+        building_id: r.buildingId,
+        check_id: e.checkId,
+        description: e.description,
+        level: e.level,
+        field: e.field ?? null,
+        detected_at: new Date().toISOString(),
+      });
+    }
   }
 
-  // Update building confidence
-  await db
-    .from("buildings")
-    .update({ confidence })
-    .eq("id", buildingId);
+  // 3. Insert all errors in one call (Supabase handles up to ~1000 rows)
+  if (allErrorRows.length > 0) {
+    // Insert in batches of 500 to avoid payload limits
+    for (let i = 0; i < allErrorRows.length; i += 500) {
+      const batch = allErrorRows.slice(i, i + 500);
+      await db.from("errors").insert(batch);
+    }
+  }
+
+  // 4. Update confidence for all buildings (batch via individual updates in parallel)
+  const updates = results.map((r) =>
+    db.from("buildings").update({ confidence: r.confidence }).eq("id", r.buildingId)
+  );
+  await Promise.all(updates);
 }

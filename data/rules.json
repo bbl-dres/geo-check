@@ -19,16 +19,6 @@
           "message": "Keine EGID vorhanden"
         },
         {
-          "id": "ID-002",
-          "name": "EGID Format",
-          "description": "Prüft ob die EGID dem korrekten Format entspricht (1-9 Ziffern, keine führenden Nullen)",
-          "attribute": "egid",
-          "operator": "matches",
-          "value": "^[1-9][0-9]{0,8}$",
-          "severity": "error",
-          "message": "EGID hat ungültiges Format"
-        },
-        {
           "id": "ID-003",
           "name": "EGID verifiziert",
           "description": "Prüft ob die EGID auf das korrekte Gebäude im GWR zeigt (nicht auf ein anderes Gebäude)",
@@ -183,28 +173,15 @@
           "severity": "warning",
           "message": "SAP- und GWR-Koordinaten weichen um {value}m ab"
         },
-        {
-          "id": "GEO-003",
-          "name": "Adresse-Koordinaten-Match",
-          "description": "Prüft ob die geocodierte Adresse mehr als 100m von den gespeicherten Koordinaten abweicht",
-          "attribute": ["lat", "lng"],
-          "operator": "geocode_distance",
-          "value": 100,
-          "unit": "meters",
-          "severity": "info",
-          "message": "Adresse und Koordinaten weichen um {value}m ab"
-        }
       ]
     }
   ],
   "operators": {
     "exists": "Prüft ob der Wert vorhanden und nicht leer ist",
     "equals": "Prüft auf exakte Übereinstimmung",
-    "matches": "Prüft gegen einen regulären Ausdruck",
     "source_match": "Vergleicht SAP- und GWR-Werte (as-is, keine Normalisierung)",
     "unique": "Prüft ob der Wert einmalig ist (kein Duplikat)",
     "distance": "Prüft die Entfernung zwischen zwei Koordinatenpaaren",
-    "geocode_distance": "Prüft die Entfernung zwischen geocodierter Adresse und Koordinaten",
     "check": "Allgemeine Prüfung mit benutzerdefinierter Logik"
   },
   "severityLevels": {

@@ -124,7 +124,16 @@ export async function loadAllData() {
 
     const teamMembers = transformUsersFromDB(usersResult.data);
     const eventsData = transformEventsFromDB(eventsResult.data);
-    const rulesConfig = transformRulesFromDB(ruleSetsResult.data, rulesResult.data);
+    // Rules: use DB data if available, otherwise fall back to data/rules.json
+    let rulesConfig = transformRulesFromDB(ruleSetsResult.data, rulesResult.data);
+    if (!rulesConfig.ruleSets || rulesConfig.ruleSets.length === 0) {
+        try {
+            const rulesRes = await fetch('data/rules.json');
+            rulesConfig = await rulesRes.json();
+        } catch (_e) {
+            // rules.json not available, keep empty config
+        }
+    }
 
     // Also return raw keyed data for backwards compatibility
     const commentsData = keyByBuildingId(commentsResult.data);
