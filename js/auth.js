@@ -461,7 +461,9 @@ export function hidePasswordResetModal() {
         // Clear messages
         const errorEl = document.getElementById('password-reset-error');
         const successEl = document.getElementById('password-reset-success');
+        const hintEl = document.getElementById('pw-match-hint');
         if (errorEl) errorEl.style.display = 'none';
+        if (hintEl) { hintEl.textContent = ''; hintEl.className = 'pw-match-hint'; }
         if (successEl) successEl.style.display = 'none';
     }
     // Clear the hash from URL
@@ -479,13 +481,48 @@ export function setupPasswordResetForm() {
 
     const errorEl = document.getElementById('password-reset-error');
     const successEl = document.getElementById('password-reset-success');
+    const passwordInput = document.getElementById('pw-reset-password');
+    const confirmInput = document.getElementById('pw-reset-confirm');
+    const hintEl = document.getElementById('pw-match-hint');
+    const cancelBtn = document.getElementById('pw-reset-cancel');
+    const submitBtn = document.getElementById('pw-reset-submit');
+
+    // Live match feedback
+    function updateMatchHint() {
+        if (!hintEl) return;
+        const pw = passwordInput.value;
+        const confirm = confirmInput.value;
+
+        if (!confirm) {
+            hintEl.textContent = '';
+            hintEl.className = 'pw-match-hint';
+            return;
+        }
+
+        if (pw === confirm) {
+            hintEl.textContent = 'Passwörter stimmen überein';
+            hintEl.className = 'pw-match-hint pw-match-ok';
+        } else {
+            hintEl.textContent = 'Passwörter stimmen nicht überein';
+            hintEl.className = 'pw-match-hint pw-match-error';
+        }
+    }
+
+    if (passwordInput) passwordInput.addEventListener('input', updateMatchHint);
+    if (confirmInput) confirmInput.addEventListener('input', updateMatchHint);
+
+    // Cancel button
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            hidePasswordResetModal();
+        });
+    }
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const password = form.querySelector('input[name="password"]').value;
-        const passwordConfirm = form.querySelector('input[name="password-confirm"]').value;
-        const submitBtn = form.querySelector('button[type="submit"]');
+        const password = passwordInput.value;
+        const passwordConfirm = confirmInput.value;
 
         // Hide previous messages
         if (errorEl) errorEl.style.display = 'none';
