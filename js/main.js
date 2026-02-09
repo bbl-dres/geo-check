@@ -127,18 +127,29 @@ function updateTabUI(tabId) {
 // Data Loading
 // ========================================
 
+let _loadDataPromise = null;
+
 async function loadData() {
   if (!isAuthenticated() && !window.isDemoMode) {
     return;
   }
 
-  try {
-    const data = await loadDataFromSupabase();
-    setData(data);
-  } catch (error) {
-    console.error('Data loading error:', error);
-    showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
-  }
+  // Re-entrancy guard: if a load is already in flight, return the same promise
+  if (_loadDataPromise) return _loadDataPromise;
+
+  _loadDataPromise = (async () => {
+    try {
+      const data = await loadDataFromSupabase();
+      setData(data);
+    } catch (error) {
+      console.error('Data loading error:', error);
+      showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
+    } finally {
+      _loadDataPromise = null;
+    }
+  })();
+
+  return _loadDataPromise;
 }
 
 // ========================================
@@ -377,6 +388,8 @@ function handlePopState(event) {
 
     if (state.currentTab === 'karte') {
       setTimeout(() => map.resize(), 100);
+    } else if (state.currentTab === 'api') {
+      initAPITab();
     }
   }
 }
@@ -1578,7 +1591,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Auth initialization failed:', err);
   }
 
-  // Setup auth state change handler
+  // Track whether we already handled the initial session
+  let initialLoadDone = false;
+
+  // Setup auth state change handler (fires on future sign-in/sign-out)
   onAuthStateChange(async (event, _session, appUser) => {
     if (appUser) {
       setCurrentUser(appUser.name);
@@ -1586,14 +1602,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       setCurrentUser(null);
     }
 
-    // Show/hide app based on auth state
-    if (event === 'SIGNED_IN' && appUser) {
+    // Skip the initial SIGNED_IN if we already handled it below
+    if (event === 'SIGNED_IN' && initialLoadDone) {
+      // This is a fresh sign-in (not the initial session replay)
       showApp();
       hideAppError();
-      // Update last login timestamp
       await updateUserLastLogin(appUser.id);
       await loadData();
-      // Re-render views - recreate markers since data changed
       recreateMarkers(selectBuilding);
       updateCounts();
       updateStatistik();
@@ -1601,36 +1616,31 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (tableVisible) renderTableView();
       renderRules();
       renderUsersTable();
-      // Resize map after showing
       if (map) setTimeout(() => map.resize(), 100);
     } else if (event === 'SIGNED_OUT') {
       showLoginLanding();
-      // Clear data
       setData({ buildings: [], teamMembers: [], eventsData: {}, commentsData: {}, errorsData: {}, rulesConfig: null });
     }
 
-    // Update UI for auth state
     updateUIForAuthState();
     scheduleLucideRefresh();
   });
 
-  // Check if already authenticated
+  // Handle initial auth state
   if (user) {
+    initialLoadDone = true;
     setCurrentUser(user.name);
     showApp();
 
-    // Load data
     await loadData();
 
-    // Update auth UI
     updateUIForAuthState();
     scheduleLucideRefresh();
 
-    // Render settings tab content
     renderRules();
     renderUsersTable();
   } else {
-    // Not authenticated - show login landing
+    initialLoadDone = true;
     showLoginLanding();
   }
 
