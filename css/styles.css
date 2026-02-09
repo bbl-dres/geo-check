@@ -206,7 +206,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
   font-size: var(--font-sm);
-  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  font-family: var(--font-family-mono);
   letter-spacing: 0.02em;
   white-space: nowrap;
   background: var(--bg-muted);
@@ -1625,7 +1625,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   color: var(--text-primary);
   margin-bottom: var(--space-sm);
   padding-bottom: var(--space-xs);
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .identify-content {
@@ -1643,7 +1643,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .identify-content th {
   padding: var(--space-xs) var(--space-sm);
   text-align: left;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-default);
 }
 
 .identify-content th {
@@ -1888,7 +1888,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .conf-label {
   width: 90px;
-  font-size: 12px;
+  font-size: var(--font-xs);
   color: var(--text-secondary);
   flex-shrink: 0;
 }
@@ -1897,13 +1897,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   flex: 1;
   height: 6px;
   background: var(--bg-muted);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
 }
 
 .conf-fill {
   height: 100%;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 .conf-fill.critical { background: var(--color-critical); }
@@ -1913,7 +1913,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .conf-val {
   width: 32px;
-  font-size: 12px;
+  font-size: var(--font-xs);
   text-align: right;
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;
@@ -2073,7 +2073,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .carousel-dot.active {
-  background: white;
+  background: var(--bg-white);
 }
 
 /* Carousel Thumbnails (legacy) */
@@ -2296,7 +2296,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--font-sm);
-  font-family: 'SF Mono', 'Monaco', 'Consolas', 'Liberation Mono', monospace;
+  font-family: var(--font-family-mono);
   letter-spacing: 0.02em;
   padding: var(--space-xs) var(--space-sm);
   border-radius: var(--radius-sm);
@@ -2503,7 +2503,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .data-table .col-value,
 .data-table .col-korrektur {
   width: 25%;
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .data-table .col-match {
@@ -2524,13 +2524,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   display: none;
 }
 
-.data-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
-}
-
 .match-icon {
   width: 16px;
   height: 16px;
@@ -2542,7 +2535,9 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .data-actions {
   margin-top: var(--space-md);
   display: flex;
+  align-items: center;
   justify-content: center;
+  gap: var(--space-sm);
 }
 
 .edit-actions {
@@ -2643,7 +2638,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--transition-fast);
 }
 
 .btn-gwr-lookup:hover {
@@ -2659,7 +2654,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 /* Edit hint text */
 .edit-hint {
   display: block;
-  font-size: 11px;
+  font-size: var(--font-xs);
   color: var(--text-muted);
   font-style: italic;
   margin-top: 2px;
@@ -2987,7 +2982,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   height: 24px;
   border-radius: var(--radius-full);
   background: var(--federal-blue);
-  color: white;
+  color: var(--text-inverse);
   font-size: var(--font-xs);
   font-weight: var(--font-semibold);
   display: flex;
@@ -2997,8 +2992,8 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .kanban-avatar.placeholder {
-  background: var(--bg-tertiary);
-  color: var(--text-tertiary);
+  background: var(--bg-muted);
+  color: var(--text-muted);
 }
 
 .kanban-avatar.placeholder .icon {
@@ -3007,7 +3002,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 }
 
 .kanban-card-due.placeholder {
-  color: var(--text-tertiary);
+  color: var(--text-muted);
 }
 
 .kanban-more {
@@ -3631,7 +3626,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   padding: var(--space-sm) var(--space-md);
   font-weight: var(--font-semibold);
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: var(--font-xs);
   text-transform: uppercase;
   letter-spacing: 0.03em;
   border-bottom: 1px solid var(--border-default);
@@ -3645,7 +3640,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .rules-table-cell {
   padding: var(--space-sm) var(--space-md);
   vertical-align: top;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-default);
   color: var(--text-secondary);
 }
 
@@ -3670,10 +3665,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .rule-field {
   font-family: var(--font-family-mono);
-  font-size: 11px;
+  font-size: var(--font-xs);
   background: var(--bg-muted);
   padding: 1px 5px;
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
 }
 
 #run-all-checks.running {
@@ -3696,7 +3691,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   padding: var(--space-md) var(--space-lg);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  background: var(--bg-primary);
+  background: var(--bg-white);
 }
 
 .workflow-item:hover {
@@ -3814,7 +3809,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   width: 0%;
   background: var(--federal-blue);
   border-radius: var(--radius-sm);
-  transition: width 0.3s ease;
+  transition: width var(--transition-slow);
 }
 
 .workflow-progress-text {
@@ -3900,14 +3895,14 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   padding: var(--space-xs) var(--space-sm);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-sm);
-  background: var(--bg-card);
+  background: var(--bg-white);
   color: var(--text-primary);
   font-size: var(--font-sm);
   cursor: pointer;
 }
 
 .user-role-select:hover {
-  border-color: var(--border-focus);
+  border-color: var(--border-strong);
 }
 
 .user-role-select:focus {
@@ -3937,7 +3932,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 #btn-edit-users.active {
   background: var(--federal-blue);
-  color: white;
+  color: var(--text-inverse);
 }
 
 .empty-message {
@@ -4192,8 +4187,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   max-width: 400px;
 }
 
+/* Shared alert base */
 .login-error,
-.password-reset-error {
+.password-reset-error,
+.forgot-password-error,
+.invite-error,
+.login-landing-error {
   background: rgba(220, 38, 38, 0.08);
   color: var(--color-critical);
   padding: var(--space-md);
@@ -4237,17 +4236,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .forgot-password-link:hover {
   text-decoration: underline;
-}
-
-.forgot-password-error,
-.invite-error {
-  background: rgba(220, 38, 38, 0.08);
-  color: var(--color-critical);
-  padding: var(--space-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-md);
-  font-size: var(--font-sm);
-  border: 1px solid var(--color-critical);
 }
 
 .forgot-password-confirm,
@@ -4424,10 +4412,10 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   font-weight: var(--font-semibold);
   padding: var(--space-xs) var(--space-sm);
-  border-radius: 3px;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-default);
   white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  box-shadow: var(--shadow-md);
   pointer-events: none;
   opacity: 0;
   transition: opacity var(--transition-fast);
@@ -4654,7 +4642,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .columns-dropdown-item input[type="checkbox"] {
   width: 16px;
   height: 16px;
-  accent-color: var(--color-primary);
+  accent-color: var(--federal-blue);
   cursor: pointer;
 }
 
@@ -5196,7 +5184,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   margin-top: 10vh;
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
 }
 
 /* Header text */
@@ -5398,11 +5386,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .login-landing-error {
   padding: var(--space-sm) var(--space-md);
-  background: rgba(220, 38, 38, 0.08);
-  border: 1px solid var(--color-critical);
-  border-radius: var(--radius-md);
-  color: var(--color-critical);
-  font-size: var(--font-sm);
+  margin-bottom: 0;
   display: none;
 }
 
@@ -5594,7 +5578,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   position: fixed;
   bottom: var(--space-xl);
   right: var(--space-xl);
-  z-index: 10000;
+  z-index: var(--z-modal);
   display: flex;
   flex-direction: column-reverse;
   gap: var(--space-sm);
@@ -5603,15 +5587,15 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .toast {
   padding: var(--space-md) var(--space-lg);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: var(--font-sm);
-  font-weight: 500;
-  color: #fff;
+  font-weight: var(--font-medium);
+  color: var(--text-inverse);
   background: var(--federal-blue);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity var(--transition-base), transform var(--transition-base);
   pointer-events: auto;
   max-width: 360px;
 }
