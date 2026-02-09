@@ -13,7 +13,8 @@ import {
   getErrorType,
   formatRelativeTime,
   formatDateTime,
-  getFieldDisplayValue
+  getFieldDisplayValue,
+  escapeHtml
 } from './state.js';
 import { map } from './map.js';
 
@@ -278,14 +279,9 @@ function updateSelectionUI() {
   }
 }
 
-export function getSelectedBuildings() {
+function getSelectedBuildings() {
   const allBuildings = getFilteredBuildings();
   return allBuildings.filter(b => selectedIds.has(b.id));
-}
-
-export function clearSelection() {
-  selectedIds.clear();
-  updateSelectionUI();
 }
 
 // ========================================
@@ -409,7 +405,7 @@ export function renderTableView() {
               <span class="building-id">${building.id}</span>
             </div>
           </td>
-          <td data-col="name">${building.name}</td>
+          <td data-col="name">${escapeHtml(building.name || '')}</td>
           <td data-col="kanton">${getFieldDisplayValue(building.kanton)}</td>
           <td data-col="portfolio">${building.portfolio || '<span class="text-muted">—</span>'}</td>
           <td data-col="status">
@@ -426,8 +422,8 @@ export function renderTableView() {
               ${building.errors.length === 0 ? '<span class="text-muted">—</span>' : ''}
             </div>
           </td>
-          <td data-col="assignee">${building.assignee ? `<span class="text-secondary">${building.assignee}</span>` : '<span class="text-muted">—</span>'}</td>
-          <td data-col="updated" class="text-muted" title="${formatDateTime(building.lastUpdate)} von ${building.lastUpdateBy || '—'}">${formatRelativeTime(building.lastUpdate)}</td>
+          <td data-col="assignee">${building.assignee ? `<span class="text-secondary">${escapeHtml(building.assignee)}</span>` : '<span class="text-muted">—</span>'}</td>
+          <td data-col="updated" class="text-muted" title="${formatDateTime(building.lastUpdate)} von ${escapeHtml(building.lastUpdateBy || '—')}">${formatRelativeTime(building.lastUpdate)}</td>
         </tr>
       `;
     }).join('');
@@ -491,12 +487,6 @@ function getPriorityLabel(priority) {
   return labels[priority] || '<span class="text-muted">—</span>';
 }
 
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
 // ========================================
 // Export Functions
 // ========================================
@@ -539,10 +529,21 @@ function exportCSV(buildings) {
 }
 
 function exportXLSX(buildings) {
-  // For now, export as CSV with .xlsx extension
-  // In production, use a library like SheetJS
-  alert('XLSX-Export wird implementiert. Vorerst als CSV exportiert.');
-  exportCSV(buildings);
+  const headers = ['ID', 'Name', 'Kanton', 'Status', 'Konfidenz', 'Priorität', 'Zugewiesen', 'Letzte Aktualisierung'];
+  const rows = buildings.map(b => [
+    b.id,
+    b.name || '',
+    getFieldDisplayValue(b.kanton) || '',
+    getStatusLabel(b.kanbanStatus),
+    b.confidence.total,
+    b.priority || 'medium',
+    b.assignee || '',
+    b.lastUpdate || ''
+  ]);
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Gebäude');
+  XLSX.writeFile(wb, 'gebaeude-export.xlsx');
 }
 
 function exportGeoJSON(buildings) {

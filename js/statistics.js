@@ -640,19 +640,3 @@ function renderPriorityChart(filtered) {
   }
 }
 
-// ========================================
-// Destroy all charts (for cleanup)
-// ========================================
-export function destroyCharts() {
-  Object.values(charts).forEach(chart => {
-    if (chart) chart.destroy();
-  });
-  charts = {
-    confidence: null,
-    status: null,
-    source: null,
-    duedate: null,
-    assignee: null,
-    priority: null
-  };
-}

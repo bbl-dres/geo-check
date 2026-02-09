@@ -17,7 +17,8 @@ import {
   formatDateTime,
   formatDisplayDate,
   getFieldDisplayValue,
-  lookupGwrByEgid
+  lookupGwrByEgid,
+  escapeHtml
 } from './state.js';
 import { map, getOrCreateEditMarker, removeEditMarker } from './map.js';
 import {
@@ -253,10 +254,10 @@ export function renderDetailPanel(building) {
     ? building.comments.map(comment => `
         <div class="comment ${comment.system ? 'system' : ''}">
           <div class="comment-header">
-            <span class="comment-author">${comment.author}</span>
+            <span class="comment-author">${escapeHtml(comment.author)}</span>
             <span class="comment-date">${new Date(comment.timestamp).toLocaleDateString('de-CH')}</span>
           </div>
-          <div class="comment-text">${comment.text}</div>
+          <div class="comment-text">${escapeHtml(comment.text)}</div>
         </div>
       `).join('')
     : '<p class="empty-text">Keine Kommentare.</p>';
@@ -1103,8 +1104,8 @@ function renderEventsLog(buildingId) {
         <i data-lucide="${getEventIcon(event.type)}" class="icon-sm"></i>
       </div>
       <div class="event-content">
-        <div class="event-title">${event.title}</div>
-        <div class="event-meta">${event.user} · ${formatEventTime(event.timestamp)}</div>
+        <div class="event-title">${escapeHtml(event.action)}</div>
+        <div class="event-meta">${escapeHtml(event.user)} · ${formatEventTime(event.timestamp)}</div>
       </div>
     </div>
   `).join('');
@@ -1350,8 +1351,8 @@ function handleImageUpload(files) {
   } else {
     // Demo mode: use local blob URLs
     Array.from(files).forEach(file => {
-      if (file.size > 10 * 1024 * 1024) {
-        alert('Datei zu gross (max. 10MB)');
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Datei zu gross (max. 5MB)');
         return;
       }
       const url = URL.createObjectURL(file);

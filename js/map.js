@@ -3,7 +3,7 @@
 // Mapbox GL JS map, clustering, basemaps, layers
 // ========================================
 
-import { state, buildings, getFilteredBuildings, updateURL } from './state.js';
+import { state, buildings, getFilteredBuildings, updateURL, escapeHtml } from './state.js';
 
 // Mapbox access token
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRyYXNuZXI1IiwiYSI6ImNtMm5yamVkdjA5MDcycXMyZ2I2MHRhamgifQ.m651j7WIX7MyxNh8KIQ1Gg';
@@ -997,7 +997,7 @@ export function setupLayerIdentify() {
             const content = Object.entries(props)
               .filter(([k, v]) => v !== null && v !== '' && !k.startsWith('objectid') && k !== 'id')
               .slice(0, 12)
-              .map(([k, v]) => `<tr><td>${k}</td><td>${v}</td></tr>`)
+              .map(([k, v]) => `<tr><td>${escapeHtml(String(k))}</td><td>${escapeHtml(String(v))}</td></tr>`)
               .join('');
 
             if (content) {

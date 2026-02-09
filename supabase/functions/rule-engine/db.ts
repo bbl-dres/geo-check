@@ -130,10 +130,15 @@ export async function writeCheckResultsBatch(
   const buildingIds = results.map((r) => r.buildingId);
 
   // 1. Delete all existing errors for these buildings in one call
-  await db
+  const { error: deleteError } = await db
     .from("errors")
     .delete()
     .in("building_id", buildingIds);
+
+  if (deleteError) {
+    console.error("Failed to delete existing errors:", deleteError);
+    throw new Error(`Delete errors failed: ${deleteError.message}`);
+  }
 
   // 2. Collect all new error rows
   const allErrorRows: Record<string, unknown>[] = [];
@@ -154,18 +159,28 @@ export async function writeCheckResultsBatch(
     }
   }
 
-  // 3. Insert all errors in one call (Supabase handles up to ~1000 rows)
+  // 3. Insert all errors in batches of 500
   if (allErrorRows.length > 0) {
-    // Insert in batches of 500 to avoid payload limits
     for (let i = 0; i < allErrorRows.length; i += 500) {
       const batch = allErrorRows.slice(i, i + 500);
-      await db.from("errors").insert(batch);
+      const { error: insertError } = await db.from("errors").insert(batch);
+      if (insertError) {
+        console.error("Failed to insert errors batch:", insertError);
+        throw new Error(`Insert errors failed: ${insertError.message}`);
+      }
     }
   }
 
-  // 4. Update confidence for all buildings (batch via individual updates in parallel)
-  const updates = results.map((r) =>
-    db.from("buildings").update({ confidence: r.confidence }).eq("id", r.buildingId)
+  // 4. Update confidence for all buildings in parallel
+  const updateResults = await Promise.all(
+    results.map((r) =>
+      db.from("buildings").update({ confidence: r.confidence }).eq("id", r.buildingId)
+    ),
   );
-  await Promise.all(updates);
+
+  const failedUpdate = updateResults.find((res) => res.error);
+  if (failedUpdate?.error) {
+    console.error("Failed to update building confidence:", failedUpdate.error);
+    throw new Error(`Update confidence failed: ${failedUpdate.error.message}`);
+  }
 }

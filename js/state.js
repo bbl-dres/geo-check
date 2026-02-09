@@ -391,15 +391,24 @@ export function getDataLabel(key) {
 export function getFieldDisplayValue(field) {
   if (!field) return '';
   // User correction takes priority
-  if (field.korrektur && field.korrektur.trim() !== '') {
+  if (typeof field.korrektur === 'string' && field.korrektur.trim() !== '') {
     return field.korrektur;
   }
   // Then GWR value
-  if (field.gwr && field.gwr.trim() !== '') {
+  if (typeof field.gwr === 'string' && field.gwr.trim() !== '') {
     return field.gwr;
   }
   // Fallback to SAP
   return field.sap || '';
+}
+
+/**
+ * Escape HTML special characters to prevent XSS
+ */
+export function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 export function formatRelativeTime(isoString) {
@@ -454,6 +463,53 @@ export function formatDisplayDate(dateStr) {
     month: 'short',
     year: 'numeric'
   });
+}
+
+/**
+ * Format a due date for compact display (kanban cards, etc.)
+ * Shows "Heute", "Morgen", "15. Jan", or "15. Jan 2027" if different year
+ */
+export function formatDueDate(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  if (dateOnly.getTime() === today.getTime()) return 'Heute';
+  if (dateOnly.getTime() === tomorrow.getTime()) return 'Morgen';
+
+  const day = date.getDate();
+  const monthNames = ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'];
+  const month = monthNames[date.getMonth()];
+
+  if (date.getFullYear() !== today.getFullYear()) {
+    return `${day}. ${month} ${date.getFullYear()}`;
+  }
+  return `${day}. ${month}`;
+}
+
+/**
+ * Get CSS class for due date urgency
+ */
+export function getDueDateClass(dateStr) {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const dateOnly = new Date(date);
+  dateOnly.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.ceil((dateOnly - today) / (1000 * 60 * 60 * 24));
+
+  if (diffDays < 0) return 'overdue';
+  if (diffDays <= 7) return 'soon';
+  return '';
 }
 
 // ========================================
@@ -537,9 +593,3 @@ export async function lookupGwrByEgid(egid) {
   }
 }
 
-/**
- * Clear the GWR cache (useful when data might have changed)
- */
-export function clearGwrCache() {
-  gwrCache.clear();
-}

@@ -48,8 +48,6 @@ export async function initAuth() {
 
     // Listen for auth changes
     supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log('Auth state changed:', event);
-
         currentSession = session;
         currentUser = session?.user || null;
 
@@ -192,20 +190,6 @@ export function isAuthenticated() {
 }
 
 /**
- * Get current session
- */
-export function getSession() {
-    return currentSession;
-}
-
-/**
- * Get current Supabase auth user
- */
-export function getAuthUser() {
-    return currentUser;
-}
-
-/**
  * Get current app user (from our users table)
  */
 export function getCurrentUser() {
@@ -304,20 +288,6 @@ export function hideLoginModal() {
         if (errorEl) {
             errorEl.textContent = '';
             errorEl.style.display = 'none';
-        }
-    }
-}
-
-/**
- * Show login error message
- */
-export function showLoginError(message) {
-    const modal = document.getElementById('login-modal');
-    if (modal) {
-        const errorEl = modal.querySelector('.login-error');
-        if (errorEl) {
-            errorEl.textContent = message;
-            errorEl.style.display = 'block';
         }
     }
 }

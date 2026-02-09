@@ -1255,11 +1255,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .basemap-color { background-image: url('../assets/basemap-color.svg'); }
 .basemap-satellite { background-image: url('../assets/basemap-satellite.svg'); }
 
-/* Scale Bar - Hidden (using Mapbox's built-in ScaleControl instead) */
-.scale-bar {
-  display: none;
-}
-
 /* Mapbox Scale Control Styling */
 .mapboxgl-ctrl-scale {
   background: rgba(255, 255, 255, 0.8);
@@ -1269,39 +1264,6 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-weight: var(--font-medium);
   color: var(--text-primary);
   padding: 0 var(--space-xs);
-}
-
-.scale-bar-line {
-  width: 100px;
-  height: 2px;
-  background: var(--text-primary);
-  position: relative;
-}
-
-.scale-bar-line::before,
-.scale-bar-line::after {
-  content: '';
-  position: absolute;
-  width: 2px;
-  height: 6px;
-  background: var(--text-primary);
-  top: -2px;
-}
-
-.scale-bar-line::before { left: 0; }
-.scale-bar-line::after { right: 0; }
-
-.scale-bar-text {
-  position: absolute;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: var(--font-xs);
-  font-weight: var(--font-medium);
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.8);
-  padding: 0 var(--space-xs);
-  top: -8px;
 }
 
 /* Layer Widget */

@@ -17,7 +17,8 @@ import {
   setSearchQuery,
   setCurrentUser,
   eventsData,
-  errorsData
+  errorsData,
+  rulesConfig
 } from './state.js';
 
 // Supabase integration
@@ -46,9 +47,6 @@ import {
   showPasswordResetModal,
   isPasswordRecoveryMode,
   updateUIForAuthState,
-  getCurrentUser,
-  getCurrentUserName,
-  getCurrentUserId,
   isAuthenticated
 } from './auth.js';
 
@@ -126,14 +124,12 @@ function updateTabUI(tabId) {
 
 async function loadData() {
   if (!isAuthenticated() && !window.isDemoMode) {
-    console.log('Not authenticated - skipping data load');
     return;
   }
 
   try {
     const data = await loadDataFromSupabase();
     setData(data);
-    console.log('Data loaded from Supabase');
   } catch (error) {
     console.error('Data loading error:', error);
     showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
@@ -175,10 +171,17 @@ async function loadDemoData() {
       comments: comments[b.id] || []
     }));
 
+    // Group events by buildingId for keyed lookup in detail panel
+    const eventsGrouped = {};
+    (events || []).forEach(e => {
+      if (!eventsGrouped[e.buildingId]) eventsGrouped[e.buildingId] = [];
+      eventsGrouped[e.buildingId].push(e);
+    });
+
     return {
       buildings,
       teamMembers: users || [],
-      eventsData: events || [],
+      eventsData: eventsGrouped,
       commentsData: comments || {},
       errorsData: errors || {},
       rulesConfig: rules || null
@@ -191,18 +194,13 @@ async function loadDemoData() {
 
 async function startDemoMode() {
   window.isDemoMode = true;
-  console.log('Starting demo mode...');
 
   try {
     const data = await loadDemoData();
     setData(data);
-    console.log('Demo data loaded successfully');
 
     // Set demo user
     setCurrentUser('Demo Benutzer');
-
-    // Store rulesConfig globally for renderRules
-    window.rulesConfig = data.rulesConfig;
 
     // Show app
     showApp();
@@ -322,6 +320,7 @@ function handlePopState(event) {
     state.filterKanton = event.state.filterKanton || [];
     state.filterConfidence = event.state.filterConfidence || [];
     state.filterPortfolio = event.state.filterPortfolio || [];
+    state.filterStatus = event.state.filterStatus || [];
     state.filterAssignee = event.state.filterAssignee || [];
     setTableVisible(event.state.tableVisible !== undefined ? event.state.tableVisible : true);
 
@@ -374,7 +373,7 @@ function handlePopState(event) {
 // ========================================
 // API Tab
 // ========================================
-const API_DOC_URL = 'http://localhost:8787/doc';
+const API_DOC_URL = '';
 let apiIframeLoaded = false;
 
 function initAPITab() {
@@ -383,6 +382,15 @@ function initAPITab() {
 
   const iframe = document.getElementById('api-iframe');
   const loading = document.getElementById('api-loading');
+
+  if (!API_DOC_URL) {
+    loading.innerHTML = `
+      <i data-lucide="alert-circle" class="icon-lg"></i>
+      <p>API-Dokumentation ist nicht konfiguriert.</p>
+      <p style="font-size: var(--font-sm)">Kein Backend verfügbar in dieser Umgebung.</p>`;
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    return;
+  }
 
   iframe.addEventListener('load', () => {
     loading.style.display = 'none';
@@ -394,7 +402,7 @@ function initAPITab() {
       <i data-lucide="alert-circle" class="icon-lg"></i>
       <p>API-Dokumentation konnte nicht geladen werden.</p>
       <p style="font-size: var(--font-sm)">Backend nicht erreichbar: ${API_DOC_URL}</p>`;
-    lucide.createIcons({ attrs: { class: ['lucide'] } });
+    if (typeof lucide !== 'undefined') lucide.createIcons();
   });
 
   iframe.src = API_DOC_URL;
@@ -469,11 +477,6 @@ function selectBuilding(id, shouldUpdateURL = true) {
   }
 }
 
-function selectBuildingAndSwitch(id) {
-  selectBuilding(id);
-  switchTab('karte');
-}
-
 // ========================================
 // Filter Application
 // ========================================
@@ -544,22 +547,10 @@ function setupFilterToggle() {
 }
 
 // ========================================
-// Modal Functions
-// ========================================
-function openModal(modalId) {
-  document.getElementById(modalId)?.classList.add('active');
-}
-
-function closeModal(modalId) {
-  document.getElementById(modalId)?.classList.remove('active');
-}
-
-// ========================================
 // Rules Display
 // ========================================
 function renderRules() {
   const container = document.getElementById('rules-container');
-  const rulesConfig = window.rulesConfig;
 
   if (!container || !rulesConfig) {
     if (container) container.innerHTML = '<div class="rules-empty">Keine Regeln verfügbar</div>';
@@ -583,10 +574,6 @@ function renderRules() {
       const sev = severityLabels[rule.severity] || { label: rule.severity };
       const fieldDisplay = Array.isArray(rule.attribute) ? rule.attribute.join(', ') : (rule.attribute || '—');
       const operatorDisplay = operatorLabels[rule.operator] || rule.operator;
-      const valueDisplay = rule.value != null
-        ? `${rule.value}${rule.unit ? ' ' + rule.unit : ''}`
-        : '';
-
       return `
         <tr class="rules-table-row">
           <td class="rules-table-cell rules-table-id">${rule.id}</td>
@@ -796,7 +783,7 @@ function setupUserEditButton() {
 
 function setupRunChecksButton() {
   const runBtn = document.getElementById('run-all-checks');
-  const lastCheckEl = document.getElementById('last-check-time');
+  const lastCheckEl = document.getElementById('workflow-checks-time');
 
   if (runBtn) {
     runBtn.addEventListener('click', async () => {
@@ -1239,7 +1226,8 @@ async function exportEventsReport() {
     if (isAuthenticated() && !window.isDemoMode) {
       sourceEvents = await fetchEventsForExport();
     } else {
-      sourceEvents = eventsData;
+      // eventsData is keyed by buildingId — flatten to array for export
+      sourceEvents = Object.values(eventsData).flat();
     }
 
     if (!Array.isArray(sourceEvents) || sourceEvents.length === 0) {
@@ -1297,7 +1285,6 @@ async function exportEventsReport() {
  * Export Prüfplan (rules) as Excel
  */
 function exportPruefplanCSV() {
-  const rulesConfig = window.rulesConfig;
   if (!rulesConfig || !rulesConfig.ruleSets) {
     alert('Keine Regeln zum Exportieren vorhanden.');
     return;
@@ -1411,9 +1398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Setup auth state change handler
-  onAuthStateChange(async (event, session, appUser) => {
-    console.log('Auth state changed:', event);
-
+  onAuthStateChange(async (event, _session, appUser) => {
     if (appUser) {
       setCurrentUser(appUser.name);
     } else {
@@ -1451,7 +1436,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Check if already authenticated
   if (user) {
     setCurrentUser(user.name);
-    console.log('Logged in as:', user.name);
     showApp();
 
     // Load data
@@ -1461,16 +1445,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateUIForAuthState();
     if (typeof lucide !== 'undefined') lucide.createIcons();
 
-    // Store rulesConfig globally for renderRules and render settings tab content
-    import('./state.js').then(mod => {
-      window.rulesConfig = mod.rulesConfig;
-      renderRules();
-      renderUsersTable();
-    });
+    // Render settings tab content
+    renderRules();
+    renderUsersTable();
   } else {
     // Not authenticated - show login landing
     showLoginLanding();
-    console.log('Not authenticated - showing login page');
   }
 
   // Initialize map (needed for both states, will show when app is visible)
@@ -1529,8 +1509,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Listen for browser back/forward
   window.addEventListener('popstate', handlePopState);
-
-  // Expose functions for inline onclick handlers
-  window.openModal = openModal;
-  window.closeModal = closeModal;
 });
