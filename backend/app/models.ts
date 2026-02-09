@@ -10,7 +10,7 @@ export interface SourceField {
   match: boolean;
 }
 
-/** Building record as stored in Supabase */
+/** Building record as stored in Supabase (snake_case matches DB columns) */
 export interface Building {
   id: string;
   name: string;
@@ -23,29 +23,37 @@ export interface Building {
     georef?: number;
   };
   assignee: string | null;
-  kanbanStatus: string;
-  dueDate: string | null;
-  inGwr: boolean;
-  mapLat: number;
-  mapLng: number;
-  // Source comparison fields
+  kanban_status: string;
+  due_date: string | null;
+  in_gwr: boolean;
+  map_lat: number;
+  map_lng: number;
+  // Source comparison fields — Address
   country: SourceField;
   kanton: SourceField;
   gemeinde: SourceField;
+  bfs_nr: SourceField;
   plz: SourceField;
   ort: SourceField;
   strasse: SourceField;
   hausnummer: SourceField;
   zusatz: SourceField;
+  // Source comparison fields — Identifiers
   egid: SourceField;
   egrid: SourceField;
-  gkat: SourceField;
-  gklas: SourceField;
-  gbaup: SourceField;
   lat: SourceField;
   lng: SourceField;
-  parcelArea: SourceField;
+  // Source comparison fields — Classification
+  gkat: SourceField;
+  gklas: SourceField;
+  gstat: SourceField;
+  gbaup: SourceField;
+  gbauj: SourceField;
+  // Source comparison fields — Measurements
+  gastw: SourceField;
+  ganzwhg: SourceField;
   garea: SourceField;
+  parcel_area: SourceField;
 }
 
 /** Severity levels for validation errors */

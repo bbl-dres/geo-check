@@ -51,9 +51,11 @@ export async function writeCheckResults(
     .delete()
     .eq("building_id", buildingId);
 
-  // Insert new errors
+  // Insert new errors (generate IDs matching generate_error_id() format)
   if (errors.length > 0) {
-    const rows = errors.map((e) => ({
+    const idPrefix = "err-" + buildingId.replace(/\//g, "-");
+    const rows = errors.map((e, i) => ({
+      id: `${idPrefix}-${String(i + 1).padStart(3, "0")}`,
       building_id: buildingId,
       check_id: e.checkId,
       description: e.description,

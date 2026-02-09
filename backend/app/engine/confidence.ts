@@ -15,11 +15,12 @@
 
 import type { Building, ValidationError } from "../models.ts";
 
-/** Fields that contribute to SAP/GWR confidence (source comparison fields) */
+/** Fields that contribute to SAP/GWR confidence (all TVP source comparison fields) */
 const SOURCE_FIELDS = [
-  "country", "kanton", "gemeinde", "plz", "ort",
-  "strasse", "hausnummer", "egid", "gkat", "gklas",
-  "gbaup", "lat", "lng",
+  "country", "kanton", "gemeinde", "bfs_nr", "plz", "ort",
+  "strasse", "hausnummer", "zusatz", "egid", "egrid",
+  "lat", "lng", "gkat", "gklas", "gstat", "gbaup", "gbauj",
+  "gastw", "ganzwhg", "garea", "parcel_area",
 ] as const;
 
 /** Severity weights for error penalty */
