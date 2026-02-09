@@ -9,6 +9,10 @@ import { updateMapMarkers } from './map.js';
 import { updateBuildingStatus as persistStatus } from './supabase.js';
 import { getCurrentUserId, getCurrentUserName, isAuthenticated } from './auth.js';
 
+// Pagination
+const KANBAN_PAGE_SIZE = 20;
+const kanbanShown = { backlog: KANBAN_PAGE_SIZE, inprogress: KANBAN_PAGE_SIZE, clarification: KANBAN_PAGE_SIZE, done: KANBAN_PAGE_SIZE };
+
 // Drag state
 let draggedCard = null;
 let draggedBuildingId = null;
@@ -28,6 +32,11 @@ export function setCallbacks(callbacks) {
 export function renderKanbanBoard(preFiltered = null) {
   const filtered = preFiltered || getFilteredBuildings();
 
+  // Reset pagination when filters change (fresh render, not from drag-drop)
+  if (!preFiltered) {
+    for (const key in kanbanShown) kanbanShown[key] = KANBAN_PAGE_SIZE;
+  }
+
   const columns = {
     backlog: filtered.filter(b => b.kanbanStatus === 'backlog' || !b.kanbanStatus),
     inprogress: filtered.filter(b => b.kanbanStatus === 'inprogress'),
@@ -43,7 +52,11 @@ export function renderKanbanBoard(preFiltered = null) {
 
     if (!container) return;
 
-    container.innerHTML = items.map(building => {
+    const limit = kanbanShown[status] || KANBAN_PAGE_SIZE;
+    const visible = items.slice(0, limit);
+    const remaining = items.length - visible.length;
+
+    container.innerHTML = visible.map(building => {
       // Use confidence-based colors for consistency across the app
       const confidenceClass = building.confidence.total < 50 ? 'critical' :
                               building.confidence.total < 80 ? 'warning' : 'ok';
@@ -79,13 +92,32 @@ export function renderKanbanBoard(preFiltered = null) {
         </div>
       `;
     }).join('');
+
+    // "Mehr laden" button when there are remaining cards
+    if (remaining > 0) {
+      container.insertAdjacentHTML('beforeend',
+        `<button class="kanban-more" data-status="${status}">+${remaining.toLocaleString('de-CH')} weitere laden</button>`
+      );
+    }
   });
 
   // Re-setup drag handlers after rendering
   setupKanbanCardHandlers();
+  setupKanbanMoreButtons();
 
   // Refresh icons
   scheduleLucideRefresh();
+}
+
+function setupKanbanMoreButtons() {
+  document.querySelectorAll('.kanban-more').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const status = btn.dataset.status;
+      kanbanShown[status] = (kanbanShown[status] || KANBAN_PAGE_SIZE) + KANBAN_PAGE_SIZE;
+      renderKanbanBoard(getFilteredBuildings());
+    });
+  });
 }
 
 // ========================================
