@@ -824,15 +824,9 @@ function setupRunChecksButton() {
 
   if (runBtn) {
     runBtn.addEventListener('click', async () => {
-      // Get auth token – a valid session JWT is required for Edge Functions
+      // Get auth token if logged in
       const supabase = getSupabase();
       const { data: { session } } = await supabase.auth.getSession();
-
-      if (!session?.access_token) {
-        alert('Bitte melden Sie sich an, um Prüfungen auszuführen.');
-        return;
-      }
-      const accessToken = session.access_token;
 
       // Disable button during run
       runBtn.disabled = true;
@@ -848,15 +842,19 @@ function setupRunChecksButton() {
         let chunksProcessed = 0;
 
         while (hasMore) {
+          const headers = {
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
+          };
+          if (session?.access_token) {
+            headers['Authorization'] = `Bearer ${session.access_token}`;
+          }
+
           const response = await fetch(
             `${SUPABASE_URL}/functions/v1/rule-engine/check-all?offset=${offset}&limit=${limit}`,
             {
               method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${accessToken}`,
-                'apikey': SUPABASE_KEY,
-                'Content-Type': 'application/json'
-              }
+              headers
             }
           );
 
