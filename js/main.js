@@ -425,6 +425,18 @@ async function invokeEdgeFunction(path, method = 'GET') {
   return response.json();
 }
 
+/**
+ * Run validation checks on a single building via the rule-engine edge function.
+ * Returns the check result with updated confidence and errors.
+ */
+async function checkSingleBuilding(buildingId) {
+  const result = await invokeEdgeFunction(
+    `rule-engine/check/${encodeURIComponent(buildingId)}`,
+    'POST'
+  );
+  return result;
+}
+
 // ========================================
 // API Tab — Swagger UI (lazy-loaded, spec fetched directly)
 // ========================================
@@ -1559,9 +1571,13 @@ function setupModuleCallbacks() {
     },
     onDataChange: () => {
       const filtered = getFilteredBuildings();
+      updateMapMarkers(filtered);
+      renderKanbanBoard(filtered);
       if (tableVisible) renderTableView(filtered);
+      updateCounts(filtered);
       updateStatistik(filtered);
-    }
+    },
+    onCheckBuilding: checkSingleBuilding
   });
 
   // Kanban callbacks

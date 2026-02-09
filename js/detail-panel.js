@@ -158,6 +158,7 @@ let onAssigneeChange = null;
 let onPriorityChange = null;
 let onDueDateChange = null;
 let onDataChange = null;
+let onCheckBuilding = null;
 
 export function setCallbacks(callbacks) {
   onStatusChange = callbacks.onStatusChange;
@@ -165,6 +166,7 @@ export function setCallbacks(callbacks) {
   onPriorityChange = callbacks.onPriorityChange;
   onDueDateChange = callbacks.onDueDateChange;
   onDataChange = callbacks.onDataChange;
+  onCheckBuilding = callbacks.onCheckBuilding;
 }
 
 // ========================================
@@ -691,6 +693,61 @@ function updateEditButton() {
 // Store drag handler reference for cleanup
 let currentDragHandler = null;
 
+/**
+ * Run validation checks on a building after save, update local data, show toast.
+ */
+async function runPostSaveChecks(buildingId) {
+  try {
+    const result = await onCheckBuilding(buildingId);
+    if (!result) return;
+
+    // Update local building data with fresh confidence and errors
+    const building = buildings.find(b => b.id === buildingId);
+    if (building) {
+      building.confidence = result.confidence;
+      building.errors = result.errors || [];
+
+      // Re-render detail panel if this building is still selected
+      if (state.selectedBuildingId === buildingId) {
+        renderDetailPanel(building);
+      }
+
+      // Refresh other views (map, table, kanban, stats)
+      if (onDataChange) onDataChange();
+    }
+
+    // Show success toast
+    const conf = result.confidence?.total;
+    const confClass = conf == null ? 'unknown' : conf < 50 ? 'critical' : conf < 80 ? 'warning' : 'ok';
+    showToast(`Prüfung abgeschlossen — Konfidenz: ${conf != null ? conf + '%' : '–'}`, confClass);
+  } catch (err) {
+    console.error('Post-save check failed:', err);
+    showToast('Prüfung fehlgeschlagen', 'error');
+  }
+}
+
+/**
+ * Show a toast notification that auto-dismisses.
+ */
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+
+  // Trigger enter animation
+  requestAnimationFrame(() => toast.classList.add('visible'));
+
+  // Auto-dismiss after 4 seconds
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    toast.addEventListener('transitionend', () => toast.remove());
+  }, 4000);
+}
+
 export function enterEditMode() {
   if (!state.selectedBuildingId) return;
   const building = buildings.find(b => b.id === state.selectedBuildingId);
@@ -829,6 +886,12 @@ export function exitEditMode(save) {
       comparisonData.in_gwr = building.inGwr;
 
       persistComparisonData(building.id, comparisonData, getCurrentUserId(), getCurrentUserName())
+        .then(() => {
+          // Run validation checks on this building after data is persisted
+          if (onCheckBuilding) {
+            runPostSaveChecks(building.id);
+          }
+        })
         .catch(err => console.error('Failed to persist corrections:', err));
     }
   } else {
