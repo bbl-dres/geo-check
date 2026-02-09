@@ -1,111 +1,111 @@
 /**
- * confidence.ts - Calculate confidence scores per source
+ * confidence.ts - Dimension-based confidence scoring
  *
- * Confidence is based on field match rates and error penalties.
+ * Confidence is calculated per field group (dimension), then combined
+ * into a weighted total. Each dimension scores the match rate of its
+ * fields: (matched + corrected) / present × 100.
  *
- * Formula (RULES.md §11):
- *   total = (georef × 0.30) + (sap × 0.35) + (gwr × 0.35)
+ * Dimensions & weights (RULES.md §11):
+ *   Identifikation  30%  — egid, egrid
+ *   Adresse          30%  — plz, ort, strasse, hausnummer
+ *   Lage             20%  — lat, lng
+ *   Klassifikation   10%  — gkat, gklas, gstat, gbaup, gbauj
+ *   Bemessungen      10%  — gastw, ganzwhg, garea, parcel_area
  *
- * SAP score: % of fields where SAP has data that match GWR
- * GWR score: % of fields where GWR has data that match SAP
- * Georef score: 100 minus geometry error penalties
+ * Fields with no data in either source are excluded (dimension → null).
+ * Dimensions with null are excluded from the total; their weight is
+ * redistributed proportionally to dimensions that have data.
  *
  * Source of truth: docs/RULES.md §11
  */
 
 import type { Building, ValidationError } from "../models.ts";
 
-/** Fields that contribute to SAP/GWR confidence (all TVP source comparison fields) */
-const SOURCE_FIELDS = [
-  "country", "kanton", "gemeinde", "bfs_nr", "plz", "ort",
-  "strasse", "hausnummer", "zusatz", "egid", "egrid",
-  "lat", "lng", "gkat", "gklas", "gstat", "gbaup", "gbauj",
-  "gastw", "ganzwhg", "garea", "parcel_area",
+/** Dimension definitions: field groups with weights */
+const DIMENSIONS = [
+  { key: "identifikation", fields: ["egid", "egrid"], weight: 0.30 },
+  { key: "adresse", fields: ["plz", "ort", "strasse", "hausnummer"], weight: 0.30 },
+  { key: "lage", fields: ["lat", "lng"], weight: 0.20 },
+  { key: "klassifikation", fields: ["gkat", "gklas", "gstat", "gbaup", "gbauj"], weight: 0.10 },
+  { key: "bemessungen", fields: ["gastw", "ganzwhg", "garea", "parcel_area"], weight: 0.10 },
 ] as const;
-
-/** Severity weights for error penalty */
-const SEVERITY_WEIGHT: Record<string, number> = {
-  error: 15,
-  warning: 8,
-  info: 2,
-};
 
 interface ConfidenceScores {
   total: number;
-  sap: number;
-  gwr: number;
-  georef: number;
+  identifikation: number | null;
+  adresse: number | null;
+  lage: number | null;
+  klassifikation: number | null;
+  bemessungen: number | null;
 }
 
 /**
- * Calculate confidence scores for a building based on:
- * 1. Field match rate per source (SAP completeness vs GWR completeness)
- * 2. Error penalties weighted by severity
+ * Calculate confidence scores for a building based on dimension match rates.
+ * A field counts as "matched" if SAP === GWR or if a korrektur value is set.
  */
 export function calculateConfidence(
   building: Building,
-  errors: ValidationError[],
+  _errors: ValidationError[],
 ): ConfidenceScores {
-  // 1. Calculate field match rates per source
-  const sapScore = calculateFieldMatchRate(building, "sap");
-  const gwrScore = calculateFieldMatchRate(building, "gwr");
+  const dimScores: Record<string, number | null> = {};
 
-  // 2. Calculate error penalty
-  // ID/ADR errors affect both sources (they're comparison discrepancies)
-  const comparisonPenalty = calculateErrorPenalty(errors, ["ADR-", "ID-"]);
-  const geoPenalty = calculateErrorPenalty(errors, ["GEO-"]);
+  for (const dim of DIMENSIONS) {
+    dimScores[dim.key] = calculateDimensionScore(building, dim.fields);
+  }
 
-  // 3. Combine: field match rate minus error penalty
-  const sap = clamp(Math.round(sapScore - comparisonPenalty));
-  const gwr = clamp(Math.round(gwrScore - comparisonPenalty));
-  const georef = clamp(Math.round(100 - geoPenalty));
+  // Weighted total — redistribute weight from null dimensions
+  let weightSum = 0;
+  let scoreSum = 0;
 
-  // Total: weighted average per RULES.md §11
-  const total = clamp(Math.round(georef * 0.30 + sap * 0.35 + gwr * 0.35));
+  for (const dim of DIMENSIONS) {
+    const score = dimScores[dim.key];
+    if (score != null) {
+      weightSum += dim.weight;
+      scoreSum += score * dim.weight;
+    }
+  }
 
-  return { total, sap, gwr, georef };
+  const total = weightSum > 0 ? clamp(Math.round(scoreSum / weightSum)) : 0;
+
+  return {
+    total,
+    identifikation: dimScores.identifikation ?? null,
+    adresse: dimScores.adresse ?? null,
+    lage: dimScores.lage ?? null,
+    klassifikation: dimScores.klassifikation ?? null,
+    bemessungen: dimScores.bemessungen ?? null,
+  };
 }
 
 /**
- * Calculate what % of fields have data AND match for a given source.
+ * Calculate match rate for a set of fields.
+ * Returns null if no field in the group has data in either source.
  *
- * SAP score: of all fields where SAP has a value, how many match GWR?
- * GWR score: of all fields where GWR has a value, how many match SAP?
- *
- * This means SAP and GWR scores can differ when one source has more
- * complete data than the other.
+ * A field is "resolved" (counts toward score) if:
+ * - match is true (SAP === GWR), OR
+ * - korrektur is set (user verified/corrected the value)
  */
-function calculateFieldMatchRate(
+function calculateDimensionScore(
   building: Building,
-  source: "sap" | "gwr",
-): number {
+  fields: readonly string[],
+): number | null {
   let present = 0;
-  let matched = 0;
+  let resolved = 0;
 
-  for (const fieldName of SOURCE_FIELDS) {
+  for (const fieldName of fields) {
     const field = building[fieldName as keyof Building];
     if (field && typeof field === "object" && "sap" in field) {
-      const sf = field as { sap: string; gwr: string; match: boolean };
-      // Count fields where THIS source has data
-      if (sf[source]) {
+      const sf = field as { sap: string; gwr: string; korrektur?: string; match: boolean };
+      // Count field if either source has data
+      if (sf.sap || sf.gwr) {
         present++;
-        if (sf.match) matched++;
+        if (sf.match || sf.korrektur) resolved++;
       }
     }
   }
 
-  if (present === 0) return 50; // No data to compare
-  return (matched / present) * 100;
-}
-
-/** Sum error penalties for rules matching any of the given prefixes */
-function calculateErrorPenalty(
-  errors: ValidationError[],
-  prefixes: string[],
-): number {
-  return errors
-    .filter((e) => prefixes.some((p) => e.checkId.startsWith(p)))
-    .reduce((sum, e) => sum + (SEVERITY_WEIGHT[e.level] ?? 5), 0);
+  if (present === 0) return null; // No data in this dimension
+  return Math.round((resolved / present) * 100);
 }
 
 function clamp(value: number, min = 0, max = 100): number {

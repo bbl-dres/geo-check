@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wireframe: Konfidenz — Bars Layout</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --font-family: 'Source Sans 3', system-ui, sans-serif;
+      --color-critical: #dc2626;
+      --color-warning: #d97706;
+      --color-success: #059669;
+      --text-primary: #1a202c;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --bg-surface: #ffffff;
+      --bg-muted: #f1f5f9;
+      --border-default: #e2e8f0;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --radius-md: 6px;
+      --radius-sm: 4px;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: #f8fafc;
+      display: flex;
+      gap: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      color: var(--text-primary);
+    }
+
+    .panel {
+      width: 400px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 12px 16px 0;
+    }
+
+    .accordion-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .accordion-header svg {
+      width: 14px;
+      height: 14px;
+      color: var(--text-muted);
+    }
+
+    .accordion-content {
+      padding: 0 16px 16px;
+    }
+
+    /* ============================================
+       OLD: Georef / SAP / GWR (for comparison)
+       ============================================ */
+    .old-container {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .old-total {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-critical);
+    }
+
+    .old-bars { flex: 1; }
+
+    .old-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .old-label {
+      width: 50px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .old-track {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-muted);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .old-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .old-fill.critical { background: var(--color-critical); }
+    .old-fill.warning { background: var(--color-warning); }
+    .old-fill.ok { background: var(--color-success); }
+
+    .old-val {
+      width: 35px;
+      font-size: 13px;
+      text-align: right;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================
+       NEW: Same layout, dimension bars
+       ============================================ */
+    .conf-container {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .conf-total {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .conf-total.critical { color: var(--color-critical); }
+    .conf-total.warning { color: var(--color-warning); }
+    .conf-total.ok { color: var(--color-success); }
+
+    .conf-bars { flex: 1; }
+
+    .conf-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .conf-row:last-child { margin-bottom: 0; }
+
+    .conf-label {
+      width: 90px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .conf-track {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-muted);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .conf-fill {
+      height: 100%;
+      border-radius: 3px;
+    }
+
+    .conf-fill.critical { background: var(--color-critical); }
+    .conf-fill.warning { background: var(--color-warning); }
+    .conf-fill.ok { background: var(--color-success); }
+    .conf-fill.empty { background: var(--border-default); }
+
+    .conf-val {
+      width: 32px;
+      font-size: 12px;
+      text-align: right;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- OLD -->
+  <div class="panel">
+    <p class="panel-label">Aktuell (Ist-Zustand)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+      <div class="old-container">
+        <div class="old-total">49%</div>
+        <div class="old-bars">
+          <div class="old-row">
+            <span class="old-label">Georef</span>
+            <div class="old-track"><div class="old-fill ok" style="width:100%"></div></div>
+            <span class="old-val">100%</span>
+          </div>
+          <div class="old-row">
+            <span class="old-label">SAP</span>
+            <div class="old-track"><div class="old-fill critical" style="width:29%"></div></div>
+            <span class="old-val">29%</span>
+          </div>
+          <div class="old-row">
+            <span class="old-label">GWR</span>
+            <div class="old-track"><div class="old-fill critical" style="width:24%"></div></div>
+            <span class="old-val">24%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEW: Dimension bars -->
+  <div class="panel">
+    <p class="panel-label">Neu (Dimensionen als Bars)</p>
+    <div class="accordion-header">
+      <span>Konfidenz</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="accordion-content">
+      <div class="conf-container">
+        <div class="conf-total critical">49%</div>
+        <div class="conf-bars">
+          <div class="conf-row">
+            <span class="conf-label">Identifikation</span>
+            <div class="conf-track"><div class="conf-fill critical" style="width:0%"></div></div>
+            <span class="conf-val">0%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Adresse</span>
+            <div class="conf-track"><div class="conf-fill warning" style="width:50%"></div></div>
+            <span class="conf-val">50%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Lage</span>
+            <div class="conf-track"><div class="conf-fill ok" style="width:100%"></div></div>
+            <span class="conf-val">100%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Klassifikation</span>
+            <div class="conf-track"><div class="conf-fill warning" style="width:60%"></div></div>
+            <span class="conf-val">60%</span>
+          </div>
+          <div class="conf-row">
+            <span class="conf-label">Bemessungen</span>
+            <div class="conf-track"><div class="conf-fill empty" style="width:0%"></div></div>
+            <span class="conf-val">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

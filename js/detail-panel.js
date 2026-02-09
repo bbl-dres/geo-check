@@ -198,19 +198,36 @@ export function renderDetailPanel(building) {
   document.getElementById('detail-title').textContent = building.name;
   document.getElementById('detail-sap-id').textContent = building.id;
 
-  // Confidence
-  const totalClass = building.confidence.total < 50 ? 'critical' :
-                     building.confidence.total < 80 ? 'warning' : 'ok';
-  document.getElementById('confidence-total').textContent = building.confidence.total + '%';
-  document.getElementById('confidence-total').className = 'confidence-total ' + totalClass;
+  // Confidence — Bars Layout
+  const total = building.confidence.total;
+  const totalClass = total < 50 ? 'critical' : total < 80 ? 'warning' : 'ok';
 
-  ['georef', 'sap', 'gwr'].forEach(key => {
-    const val = building.confidence[key];
-    const barClass = val < 50 ? 'critical' : val < 80 ? 'warning' : 'ok';
-    document.getElementById(`bar-${key}`).style.width = val + '%';
-    document.getElementById(`bar-${key}`).className = 'confidence-bar-fill ' + barClass;
-    document.getElementById(`val-${key}`).textContent = val + '%';
-  });
+  const totalEl = document.getElementById('confidence-total');
+  totalEl.textContent = total + '%';
+  totalEl.className = 'conf-total ' + totalClass;
+
+  // Dimension bars
+  const DIMENSIONS = [
+    { key: 'identifikation', label: 'Identifikation' },
+    { key: 'adresse', label: 'Adresse' },
+    { key: 'lage', label: 'Lage' },
+    { key: 'klassifikation', label: 'Klassifikation' },
+    { key: 'bemessungen', label: 'Bemessungen' },
+  ];
+
+  const barsContainer = document.getElementById('confidence-bars');
+  barsContainer.innerHTML = DIMENSIONS.map(dim => {
+    const val = building.confidence[dim.key];
+    const hasData = val != null;
+    const cls = !hasData ? 'empty' : val < 50 ? 'critical' : val < 80 ? 'warning' : 'ok';
+    const display = hasData ? val + '%' : '—';
+    const width = hasData ? val + '%' : '0%';
+    return `<div class="conf-row">
+      <span class="conf-label">${dim.label}</span>
+      <div class="conf-track"><div class="conf-fill ${cls}" style="width:${width}"></div></div>
+      <span class="conf-val">${display}</span>
+    </div>`;
+  }).join('');
 
   // Errors - render as table
   const errorTable = document.getElementById('error-table');

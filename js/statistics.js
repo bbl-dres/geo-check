@@ -84,11 +84,9 @@ function getChartFilteredBuildings(preFiltered = null) {
 
   if (chartFilters.source) {
     filtered = filtered.filter(b => {
-      if (chartFilters.source === 'georef') return b.confidence.georef < 80;
-      if (chartFilters.source === 'gwr') return b.confidence.gwr < 80;
-      if (chartFilters.source === 'sap') return b.confidence.sap < 80;
-      if (chartFilters.source === 'address') return b.data && b.data.address && !b.data.address.match;
-      return true;
+      const dim = b.confidence[chartFilters.source];
+      if (dim != null) return dim < 80;
+      return false;
     });
   }
 
@@ -150,12 +148,13 @@ const chartColors = {
     done: '#059669'        // --color-success
   },
 
-  // Data sources (matching --type-* tokens)
+  // Confidence dimensions
   source: {
-    georef: '#6366f1',     // --type-geo
-    gwr: '#059669',        // --type-gwr
-    sap: '#0891b2',        // --type-sap
-    address: '#7c3aed'     // --type-address
+    identifikation: '#6366f1',
+    adresse: '#0891b2',
+    lage: '#059669',
+    klassifikation: '#d97706',
+    bemessungen: '#94a3b8'
   },
 
   // Priority (matching the filter chip colors - all muted grey for icons)
@@ -392,19 +391,21 @@ function renderStatusChart(filtered) {
 // Source Mismatches Chart (Horizontal Bar)
 // ========================================
 function renderSourceChart(filtered) {
-  const sourceCounts = { georef: 0, gwr: 0, sap: 0, address: 0 };
+  const dimKeys = ['identifikation', 'adresse', 'lage', 'klassifikation', 'bemessungen'];
+  const dimLabels = ['Identifikation', 'Adresse', 'Lage', 'Klassifikation', 'Bemessungen'];
+  const dimCounts = { identifikation: 0, adresse: 0, lage: 0, klassifikation: 0, bemessungen: 0 };
   filtered.forEach(b => {
-    if (b.confidence.georef < 80) sourceCounts.georef++;
-    if (b.confidence.gwr < 80) sourceCounts.gwr++;
-    if (b.confidence.sap < 80) sourceCounts.sap++;
-    if (b.data && b.data.address && !b.data.address.match) sourceCounts.address++;
+    for (const key of dimKeys) {
+      const val = b.confidence[key];
+      if (val != null && val < 80) dimCounts[key]++;
+    }
   });
 
   const options = {
     ...baseChartOptions,
     series: [{
       name: 'Abweichungen',
-      data: [sourceCounts.georef, sourceCounts.gwr, sourceCounts.sap, sourceCounts.address]
+      data: dimKeys.map(k => dimCounts[k])
     }],
     chart: {
       ...baseChartOptions.chart,
@@ -412,8 +413,7 @@ function renderSourceChart(filtered) {
       height: 220,
       events: {
         dataPointSelection: (event, chartContext, config) => {
-          const sources = ['georef', 'gwr', 'sap', 'address'];
-          toggleChartFilter('source', sources[config.dataPointIndex]);
+          toggleChartFilter('source', dimKeys[config.dataPointIndex]);
         }
       }
     },
@@ -425,9 +425,9 @@ function renderSourceChart(filtered) {
         distributed: true
       }
     },
-    colors: [chartColors.source.georef, chartColors.source.gwr, chartColors.source.sap, chartColors.source.address],
+    colors: dimKeys.map(k => chartColors.source[k]),
     xaxis: {
-      categories: ['Georef', 'GWR', 'SAP', 'Adresse'],
+      categories: dimLabels,
       labels: { style: { fontSize: '12px' } }
     },
     yaxis: {

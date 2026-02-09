@@ -168,11 +168,11 @@ These rules ensure that SAP RE-FX records can be uniquely linked to the correct 
 | `ID-004` | EGRID vorhanden | `egrid` | EGRID exists for cadastre/ÖREB linkage | warning |
 | `ID-005` | EGID Duplikat | `egid` | Same EGID used for multiple SAP records | error |
 | `ID-006` | Koordinaten Duplikat | `lat`, `lng` | Same coordinates used for multiple SAP records | warning |
-| `ID-007` | Mehrere GWR-Gebäude | `inGwr` | One SAP record links to multiple GWR buildings (1:N) | info |
+| `ID-007` | Mehrfache Gebäudenummern | `name`, `hausnummer` | Building name or house number contains multiple numbers, suggesting the SAP record covers multiple physical buildings | info |
 
 **Error consolidation:** If EGID is missing (`ID-001`), do not also trigger `ID-002` or `ID-003`.
 
-**Note on ID-007:** It is valid for one SAP RE-FX object to represent multiple physical buildings in GWR (building consolidation). This is flagged as `info` for awareness, not as an error.
+**Note on ID-007:** Checks both the building `name` (e.g. "Bern, Hauptstr. 12, 14, 16") and `hausnummer` (e.g. "3-5", "12/14", "10, 12") for patterns indicating multiple buildings behind one SAP record. This is flagged as `info` because building consolidation may be intentional.
 
 ### 3.2 Adresse (`address`)
 
@@ -349,7 +349,7 @@ Validation errors are identified by prefixed codes that indicate the error domai
 | `ID-004` | `egrid` | EGRID missing (cadastre linkage) | warning |
 | `ID-005` | `egid` | Duplicate EGID (same EGID for multiple SAP records) | error |
 | `ID-006` | `lat`, `lng` | Duplicate coordinates (same coords for multiple SAP records) | warning |
-| `ID-007` | `inGwr` | Multiple GWR buildings linked to one SAP record (1:N) | info |
+| `ID-007` | `name`, `hausnummer` | Building name or house number contains multiple numbers | info |
 
 ### 6.2 ADR Errors (Address)
 
@@ -587,29 +587,73 @@ VALUES ('custom-001', 'custom-checks', 'Regel Name', '...', 'fieldName', 'exists
 
 ## 11. Confidence Score Calculation
 
-Validation results contribute to the overall confidence score displayed for each building.
+The confidence score measures data quality per building across five task-oriented dimensions. Each dimension scores the match rate of its fields, and the total is the weighted average.
 
-### 11.1 Score Components
+### 11.1 Dimensions
 
-| Component | Weight | Description |
-|-----------|--------|-------------|
-| `georef` | 30% | Geometric data quality |
-| `sap` | 35% | SAP RE-FX completeness/match rate |
-| `gwr` | 35% | GWR data completeness/match rate |
+Confidence is calculated per **field group** (dimension) rather than per data source. This gives users actionable insight into *what* needs fixing.
+
+| Dimension | Key | Fields | Weight | Description |
+|-----------|-----|--------|--------|-------------|
+| Identifikation | `identifikation` | `egid`, `egrid` | 30% | Can the building be uniquely linked to GWR? |
+| Adresse | `adresse` | `plz`, `ort`, `strasse`, `hausnummer` | 30% | Do the core address fields agree between SAP and GWR? |
+| Lage | `lage` | `lat`, `lng` | 20% | Do the coordinates agree between sources? |
+| Klassifikation | `klassifikation` | `gkat`, `gklas`, `gstat`, `gbaup`, `gbauj` | 10% | Do building classification codes match? |
+| Bemessungen | `bemessungen` | `gastw`, `ganzwhg`, `garea`, `parcel_area` | 10% | Do measurement values agree? |
 
 ### 11.2 Calculation
 
+**Per-dimension score:**
+
 ```
-total = (georef × 0.30) + (sap × 0.35) + (gwr × 0.35)
+dimension_score = (resolved_fields / present_fields) × 100
 ```
 
-### 11.3 Thresholds
+A field is **present** if either SAP or GWR has a value. A field is **resolved** if:
+- `match` is true (SAP and GWR agree), OR
+- `korrektur` is set (user has verified/corrected the value)
+
+If no field in a dimension has data, the dimension score is `null` (displayed as "—").
+
+**Total score:**
+
+```
+total = Σ(dimension_score × weight) / Σ(weight)
+```
+
+Dimensions with `null` scores are excluded; their weight is redistributed proportionally to dimensions that have data.
+
+### 11.3 Confidence Object (JSONB)
+
+```json
+{
+  "total": 49,
+  "identifikation": 0,
+  "adresse": 50,
+  "lage": 100,
+  "klassifikation": 60,
+  "bemessungen": null
+}
+```
+
+A `null` dimension value means no data exists in either source for any field in that group.
+
+### 11.4 Thresholds
 
 | Level | Range | Color | CSS Variable |
 |-------|-------|-------|--------------|
 | Critical | < 50% | Red | `--color-critical` |
 | Warning | 50-80% | Orange | `--color-warning` |
 | OK | >= 80% | Green | `--color-success` |
+
+Thresholds apply to both the total score and individual dimension scores.
+
+### 11.5 Key Design Decisions
+
+- **Korrektur boosts confidence.** A corrected field counts as resolved, even if SAP and GWR still disagree. This rewards user verification work.
+- **Missing data is neutral, not penalizing.** A dimension with no data scores `null` rather than 0 or 50. Its weight is redistributed, so empty dimensions don't drag down the total.
+- **Dimensions are task-oriented.** Users see "Identifikation 0%" and know to fix the EGID, rather than "SAP 29%" which gives no actionable direction.
+- **All fields within a dimension are equally weighted.** This keeps the model simple and predictable.
 
 ---
 
