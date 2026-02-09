@@ -30,7 +30,8 @@ import {
   fetchEventsForExport,
   updateUserLastLogin,
   updateUserRole,
-  removeUser
+  removeUser,
+  updateBuildingGwrFields
 } from './supabase.js';
 
 import {
@@ -880,6 +881,145 @@ function setupRunChecksButton() {
 }
 
 // ========================================
+// GWR Enrich: Swisstopo API → Update GWR values
+// ========================================
+const SWISSTOPO_FIND_URL = 'https://api3.geo.admin.ch/rest/services/ech/MapServer/find';
+
+/**
+ * Fetch GWR data for a single EGID from the Swisstopo API.
+ * Returns mapped field values or null if not found.
+ */
+async function fetchGwrByEgid(egid) {
+  const params = new URLSearchParams({
+    layer: 'ch.bfs.gebaeude_wohnungs_register',
+    searchText: egid,
+    searchField: 'egid',
+    returnGeometry: 'true',
+    contains: 'false',
+    sr: '4326'
+  });
+
+  const response = await fetch(`${SWISSTOPO_FIND_URL}?${params}`);
+  if (!response.ok) return null;
+
+  const data = await response.json();
+  if (!data.results || data.results.length === 0) return null;
+
+  const a = data.results[0].attributes;
+  const geom = data.results[0].geometry;
+
+  // Map GWR API attributes to our field keys
+  return {
+    egid: String(a.egid ?? ''),
+    egrid: a.egrid || '',
+    plz: String(a.dplz4 ?? ''),
+    ort: a.dplzname || '',
+    strasse: a.strname || '',
+    hausnummer: String(a.deinr ?? ''),
+    gemeinde: a.ggdename || '',
+    bfsNr: String(a.ggdenr ?? ''),
+    kanton: a.gdekt || '',
+    country: 'CH',
+    gstat: String(a.gstat ?? ''),
+    gkat: String(a.gkat ?? ''),
+    gklas: String(a.gklas ?? ''),
+    gbaup: String(a.gbaup ?? ''),
+    gbauj: String(a.gbauj ?? ''),
+    gastw: String(a.gastw ?? ''),
+    ganzwhg: String(a.ganzwhg ?? ''),
+    garea: String(a.garea ?? ''),
+    lat: geom ? String(geom.y) : '',
+    lng: geom ? String(geom.x) : '',
+  };
+}
+
+function setupGwrEnrichButton() {
+  const btn = document.getElementById('run-gwr-enrich');
+  const timeEl = document.getElementById('workflow-gwr-time');
+
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    const originalHTML = btn.innerHTML;
+    btn.textContent = 'Läuft...';
+
+    try {
+      // Filter buildings that have a GWR EGID value
+      const withEgid = buildings.filter(b => b.egid?.gwr);
+      const total = withEgid.length;
+
+      if (total === 0) {
+        alert('Keine Gebäude mit GWR-EGID gefunden.');
+        return;
+      }
+
+      let updated = 0;
+      let notFound = 0;
+      let errors = 0;
+      const batchSize = 10;
+
+      for (let i = 0; i < total; i += batchSize) {
+        const batch = withEgid.slice(i, i + batchSize);
+
+        // Process batch concurrently
+        const results = await Promise.allSettled(
+          batch.map(async (building) => {
+            const gwrData = await fetchGwrByEgid(building.egid.gwr);
+            await updateBuildingGwrFields(building.id, building, gwrData);
+            return gwrData !== null;
+          })
+        );
+
+        for (const r of results) {
+          if (r.status === 'fulfilled') {
+            if (r.value) updated++;
+            else notFound++;
+          } else {
+            errors++;
+            console.error('GWR enrich error:', r.reason);
+          }
+        }
+
+        // Update progress
+        const done = Math.min(i + batchSize, total);
+        btn.textContent = `Läuft... ${done}/${total}`;
+
+        // Small delay between batches to avoid rate limiting
+        if (i + batchSize < total) {
+          await new Promise(r => setTimeout(r, 300));
+        }
+      }
+
+      // Update last run timestamp
+      if (timeEl) {
+        const now = new Date();
+        timeEl.textContent = now.toLocaleDateString('de-CH', {
+          day: '2-digit', month: '2-digit', year: 'numeric'
+        }) + ', ' + now.toLocaleTimeString('de-CH', {
+          hour: '2-digit', minute: '2-digit'
+        });
+      }
+
+      alert(`GWR Aktualisierung abgeschlossen:\n${updated} aktualisiert\n${notFound} nicht im GWR gefunden\n${errors} Fehler`);
+
+      // Reload data to reflect changes
+      const data = await loadDataFromSupabase();
+      setData(data);
+      applyFilters();
+
+    } catch (err) {
+      console.error('GWR enrich failed:', err);
+      alert(`Fehler bei GWR-Aktualisierung: ${err.message}`);
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+      if (typeof lucide !== 'undefined') lucide.createIcons();
+    }
+  });
+}
+
+// ========================================
 // Main Event Listeners
 // ========================================
 function setupEventListeners() {
@@ -1348,6 +1488,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupFieldToggle();
   setupImageWidget();
   setupRunChecksButton();
+  setupGwrEnrichButton();
   setupUserEditButton();
 
   // Setup chart filter callback (cross-filtering updates other views)

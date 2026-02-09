@@ -298,9 +298,10 @@ const PRIMARY_FIELDS = [
 
 // Secondary fields: supplementary context, hidden by default
 const SECONDARY_FIELDS = [
-  'country', 'kanton', 'gemeinde', 'zusatz',
+  'country', 'kanton', 'gemeinde', 'bfsNr', 'zusatz',
   'egrid', 'parcelArea', 'garea',
-  'gkat', 'gklas', 'gbaup'
+  'gkat', 'gklas', 'gstat', 'gbaup', 'gbauj',
+  'gastw', 'ganzwhg'
 ];
 
 // Combined for iteration (primary first, then secondary)
@@ -309,17 +310,19 @@ const COMPARED_FIELDS = [...PRIMARY_FIELDS, ...SECONDARY_FIELDS];
 // Fields editable in the Korrektur column (all comparison fields except coords)
 const KORREKTUR_EDITABLE_FIELDS = [
   'plz', 'ort', 'strasse', 'hausnummer',
-  'country', 'kanton', 'gemeinde', 'zusatz',
+  'country', 'kanton', 'gemeinde', 'bfsNr', 'zusatz',
   'egrid', 'parcelArea', 'garea',
-  'gkat', 'gklas', 'gbaup'
+  'gkat', 'gklas', 'gstat', 'gbaup', 'gbauj',
+  'gastw', 'ganzwhg'
 ];
 
 // All real data fields (for edit mode saving)
 const ALL_DATA_FIELDS = [
   'plz', 'ort', 'strasse', 'hausnummer', 'egid',
-  'country', 'kanton', 'gemeinde', 'zusatz',
+  'country', 'kanton', 'gemeinde', 'bfsNr', 'zusatz',
   'egrid', 'parcelArea', 'garea',
-  'gkat', 'gklas', 'gbaup', 'lat', 'lng'
+  'gkat', 'gklas', 'gstat', 'gbaup', 'gbauj',
+  'gastw', 'ganzwhg', 'lat', 'lng'
 ];
 
 // Track whether secondary fields are visible
