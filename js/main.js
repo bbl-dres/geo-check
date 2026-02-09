@@ -375,6 +375,37 @@ function handlePopState(event) {
 }
 
 // ========================================
+// Edge Function Helper
+// ========================================
+async function invokeEdgeFunction(path, method = 'GET') {
+  const supabase = getSupabase();
+
+  // Get a fresh session JWT (refreshes automatically if expired)
+  const { data: { session } } = await supabase.auth.getSession();
+  const accessToken = session?.access_token;
+
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Content-Type': 'application/json'
+  };
+  if (accessToken) {
+    headers['Authorization'] = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/${path}`, {
+    method,
+    headers
+  });
+
+  if (!response.ok) {
+    const body = await response.json().catch(() => ({}));
+    throw new Error(body.message || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+// ========================================
 // API Tab — Swagger UI (lazy-loaded)
 // ========================================
 const SWAGGER_CSS = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css';
@@ -414,13 +445,8 @@ async function initAPITab() {
     // Load Swagger UI assets on demand
     await loadSwaggerUI();
 
-    // Fetch OpenAPI spec from edge function (public, anon key only)
-    const specUrl = `${SUPABASE_URL}/functions/v1/rule-engine/openapi.json`;
-    const res = await fetch(specUrl, {
-      headers: { 'apikey': SUPABASE_KEY }
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const spec = await res.json();
+    // Fetch OpenAPI spec from edge function
+    const spec = await invokeEdgeFunction('rule-engine/openapi.json');
 
     // Hide loading, show Swagger container
     loading.style.display = 'none';
@@ -824,10 +850,6 @@ function setupRunChecksButton() {
 
   if (runBtn) {
     runBtn.addEventListener('click', async () => {
-      // Get auth token if logged in
-      const supabase = getSupabase();
-      const { data: { session } } = await supabase.auth.getSession();
-
       // Disable button during run
       runBtn.disabled = true;
       const originalText = runBtn.textContent;
@@ -842,28 +864,11 @@ function setupRunChecksButton() {
         let chunksProcessed = 0;
 
         while (hasMore) {
-          const headers = {
-            'apikey': SUPABASE_KEY,
-            'Content-Type': 'application/json'
-          };
-          if (session?.access_token) {
-            headers['Authorization'] = `Bearer ${session.access_token}`;
-          }
-
-          const response = await fetch(
-            `${SUPABASE_URL}/functions/v1/rule-engine/check-all?offset=${offset}&limit=${limit}`,
-            {
-              method: 'POST',
-              headers
-            }
+          const data = await invokeEdgeFunction(
+            `rule-engine/check-all?offset=${offset}&limit=${limit}`,
+            'POST'
           );
 
-          if (!response.ok) {
-            const err = await response.json().catch(() => ({}));
-            throw new Error(err.message || `HTTP ${response.status}`);
-          }
-
-          const data = await response.json();
           totalBuildings = data.totalBuildings;
           totalErrors += data.totalErrors;
           hasMore = data.hasMore;
