@@ -50,7 +50,9 @@
       "Bash(for sym in state buildings getFilteredBuildings tableVisible currentUser getFieldDisplayValue escapeHtml formatDueDate getDueDateClass)",
       "Bash(for sym in state getFilteredBuildings tableVisible setTableVisible updateURL getTagLabel getErrorType formatRelativeTime formatDateTime getFieldDisplayValue escapeHtml)",
       "Bash(for sym in escapeHtml)",
-      "Bash(for sym in state buildings getFilteredBuildings updateURL escapeHtml)"
+      "Bash(for sym in state buildings getFilteredBuildings updateURL escapeHtml)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:supabase.com)"
     ]
   }
 }
