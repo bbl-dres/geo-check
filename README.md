@@ -1,11 +1,10 @@
 # Geo-Check
 
-A prototype web application for validating and managing property data.
+A prototype web application for validating and managing property data. Built for the Federal Office for Buildings and Logistics (BBL).
 
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
 > All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
-A prototype web application for validating and managing property data. Built for the Federal Office for Buildings and Logistics (BBL).
 
 **Live Demo:** https://bbl-dres.github.io/geo-check/
 
@@ -14,7 +13,7 @@ A prototype web application for validating and managing property data. Built for
 ## Features
 
 ### Map View
-- Interactive map with Swiss federal buildings
+- Interactive map with Swiss federal buildings (Mapbox GL JS)
 - Multiple basemap options (swisstopo, OpenStreetMap, Orthofoto)
 - WMS layer overlays (Cadastral parcels, Administrative boundaries)
 - Location search via swisstopo API
@@ -34,71 +33,121 @@ A prototype web application for validating and managing property data. Built for
 ### Detail Panel
 - Building metadata and confidence scores
 - Data source comparison (GEOREF, SAP, GWR, ADDRESS)
-- Inline editing capabilities
+- Inline editing with correction tracking
 - Comments and event history
+- Image carousel with upload
 
 ### Validation Rules
-- Automated data quality checks
-- Configurable rule severity levels
-- Last check timestamp tracking
+- Automated data quality checks via rule engine
+- Configurable rule severity levels (error, warning, info)
+- Confidence scoring across 5 dimensions
+- Swagger UI API documentation
+
+### Authentication
+- Email + password authentication via Supabase Auth
+- Role-based access (Admin, Bearbeiter, Leser)
+- Admin user invitation flow
 
 ## Tech Stack
 
-- **Frontend:** Vanilla JavaScript (ES Modules)
-- **Map:** Leaflet.js with swisstopo WMS/WMTS
-- **Icons:** Lucide Icons
-- **Styling:** Custom CSS with design tokens
+| Layer    | Technology                                |
+|----------|-------------------------------------------|
+| Frontend | Vanilla JavaScript (ES6 Modules)          |
+| Maps     | Mapbox GL JS v3.3.0                       |
+| Charts   | ApexCharts v5.3.6                         |
+| Icons    | Lucide Icons v0.563.0                     |
+| Export   | SheetJS/XLSX v0.18.5 (on-demand)          |
+| Auth/DB  | Supabase (PostgreSQL, Auth, Storage, Realtime) |
+| Backend  | Deno + Hono (TypeScript)                  |
+| CI/CD    | GitHub Actions                            |
+| Styling  | Custom CSS with design tokens             |
 
 ## Project Structure
 
 ```
 geo-check/
-├── index.html          # Main application
+├── index.html              # Single-page application
 ├── css/
-│   ├── tokens.css      # Design tokens (colors, spacing, etc.)
-│   └── styles.css      # Component styles
+│   ├── tokens.css          # Design tokens (colors, spacing, fonts)
+│   └── styles.css          # Component styles
 ├── js/
-│   ├── main.js         # Application entry point
-│   ├── state.js        # Global state management
-│   ├── map.js          # Leaflet map setup and layers
-│   ├── search.js       # swisstopo location search
-│   ├── data-table.js   # Table view with pagination
-│   ├── detail-panel.js # Building detail sidebar
-│   ├── kanban.js       # Kanban board view
-│   └── statistics.js   # Statistics dashboard
-└── data/
-    ├── buildings.json  # Building data
-    ├── users.json      # Team members
-    ├── events.json     # Activity log
-    ├── comments.json   # Building comments
-    ├── errors.json     # Validation errors
-    └── rules.json      # Validation rules
+│   ├── main.js             # App entry point & orchestration
+│   ├── state.js            # Global state & filtering
+│   ├── map.js              # Mapbox GL integration
+│   ├── detail-panel.js     # Building detail sidebar
+│   ├── data-table.js       # Table view with pagination
+│   ├── kanban.js           # Kanban board & drag-drop
+│   ├── statistics.js       # Charts & statistics
+│   ├── auth.js             # Supabase authentication
+│   ├── supabase.js         # Database queries
+│   ├── search.js           # Swisstopo location search
+│   ├── icons.js            # Lucide icon rendering
+│   └── xlsx-loader.js      # On-demand XLSX library loader
+├── backend/                # Deno rule engine API
+│   ├── deno.json           # Deno config & tasks
+│   └── app/
+│       ├── main.ts         # Server entry point
+│       ├── config.ts       # Environment configuration
+│       ├── db.ts           # Supabase database client
+│       ├── models.ts       # TypeScript type definitions
+│       ├── engine/         # Rule registry, runner, confidence
+│       ├── rules/          # Validation rule definitions
+│       ├── routes/         # HTTP route handlers
+│       └── geo/            # Swisstopo geocoding client
+├── supabase/
+│   ├── config.toml         # Supabase project config
+│   └── functions/          # Edge Functions (invite-user, rule-engine)
+├── docs/                   # DATABASE.md, EDGE-FUNCTIONS.md, RULES.md
+├── scripts/                # FME workspace for data upsert
+└── data/                   # Demo JSON files (fallback data)
 ```
 
 ## Getting Started
 
-1. Clone the repository
-2. Serve the files with any static web server
-3. Open in browser
+### Frontend
 
-Example with Python:
+Serve the files with any static web server:
+
 ```bash
+# Node.js
+npx serve
+
+# Python
 python -m http.server 8000
 ```
 
-Example with Node.js:
+Open http://localhost:8000
+
+### Backend (Rule Engine)
+
+Requires [Deno](https://deno.land/):
+
 ```bash
-npx serve
+cd backend
+deno task dev    # development with watch mode (port 8787)
+deno task start  # production
+```
+
+**Environment variables:**
+- `SUPABASE_URL` — Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY` — Service role key (required, no fallback)
+- `PORT` — Server port (default: 8787)
+
+### Edge Functions
+
+Deployed automatically via GitHub Actions on push to `main` (when `supabase/functions/**` changes).
+
+For local development with [Supabase CLI](https://supabase.com/docs/guides/cli):
+```bash
+supabase functions serve
 ```
 
 ## Configuration
 
-The application uses swisstopo APIs for:
-- Base maps (WMTS)
-- WMS overlay layers
-- Location search (geo.admin.ch SearchServer)
-
-No API keys required for swisstopo services.
+The application uses:
+- **Swisstopo APIs** for base maps, WMS overlays, and location search (no API key required)
+- **Mapbox GL JS** for interactive mapping (access token in `js/map.js`)
+- **Supabase** for authentication, database, storage, and realtime subscriptions
 
 ## Browser Support
 
