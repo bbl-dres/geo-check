@@ -4,10 +4,76 @@
 -- PostgreSQL schema for Supabase migration
 -- Uses JSONB fields for flexible data structures (Three-Value Pattern)
 --
--- Version: 1.1
--- Last updated: 2026-02-02
+-- Version: 1.2
+-- Last updated: 2026-02-09
 -- Compatible with: Supabase (PostgreSQL 15+)
 -- ============================================================================
+
+-- ============================================================================
+-- DROP EXISTING OBJECTS
+-- ============================================================================
+
+-- Realtime publication (ignore errors if tables not yet added)
+DO $$ BEGIN
+  ALTER PUBLICATION supabase_realtime DROP TABLE buildings, comments, events, errors;
+EXCEPTION WHEN OTHERS THEN NULL;
+END $$;
+
+-- Storage policies
+DROP POLICY IF EXISTS "Public read access for building images" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can upload building images" ON storage.objects;
+DROP POLICY IF EXISTS "Admins can delete building images" ON storage.objects;
+
+-- Storage bucket
+DELETE FROM storage.buckets WHERE id = 'building-images';
+
+-- RLS policies on app tables
+DO $$ DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN
+    SELECT policyname, tablename
+    FROM pg_policies
+    WHERE schemaname = 'public'
+      AND tablename IN ('users','buildings','rule_sets','rules','errors','comments','events')
+  LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I ON %I', r.policyname, r.tablename);
+  END LOOP;
+END $$;
+
+-- Views
+DROP VIEW IF EXISTS v_user_workload CASCADE;
+DROP VIEW IF EXISTS v_building_summary CASCADE;
+
+-- Tables (order respects foreign key dependencies)
+DROP TABLE IF EXISTS events CASCADE;
+DROP TABLE IF EXISTS comments CASCADE;
+DROP TABLE IF EXISTS errors CASCADE;
+DROP TABLE IF EXISTS rules CASCADE;
+DROP TABLE IF EXISTS rule_sets CASCADE;
+DROP TABLE IF EXISTS buildings CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+-- Reference tables
+DROP TABLE IF EXISTS ref_gbaup CASCADE;
+DROP TABLE IF EXISTS ref_gstat CASCADE;
+DROP TABLE IF EXISTS ref_cantons CASCADE;
+
+-- Custom types
+DROP TYPE IF EXISTS event_type CASCADE;
+DROP TYPE IF EXISTS error_level CASCADE;
+DROP TYPE IF EXISTS portfolio_type CASCADE;
+DROP TYPE IF EXISTS priority_level CASCADE;
+DROP TYPE IF EXISTS kanban_status CASCADE;
+DROP TYPE IF EXISTS user_role CASCADE;
+
+-- Functions
+DROP FUNCTION IF EXISTS update_updated_at CASCADE;
+DROP FUNCTION IF EXISTS sync_assignee_name CASCADE;
+DROP FUNCTION IF EXISTS generate_comment_id CASCADE;
+DROP FUNCTION IF EXISTS generate_error_id CASCADE;
+DROP FUNCTION IF EXISTS derive_kanton CASCADE;
+DROP FUNCTION IF EXISTS derive_map_coordinates CASCADE;
 
 -- ============================================================================
 -- EXTENSIONS
