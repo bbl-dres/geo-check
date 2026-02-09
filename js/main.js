@@ -23,6 +23,8 @@ import {
 // Supabase integration
 import {
   initSupabase,
+  getSupabase,
+  SUPABASE_URL,
   loadAllData as loadDataFromSupabase,
   fetchErrorsForExport,
   fetchEventsForExport,
@@ -796,21 +798,82 @@ function setupRunChecksButton() {
   const lastCheckEl = document.getElementById('last-check-time');
 
   if (runBtn) {
-    runBtn.addEventListener('click', () => {
-      alert('Prüfung wird gestartet. Die Ergebnisse werden in Kürze angezeigt.');
+    runBtn.addEventListener('click', async () => {
+      // Get auth token
+      const supabase = getSupabase();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert('Nicht authentifiziert. Bitte erneut anmelden.');
+        return;
+      }
 
-      // Update last check timestamp
-      if (lastCheckEl) {
-        const now = new Date();
-        const formatted = now.toLocaleDateString('de-CH', {
-          day: '2-digit',
-          month: '2-digit',
-          year: 'numeric'
-        }) + ', ' + now.toLocaleTimeString('de-CH', {
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-        lastCheckEl.textContent = formatted;
+      // Disable button during run
+      runBtn.disabled = true;
+      const originalText = runBtn.textContent;
+      runBtn.textContent = 'Prüfung läuft...';
+
+      try {
+        let offset = 0;
+        const limit = 50;
+        let totalBuildings = 0;
+        let totalErrors = 0;
+        let hasMore = true;
+        let chunksProcessed = 0;
+
+        while (hasMore) {
+          const response = await fetch(
+            `${SUPABASE_URL}/functions/v1/rule-engine/check-all?offset=${offset}&limit=${limit}`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${session.access_token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.message || `HTTP ${response.status}`);
+          }
+
+          const data = await response.json();
+          totalBuildings = data.totalBuildings;
+          totalErrors += data.totalErrors;
+          hasMore = data.hasMore;
+          offset = data.nextOffset ?? offset + limit;
+          chunksProcessed++;
+
+          // Update button with progress
+          const checked = Math.min(offset, totalBuildings);
+          runBtn.textContent = `Prüfung läuft... ${checked}/${totalBuildings}`;
+        }
+
+        // Update last check timestamp
+        if (lastCheckEl) {
+          const now = new Date();
+          const formatted = now.toLocaleDateString('de-CH', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+          }) + ', ' + now.toLocaleTimeString('de-CH', {
+            hour: '2-digit',
+            minute: '2-digit'
+          });
+          lastCheckEl.textContent = formatted;
+        }
+
+        alert(`Prüfung abgeschlossen: ${totalBuildings} Gebäude geprüft, ${totalErrors} Fehler gefunden.`);
+
+        // Reload data to reflect updated confidence/errors
+        await loadDataFromSupabase();
+
+      } catch (err) {
+        console.error('Rule engine check failed:', err);
+        alert(`Fehler bei der Prüfung: ${err.message}`);
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = originalText;
       }
     });
   }
