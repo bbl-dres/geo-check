@@ -71,6 +71,7 @@ DROP FUNCTION IF EXISTS generate_comment_id CASCADE;
 DROP FUNCTION IF EXISTS generate_error_id CASCADE;
 DROP FUNCTION IF EXISTS derive_kanton CASCADE;
 DROP FUNCTION IF EXISTS derive_map_coordinates CASCADE;
+DROP FUNCTION IF EXISTS safe_jsonb CASCADE;
 
 -- ============================================================================
 -- EXTENSIONS
@@ -172,7 +173,7 @@ CREATE TABLE buildings (
     -- ----------------------------------------------------------------
     -- Denormalized columns (derived via triggers for query performance)
     -- ----------------------------------------------------------------
-    kanton_code     CHAR(2),      -- Derived from kanton TVP (korrektur > gwr > sap)
+    kanton_code     VARCHAR(50),   -- Derived from kanton TVP (korrektur > gwr > sap)
     map_lat         DOUBLE PRECISION,  -- Derived from lat TVP
     map_lng         DOUBLE PRECISION,  -- Derived from lng TVP
 
@@ -185,8 +186,7 @@ CREATE TABLE buildings (
     created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     -- Constraints
-    CONSTRAINT valid_lat CHECK (map_lat IS NULL OR (map_lat >= 45.81 AND map_lat <= 47.81)),
-    CONSTRAINT valid_lng CHECK (map_lng IS NULL OR (map_lng >= 5.95 AND map_lng <= 10.49)),
+    -- Note: no lat/lng bounds check — dataset includes foreign buildings (Ausland)
     CONSTRAINT valid_confidence CHECK (
         CAST(confidence->>'total' AS int) BETWEEN 0 AND 100 AND
         CAST(confidence->>'georef' AS int) BETWEEN 0 AND 100 AND
@@ -210,7 +210,7 @@ CREATE INDEX idx_buildings_name_search ON buildings USING GIN (to_tsvector('germ
 
 COMMENT ON TABLE buildings IS 'Federal building records with multi-source data comparison';
 COMMENT ON COLUMN buildings.id IS 'SAP property ID (format: XXXX/YYYY/ZZ)';
-COMMENT ON COLUMN buildings.kanton_code IS 'Denormalized 2-letter canton code derived from kanton TVP via trigger';
+COMMENT ON COLUMN buildings.kanton_code IS 'Denormalized canton value derived from kanton TVP via trigger (may be 2-letter code or full name depending on source)';
 COMMENT ON COLUMN buildings.images IS 'JSONB array of image objects [{id, url, filename, uploadDate, uploadedBy, uploadedById}]';
 
 -- ----------------------------------------------------------------------------
@@ -439,6 +439,25 @@ BEGIN
     RETURN 'err-' || v_bid || '-' || LPAD(v_seq::TEXT, 3, '0');
 END;
 $$ LANGUAGE plpgsql;
+
+-- ----------------------------------------------------------------------------
+-- Safe JSONB cast (coerces NULL / empty string → '{}')
+-- Use in FME SQL statements or migration scripts when input may be empty.
+-- ----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION safe_jsonb(val TEXT)
+RETURNS JSONB AS $$
+BEGIN
+    IF val IS NULL OR TRIM(val) = '' THEN
+        RETURN '{}'::jsonb;
+    END IF;
+    RETURN val::jsonb;
+EXCEPTION WHEN OTHERS THEN
+    -- If the text is not valid JSON, return empty object
+    RETURN '{}'::jsonb;
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+COMMENT ON FUNCTION safe_jsonb(TEXT) IS 'Safely cast TEXT to JSONB — returns {} for NULL, empty string, or invalid JSON. Use in ETL pipelines (FME, migration scripts) to avoid "invalid input syntax for type json" errors.';
 
 -- ----------------------------------------------------------------------------
 -- Derive kanton_code from kanton TVP column (for filtering performance)
@@ -927,7 +946,7 @@ Migration from JSON files to Supabase:
    - camelCase JSON keys map to snake_case SQL columns: bfsNr → bfs_nr, parcelArea → parcel_area
    - Map assignee names to assignee_id via user lookup
    - Images array stays as JSONB
-   - kanton_code CHAR(2) auto-derived via trigger from kanton JSONB column
+   - kanton_code VARCHAR(50) auto-derived via trigger from kanton JSONB column
    - map_lat/map_lng auto-derived via trigger from lat/lng JSONB columns
 
 3. ERRORS (errors.json → errors table)
@@ -975,4 +994,42 @@ JSON-to-SQL column name mapping:
   bfsNr       → bfs_nr
   parcelArea  → parcel_area
   kanton (denormalized CHAR) → kanton_code
+
+7. FME / ETL DATA LOADING
+   All TVP columns are JSONB NOT NULL DEFAULT '{}'. PostgreSQL CANNOT cast
+   an empty string '' to JSONB — it must be valid JSON (e.g. '{}') or NULL.
+
+   ERROR: "invalid input syntax for type json"
+   CAUSE: FME AttributeCreator sends empty string for TVP columns that have
+          no source data (e.g. gemeinde, bfsNr, zusatz).
+
+   FIX OPTION A — In FME (recommended):
+     In the AttributeCreator, set ALL TVP columns to a valid JSON object
+     even when no source data exists:
+       gemeinde  SET_TO  { "sap": "", "gwr": "", "korrektur": "", "match": true }
+       bfsNr     SET_TO  { "sap": "", "gwr": "", "korrektur": "", "match": true }
+       zusatz    SET_TO  { "sap": "", "gwr": "", "korrektur": "", "match": true }
+     Or at minimum set them to: {}
+
+   FIX OPTION B — In SQL (via FME FeatureWriter BEGIN SQL or SQLExecutor):
+     Use the safe_jsonb() helper function for all TVP columns:
+       INSERT INTO buildings (id, name, portfolio, country, kanton, gemeinde, ...)
+       VALUES (
+         '1086/1228/AA',
+         'Heimiswil, Ried',
+         'Infrastruktur',
+         safe_jsonb('{ "sap": "Schweiz", "gwr": "", "korrektur": "", "match": true }'),
+         safe_jsonb('{ "sap": "Bern", "gwr": "", "korrektur": "", "match": true }'),
+         safe_jsonb(''),  -- empty string → safely becomes '{}'
+         ...
+       );
+
+   FIX OPTION C — In FME (NullAttributeMapper):
+     Add a NullAttributeMapper transformer before the FeatureWriter:
+       - Map empty attributes to: {}
+       - Apply to: gemeinde, bfsNr, zusatz (and any other TVP columns)
+
+   NOTE: The kanton TVP field may contain full canton names (e.g. "Bern")
+   or 2-letter codes ("BE"). The derive_kanton trigger stores whatever
+   value is present into kanton_code VARCHAR(50).
 */

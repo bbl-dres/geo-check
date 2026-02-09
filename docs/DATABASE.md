@@ -281,7 +281,7 @@ The primary entity representing a federal building record.
 | `garea` | `garea JSONB` | TVP | No | X | GAREA | Building footprint in m² (Gebäudefläche) |
 | `parcelArea` | `parcel_area JSONB` | TVP | No | X | ÖREB | Parcel area in m² (via Swisstopo API by EGID) |
 | **Derived Columns** (auto-populated via triggers) ||||||
-| `kantonCode` | `kanton_code CHAR(2)` | string | — | | | Derived from `kanton` TVP (korrektur > gwr > sap) |
+| `kantonCode` | `kanton_code VARCHAR(50)` | string | — | | | Derived from `kanton` TVP (korrektur > gwr > sap) |
 | `mapLat` | `map_lat DOUBLE PRECISION` | number | — | | | Derived from `lat` TVP (korrektur > gwr > sap) |
 | `mapLng` | `map_lng DOUBLE PRECISION` | number | — | | | Derived from `lng` TVP (korrektur > gwr > sap) |
 
@@ -1025,7 +1025,7 @@ For query performance, some fields are denormalized and auto-derived via trigger
 
 | Column | PostgreSQL Type | Source | Trigger |
 |--------|-----------------|--------|---------|
-| `buildings.kanton_code` | `CHAR(2)` | `kanton JSONB` column | `tr_buildings_derive_kanton` |
+| `buildings.kanton_code` | `VARCHAR(50)` | `kanton JSONB` column | `tr_buildings_derive_kanton` |
 | `buildings.map_lat` | `DOUBLE PRECISION` | `lat JSONB` column | `tr_buildings_derive_coords` |
 | `buildings.map_lng` | `DOUBLE PRECISION` | `lng JSONB` column | `tr_buildings_derive_coords` |
 | `buildings.assignee` | `VARCHAR(100)` | `users.name` | `tr_users_name_sync` |
