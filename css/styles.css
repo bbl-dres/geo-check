@@ -1270,7 +1270,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .layer-widget {
   position: absolute;
   top: var(--space-lg);
-  right: var(--space-lg);
+  left: var(--space-lg);
   z-index: var(--z-overlay);
 }
 
