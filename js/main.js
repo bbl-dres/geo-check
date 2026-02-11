@@ -6,6 +6,7 @@
 import {
   state,
   buildings,
+  teamMembers,
   setData,
   getFilteredBuildings,
   tableVisible,
@@ -15,6 +16,8 @@ import {
   toggleFilter,
   setupMultiSelectFilter,
   applyMultiSelectState,
+  populateMultiSelectOptions,
+  getFieldDisplayValue,
   setSearchQuery,
   setCurrentUser,
   eventsData,
@@ -140,8 +143,11 @@ async function loadData() {
 
   _loadDataPromise = (async () => {
     try {
-      const data = await loadDataFromSupabase();
+      const data = window.isDemoMode
+        ? await loadDemoData()
+        : await loadDataFromSupabase();
       setData(data);
+      populateFilterDropdowns();
     } catch (error) {
       console.error('Data loading error:', error);
       showAppError('Daten konnten nicht geladen werden. Bitte versuchen Sie es erneut.');
@@ -180,8 +186,6 @@ async function loadDemoData() {
     // Transform buildings to attach errors and comments
     const buildings = (buildingsRaw || []).map(b => ({
       ...b,
-      // Extract kanton string from object if needed
-      kanton: typeof b.kanton === 'object' ? (b.kanton.sap || b.kanton.gwr || '') : b.kanton,
       // Attach errors for this building
       errors: errors[b.id] || [],
       // Attach comments for this building
@@ -209,15 +213,81 @@ async function loadDemoData() {
   }
 }
 
+// ========================================
+// Dynamic Filter Population
+// ========================================
+
+function populateFilterDropdowns() {
+  // Status labels and order (workflow sequence)
+  const STATUS_ORDER = ['backlog', 'inprogress', 'clarification', 'done'];
+  const STATUS_LABELS = {
+    backlog: 'Offen',
+    inprogress: 'In Bearbeitung',
+    clarification: 'Rückfrage',
+    done: 'Erledigt'
+  };
+
+  // Confidence class definitions
+  const CONFIDENCE_CLASSES = [
+    { value: 'critical', label: 'Kritisch', title: 'Konfidenz unter 50%' },
+    { value: 'warning', label: 'Warnung', title: 'Konfidenz 50–80%' },
+    { value: 'ok', label: 'OK', title: 'Konfidenz über 80%' }
+  ];
+
+  // --- Kanton ---
+  const kantonValues = [...new Set(
+    buildings.map(b => getFieldDisplayValue(b.kanton)).filter(Boolean)
+  )].sort();
+  populateMultiSelectOptions('filter-kanton', kantonValues.map(v => ({ value: v, label: v })));
+
+  // --- Portfolio ---
+  const portfolioValues = [...new Set(
+    buildings.map(b => b.portfolio).filter(Boolean)
+  )].sort();
+  populateMultiSelectOptions('filter-portfolio', portfolioValues.map(v => ({ value: v, label: v })));
+
+  // --- Status (fixed workflow order) ---
+  const statusPresent = new Set(buildings.map(b => b.kanbanStatus).filter(Boolean));
+  const statusOptions = STATUS_ORDER
+    .filter(s => statusPresent.has(s))
+    .map(s => ({ value: s, label: STATUS_LABELS[s] || s }));
+  populateMultiSelectOptions('filter-status', statusOptions);
+
+  // --- Confidence (only classes present in data) ---
+  const confClasses = new Set(buildings.map(b => {
+    const conf = b.confidence?.total;
+    if (conf == null) return null;
+    if (conf < 50) return 'critical';
+    if (conf < 80) return 'warning';
+    return 'ok';
+  }).filter(Boolean));
+  const confOptions = CONFIDENCE_CLASSES.filter(c => confClasses.has(c.value));
+  populateMultiSelectOptions('filter-confidence', confOptions);
+
+  // --- Assignee ---
+  const assigneeNames = [...new Set(
+    buildings.map(b => b.assignee).filter(Boolean)
+  )].sort();
+  const assigneeOptions = [
+    { value: '', label: 'Nicht zugewiesen' },
+    ...assigneeNames.map(name => ({ value: name, label: name }))
+  ];
+  populateMultiSelectOptions('filter-assignee', assigneeOptions);
+}
+
 async function startDemoMode() {
   window.isDemoMode = true;
 
   try {
     const data = await loadDemoData();
     setData(data);
+    populateFilterDropdowns();
 
     // Set demo user
     setCurrentUser('Demo Benutzer');
+
+    // Persist demo mode to URL
+    updateURL(true);
 
     // Show app
     showApp();
@@ -236,7 +306,8 @@ async function startDemoMode() {
     if (userDropdownName) userDropdownName.textContent = 'Demo Benutzer';
     if (userDropdownRole) userDropdownRole.textContent = 'Demo';
 
-    // Re-render views
+    // Re-render views (map may not be ready yet on URL-based init — that's OK,
+    // recreateMarkers exits early and map.on('load') picks up the data)
     recreateMarkers(selectBuilding);
     updateCounts();
     updateStatistik();
@@ -993,8 +1064,7 @@ function setupRunChecksButton() {
       console.groupEnd();
 
       // Reload data to reflect updated confidence/errors
-      const freshData = await loadDataFromSupabase();
-      setData(freshData);
+      await loadData();
 
       // Re-render all views with fresh data
       recreateMarkers(selectBuilding);
@@ -1201,8 +1271,7 @@ function setupGwrEnrichButton() {
       console.groupEnd();
 
       // Reload data to reflect changes
-      const data = await loadDataFromSupabase();
-      setData(data);
+      await loadData();
       applyFilters();
 
     } catch (err) {
@@ -1616,15 +1685,24 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Password recovery/invite is handled in onAuthStateChange (PASSWORD_RECOVERY event)
 
-  // Show login landing immediately (prevents blank screen while auth resolves)
-  showLoginLanding();
+  // Check URL for demo mode early, before auth
+  const urlDemoMode = new URLSearchParams(window.location.search).get('mode') === 'demo';
 
-  // Initialize authentication
   let user = null;
-  try {
-    user = await initAuth();
-  } catch (err) {
-    console.error('Auth initialization failed:', err);
+
+  if (urlDemoMode) {
+    // Auto-start demo mode from URL — skip authentication entirely
+    await startDemoMode();
+  } else {
+    // Show login landing immediately (prevents blank screen while auth resolves)
+    showLoginLanding();
+
+    // Initialize authentication
+    try {
+      user = await initAuth();
+    } catch (err) {
+      console.error('Auth initialization failed:', err);
+    }
   }
 
   // Track whether we already handled the initial session
@@ -1632,6 +1710,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup auth state change handler (fires on future sign-in/sign-out)
   onAuthStateChange(async (event, _session, appUser) => {
+    // In demo mode, ignore auth events to prevent Supabase data from overwriting demo data
+    if (window.isDemoMode) return;
+
     if (appUser) {
       setCurrentUser(appUser.name);
     } else {
@@ -1670,8 +1751,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     scheduleLucideRefresh();
   });
 
-  // Handle initial auth state
-  if (user) {
+  // Handle initial auth state (skip if demo mode — already handled above)
+  if (window.isDemoMode) {
+    initialLoadDone = true;
+  } else if (user) {
     initialLoadDone = true;
     setCurrentUser(user.name);
     showApp();

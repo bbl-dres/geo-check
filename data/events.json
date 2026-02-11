@@ -5,6 +5,7 @@
     "type": "comment",
     "action": "Kommentar hinzugefügt",
     "user": "M. Keller",
+    "userId": 1,
     "timestamp": "2026-01-12T14:32:00",
     "details": "Vor Ort verifiziert - GWR Position ist korrekt."
   },
@@ -14,6 +15,7 @@
     "type": "assignment",
     "action": "Zugewiesen",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-10T09:15:00",
     "details": "Zugewiesen an M. Keller"
   },
@@ -23,6 +25,7 @@
     "type": "detection",
     "action": "Fehler erkannt",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-10T08:00:00",
     "details": "Automatisch erkannt: Koordinatenabweichung > 30m"
   },
@@ -32,6 +35,7 @@
     "type": "detection",
     "action": "Fehler erkannt",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-08T08:00:00",
     "details": "Kritische Fehler erkannt: Keine Koordinaten, EGID nicht gefunden"
   },
@@ -41,6 +45,7 @@
     "type": "comment",
     "action": "Kommentar hinzugefügt",
     "user": "S. Brunner",
+    "userId": 2,
     "timestamp": "2026-01-14T11:45:00",
     "details": "Archivdokumente angefragt zur Klärung."
   },
@@ -50,6 +55,7 @@
     "type": "status",
     "action": "Status geändert",
     "user": "S. Brunner",
+    "userId": 2,
     "timestamp": "2026-01-14T11:30:00",
     "details": "Status: Zugewiesen → In Prüfung"
   },
@@ -59,6 +65,7 @@
     "type": "assignment",
     "action": "Zugewiesen",
     "user": "A. Meier",
+    "userId": 4,
     "timestamp": "2026-01-13T09:00:00",
     "details": "Zugewiesen an S. Brunner"
   },
@@ -68,6 +75,7 @@
     "type": "status",
     "action": "Abgeschlossen",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-15T16:00:00",
     "details": "Alle Prüfungen bestanden - automatisch abgeschlossen"
   },
@@ -77,6 +85,7 @@
     "type": "correction",
     "action": "Korrektur angewendet",
     "user": "T. Weber",
+    "userId": 3,
     "timestamp": "2026-01-15T15:45:00",
     "details": "Koordinaten aus GWR übernommen"
   },
@@ -86,6 +95,7 @@
     "type": "assignment",
     "action": "Zugewiesen",
     "user": "A. Meier",
+    "userId": 4,
     "timestamp": "2026-01-10T10:30:00",
     "details": "Zugewiesen an T. Weber"
   },
@@ -95,6 +105,7 @@
     "type": "detection",
     "action": "Kritischer Fehler",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-05T08:00:00",
     "details": "Kritischer Fehler erkannt - manuelle Prüfung erforderlich"
   },
@@ -104,6 +115,7 @@
     "type": "assignment",
     "action": "Zugewiesen",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-11T09:00:00",
     "details": "Zugewiesen an A. Meier"
   },
@@ -113,6 +125,7 @@
     "type": "comment",
     "action": "Kommentar hinzugefügt",
     "user": "M. Keller",
+    "userId": 1,
     "timestamp": "2026-01-13T16:20:00",
     "details": "Vor Ort geprüft - Hausnummer ist 15a."
   },
@@ -122,6 +135,7 @@
     "type": "status",
     "action": "Status geändert",
     "user": "M. Keller",
+    "userId": 1,
     "timestamp": "2026-01-13T16:15:00",
     "details": "Status: Zugewiesen → In Prüfung"
   },
@@ -131,6 +145,7 @@
     "type": "detection",
     "action": "Fehler erkannt",
     "user": "System",
+    "userId": null,
     "timestamp": "2026-01-01T08:00:00",
     "details": "Position falsch, Daten veraltet"
   },
@@ -140,6 +155,7 @@
     "type": "assignment",
     "action": "Zugewiesen",
     "user": "A. Meier",
+    "userId": 4,
     "timestamp": "2026-01-09T14:00:00",
     "details": "Zugewiesen an S. Brunner"
   }
