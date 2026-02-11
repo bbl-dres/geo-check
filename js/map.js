@@ -39,6 +39,9 @@ let pendingSelection = null;
 // Flag to track if building layers have been created
 let markersReady = false;
 
+// Flag to track if the map has completed initial load
+let mapLoaded = false;
+
 // Flag to track if a filter update is pending
 let pendingFilterUpdate = false;
 
@@ -54,6 +57,7 @@ const BUILDING_LAYERS = [
   'selected-point-halo',
   'clusters',
   'cluster-count',
+  'unclustered-point-bg',
   'unclustered-point',
   'selected-point',
   'unclustered-label'
@@ -166,14 +170,25 @@ function buildingsToGeoJSON(buildingsList) {
 // Building Layers (Source + Clustered Layers)
 // ========================================
 function addBuildingLayers() {
+  // Guard: skip if source already exists (prevents duplicate source errors from race conditions)
+  if (map.getSource('buildings-source')) {
+    console.log('[MAP DEBUG] addBuildingLayers SKIPPED — source already exists');
+    return;
+  }
+
   const filtered = markersVisible ? getFilteredBuildings() : [];
+  const geojson = buildingsToGeoJSON(filtered);
+  console.log(`[MAP DEBUG] addBuildingLayers — ${filtered.length} buildings, ${geojson.features.length} features with coords`);
+  if (geojson.features.length > 0) {
+    console.log('[MAP DEBUG] first feature:', JSON.stringify(geojson.features[0]));
+  }
 
   map.addSource('buildings-source', {
     type: 'geojson',
-    data: buildingsToGeoJSON(filtered),
+    data: geojson,
     cluster: true,
-    clusterMaxZoom: 11,
-    clusterRadius: 40,
+    clusterMaxZoom: 14,
+    clusterRadius: 50,
     promoteId: 'id'
   });
 
@@ -233,7 +248,26 @@ function addBuildingLayers() {
     }
   });
 
-  // 4. Unclustered point circles (confidence-colored)
+  // 4a. Unclustered point fallback (always-visible dark ring behind confidence circles)
+  map.addLayer({
+    id: 'unclustered-point-bg',
+    type: 'circle',
+    source: 'buildings-source',
+    filter: ['!', ['has', 'point_count']],
+    paint: {
+      'circle-color': '#64748b',
+      'circle-radius': [
+        'interpolate', ['linear'], ['zoom'],
+        8, 6,
+        12, 9,
+        16, 12
+      ],
+      'circle-opacity': 1,
+      'circle-stroke-width': 0
+    }
+  });
+
+  // 4b. Unclustered point circles (confidence-colored, on top of fallback)
   map.addLayer({
     id: 'unclustered-point',
     type: 'circle',
@@ -241,13 +275,12 @@ function addBuildingLayers() {
     filter: ['!', ['has', 'point_count']],
     paint: {
       'circle-color': [
-        'match',
-        ['get', 'confidenceClass'],
-        'critical', '#dc2626',
-        'warning', '#d97706',
-        'ok', '#059669',
-        'unknown', '#1a365d',
-        '#888888'
+        'step',
+        ['coalesce', ['get', 'confidence'], -1],
+        '#1a365d',
+        0, '#dc2626',
+        50, '#d97706',
+        80, '#059669'
       ],
       'circle-radius': [
         'interpolate', ['linear'], ['zoom'],
@@ -255,8 +288,10 @@ function addBuildingLayers() {
         12, 8,
         16, 11
       ],
+      'circle-opacity': 1,
       'circle-stroke-width': 2,
-      'circle-stroke-color': '#ffffff'
+      'circle-stroke-color': '#ffffff',
+      'circle-stroke-opacity': 1
     }
   });
 
@@ -268,13 +303,12 @@ function addBuildingLayers() {
     filter: ['==', ['get', 'id'], ''],
     paint: {
       'circle-color': [
-        'match',
-        ['get', 'confidenceClass'],
-        'critical', '#dc2626',
-        'warning', '#d97706',
-        'ok', '#059669',
-        'unknown', '#1a365d',
-        '#888888'
+        'step',
+        ['coalesce', ['get', 'confidence'], -1],
+        '#1a365d',
+        0, '#dc2626',
+        50, '#d97706',
+        80, '#059669'
       ],
       'circle-radius': [
         'interpolate', ['linear'], ['zoom'],
@@ -282,8 +316,10 @@ function addBuildingLayers() {
         12, 11,
         16, 14
       ],
+      'circle-opacity': 1,
       'circle-stroke-width': 3,
-      'circle-stroke-color': '#1a365d'
+      'circle-stroke-color': '#1a365d',
+      'circle-stroke-opacity': 1
     }
   });
 
@@ -323,7 +359,18 @@ function removeBuildingLayers() {
 
 function readdBuildingLayers() {
   if (!markersReady) return;
-  if (map.getSource('buildings-source')) return;
+
+  // Check for both source AND layers — in Mapbox GL v3, style transitions
+  // can remove layers while the source survives, leaving markers invisible.
+  const sourceExists = !!map.getSource('buildings-source');
+  const layersExist = BUILDING_LAYERS.some(id => map.getLayer(id));
+
+  if (sourceExists && layersExist) return;
+
+  // Clean up stale source if layers were lost
+  if (sourceExists && !layersExist) {
+    map.removeSource('buildings-source');
+  }
 
   addBuildingLayers();
 
@@ -447,12 +494,16 @@ export function getOrCreateEditMarker(buildingId) {
   if (!building) return null;
 
   // Hide the GeoJSON layers for this building so only the DOM marker is visible
+  const excludeFilter = [
+    'all',
+    ['!', ['has', 'point_count']],
+    ['!=', ['get', 'id'], buildingId]
+  ];
+  if (map.getLayer('unclustered-point-bg')) {
+    map.setFilter('unclustered-point-bg', excludeFilter);
+  }
   if (map.getLayer('unclustered-point')) {
-    map.setFilter('unclustered-point', [
-      'all',
-      ['!', ['has', 'point_count']],
-      ['!=', ['get', 'id'], buildingId]
-    ]);
+    map.setFilter('unclustered-point', excludeFilter);
   }
   if (map.getLayer('selected-point')) {
     map.setFilter('selected-point', ['==', ['get', 'id'], '']);
@@ -485,8 +536,12 @@ export function removeEditMarker() {
   }
 
   // Restore filters to show all points again
+  const defaultFilter = ['!', ['has', 'point_count']];
+  if (map && map.getLayer('unclustered-point-bg')) {
+    map.setFilter('unclustered-point-bg', defaultFilter);
+  }
   if (map && map.getLayer('unclustered-point')) {
-    map.setFilter('unclustered-point', ['!', ['has', 'point_count']]);
+    map.setFilter('unclustered-point', defaultFilter);
   }
   // Re-apply selection highlight if a building is still selected
   if (map && state.selectedBuildingId) {
@@ -518,6 +573,8 @@ export function initMap() {
 
   // Add controls after map loads
   map.on('load', () => {
+    mapLoaded = true;
+
     const nav = new mapboxgl.NavigationControl({ showCompass: false });
     map.addControl(nav, 'top-right');
 
@@ -574,7 +631,12 @@ function hidePoiLayers() {
   const style = map.getStyle();
   if (!style || !style.layers) return;
 
+  // Set of our own layer IDs — must not be hidden
+  const ownLayers = new Set(BUILDING_LAYERS);
+
   style.layers.forEach(layer => {
+    if (ownLayers.has(layer.id)) return;
+
     const id = layer.id.toLowerCase();
     if (id.includes('poi') ||
         id.includes('shop') ||
@@ -647,16 +709,22 @@ function updateZoomButtonStates() {
 export function recreateMarkers(clickHandler = null) {
   if (!map) return;
 
+  // Store click handler even if we defer
+  if (clickHandler) {
+    storedClickHandler = clickHandler;
+  }
+
+  // If map hasn't completed initial load, don't manipulate layers.
+  // map.on('load') will call addBuildingLayers() with current data.
+  if (!mapLoaded) return;
+
   removeEditMarker();
   removeBuildingLayers();
   markersReady = false;
 
   addBuildingLayers();
 
-  if (clickHandler) {
-    storedClickHandler = clickHandler;
-    setupLayerClickHandlers(clickHandler);
-  } else if (storedClickHandler) {
+  if (storedClickHandler) {
     setupLayerClickHandlers(storedClickHandler);
   } else if (pendingClickHandler) {
     storedClickHandler = pendingClickHandler;

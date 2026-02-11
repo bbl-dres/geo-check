@@ -43,7 +43,7 @@ supabase/
   functions/rule-engine/ # Edge function mirror of backend rule engine
 docs/                   # DATABASE.md (schema), EDGE-FUNCTIONS.md, RULES.md
 scripts/Upsert.fmw      # FME workspace for bulk data upsert
-data/                   # Demo/fallback JSON files (not used when Supabase is connected)
+data/                   # Rule configuration (rules.json)
 ```
 
 ## Running

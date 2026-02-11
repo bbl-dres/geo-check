@@ -874,7 +874,7 @@ export function exitEditMode(save) {
     building.lastUpdateBy = currentUser;
 
     // Persist corrections to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       const comparisonData = {};
       ALL_DATA_FIELDS.forEach(field => {
         if (building[field] && typeof building[field] === 'object' && 'sap' in building[field]) {
@@ -980,7 +980,7 @@ function updateBuildingPriority(buildingId, newPriority) {
     if (onPriorityChange) onPriorityChange();
 
     // Persist to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       persistPriority(buildingId, newPriority, getCurrentUserId(), getCurrentUserName())
         .catch(err => console.error('Failed to persist priority:', err));
     }
@@ -1020,7 +1020,7 @@ function updateBuildingStatus(buildingId, newStatus) {
     if (onStatusChange) onStatusChange();
 
     // Persist to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       persistStatus(buildingId, newStatus, getCurrentUserId(), getCurrentUserName())
         .catch(err => console.error('Failed to persist status:', err));
     }
@@ -1070,7 +1070,7 @@ function assignBuilding(buildingId, assigneeName) {
     if (onAssigneeChange) onAssigneeChange();
 
     // Persist to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       const member = teamMembers.find(m => m.name === assigneeName);
       persistAssignee(buildingId, member?.id || null, assigneeName, getCurrentUserId(), getCurrentUserName())
         .catch(err => console.error('Failed to persist assignee:', err));
@@ -1160,7 +1160,7 @@ function updateBuildingDueDate(buildingId, newDueDate) {
     if (onDueDateChange) onDueDateChange();
 
     // Persist to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       persistDueDate(buildingId, newDueDate, getCurrentUserId(), getCurrentUserName())
         .catch(err => console.error('Failed to persist due date:', err));
     }
@@ -1231,7 +1231,7 @@ export function submitComment() {
   renderDetailPanel(building);
 
   // Persist to Supabase
-  if (!window.isDemoMode && isAuthenticated()) {
+  if (isAuthenticated()) {
     persistComment(state.selectedBuildingId, text, getCurrentUserId(), getCurrentUserName())
       .catch(err => console.error('Failed to persist comment:', err));
   }
@@ -1409,48 +1409,27 @@ function handleImageUpload(files) {
     building.images = [];
   }
 
-  if (!window.isDemoMode && isAuthenticated()) {
-    // Upload to Supabase Storage
-    Array.from(files).forEach(file => {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Datei zu gross (max. 5MB)');
-        return;
-      }
-      persistImage(state.selectedBuildingId, file, getCurrentUserId(), getCurrentUserName())
-        .then(imageObj => {
-          building.images.push(imageObj);
-          building.lastUpdate = new Date().toISOString();
-          building.lastUpdateBy = currentUser;
-          currentImageIndex = building.images.length - 1;
-          renderImageWidget(building);
-        })
-        .catch(err => {
-          console.error('Failed to upload image:', err);
-          alert('Bild-Upload fehlgeschlagen.');
-        });
-    });
-  } else {
-    // Demo mode: use local blob URLs
-    Array.from(files).forEach(file => {
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Datei zu gross (max. 5MB)');
-        return;
-      }
-      const url = URL.createObjectURL(file);
-      building.images.push({
-        id: Date.now() + Math.random(),
-        url: url,
-        filename: file.name,
-        uploadDate: new Date().toISOString(),
-        uploadedBy: currentUser
-      });
-    });
+  if (!isAuthenticated()) return;
 
-    building.lastUpdate = new Date().toISOString();
-    building.lastUpdateBy = currentUser;
-    currentImageIndex = building.images.length - 1;
-    renderImageWidget(building);
-  }
+  // Upload to Supabase Storage
+  Array.from(files).forEach(file => {
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Datei zu gross (max. 5MB)');
+      return;
+    }
+    persistImage(state.selectedBuildingId, file, getCurrentUserId(), getCurrentUserName())
+      .then(imageObj => {
+        building.images.push(imageObj);
+        building.lastUpdate = new Date().toISOString();
+        building.lastUpdateBy = currentUser;
+        currentImageIndex = building.images.length - 1;
+        renderImageWidget(building);
+      })
+      .catch(err => {
+        console.error('Failed to upload image:', err);
+        alert('Bild-Upload fehlgeschlagen.');
+      });
+  });
 }
 
 function deleteCurrentImage() {
