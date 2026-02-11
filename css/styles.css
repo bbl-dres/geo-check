@@ -5576,11 +5576,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
    ======================================== */
 #toast-container {
   position: fixed;
-  bottom: var(--space-xl);
-  right: var(--space-xl);
+  top: var(--space-xl);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: var(--z-modal);
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-sm);
   pointer-events: none;
 }
@@ -5594,15 +5596,21 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   background: var(--federal-blue);
   box-shadow: var(--shadow-lg);
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(-12px);
   transition: opacity var(--transition-base), transform var(--transition-base);
   pointer-events: auto;
-  max-width: 360px;
+  max-width: 420px;
+  text-align: center;
 }
 
 .toast.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.toast.dismissing {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 .toast-ok { background: var(--color-success); }

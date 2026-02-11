@@ -591,20 +591,26 @@ export async function lookupGwrByEgid(egid) {
 
     // Map API response to our field structure
     const gwrData = {
-      egid: attr.egid,
-      plz: String(attr.dplz4 || ''),
-      ort: attr.ggdename || '',
-      strasse: attr.strname?.[0] || '',
-      hausnummer: attr.deinr || '',
-      kanton: attr.gdekt || '',
-      gemeinde: attr.ggdename || '',
+      egid: String(attr.egid ?? ''),
       egrid: attr.egrid || '',
-      gkat: String(attr.gkat || ''),
-      gklas: String(attr.gklas || ''),
-      gbaup: String(attr.gbaup || ''),
-      garea: String(attr.garea || ''),
-      lat: result.geometry?.y || null,
-      lng: result.geometry?.x || null
+      plz: String(attr.dplz4 ?? ''),
+      ort: attr.dplzname || '',
+      strasse: attr.strname || '',
+      hausnummer: String(attr.deinr ?? ''),
+      gemeinde: attr.ggdename || '',
+      bfsNr: String(attr.ggdenr ?? ''),
+      kanton: attr.gdekt || '',
+      country: 'CH',
+      gstat: String(attr.gstat ?? ''),
+      gkat: String(attr.gkat ?? ''),
+      gklas: String(attr.gklas ?? ''),
+      gbaup: String(attr.gbaup ?? ''),
+      gbauj: String(attr.gbauj ?? ''),
+      gastw: String(attr.gastw ?? ''),
+      ganzwhg: String(attr.ganzwhg ?? ''),
+      garea: String(attr.garea ?? ''),
+      lat: result.geometry ? String(result.geometry.y) : '',
+      lng: result.geometry ? String(result.geometry.x) : ''
     };
 
     // Cache the result
