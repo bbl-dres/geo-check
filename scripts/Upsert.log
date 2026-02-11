@@ -1,0 +1,98 @@
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Current FME version: FME 2025.0.3.0 (20250602 - Build 25241 - WIN64)
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|System Time: 20260211063913 UTC
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME_HOME is 'C:\Program Files\FME\'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Form (floating)
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Permanent License.
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Machine host name is: DESKTOP-BIEK64S
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|OS Locale Name     : en_CH
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|OS Locale Encoding : windows-1252
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Process Encoding   : UTF-8
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME API version: '4.0 20240722'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: FME_BASE is 'no'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: FME_MF_DIR is 'C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts/'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: FME_MF_NAME is 'Upsert.fmw'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: FME_PRODUCT_NAME is 'FME(R) 2025.0.3.0'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Operating System: Microsoft Windows 10 64-bit  (Build 19045)
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Platform: WIN64
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|System Status: 103.45 GB of disk space available in the FME temporary folder (C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770788146548_32260\fmetmp_e)
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|System Status: 31.72 GB of physical memory available
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|System Status: 126.88 GB of virtual memory available
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|START - ProcessID: 15524, peak process memory usage: 41828 kB, current process memory usage: 41824 kB
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Command line arguments are `C:\Program Files\FME\fme.exe' `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts\wb-xlate-1770791952174_32260' `--FME_LAUNCH_VIEWER_APP' `WORKBENCH' `LOG_STANDARDOUT' `YES' `LOG_TIMINGS' `YES' `LogCountServerName' `58649' `LOG_STANDARDOUT' `No' `WORKBENCH_LOG_SERVER' `58537'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Connection Storage: 'C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for formats are : C:\Program Files\FME\datasources;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Formats;C:\Users\DavidRasner\Documents\FME\Formats
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for transformers are : C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\Packages\25241-win64\transformers;C:\Program Files\FME\transformers;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Transformers
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for coordinate systems are : C:\Users\DavidRasner\Documents\FME\CoordinateSystems
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for coordinate system exceptions are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemExceptions
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for coordinate system grid overrides are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemGridOverrides
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for CS-MAP transformation exceptions are : C:\Users\DavidRasner\Documents\FME\CsmapTransformationExceptions
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|Shared folders for transformer categories are : C:\Users\DavidRasner\Documents\FME\TransformerCategories
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Current working folder is `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Temporary folder is `C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770788146548_32260\fmetmp_e', set from environment variable `FME_TEMP'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Cache folder is 'C:\Users\DAVIDR~1\AppData\Local\Temp'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: FME_HOME is `C:\Program Files\FME\'
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Start freeing memory when the process exceeds 95.16 GB
+2026-02-11 07:39:12|   0.0|  0.0|INFORM|FME Configuration: Stop freeing memory when the process is below 71.37 GB
+2026-02-11 07:39:12|   0.1|  0.1|INFORM|Creating writer for format: 
+2026-02-11 07:39:12|   0.1|  0.0|INFORM|Creating reader for format: 
+2026-02-11 07:39:12|   0.1|  0.0|INFORM|MULTI_READER(MULTI_READER): Will fail with first member reader failure
+2026-02-11 07:39:12|   0.1|  0.0|INFORM|Using Multi Reader with keyword `MULTI_READER' to read multiple datasets
+2026-02-11 07:39:12|   0.1|  0.0|INFORM|Using MultiWriter with keyword `MULTI_DEST' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-11 07:39:12|   0.1|  0.0|INFORM|Emptying factory pipeline
+2026-02-11 07:39:12|   0.2|  0.1|STATS |Restoring 2009 feature(s) from FME feature store file `C:\Users\DAVIDR~1\AppData\Local\Temp\wb-cache-Upsert-RIuZyw\Main_TestFilter -1 17 fo 5 _lt_lt_gt_UNFILTERED_lt_gt_gt_  0  28e1f040b27deae1a8da4b3d3f7b0b1a87a38f64.ffs'
+2026-02-11 07:39:12|   0.2|  0.0|INFORM|Creating writer for format: 
+2026-02-11 07:39:12|   0.2|  0.0|INFORM|Using MultiWriter with keyword `FeatureWriter' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-11 07:39:13|   0.3|  0.1|INFORM|FME Configuration: Using connection values from 'Supabase Geo-Check' for FeatureWriter_0
+2026-02-11 07:39:13|   0.3|  0.0|INFORM|Creating writer for format: PostGIS
+2026-02-11 07:39:13|   0.4|  0.1|INFORM|Trying to find a DYNAMIC plugin for writer named `POSTGIS'
+2026-02-11 07:39:13|   0.4|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-11 07:39:13|   0.4|  0.0|INFORM|Writer `FeatureWriter_0' of type `POSTGIS' using group definition keyword `FeatureWriter_0_DEF'
+2026-02-11 07:39:13|   0.5|  0.1|INFORM|Opening POSTGIS writer for dataset 'postgres'...
+2026-02-11 07:39:13|   0.6|  0.1|INFORM|PostGIS client encoding: 'UTF8'
+2026-02-11 07:39:13|   0.6|  0.0|INFORM|PostgreSQL 17.6 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2026-02-11 07:39:13|   0.6|  0.0|INFORM|3.3 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
+2026-02-11 07:39:13|   0.6|  0.0|WARN  |POSTGIS Writer: Bulk Insert is set to Yes, but a conflicting Feature Operation has been detected. Feature type 'buildings' has a Feature Operation of 'Upsert'. Bulk Insert is now being set to No, which can cause insert operations to be much slower
+2026-02-11 07:39:13|   0.6|  0.0|INFORM|Testing for the existence of table 'public.buildings'...
+2026-02-11 07:39:13|   0.6|  0.0|INFORM|Using existing table 'public.buildings'
+2026-02-11 07:39:14|   0.6|  0.0|WARN  |POSTGIS Writer: The column 'bfsnr' does not exist on the table 'buildings'
+2026-02-11 07:39:14|   0.6|  0.0|WARN  |PostGIS writer: Couldn't find spatial column "geom" in table public.buildings - will write non-spatial data only
+2026-02-11 07:39:14|   0.6|  0.0|INFORM|POSTGIS Writer: Creating 'Insert' feature type processor for feature type 'buildings'
+2026-02-11 07:39:14|   0.9|  0.3|STATS |AttributeRemover (TeeFactory): Cloned 2009 input feature(s) into 2009 output feature(s)
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Sampler (SamplingFactory): Sampled 10 of 2009 feature(s)
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Sampler_Sampled (TeeFactory): Cloned 10 input feature(s) into 10 output feature(s)
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|10 feature(s) coerced to 3D in table 'public.buildings'
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|Successfully closed POSTGIS database writer
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|Feature output statistics for `POSTGIS' writer using keyword `FeatureWriter_0':
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |                               Features Written
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |buildings                                                                   10
+2026-02-11 07:39:14|   0.9|  0.0|STATS |==============================================================================
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Total Features Written                                                      10
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Destination Feature Type Routing Correlator (RoutingFactory): Tested 0 input feature(s), wrote 0 output feature(s): 0 matched merge filters, 0 were routed to output, 0 could not be routed.
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Final Output Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |                            Features Read Summary
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |==============================================================================
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Total Features Read                                                          0
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |                           Features Written Summary
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|STATS |==============================================================================
+2026-02-11 07:39:14|   0.9|  0.0|STATS |Total Features Written                                                       0
+2026-02-11 07:39:14|   0.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~                                                                             ~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~    Feature caches have been recorded at every stage of the translation.     ~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~                      To inspect the recorded features,                      ~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~              click the feature cache icons next to the ports.               ~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~                                                                             ~-
+2026-02-11 07:39:14|   0.9|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|Translation was SUCCESSFUL with 10 warning(s) (0 feature(s) output)
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|FME Session Duration: 2.2 seconds. (CPU: 0.7s user, 0.2s system)
+2026-02-11 07:39:14|   0.9|  0.0|INFORM|END - ProcessID: 15524, peak process memory usage: 57412 kB, current process memory usage: 54808 kB

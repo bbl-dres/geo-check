@@ -755,5 +755,9 @@ function formatSwissDate(isoDate) {
 
 export {
     SUPABASE_URL,
-    SUPABASE_KEY
+    SUPABASE_KEY,
+    transformBuildingsFromDB,
+    transformUsersFromDB,
+    transformEventsFromDB,
+    keyByBuildingId
 };

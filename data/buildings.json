@@ -11,14 +11,14 @@
       "gwr": 100
     },
     "assignee": "M. Keller",
-    "assigneeId": 1,
-    "kanbanStatus": "inprogress",
-    "dueDate": "2026-02-15",
-    "lastUpdate": "2026-01-27T14:30:00Z",
-    "lastUpdateBy": "M. Keller",
-    "inGwr": true,
-    "mapLat": 47.5656,
-    "mapLng": 9.3744,
+    "assignee_id": 1,
+    "kanban_status": "inprogress",
+    "due_date": "2026-02-15",
+    "last_update": "2026-01-27T14:30:00Z",
+    "last_update_by": "M. Keller",
+    "in_gwr": true,
+    "map_lat": 47.5656,
+    "map_lng": 9.3744,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -37,7 +37,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "4436",
       "gwr": "4436",
       "korrektur": "",
@@ -127,7 +127,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1250",
       "gwr": "1275",
       "korrektur": "",
@@ -187,13 +187,13 @@
       "gwr": 78
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": "2026-01-25",
-    "lastUpdate": "2026-01-23T09:15:00Z",
-    "lastUpdateBy": "System",
-    "inGwr": true,
-    "mapLat": 47.6512,
-    "mapLng": 9.1756,
+    "kanban_status": "backlog",
+    "due_date": "2026-01-25",
+    "last_update": "2026-01-23T09:15:00Z",
+    "last_update_by": "System",
+    "in_gwr": true,
+    "map_lat": 47.6512,
+    "map_lng": 9.1756,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -212,7 +212,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "4671",
       "gwr": "4671",
       "korrektur": "",
@@ -302,7 +302,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "685",
       "gwr": "685",
       "korrektur": "",
@@ -348,14 +348,14 @@
       "gwr": 70
     },
     "assignee": "S. Brunner",
-    "assigneeId": 2,
-    "kanbanStatus": "clarification",
-    "dueDate": "2026-02-03",
-    "lastUpdate": "2026-01-28T11:45:00Z",
-    "lastUpdateBy": "S. Brunner",
-    "inGwr": true,
-    "mapLat": 47.4237,
-    "mapLng": 9.368,
+    "assignee_id": 2,
+    "kanban_status": "clarification",
+    "due_date": "2026-02-03",
+    "last_update": "2026-01-28T11:45:00Z",
+    "last_update_by": "S. Brunner",
+    "in_gwr": true,
+    "map_lat": 47.4237,
+    "map_lng": 9.368,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -374,7 +374,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "3203",
       "gwr": "3203",
       "korrektur": "",
@@ -464,7 +464,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "3200",
       "gwr": "3200",
       "korrektur": "",
@@ -501,13 +501,13 @@
       "gwr": 100
     },
     "assignee": null,
-    "kanbanStatus": "done",
-    "dueDate": null,
-    "lastUpdate": "2026-01-30T08:00:00Z",
-    "lastUpdateBy": "T. Weber",
-    "inGwr": true,
-    "mapLat": 47.3834,
-    "mapLng": 8.5397,
+    "kanban_status": "done",
+    "due_date": null,
+    "last_update": "2026-01-30T08:00:00Z",
+    "last_update_by": "T. Weber",
+    "in_gwr": true,
+    "map_lat": 47.3834,
+    "map_lng": 8.5397,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -526,7 +526,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "261",
       "gwr": "261",
       "korrektur": "",
@@ -616,7 +616,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "890",
       "gwr": "890",
       "korrektur": "",
@@ -653,14 +653,14 @@
       "gwr": 70
     },
     "assignee": "T. Weber",
-    "assigneeId": 3,
-    "kanbanStatus": "inprogress",
-    "dueDate": null,
-    "lastUpdate": "2026-01-25T16:20:00Z",
-    "lastUpdateBy": "T. Weber",
-    "inGwr": true,
-    "mapLat": 46.948,
-    "mapLng": 7.4474,
+    "assignee_id": 3,
+    "kanban_status": "inprogress",
+    "due_date": null,
+    "last_update": "2026-01-25T16:20:00Z",
+    "last_update_by": "T. Weber",
+    "in_gwr": true,
+    "map_lat": 46.948,
+    "map_lng": 7.4474,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -679,7 +679,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "351",
       "gwr": "351",
       "korrektur": "",
@@ -769,7 +769,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1450",
       "gwr": "1450",
       "korrektur": "",
@@ -806,13 +806,13 @@
       "gwr": 35
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": null,
-    "lastUpdate": "2026-01-20T10:00:00Z",
-    "lastUpdateBy": "System",
-    "inGwr": true,
-    "mapLat": 46.8499,
-    "mapLng": 9.5329,
+    "kanban_status": "backlog",
+    "due_date": null,
+    "last_update": "2026-01-20T10:00:00Z",
+    "last_update_by": "System",
+    "in_gwr": true,
+    "map_lat": 46.8499,
+    "map_lng": 9.5329,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -831,7 +831,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "3901",
       "gwr": "3901",
       "korrektur": "",
@@ -921,7 +921,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "2100",
       "gwr": "2142",
       "korrektur": "",
@@ -958,14 +958,14 @@
       "gwr": 60
     },
     "assignee": "A. Meier",
-    "assigneeId": 4,
-    "kanbanStatus": "inprogress",
-    "dueDate": null,
-    "lastUpdate": "2026-01-26T13:10:00Z",
-    "lastUpdateBy": "A. Meier",
-    "inGwr": true,
-    "mapLat": 47.4979,
-    "mapLng": 8.7246,
+    "assignee_id": 4,
+    "kanban_status": "inprogress",
+    "due_date": null,
+    "last_update": "2026-01-26T13:10:00Z",
+    "last_update_by": "A. Meier",
+    "in_gwr": true,
+    "map_lat": 47.4979,
+    "map_lng": 8.7246,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -984,7 +984,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "230",
       "gwr": "230",
       "korrektur": "",
@@ -1074,7 +1074,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "5600",
       "gwr": "5600",
       "korrektur": "",
@@ -1111,13 +1111,13 @@
       "gwr": 80
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": null,
-    "lastUpdate": "2026-01-29T17:45:00Z",
-    "lastUpdateBy": "M. Keller",
-    "inGwr": true,
-    "mapLat": 47.5533,
-    "mapLng": 8.8987,
+    "kanban_status": "backlog",
+    "due_date": null,
+    "last_update": "2026-01-29T17:45:00Z",
+    "last_update_by": "M. Keller",
+    "in_gwr": true,
+    "map_lat": 47.5533,
+    "map_lng": 8.8987,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1136,7 +1136,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "4566",
       "gwr": "4566",
       "korrektur": "",
@@ -1226,7 +1226,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "720",
       "gwr": "720",
       "korrektur": "",
@@ -1263,13 +1263,13 @@
       "gwr": 95
     },
     "assignee": null,
-    "kanbanStatus": "done",
-    "dueDate": null,
-    "lastUpdate": "2026-01-30T09:30:00Z",
-    "lastUpdateBy": "S. Brunner",
-    "inGwr": true,
-    "mapLat": 47.548,
-    "mapLng": 7.5896,
+    "kanban_status": "done",
+    "due_date": null,
+    "last_update": "2026-01-30T09:30:00Z",
+    "last_update_by": "S. Brunner",
+    "in_gwr": true,
+    "map_lat": 47.548,
+    "map_lng": 7.5896,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1288,7 +1288,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "2701",
       "gwr": "2701",
       "korrektur": "",
@@ -1378,7 +1378,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1100",
       "gwr": "1100",
       "korrektur": "",
@@ -1415,14 +1415,14 @@
       "gwr": 67
     },
     "assignee": "M. Keller",
-    "assigneeId": 1,
-    "kanbanStatus": "clarification",
-    "dueDate": null,
-    "lastUpdate": "2026-01-28T15:00:00Z",
-    "lastUpdateBy": "M. Keller",
-    "inGwr": true,
-    "mapLat": 47.0502,
-    "mapLng": 8.3093,
+    "assignee_id": 1,
+    "kanban_status": "clarification",
+    "due_date": null,
+    "last_update": "2026-01-28T15:00:00Z",
+    "last_update_by": "M. Keller",
+    "in_gwr": true,
+    "map_lat": 47.0502,
+    "map_lng": 8.3093,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1441,7 +1441,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "1061",
       "gwr": "1061",
       "korrektur": "",
@@ -1531,7 +1531,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "680",
       "gwr": "680",
       "korrektur": "",
@@ -1568,13 +1568,13 @@
       "gwr": 30
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": null,
-    "lastUpdate": "2026-01-16T08:30:00Z",
-    "lastUpdateBy": "System",
-    "inGwr": true,
-    "mapLat": 46.2138,
-    "mapLng": 6.149,
+    "kanban_status": "backlog",
+    "due_date": null,
+    "last_update": "2026-01-16T08:30:00Z",
+    "last_update_by": "System",
+    "in_gwr": true,
+    "map_lat": 46.2138,
+    "map_lng": 6.149,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1593,7 +1593,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "6621",
       "gwr": "6621",
       "korrektur": "",
@@ -1683,7 +1683,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1800",
       "gwr": "1836",
       "korrektur": "",
@@ -1720,14 +1720,14 @@
       "gwr": 82
     },
     "assignee": "S. Brunner",
-    "assigneeId": 2,
-    "kanbanStatus": "inprogress",
-    "dueDate": null,
-    "lastUpdate": "2026-01-24T12:15:00Z",
-    "lastUpdateBy": "S. Brunner",
-    "inGwr": true,
-    "mapLat": 46.005,
-    "mapLng": 8.952,
+    "assignee_id": 2,
+    "kanban_status": "inprogress",
+    "due_date": null,
+    "last_update": "2026-01-24T12:15:00Z",
+    "last_update_by": "S. Brunner",
+    "in_gwr": true,
+    "map_lat": 46.005,
+    "map_lng": 8.952,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1746,7 +1746,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "5192",
       "gwr": "5192",
       "korrektur": "",
@@ -1836,7 +1836,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "950",
       "gwr": "950",
       "korrektur": "",
@@ -1873,14 +1873,14 @@
       "gwr": 50
     },
     "assignee": "A. Meier",
-    "assigneeId": 4,
-    "kanbanStatus": "clarification",
-    "dueDate": null,
-    "lastUpdate": "2026-01-29T10:00:00Z",
-    "lastUpdateBy": "A. Meier",
-    "inGwr": true,
-    "mapLat": 47.3925,
-    "mapLng": 8.0444,
+    "assignee_id": 4,
+    "kanban_status": "clarification",
+    "due_date": null,
+    "last_update": "2026-01-29T10:00:00Z",
+    "last_update_by": "A. Meier",
+    "in_gwr": true,
+    "map_lat": 47.3925,
+    "map_lng": 8.0444,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -1899,7 +1899,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "4001",
       "gwr": "4001",
       "korrektur": "",
@@ -1989,7 +1989,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1350",
       "gwr": "1350",
       "korrektur": "",
@@ -2026,14 +2026,14 @@
       "gwr": 90
     },
     "assignee": "T. Weber",
-    "assigneeId": 3,
-    "kanbanStatus": "done",
-    "dueDate": null,
-    "lastUpdate": "2026-01-28T16:30:00Z",
-    "lastUpdateBy": "T. Weber",
-    "inGwr": true,
-    "mapLat": 47.2088,
-    "mapLng": 7.5378,
+    "assignee_id": 3,
+    "kanban_status": "done",
+    "due_date": null,
+    "last_update": "2026-01-28T16:30:00Z",
+    "last_update_by": "T. Weber",
+    "in_gwr": true,
+    "map_lat": 47.2088,
+    "map_lng": 7.5378,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2052,7 +2052,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "2601",
       "gwr": "2601",
       "korrektur": "",
@@ -2142,7 +2142,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "480",
       "gwr": "480",
       "korrektur": "",
@@ -2179,13 +2179,13 @@
       "gwr": 88
     },
     "assignee": null,
-    "kanbanStatus": "done",
-    "dueDate": null,
-    "lastUpdate": "2026-01-27T09:15:00Z",
-    "lastUpdateBy": "M. Keller",
-    "inGwr": true,
-    "mapLat": 46.758,
-    "mapLng": 7.629,
+    "kanban_status": "done",
+    "due_date": null,
+    "last_update": "2026-01-27T09:15:00Z",
+    "last_update_by": "M. Keller",
+    "in_gwr": true,
+    "map_lat": 46.758,
+    "map_lng": 7.629,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2204,7 +2204,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "942",
       "gwr": "942",
       "korrektur": "",
@@ -2294,7 +2294,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "560",
       "gwr": "560",
       "korrektur": "",
@@ -2331,14 +2331,14 @@
       "gwr": 45
     },
     "assignee": "S. Brunner",
-    "assigneeId": 2,
-    "kanbanStatus": "inprogress",
-    "dueDate": null,
-    "lastUpdate": "2026-01-30T11:00:00Z",
-    "lastUpdateBy": "S. Brunner",
-    "inGwr": true,
-    "mapLat": 47.1368,
-    "mapLng": 7.2467,
+    "assignee_id": 2,
+    "kanban_status": "inprogress",
+    "due_date": null,
+    "last_update": "2026-01-30T11:00:00Z",
+    "last_update_by": "S. Brunner",
+    "in_gwr": true,
+    "map_lat": 47.1368,
+    "map_lng": 7.2467,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2357,7 +2357,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "371",
       "gwr": "371",
       "korrektur": "",
@@ -2447,7 +2447,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "1680",
       "gwr": "1714",
       "korrektur": "",
@@ -2484,13 +2484,13 @@
       "gwr": 75
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": null,
-    "lastUpdate": "2026-01-22T14:45:00Z",
-    "lastUpdateBy": "System",
-    "inGwr": true,
-    "mapLat": 47.6961,
-    "mapLng": 8.635,
+    "kanban_status": "backlog",
+    "due_date": null,
+    "last_update": "2026-01-22T14:45:00Z",
+    "last_update_by": "System",
+    "in_gwr": true,
+    "map_lat": 47.6961,
+    "map_lng": 8.635,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2509,7 +2509,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "2939",
       "gwr": "2939",
       "korrektur": "",
@@ -2599,7 +2599,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "420",
       "gwr": "420",
       "korrektur": "",
@@ -2636,14 +2636,14 @@
       "gwr": 95
     },
     "assignee": "M. Keller",
-    "assigneeId": 1,
-    "kanbanStatus": "done",
-    "dueDate": null,
-    "lastUpdate": "2026-01-30T08:30:00Z",
-    "lastUpdateBy": "M. Keller",
-    "inGwr": true,
-    "mapLat": 47.1724,
-    "mapLng": 8.5179,
+    "assignee_id": 1,
+    "kanban_status": "done",
+    "due_date": null,
+    "last_update": "2026-01-30T08:30:00Z",
+    "last_update_by": "M. Keller",
+    "in_gwr": true,
+    "map_lat": 47.1724,
+    "map_lng": 8.5179,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2662,7 +2662,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "1711",
       "gwr": "1711",
       "korrektur": "",
@@ -2752,7 +2752,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "780",
       "gwr": "780",
       "korrektur": "",
@@ -2789,14 +2789,14 @@
       "gwr": 60
     },
     "assignee": "T. Weber",
-    "assigneeId": 3,
-    "kanbanStatus": "clarification",
-    "dueDate": null,
-    "lastUpdate": "2026-01-29T15:20:00Z",
-    "lastUpdateBy": "T. Weber",
-    "inGwr": true,
-    "mapLat": 46.992,
-    "mapLng": 6.931,
+    "assignee_id": 3,
+    "kanban_status": "clarification",
+    "due_date": null,
+    "last_update": "2026-01-29T15:20:00Z",
+    "last_update_by": "T. Weber",
+    "in_gwr": true,
+    "map_lat": 46.992,
+    "map_lng": 6.931,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2815,7 +2815,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "6458",
       "gwr": "6458",
       "korrektur": "",
@@ -2905,7 +2905,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "2200",
       "gwr": "2200",
       "korrektur": "",
@@ -2942,13 +2942,13 @@
       "gwr": 40
     },
     "assignee": null,
-    "kanbanStatus": "backlog",
-    "dueDate": null,
-    "lastUpdate": "2026-01-18T10:00:00Z",
-    "lastUpdateBy": "System",
-    "inGwr": true,
-    "mapLat": 46.2333,
-    "mapLng": 7.3592,
+    "kanban_status": "backlog",
+    "due_date": null,
+    "last_update": "2026-01-18T10:00:00Z",
+    "last_update_by": "System",
+    "in_gwr": true,
+    "map_lat": 46.2333,
+    "map_lng": 7.3592,
     "country": {
       "sap": "CH",
       "gwr": "CH",
@@ -2967,7 +2967,7 @@
       "korrektur": "",
       "match": true
     },
-    "bfsNr": {
+    "bfs_nr": {
       "sap": "6266",
       "gwr": "6266",
       "korrektur": "",
@@ -3057,7 +3057,7 @@
       "korrektur": "",
       "match": false
     },
-    "parcelArea": {
+    "parcel_area": {
       "sap": "920",
       "gwr": "920",
       "korrektur": "",

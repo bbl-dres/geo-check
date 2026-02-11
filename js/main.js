@@ -40,7 +40,11 @@ import {
   removeUser,
   updateBuildingGwrFields,
   buildGwrUpdateRow,
-  batchUpdateBuildingGwrFields
+  batchUpdateBuildingGwrFields,
+  transformBuildingsFromDB,
+  transformUsersFromDB,
+  transformEventsFromDB,
+  keyByBuildingId
 } from './supabase.js';
 
 import {
@@ -174,7 +178,7 @@ async function loadDemoData() {
       fetch('data/rules.json')
     ]);
 
-    const [buildingsRaw, users, events, comments, errors, rules] = await Promise.all([
+    const [buildingsRaw, usersRaw, eventsRaw, commentsRaw, errorsRaw, rules] = await Promise.all([
       buildingsRes.json(),
       usersRes.json(),
       eventsRes.json(),
@@ -183,28 +187,32 @@ async function loadDemoData() {
       rulesRes.json()
     ]);
 
-    // Transform buildings to attach errors and comments
-    const buildings = (buildingsRaw || []).map(b => ({
-      ...b,
-      // Attach errors for this building
-      errors: errors[b.id] || [],
-      // Attach comments for this building
-      comments: comments[b.id] || []
-    }));
+    // Use the same transform pipeline as the Supabase path
+    // JSON files now use snake_case matching the DB schema
+    const buildings = transformBuildingsFromDB(
+      buildingsRaw || [],
+      commentsRaw || [],
+      errorsRaw || []
+    );
 
-    // Group events by buildingId for keyed lookup in detail panel
+    const teamMembers = transformUsersFromDB(usersRaw || []);
+
+    const eventsFlat = transformEventsFromDB(eventsRaw || []);
     const eventsGrouped = {};
-    (events || []).forEach(e => {
+    eventsFlat.forEach(e => {
       if (!eventsGrouped[e.buildingId]) eventsGrouped[e.buildingId] = [];
       eventsGrouped[e.buildingId].push(e);
     });
 
+    const commentsData = keyByBuildingId(commentsRaw || []);
+    const errorsData = keyByBuildingId(errorsRaw || []);
+
     return {
       buildings,
-      teamMembers: users || [],
+      teamMembers,
       eventsData: eventsGrouped,
-      commentsData: comments || {},
-      errorsData: errors || {},
+      commentsData,
+      errorsData,
       rulesConfig: rules || null
     };
   } catch (error) {

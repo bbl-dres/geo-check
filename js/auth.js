@@ -127,15 +127,16 @@ export async function signIn(email, password) {
 export async function signOut() {
     const supabase = getSupabase();
 
-    const { error } = await supabase.auth.signOut();
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
+
+    // Always clear local state, even if the API call failed
+    currentSession = null;
+    currentUser = null;
+    currentAppUser = null;
 
     if (error) {
         throw error;
     }
-
-    currentSession = null;
-    currentUser = null;
-    currentAppUser = null;
 }
 
 /**
@@ -810,11 +811,10 @@ if (typeof window !== 'undefined') {
         signOut: async () => {
             try {
                 await signOut();
-                window.location.reload();
             } catch (error) {
                 console.error('Sign out error:', error);
-                alert('Fehler beim Abmelden. Bitte versuchen Sie es erneut.');
             }
+            window.location.reload();
         }
     };
 
