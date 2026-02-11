@@ -694,6 +694,60 @@ function updateEditButton() {
 let currentDragHandler = null;
 
 /**
+ * Refresh GWR fields from Swisstopo API, then persist all corrections to Supabase.
+ */
+async function refreshGwrAndPersist(building) {
+  // Refresh GWR data if the building has an EGID
+  const egid = building.egid?.gwr;
+  if (egid) {
+    const gwrData = await lookupGwrByEgid(egid);
+    if (gwrData) {
+      building.inGwr = true;
+
+      // Update GWR values for all TVP fields that the API provides
+      for (const [key, value] of Object.entries(gwrData)) {
+        if (building[key] && typeof building[key] === 'object' && 'sap' in building[key]) {
+          building[key].gwr = String(value ?? '');
+          // Recalculate match
+          const sap = building[key].sap || '';
+          const gwr = building[key].gwr;
+          const korrektur = building[key].korrektur || '';
+          const displayVal = korrektur || gwr || sap;
+          building[key].match = (sap === gwr) && (gwr === displayVal);
+        }
+      }
+    } else {
+      building.inGwr = false;
+    }
+  }
+
+  // Build comparison data payload
+  const comparisonData = {};
+  ALL_DATA_FIELDS.forEach(field => {
+    if (building[field] && typeof building[field] === 'object' && 'sap' in building[field]) {
+      comparisonData[field] = building[field];
+    }
+  });
+  comparisonData.map_lat = building.mapLat;
+  comparisonData.map_lng = building.mapLng;
+  comparisonData.in_gwr = building.inGwr;
+
+  // Persist to Supabase
+  await persistComparisonData(building.id, comparisonData, getCurrentUserId(), getCurrentUserName());
+
+  // Re-render detail panel with updated GWR values if still selected
+  if (state.selectedBuildingId === building.id) {
+    renderDetailPanel(building);
+  }
+  if (onDataChange) onDataChange();
+
+  // Run validation checks
+  if (onCheckBuilding) {
+    await runPostSaveChecks(building.id);
+  }
+}
+
+/**
  * Run validation checks on a building after save, update local data, show toast.
  */
 async function runPostSaveChecks(buildingId) {
@@ -741,10 +795,11 @@ function showToast(message, type = 'info') {
   // Trigger enter animation
   requestAnimationFrame(() => toast.classList.add('visible'));
 
-  // Auto-dismiss after 4 seconds
+  // Auto-dismiss after 4 seconds (slide down then remove)
   setTimeout(() => {
     toast.classList.remove('visible');
-    toast.addEventListener('transitionend', () => toast.remove());
+    toast.classList.add('dismissing');
+    toast.addEventListener('transitionend', () => toast.remove(), { once: true });
   }, 4000);
 }
 
@@ -873,26 +928,11 @@ export function exitEditMode(save) {
     building.lastUpdate = new Date().toISOString();
     building.lastUpdateBy = currentUser;
 
-    // Persist corrections to Supabase
+    // Refresh GWR data and persist corrections to Supabase
     if (isAuthenticated()) {
-      const comparisonData = {};
-      ALL_DATA_FIELDS.forEach(field => {
-        if (building[field] && typeof building[field] === 'object' && 'sap' in building[field]) {
-          comparisonData[field] = building[field];
-        }
-      });
-      comparisonData.map_lat = building.mapLat;
-      comparisonData.map_lng = building.mapLng;
-      comparisonData.in_gwr = building.inGwr;
-
-      persistComparisonData(building.id, comparisonData, getCurrentUserId(), getCurrentUserName())
-        .then(() => {
-          // Run validation checks on this building after data is persisted
-          if (onCheckBuilding) {
-            runPostSaveChecks(building.id);
-          }
-        })
-        .catch(err => console.error('Failed to persist corrections:', err));
+      refreshGwrAndPersist(building).catch(err =>
+        console.error('Failed to save:', err)
+      );
     }
   } else {
     // Restore original values (flat structure)

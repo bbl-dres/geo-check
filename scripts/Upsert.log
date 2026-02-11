@@ -1,0 +1,180 @@
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Current FME version: FME 2025.0.3.0 (20250602 - Build 25241 - WIN64)
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|System Time: 20260211085208 UTC
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME_HOME is 'C:\Program Files\FME\'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Form (floating)
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Permanent License.
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Machine host name is: DESKTOP-BIEK64S
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|OS Locale Name     : en_CH
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|OS Locale Encoding : windows-1252
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Process Encoding   : UTF-8
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME API version: '4.0 20240722'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: FME_BASE is 'no'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: FME_MF_DIR is 'C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts/'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: FME_MF_NAME is 'Upsert.fmw'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: FME_PRODUCT_NAME is 'FME(R) 2025.0.3.0'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Operating System: Microsoft Windows 10 64-bit  (Build 19045)
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Platform: WIN64
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|System Status: 102.78 GB of disk space available in the FME temporary folder (C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770788146548_32260\fmetmp_f)
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|System Status: 31.72 GB of physical memory available
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|System Status: 126.88 GB of virtual memory available
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|START - ProcessID: 31484, peak process memory usage: 41928 kB, current process memory usage: 41920 kB
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Command line arguments are `C:\Program Files\FME\fme.exe' `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts\wb-xlate-1770799927091_32260' `--FME_LAUNCH_VIEWER_APP' `WORKBENCH' `LOG_STANDARDOUT' `YES' `LOG_TIMINGS' `YES' `LogCountServerName' `58649' `LOG_STANDARDOUT' `No' `WORKBENCH_LOG_SERVER' `58537'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Connection Storage: 'C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for formats are : C:\Program Files\FME\datasources;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Formats;C:\Users\DavidRasner\Documents\FME\Formats
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for transformers are : C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\Packages\25241-win64\transformers;C:\Program Files\FME\transformers;C:\Users\DavidRasner\AppData\Roaming\Safe Software\FME\FME Store\Transformers
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for coordinate systems are : C:\Users\DavidRasner\Documents\FME\CoordinateSystems
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for coordinate system exceptions are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemExceptions
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for coordinate system grid overrides are : C:\Users\DavidRasner\Documents\FME\CoordinateSystemGridOverrides
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for CS-MAP transformation exceptions are : C:\Users\DavidRasner\Documents\FME\CsmapTransformationExceptions
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Shared folders for transformer categories are : C:\Users\DavidRasner\Documents\FME\TransformerCategories
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Current working folder is `C:\Users\DavidRasner\Documents\GitHub\geo-check\scripts'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Temporary folder is `C:\Users\DAVIDR~1\AppData\Local\Temp\wbrun_1770788146548_32260\fmetmp_f', set from environment variable `FME_TEMP'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Cache folder is 'C:\Users\DAVIDR~1\AppData\Local\Temp'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: FME_HOME is `C:\Program Files\FME\'
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Start freeing memory when the process exceeds 95.16 GB
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|FME Configuration: Stop freeing memory when the process is below 71.37 GB
+2026-02-11 09:52:07|   0.0|  0.0|INFORM|Creating writer for format: 
+2026-02-11 09:52:07|   0.1|  0.1|INFORM|Creating reader for format: 
+2026-02-11 09:52:07|   0.1|  0.0|INFORM|MULTI_READER(MULTI_READER): Will fail with first member reader failure
+2026-02-11 09:52:07|   0.1|  0.0|INFORM|Using Multi Reader with keyword `MULTI_READER' to read multiple datasets
+2026-02-11 09:52:07|   0.1|  0.0|INFORM|Using MultiWriter with keyword `MULTI_DEST' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-11 09:52:07|   0.1|  0.0|INFORM|Emptying factory pipeline
+2026-02-11 09:52:08|   0.2|  0.1|INFORM|Creating reader for format: Microsoft Excel
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `XLSXR'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|FeatureReader (QueryFactory): Performing query against XLSXR dataset `D:\BBL_Gebäude.xlsx'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Creating reader for format: Microsoft Excel
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `XLSXR'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Creating reader for format: Microsoft Excel
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `XLSXR'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Reader is in set constraints mode
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Blank cells will be read as 'Null'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Apply filters in workbook during read: '0'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Reading images embedded in workbook 'BBL_Gebäude.xlsx' for selected sheets as 'None'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Parameter _SCHEMA_HANDLING_REVISION has value 2
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Output cell formulas: 'false'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Output cell formatting: 'false'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Output cell comments: 'false'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Force full datetime values: 'false'
+2026-02-11 09:52:08|   0.2|  0.0|INFORM|Excel Reader: Opening dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:08|   1.2|  1.0|INFORM|Excel Reader: Blank cells will be read as 'Null'
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Apply filters in workbook during read: '0'
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Reading images embedded in workbook 'BBL_Gebäude.xlsx' for selected sheets as 'None'
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Parameter _SCHEMA_HANDLING_REVISION has value 2
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Trimming whitespace from attribute names
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Reading sheet 'BBL Objekt'...
+2026-02-11 09:52:08|   1.2|  0.0|INFORM|Excel Reader: Sheet 'BBL Objekt' range: Start Row '1', Start Column 'A', End Row '4044', End Column 'BP'
+2026-02-11 09:52:09|   1.4|  0.2|INFORM|Excel Reader: Closing dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Writer: Workbook contains 1 fonts and 1 cell formats after writing
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Closing dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Merged 1 schema features read from 1 datasets into 1 resulting feature types
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Reader is in set constraints mode
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|XLSXR reader: Creating bulk features from individual features
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Output cell formulas: 'false'
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Output cell formatting: 'false'
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Output cell comments: 'false'
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Force full datetime values: 'false'
+2026-02-11 09:52:09|   1.4|  0.0|INFORM|Excel Reader: Opening dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:10|   2.2|  0.8|INFORM|Excel Reader: Blank cells will be read as 'Null'
+2026-02-11 09:52:10|   2.3|  0.1|INFORM|Excel Reader: Apply filters in workbook during read: '0'
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Excel Reader: Reading images embedded in workbook 'BBL_Gebäude.xlsx' for selected sheets as 'None'
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Excel Reader: Parameter _SCHEMA_HANDLING_REVISION has value 2
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Excel Reader: Trimming whitespace from attribute names
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Excel Reader: Reading sheet 'BBL Objekt'...
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Excel Reader: Sheet 'BBL Objekt' range: Start Row '1', Start Column 'A', End Row '4044', End Column 'BP'
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader R_1[XLSXR] set to `LL-WGS84' as read from input data
+2026-02-11 09:52:10|   2.3|  0.0|INFORM|Coordinate System `LL-WGS84' parameters: CS_NAME=`LL-WGS84' DESC_NM=`WGS84 Lat/Longs' DT_NAME=`WGS84' GROUP=`LL' MAP_SCL=`1' PROJ=`LL' QUAD=`1' SCL_RED=`1' UNIT=`DEGREE'
+2026-02-11 09:52:10|   2.8|  0.5|INFORM|FFS writer: Writing 4043 feature(s) to file 'C:\Users\DAVIDR~1\AppData\Local\Temp\wb-cache-Upsert-RIuZyw\Main_FeatureReader -1 2 fo 1 BBL_lt_space_gt_Objekt  0  72f636deb64f873db9a4b88575624b9bee29c23f.fts'
+2026-02-11 09:52:10|   2.8|  0.0|INFORM|Spatial Index: Adding 4043 features
+2026-02-11 09:52:10|   2.9|  0.1|INFORM|FFS writer: Writing 4043 feature(s) to file 'C:\Users\DAVIDR~1\AppData\Local\Temp\wb-cache-Upsert-RIuZyw\Main_BulkAttributeRenamer -1 12 fo 0 OUTPUT  0  84cfa358035cef1826fc0c6b74d2b83ea61ae312.fts'
+2026-02-11 09:52:10|   2.9|  0.0|INFORM|Spatial Index: Adding 4043 features
+2026-02-11 09:52:10|   2.9|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:10|   3.0|  0.1|INFORM|Creating writer for format: 
+2026-02-11 09:52:10|   3.0|  0.0|INFORM|Using MultiWriter with keyword `FeatureWriter' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2026-02-11 09:52:10|   3.2|  0.2|INFORM|FME Configuration: Using connection values from 'Supabase Geo-Check' for FeatureWriter_0
+2026-02-11 09:52:10|   3.2|  0.0|INFORM|Creating writer for format: PostGIS
+2026-02-11 09:52:11|   3.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for writer named `POSTGIS'
+2026-02-11 09:52:11|   3.2|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2026-02-11 09:52:11|   3.2|  0.0|INFORM|Writer `FeatureWriter_0' of type `POSTGIS' using group definition keyword `FeatureWriter_0_DEF'
+2026-02-11 09:52:11|   3.3|  0.1|INFORM|Opening POSTGIS writer for dataset 'postgres'...
+2026-02-11 09:52:11|   3.3|  0.0|INFORM|PostGIS client encoding: 'UTF8'
+2026-02-11 09:52:11|   3.3|  0.0|INFORM|PostgreSQL 17.6 on aarch64-unknown-linux-gnu, compiled by gcc (GCC) 13.2.0, 64-bit
+2026-02-11 09:52:11|   3.3|  0.0|INFORM|3.3 USE_GEOS=1 USE_PROJ=1 USE_STATS=1
+2026-02-11 09:52:11|   3.3|  0.0|WARN  |POSTGIS Writer: Bulk Insert is set to Yes, but a conflicting Feature Operation has been detected. Feature type 'buildings' has a Feature Operation of 'Upsert'. Bulk Insert is now being set to No, which can cause insert operations to be much slower
+2026-02-11 09:52:11|   3.3|  0.0|INFORM|Testing for the existence of table 'public.buildings'...
+2026-02-11 09:52:11|   3.3|  0.0|INFORM|Using existing table 'public.buildings'
+2026-02-11 09:52:12|   3.3|  0.0|WARN  |POSTGIS Writer: The column 'bfsnr' does not exist on the table 'buildings'
+2026-02-11 09:52:12|   3.3|  0.0|WARN  |PostGIS writer: Couldn't find spatial column "geom" in table public.buildings - will write non-spatial data only
+2026-02-11 09:52:12|   3.3|  0.0|INFORM|POSTGIS Writer: Creating 'Insert' feature type processor for feature type 'buildings'
+2026-02-11 09:52:12|   3.3|  0.0|INFORM|TestFilter_@Value(gis_bbl_bezeichnung) CONTAINS ABGA Feature Recorder -1 2147614737 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.1|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_@Value(gis_bbl_bezeichnung) CONTAINS ABGA Feature Recorder -1 2147614737 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.4|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.5|  0.1|INFORM|TestFilter_@Value(gis_bbl_bezeichnung) CONTAINS ABGA Feature Recorder -1 2147614737 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:12|   3.5|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_bbl_bezeichnung) CONTAINS ABGA Feature Recorder -1 2147614737 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_<UNFILTERED> Feature Recorder -1 2147942417 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_bbl_bezeichnung) CONTAINS ABGA Feature Recorder -1 2147614737 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter_@Value(gis_adr_land) NOT_= Schweiz Feature Recorder -1 2147811345 (RecorderFactory): Splitting bulk features into individual features
+2026-02-11 09:52:13|   3.5|  0.0|INFORM|TestFilter (TestFactory): Splitting bulk features into individual features
+2026-02-11 09:52:18|   3.9|  0.4|INFORM|TestFilter (TestFactory): Tested 1147 of 3873 bulk features
+2026-02-11 09:52:21|   4.2|  0.3|INFORM|Committed transaction at feature '1000'
+2026-02-11 09:52:23|   4.3|  0.1|INFORM|TestFilter (TestFactory): Tested 2804 of 3873 bulk features
+2026-02-11 09:52:28|   4.6|  0.3|INFORM|TestFilter (TestFactory): Tested 3462 of 3873 bulk features
+2026-02-11 09:52:29|   4.8|  0.2|INFORM|Committed transaction at feature '2000'
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|TestFilter (TestFactory): Tested 3873 of 3873 bulk features
+2026-02-11 09:52:29|   4.8|  0.0|STATS |Creator_XML_Creator (CreationFactory): Created 1 features
+2026-02-11 09:52:29|   4.8|  0.0|STATS |Creator_Cloner (TeeFactory): Cloned 1 input feature(s) into 1 output feature(s)
+2026-02-11 09:52:29|   4.8|  0.0|STATS |Creator_CREATED Brancher -1 4 (BranchingFactory): Branched 1 input feature -- 1 feature routed to the target factory, and 0 features routed to the fallback factory.
+2026-02-11 09:52:29|   4.8|  0.0|STATS |_CREATOR_BRANCH_TARGET (TeeFactory): Cloned 1 input feature(s) into 1 output feature(s)
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|Excel Reader: Closing dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|Excel Writer: Workbook contains 1 fonts and 1 cell formats after writing
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|Excel Reader: Closing dataset 'D:\BBL_Gebäude.xlsx'...
+2026-02-11 09:52:29|   4.8|  0.0|STATS |BulkAttributeRenamer (TeeFactory): Cloned 4043 input feature(s) into 4043 output feature(s)
+2026-02-11 09:52:29|   4.8|  0.0|STATS |TestFilter_INPUT (TeeFactory): Cloned 4043 input feature(s) into 4043 output feature(s)
+2026-02-11 09:52:29|   4.8|  0.0|STATS |TestFilter (TestFactory): Tested 4043 input feature(s) -- 2034 feature(s) passed and 2009 feature(s) failed
+2026-02-11 09:52:29|   4.8|  0.0|STATS |AttributeRemover (TeeFactory): Cloned 2009 input feature(s) into 2009 output feature(s)
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|2009 feature(s) coerced to 3D in table 'public.buildings'
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|Successfully closed POSTGIS database writer
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:29|   4.8|  0.0|INFORM|Feature output statistics for `POSTGIS' writer using keyword `FeatureWriter_0':
+2026-02-11 09:52:29|   4.8|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:29|   4.8|  0.0|STATS |                               Features Written
+2026-02-11 09:52:29|   4.9|  0.1|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:29|   4.9|  0.0|STATS |buildings                                                                 2009
+2026-02-11 09:52:29|   4.9|  0.0|STATS |==============================================================================
+2026-02-11 09:52:29|   4.9|  0.0|STATS |Total Features Written                                                    2009
+2026-02-11 09:52:29|   4.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.1|STATS |Destination Feature Type Routing Correlator (RoutingFactory): Tested 0 input feature(s), wrote 0 output feature(s): 0 matched merge filters, 0 were routed to output, 0 could not be routed.
+2026-02-11 09:52:30|   5.0|  0.0|STATS |Final Output Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|STATS |                            Features Read Summary
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|STATS |==============================================================================
+2026-02-11 09:52:30|   5.0|  0.0|STATS |Total Features Read                                                          0
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|STATS |                           Features Written Summary
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|STATS |==============================================================================
+2026-02-11 09:52:30|   5.0|  0.0|STATS |Total Features Written                                                       0
+2026-02-11 09:52:30|   5.0|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~                                                                             ~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~    Feature caches have been recorded at every stage of the translation.     ~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~                      To inspect the recorded features,                      ~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~              click the feature cache icons next to the ports.               ~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~                                                                             ~-
+2026-02-11 09:52:30|   5.0|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2026-02-11 09:52:30|   5.0|  0.0|INFORM|Translation was SUCCESSFUL with 10 warning(s) (0 feature(s) output)
+2026-02-11 09:52:30|   5.0|  0.0|INFORM|FME Session Duration: 22.4 seconds. (CPU: 4.3s user, 0.7s system)
+2026-02-11 09:52:30|   5.0|  0.0|INFORM|END - ProcessID: 31484, peak process memory usage: 207284 kB, current process memory usage: 139260 kB
