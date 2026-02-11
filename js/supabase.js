@@ -300,7 +300,7 @@ function transformCommentsForBuilding(comments) {
         id: c.id,
         author: c.author,
         authorId: c.author_id,
-        date: formatSwissDate(c.created_at),
+        timestamp: c.created_at,
         text: c.text,
         system: c.is_system
     }));
@@ -576,7 +576,7 @@ export async function addComment(buildingId, text, userId, userName) {
         id: commentId,
         author: userName,
         authorId: userId,
-        date: formatSwissDate(new Date().toISOString()),
+        timestamp: new Date().toISOString(),
         text: text,
         system: false
     };

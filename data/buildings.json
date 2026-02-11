@@ -11,6 +11,7 @@
       "gwr": 100
     },
     "assignee": "M. Keller",
+    "assigneeId": 1,
     "kanbanStatus": "inprogress",
     "dueDate": "2026-02-15",
     "lastUpdate": "2026-01-27T14:30:00Z",
@@ -347,6 +348,7 @@
       "gwr": 70
     },
     "assignee": "S. Brunner",
+    "assigneeId": 2,
     "kanbanStatus": "clarification",
     "dueDate": "2026-02-03",
     "lastUpdate": "2026-01-28T11:45:00Z",
@@ -651,6 +653,7 @@
       "gwr": 70
     },
     "assignee": "T. Weber",
+    "assigneeId": 3,
     "kanbanStatus": "inprogress",
     "dueDate": null,
     "lastUpdate": "2026-01-25T16:20:00Z",
@@ -955,6 +958,7 @@
       "gwr": 60
     },
     "assignee": "A. Meier",
+    "assigneeId": 4,
     "kanbanStatus": "inprogress",
     "dueDate": null,
     "lastUpdate": "2026-01-26T13:10:00Z",
@@ -1411,6 +1415,7 @@
       "gwr": 67
     },
     "assignee": "M. Keller",
+    "assigneeId": 1,
     "kanbanStatus": "clarification",
     "dueDate": null,
     "lastUpdate": "2026-01-28T15:00:00Z",
@@ -1715,6 +1720,7 @@
       "gwr": 82
     },
     "assignee": "S. Brunner",
+    "assigneeId": 2,
     "kanbanStatus": "inprogress",
     "dueDate": null,
     "lastUpdate": "2026-01-24T12:15:00Z",
@@ -1867,6 +1873,7 @@
       "gwr": 50
     },
     "assignee": "A. Meier",
+    "assigneeId": 4,
     "kanbanStatus": "clarification",
     "dueDate": null,
     "lastUpdate": "2026-01-29T10:00:00Z",
@@ -2019,6 +2026,7 @@
       "gwr": 90
     },
     "assignee": "T. Weber",
+    "assigneeId": 3,
     "kanbanStatus": "done",
     "dueDate": null,
     "lastUpdate": "2026-01-28T16:30:00Z",
@@ -2323,6 +2331,7 @@
       "gwr": 45
     },
     "assignee": "S. Brunner",
+    "assigneeId": 2,
     "kanbanStatus": "inprogress",
     "dueDate": null,
     "lastUpdate": "2026-01-30T11:00:00Z",
@@ -2627,6 +2636,7 @@
       "gwr": 95
     },
     "assignee": "M. Keller",
+    "assigneeId": 1,
     "kanbanStatus": "done",
     "dueDate": null,
     "lastUpdate": "2026-01-30T08:30:00Z",
@@ -2779,6 +2789,7 @@
       "gwr": 60
     },
     "assignee": "T. Weber",
+    "assigneeId": 3,
     "kanbanStatus": "clarification",
     "dueDate": null,
     "lastUpdate": "2026-01-29T15:20:00Z",

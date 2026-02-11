@@ -77,6 +77,10 @@ export function getSearchQuery() {
 export function updateURL(replace = false) {
   const params = new URLSearchParams();
 
+  if (window.isDemoMode) {
+    params.set('mode', 'demo');
+  }
+
   params.set('tab', state.currentTab);
 
   if (state.selectedBuildingId) {
@@ -112,6 +116,11 @@ export function updateURL(replace = false) {
 
 export function parseURL() {
   const params = new URLSearchParams(window.location.search);
+
+  // Detect demo mode from URL
+  if (params.get('mode') === 'demo') {
+    window.isDemoMode = true;
+  }
 
   const tab = params.get('tab');
   if (tab && ['karte', 'aufgaben', 'statistik', 'settings', 'api'].includes(tab)) {
@@ -248,13 +257,30 @@ export function toggleFilter(filterName, shouldUpdateURL = true) {
 // ========================================
 // Multi-Select Filter Dropdowns
 // ========================================
+
+/**
+ * Populate a multi-select dropdown with options dynamically.
+ * @param {string} elementId - Container element ID (e.g. 'filter-kanton')
+ * @param {Array<{value: string, label: string, title?: string}>} options
+ */
+export function populateMultiSelectOptions(elementId, options) {
+  const container = document.getElementById(elementId);
+  if (!container) return;
+  const optionsContainer = container.querySelector('.multi-select-options');
+  if (!optionsContainer) return;
+
+  optionsContainer.innerHTML = options.map(opt => {
+    const titleAttr = opt.title ? ` title="${escapeHtml(opt.title)}"` : '';
+    return `<label class="multi-select-option"><input type="checkbox" value="${escapeHtml(opt.value)}"><span${titleAttr}>${escapeHtml(opt.label)}</span></label>`;
+  }).join('');
+}
+
 export function setupMultiSelectFilter(elementId, stateKey, onChange = null) {
   const container = document.getElementById(elementId);
   if (!container) return;
 
   const trigger = container.querySelector('.multi-select-trigger');
-  const dropdown = container.querySelector('.multi-select-dropdown');
-  const checkboxes = container.querySelectorAll('.multi-select-option input[type="checkbox"]');
+  const optionsContainer = container.querySelector('.multi-select-options');
   const countBadge = container.querySelector('.multi-select-count');
 
   if (!trigger) return;
@@ -268,6 +294,7 @@ export function setupMultiSelectFilter(elementId, stateKey, onChange = null) {
   });
 
   const updateSelection = () => {
+    const checkboxes = container.querySelectorAll('.multi-select-option input[type="checkbox"]');
     const selected = Array.from(checkboxes)
       .filter(cb => cb.checked)
       .map(cb => cb.value);
@@ -285,15 +312,21 @@ export function setupMultiSelectFilter(elementId, stateKey, onChange = null) {
     if (onChange) onChange();
   };
 
-  checkboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', updateSelection);
-  });
+  // Event delegation — works with dynamically added checkboxes
+  if (optionsContainer) {
+    optionsContainer.addEventListener('change', (e) => {
+      if (e.target.matches('input[type="checkbox"]')) {
+        updateSelection();
+      }
+    });
+  }
 
   // Handle "All" and "None" action buttons
   const actionButtons = container.querySelectorAll('.multi-select-action');
   actionButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
+      const checkboxes = container.querySelectorAll('.multi-select-option input[type="checkbox"]');
       checkboxes.forEach(cb => {
         cb.checked = action === 'all';
       });
