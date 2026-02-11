@@ -20,8 +20,6 @@ import {
   getFieldDisplayValue,
   setSearchQuery,
   setCurrentUser,
-  eventsData,
-  errorsData,
   rulesConfig,
   escapeHtml
 } from './state.js';
@@ -40,11 +38,7 @@ import {
   removeUser,
   updateBuildingGwrFields,
   buildGwrUpdateRow,
-  batchUpdateBuildingGwrFields,
-  transformBuildingsFromDB,
-  transformUsersFromDB,
-  transformEventsFromDB,
-  keyByBuildingId
+  batchUpdateBuildingGwrFields
 } from './supabase.js';
 
 import {
@@ -138,7 +132,7 @@ function updateTabUI(tabId) {
 let _loadDataPromise = null;
 
 async function loadData() {
-  if (!isAuthenticated() && !window.isDemoMode) {
+  if (!isAuthenticated()) {
     return;
   }
 
@@ -147,9 +141,7 @@ async function loadData() {
 
   _loadDataPromise = (async () => {
     try {
-      const data = window.isDemoMode
-        ? await loadDemoData()
-        : await loadDataFromSupabase();
+      const data = await loadDataFromSupabase();
       setData(data);
       populateFilterDropdowns();
     } catch (error) {
@@ -161,64 +153,6 @@ async function loadData() {
   })();
 
   return _loadDataPromise;
-}
-
-// ========================================
-// Demo Mode - Load from JSON files
-// ========================================
-
-async function loadDemoData() {
-  try {
-    const [buildingsRes, usersRes, eventsRes, commentsRes, errorsRes, rulesRes] = await Promise.all([
-      fetch('data/buildings.json'),
-      fetch('data/users.json'),
-      fetch('data/events.json'),
-      fetch('data/comments.json'),
-      fetch('data/errors.json'),
-      fetch('data/rules.json')
-    ]);
-
-    const [buildingsRaw, usersRaw, eventsRaw, commentsRaw, errorsRaw, rules] = await Promise.all([
-      buildingsRes.json(),
-      usersRes.json(),
-      eventsRes.json(),
-      commentsRes.json(),
-      errorsRes.json(),
-      rulesRes.json()
-    ]);
-
-    // Use the same transform pipeline as the Supabase path
-    // JSON files now use snake_case matching the DB schema
-    const buildings = transformBuildingsFromDB(
-      buildingsRaw || [],
-      commentsRaw || [],
-      errorsRaw || []
-    );
-
-    const teamMembers = transformUsersFromDB(usersRaw || []);
-
-    const eventsFlat = transformEventsFromDB(eventsRaw || []);
-    const eventsGrouped = {};
-    eventsFlat.forEach(e => {
-      if (!eventsGrouped[e.buildingId]) eventsGrouped[e.buildingId] = [];
-      eventsGrouped[e.buildingId].push(e);
-    });
-
-    const commentsData = keyByBuildingId(commentsRaw || []);
-    const errorsData = keyByBuildingId(errorsRaw || []);
-
-    return {
-      buildings,
-      teamMembers,
-      eventsData: eventsGrouped,
-      commentsData,
-      errorsData,
-      rulesConfig: rules || null
-    };
-  } catch (error) {
-    console.error('Error loading demo data:', error);
-    throw error;
-  }
 }
 
 // ========================================
@@ -281,64 +215,6 @@ function populateFilterDropdowns() {
     ...assigneeNames.map(name => ({ value: name, label: name }))
   ];
   populateMultiSelectOptions('filter-assignee', assigneeOptions);
-}
-
-async function startDemoMode() {
-  window.isDemoMode = true;
-
-  try {
-    const data = await loadDemoData();
-    setData(data);
-    populateFilterDropdowns();
-
-    // Set demo user
-    setCurrentUser('Demo Benutzer');
-
-    // Persist demo mode to URL
-    updateURL(true);
-
-    // Show app
-    showApp();
-    hideAppError();
-
-    // Update UI for demo user
-    const loginBtn = document.getElementById('login-btn');
-    const userTrigger = document.getElementById('user-trigger');
-    const userInitials = document.getElementById('user-initials');
-    const userDropdownName = document.getElementById('user-dropdown-name');
-    const userDropdownRole = document.getElementById('user-dropdown-role');
-
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (userTrigger) userTrigger.style.display = 'flex';
-    if (userInitials) userInitials.textContent = 'DE';
-    if (userDropdownName) userDropdownName.textContent = 'Demo Benutzer';
-    if (userDropdownRole) userDropdownRole.textContent = 'Demo';
-
-    // Re-render views (map may not be ready yet on URL-based init — that's OK,
-    // recreateMarkers exits early and map.on('load') picks up the data)
-    recreateMarkers(selectBuilding);
-    updateCounts();
-    updateStatistik();
-    renderKanbanBoard();
-    if (tableVisible) renderTableView();
-    renderRules();
-    renderUsersTable();
-
-    // Resize map after showing
-    if (map) setTimeout(() => map.resize(), 100);
-
-    scheduleLucideRefresh();
-  } catch (error) {
-    console.error('Demo mode error:', error);
-    showAppError('Demo-Daten konnten nicht geladen werden.');
-  }
-}
-
-function setupDemoButton() {
-  const demoBtn = document.getElementById('demo-btn');
-  if (demoBtn) {
-    demoBtn.addEventListener('click', startDemoMode);
-  }
 }
 
 // ========================================
@@ -1446,23 +1322,16 @@ async function exportErrorsReport() {
   updateProgress(0, 0);
 
   try {
-    let sourceErrors;
     let buildingMap = {};
 
-    if (isAuthenticated() && !window.isDemoMode) {
-      console.group('📊 Fehlerbericht Export');
-      console.log('Fetching errors with pagination...');
-      const { errors, buildings: buildingsList } = await fetchErrorsForExport((loaded, total) => {
-        updateProgress(loaded, total);
-        console.log(`  Loaded ${loaded} / ${total} errors`);
-      });
-      sourceErrors = errors;
-      buildingsList.forEach(b => { buildingMap[b.id] = b; });
-      console.log('All errors fetched, building Excel file...');
-    } else {
-      sourceErrors = errorsData;
-      buildings.forEach(b => { buildingMap[b.id] = b; });
-    }
+    console.group('📊 Fehlerbericht Export');
+    console.log('Fetching errors with pagination...');
+    const { errors: sourceErrors, buildings: buildingsList } = await fetchErrorsForExport((loaded, total) => {
+      updateProgress(loaded, total);
+      console.log(`  Loaded ${loaded} / ${total} errors`);
+    });
+    buildingsList.forEach(b => { buildingMap[b.id] = b; });
+    console.log('All errors fetched, building Excel file...');
 
     const rows = [];
     for (const buildingId in sourceErrors) {
@@ -1521,14 +1390,7 @@ async function exportEventsReport() {
   }
 
   try {
-    let sourceEvents;
-
-    if (isAuthenticated() && !window.isDemoMode) {
-      sourceEvents = await fetchEventsForExport();
-    } else {
-      // eventsData is keyed by buildingId — flatten to array for export
-      sourceEvents = Object.values(eventsData).flat();
-    }
+    const sourceEvents = await fetchEventsForExport();
 
     if (!Array.isArray(sourceEvents) || sourceEvents.length === 0) {
       alert('Keine Ereignisse zum Exportieren vorhanden.');
@@ -1689,28 +1551,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupForgotPasswordForm();
   setupInviteForm();
   setupUserDropdown();
-  setupDemoButton();
-
   // Password recovery/invite is handled in onAuthStateChange (PASSWORD_RECOVERY event)
 
-  // Check URL for demo mode early, before auth
-  const urlDemoMode = new URLSearchParams(window.location.search).get('mode') === 'demo';
+  // Show login landing immediately (prevents blank screen while auth resolves)
+  showLoginLanding();
 
+  // Initialize authentication
   let user = null;
-
-  if (urlDemoMode) {
-    // Auto-start demo mode from URL — skip authentication entirely
-    await startDemoMode();
-  } else {
-    // Show login landing immediately (prevents blank screen while auth resolves)
-    showLoginLanding();
-
-    // Initialize authentication
-    try {
-      user = await initAuth();
-    } catch (err) {
-      console.error('Auth initialization failed:', err);
-    }
+  try {
+    user = await initAuth();
+  } catch (err) {
+    console.error('Auth initialization failed:', err);
   }
 
   // Track whether we already handled the initial session
@@ -1718,9 +1569,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Setup auth state change handler (fires on future sign-in/sign-out)
   onAuthStateChange(async (event, _session, appUser) => {
-    // In demo mode, ignore auth events to prevent Supabase data from overwriting demo data
-    if (window.isDemoMode) return;
-
     if (appUser) {
       setCurrentUser(appUser.name);
     } else {
@@ -1759,10 +1607,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     scheduleLucideRefresh();
   });
 
-  // Handle initial auth state (skip if demo mode — already handled above)
-  if (window.isDemoMode) {
-    initialLoadDone = true;
-  } else if (user) {
+  // Handle initial auth state
+  if (user) {
     initialLoadDone = true;
     setCurrentUser(user.name);
     showApp();

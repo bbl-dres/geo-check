@@ -230,7 +230,7 @@ function handleDrop(e) {
     building.lastUpdateBy = currentUser;
 
     // Persist to Supabase
-    if (!window.isDemoMode && isAuthenticated()) {
+    if (isAuthenticated()) {
       persistStatus(building.id, newStatus, getCurrentUserId(), getCurrentUserName())
         .catch(err => console.error('Failed to persist status:', err));
     }

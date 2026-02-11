@@ -77,10 +77,6 @@ export function getSearchQuery() {
 export function updateURL(replace = false) {
   const params = new URLSearchParams();
 
-  if (window.isDemoMode) {
-    params.set('mode', 'demo');
-  }
-
   params.set('tab', state.currentTab);
 
   if (state.selectedBuildingId) {
@@ -116,11 +112,6 @@ export function updateURL(replace = false) {
 
 export function parseURL() {
   const params = new URLSearchParams(window.location.search);
-
-  // Detect demo mode from URL
-  if (params.get('mode') === 'demo') {
-    window.isDemoMode = true;
-  }
 
   const tab = params.get('tab');
   if (tab && ['karte', 'aufgaben', 'statistik', 'settings', 'api'].includes(tab)) {

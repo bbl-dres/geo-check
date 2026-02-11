@@ -23,7 +23,7 @@ A prototype web application for validating and managing property data. Built for
 - Searchable and sortable building list
 - Row selection with checkboxes
 - Configurable page size (100, 500, 1000)
-- Export to CSV, XLSX, GeoJSON (all or selected)
+- Export to CSV, XLSX (all or selected)
 
 ### Kanban Board
 - Task management with drag-and-drop
@@ -99,7 +99,7 @@ geo-check/
 │   └── functions/          # Edge Functions (invite-user, rule-engine)
 ├── docs/                   # DATABASE.md, EDGE-FUNCTIONS.md, RULES.md
 ├── scripts/                # FME workspace for data upsert
-└── data/                   # Demo JSON files (fallback data)
+└── data/                   # Rule configuration (rules.json)
 ```
 
 ## Getting Started
