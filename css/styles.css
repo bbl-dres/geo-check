@@ -4987,6 +4987,7 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
    Footer
    ======================================== */
 .app-footer {
+  position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -4996,6 +4997,12 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
   font-size: var(--font-sm);
   color: var(--text-muted);
   flex-shrink: 0;
+}
+
+.app-footer > .prototype-badge {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .footer-links {
@@ -5174,12 +5181,13 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .login-landing.visible {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
 }
 
 .login-landing-container {
   width: 100%;
   max-width: 360px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
