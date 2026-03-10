@@ -1,0 +1,282 @@
+[
+  {
+    "id": "err-002-1",
+    "building_id": "BBL/002",
+    "check_id": "ADR-007",
+    "description": "Hausnummer weicht ab (SAP: 5, GWR: 3)",
+    "level": "warning",
+    "field": "hausnummer",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-002-2",
+    "building_id": "BBL/002",
+    "check_id": "GEO-002",
+    "description": "Gebäudefläche weicht ab (SAP: 4800, GWR: 4750)",
+    "level": "info",
+    "field": "garea",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-002-3",
+    "building_id": "BBL/002",
+    "check_id": "ADR-006",
+    "description": "Baujahr weicht ab (SAP: 1892, GWR: 1894)",
+    "level": "info",
+    "field": "gbauj",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-004-1",
+    "building_id": "BBL/004",
+    "check_id": "ID-003",
+    "description": "EGID zeigt auf ein anderes Gebäude im GWR (SAP: 2345670, GWR: 2345999)",
+    "level": "error",
+    "field": "egid",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-004-2",
+    "building_id": "BBL/004",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Guisanplatz, GWR: Papiermühlestr.)",
+    "level": "error",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-004-3",
+    "building_id": "BBL/004",
+    "check_id": "ADR-007",
+    "description": "Hausnummer weicht ab (SAP: 1, GWR: 21)",
+    "level": "warning",
+    "field": "hausnummer",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-004-4",
+    "building_id": "BBL/004",
+    "check_id": "GEO-002",
+    "description": "SAP- und GWR-Koordinaten weichen um 178m ab",
+    "level": "warning",
+    "field": "lat",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-005-1",
+    "building_id": "BBL/005",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Corso S. Gottardo, GWR: Corso San Gottardo)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-005-2",
+    "building_id": "BBL/005",
+    "check_id": "ADR-007",
+    "description": "Hausnummer weicht ab (SAP: 12, GWR: 12a)",
+    "level": "warning",
+    "field": "hausnummer",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-007-1",
+    "building_id": "BBL/007",
+    "check_id": "ID-001",
+    "description": "Gebäude nicht im GWR gefunden",
+    "level": "error",
+    "field": "egid",
+    "detected_at": "2026-02-28T13:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-007-2",
+    "building_id": "BBL/007",
+    "check_id": "GEO-001",
+    "description": "Keine GWR-Koordinaten vorhanden",
+    "level": "error",
+    "field": "lat",
+    "detected_at": "2026-02-28T13:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-008-1",
+    "building_id": "BBL/008",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Rämistr., GWR: Rämistrasse)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-010-1",
+    "building_id": "BBL/010",
+    "check_id": "ADR-007",
+    "description": "Hausnummer weicht ab (SAP: leer, GWR: 1)",
+    "level": "warning",
+    "field": "hausnummer",
+    "detected_at": "2026-03-02T07:30:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-010-2",
+    "building_id": "BBL/010",
+    "check_id": "ADR-008",
+    "description": "Adresszusatz weicht ab (SAP: Hangar A, GWR: leer)",
+    "level": "info",
+    "field": "zusatz",
+    "detected_at": "2026-03-02T07:30:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-010-3",
+    "building_id": "BBL/010",
+    "check_id": "GEO-002",
+    "description": "SAP- und GWR-Koordinaten weichen um 72m ab",
+    "level": "warning",
+    "field": "lat",
+    "detected_at": "2026-03-02T07:30:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-012-1",
+    "building_id": "BBL/012",
+    "check_id": "ADR-004",
+    "description": "Postleitzahl weicht ab (SAP: 6500, GWR: 6501)",
+    "level": "warning",
+    "field": "plz",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-012-2",
+    "building_id": "BBL/012",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Via Stefano Franscini, GWR: Via S. Franscini)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-013-1",
+    "building_id": "BBL/013",
+    "check_id": "ADR-004",
+    "description": "Postleitzahl weicht ab (SAP: 3003, GWR: 3097)",
+    "level": "warning",
+    "field": "plz",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-013-2",
+    "building_id": "BBL/013",
+    "check_id": "ADR-005",
+    "description": "Ortsbezeichnung weicht ab (SAP: Bern, GWR: Liebefeld)",
+    "level": "warning",
+    "field": "ort",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-013-3",
+    "building_id": "BBL/013",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Schwarzenburgstr., GWR: Schwarzenburgstrasse)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-013-4",
+    "building_id": "BBL/013",
+    "check_id": "GEO-002",
+    "description": "SAP- und GWR-Koordinaten weichen um 130m ab",
+    "level": "warning",
+    "field": "lat",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-015-1",
+    "building_id": "BBL/015",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Avenue du Tribunal-Fédéral, GWR: Av. du Tribunal-Fédéral)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-02-25T11:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-017-1",
+    "building_id": "BBL/017",
+    "check_id": "ID-001",
+    "description": "Gebäude nicht im GWR gefunden",
+    "level": "error",
+    "field": "egid",
+    "detected_at": "2026-03-01T12:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-017-2",
+    "building_id": "BBL/017",
+    "check_id": "GEO-001",
+    "description": "Keine GWR-Koordinaten vorhanden",
+    "level": "error",
+    "field": "lat",
+    "detected_at": "2026-03-01T12:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-018-1",
+    "building_id": "BBL/018",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Industriestrasse, GWR: Industriestr.)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-018-2",
+    "building_id": "BBL/018",
+    "check_id": "ADR-008",
+    "description": "Adresszusatz weicht ab (SAP: Gebäude B, GWR: leer)",
+    "level": "info",
+    "field": "zusatz",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-019-1",
+    "building_id": "BBL/019",
+    "check_id": "ADR-006",
+    "description": "Strassenname weicht ab (SAP: Chemin des Cerisiers, GWR: Ch. des Cerisiers)",
+    "level": "info",
+    "field": "strasse",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  },
+  {
+    "id": "err-019-2",
+    "building_id": "BBL/019",
+    "check_id": "GEO-002",
+    "description": "SAP- und GWR-Koordinaten weichen um 85m ab",
+    "level": "warning",
+    "field": "lat",
+    "detected_at": "2026-03-01T08:00:00Z",
+    "resolved_at": null
+  }
+]
