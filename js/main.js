@@ -24,35 +24,20 @@ import {
   escapeHtml
 } from './state.js';
 
-// Supabase integration
+// Data layer (static JSON in demo mode)
 import {
-  initSupabase,
-  getSupabase,
-  SUPABASE_URL,
-  SUPABASE_KEY,
   loadAllData as loadDataFromSupabase,
   fetchErrorsForExport,
   fetchEventsForExport,
-  updateUserLastLogin,
   updateUserRole,
-  removeUser,
-  updateBuildingGwrFields,
-  buildGwrUpdateRow,
-  batchUpdateBuildingGwrFields
+  removeUser
 } from './supabase.js';
 
 import {
   initAuth,
-  onAuthStateChange,
   setupLoginForm,
-  setupPasswordResetForm,
-  setupForgotPasswordForm,
-  setupInviteForm,
   setupUserDropdown,
-  showPasswordResetModal,
-  isPasswordRecoveryMode,
-  updateUIForAuthState,
-  isAuthenticated
+  updateUIForAuthState
 } from './auth.js';
 
 import {
@@ -132,10 +117,6 @@ function updateTabUI(tabId) {
 let _loadDataPromise = null;
 
 async function loadData() {
-  if (!isAuthenticated()) {
-    return;
-  }
-
   // Re-entrancy guard: if a load is already in flight, return the same promise
   if (_loadDataPromise) return _loadDataPromise;
 
@@ -351,137 +332,30 @@ function handlePopState(event) {
 }
 
 // ========================================
-// Edge Function Helper
+// Validation (Demo: no-op)
 // ========================================
-async function invokeEdgeFunction(path, method = 'GET') {
-  const supabase = getSupabase();
-
-  // Get a fresh session JWT (refreshes automatically if expired)
-  const { data: { session } } = await supabase.auth.getSession();
-  const accessToken = session?.access_token;
-
-  const headers = {
-    'apikey': SUPABASE_KEY,
-    'Content-Type': 'application/json'
-  };
-  if (accessToken) {
-    headers['Authorization'] = `Bearer ${accessToken}`;
-  }
-
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/${path}`, {
-    method,
-    headers
-  });
-
-  if (!response.ok) {
-    const body = await response.json().catch(() => ({}));
-    throw new Error(body.message || `HTTP ${response.status}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Run validation checks on a single building via the rule-engine edge function.
- * Returns the check result with updated confidence and errors.
- */
 async function checkSingleBuilding(buildingId) {
-  const result = await invokeEdgeFunction(
-    `rule-engine/check/${encodeURIComponent(buildingId)}`,
-    'POST'
-  );
-  return result;
+  console.log(`[Demo] Check single building: ${buildingId} — no-op`);
+  return null;
 }
 
 // ========================================
-// API Tab — Swagger UI (lazy-loaded, spec fetched directly)
+// API Tab (Demo: static message)
 // ========================================
-const SWAGGER_CSS_URL = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css';
-const SWAGGER_JS_URL = 'https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js';
-let swaggerPromise = null;
 let apiLoaded = false;
 
-function loadSwaggerUI() {
-  if (typeof SwaggerUIBundle !== 'undefined') return Promise.resolve();
-  if (swaggerPromise) return swaggerPromise;
-
-  // Fetch CSS as text and inject as inline <style> (CSP allows 'unsafe-inline')
-  const cssReady = fetch(SWAGGER_CSS_URL)
-    .then(r => { if (!r.ok) throw new Error(`CSS ${r.status}`); return r.text(); })
-    .then(css => {
-      const style = document.createElement('style');
-      style.textContent = css;
-      document.head.appendChild(style);
-    });
-
-  const jsReady = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = SWAGGER_JS_URL;
-    script.onload = resolve;
-    script.onerror = () => reject(new Error('Swagger JS konnte nicht geladen werden'));
-    document.head.appendChild(script);
-  });
-
-  swaggerPromise = Promise.all([cssReady, jsReady]).catch(err => {
-    swaggerPromise = null;
-    throw err;
-  });
-
-  return swaggerPromise;
-}
-
-async function initAPITab() {
+function initAPITab() {
   if (apiLoaded) return;
 
   const loading = document.getElementById('api-loading');
-  const container = document.getElementById('swagger-ui');
-
-  // Reset loading UI in case of a previous error
-  loading.style.display = '';
-  loading.innerHTML = `
-    <i data-lucide="loader" class="icon-lg spinner"></i>
-    <p>API-Dokumentation wird geladen...</p>`;
-  container.style.display = 'none';
-  scheduleLucideRefresh();
-
-  try {
-    // Load Swagger UI CSS + JS in parallel
-    await loadSwaggerUI();
-
-    // Fetch OpenAPI spec directly (no auth needed — verify_jwt = false)
-    const specUrl = `${SUPABASE_URL}/functions/v1/rule-engine/openapi.json`;
-    const response = await fetch(specUrl, {
-      headers: { 'apikey': SUPABASE_KEY }
-    });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const spec = await response.json();
-
-    // Hide loading, show Swagger container
-    loading.style.display = 'none';
-    container.style.display = 'block';
-
-    // Render Swagger UI
-    SwaggerUIBundle({
-      spec,
-      dom_id: '#swagger-ui',
-      deepLinking: true,
-      defaultModelsExpandDepth: 1,
-      defaultModelExpandDepth: 1,
-    });
-
-    apiLoaded = true;
-  } catch (err) {
-    console.error('API docs error:', err);
+  if (loading) {
     loading.innerHTML = `
-      <i data-lucide="alert-circle" class="icon-lg"></i>
-      <p>API-Dokumentation konnte nicht geladen werden.</p>
-      <p style="font-size: var(--font-sm); color: var(--text-muted)">${escapeHtml(err.message)}</p>
-      <button class="btn btn-ghost btn-sm" style="margin-top: var(--space-md)">
-        <i data-lucide="refresh-cw" class="icon-sm"></i> Erneut versuchen
-      </button>`;
-    loading.querySelector('button').addEventListener('click', () => initAPITab());
+      <i data-lucide="info" class="icon-lg"></i>
+      <p>API-Dokumentation ist im Demo-Modus nicht verfügbar.</p>
+      <p style="font-size: var(--font-sm); color: var(--text-muted)">Die Rule-Engine API benötigt eine aktive Supabase-Instanz.</p>`;
     scheduleLucideRefresh();
   }
+  apiLoaded = true;
 }
 
 // ========================================
@@ -860,113 +734,10 @@ function setupUserEditButton() {
 
 function setupRunChecksButton() {
   const runBtn = document.getElementById('run-all-checks');
-  const abortBtn = document.getElementById('abort-all-checks');
-  const progressEl = document.getElementById('progress-all-checks');
-  const lastCheckEl = document.getElementById('workflow-checks-time');
-
   if (!runBtn) return;
 
-  let aborted = false;
-
-  function setRunning(running) {
-    const item = runBtn.closest('.workflow-item');
-    if (running) {
-      runBtn.innerHTML = '<i data-lucide="loader-circle" class="icon-sm"></i> Läuft...';
-      runBtn.classList.add('running');
-      abortBtn.hidden = false;
-      progressEl.hidden = false;
-      item.classList.add('running');
-    } else {
-      runBtn.innerHTML = '<i data-lucide="play" class="icon-sm"></i> Ausführen';
-      runBtn.classList.remove('running');
-      abortBtn.hidden = true;
-      progressEl.hidden = true;
-      item.classList.remove('running');
-      progressEl.querySelector('.workflow-progress-fill').style.width = '0%';
-    }
-    scheduleLucideRefresh();
-  }
-
-  function updateProgress(current, total) {
-    const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-    progressEl.querySelector('.workflow-progress-fill').style.width = `${pct}%`;
-    progressEl.querySelector('.workflow-progress-text').textContent = `${current} / ${total}`;
-  }
-
-  abortBtn.addEventListener('click', () => { aborted = true; });
-
-  runBtn.addEventListener('click', async () => {
-    aborted = false;
-    setRunning(true);
-
-    try {
-      let offset = 0;
-      const limit = 50;
-      let totalBuildings = 0;
-      let totalErrors = 0;
-      let hasMore = true;
-      let chunk = 0;
-
-      console.group('[Checks] Alle Prüfungen ausführen');
-      console.log('Starte Prüfung…');
-
-      while (hasMore) {
-        if (aborted) {
-          console.warn(`Abgebrochen bei Offset ${offset}`);
-          break;
-        }
-
-        chunk++;
-        const data = await invokeEdgeFunction(
-          `rule-engine/check-all?offset=${offset}&limit=${limit}`,
-          'POST'
-        );
-
-        totalBuildings = data.totalBuildings;
-        totalErrors += data.totalErrors;
-        hasMore = data.hasMore;
-        offset = data.nextOffset ?? offset + limit;
-
-        const processed = Math.min(offset, totalBuildings);
-        console.log(`Chunk ${chunk}: ${processed}/${totalBuildings} geprüft, ${data.totalErrors} Fehler in diesem Batch`);
-        updateProgress(processed, totalBuildings);
-      }
-
-      // Update last check timestamp
-      if (lastCheckEl) {
-        lastCheckEl.textContent = formatNowSwiss();
-      }
-
-      if (aborted) {
-        console.warn(`Ergebnis: Abgebrochen — ${Math.min(offset, totalBuildings)}/${totalBuildings} geprüft, ${totalErrors} Fehler`);
-        alert(`Prüfung abgebrochen: ${Math.min(offset, totalBuildings)}/${totalBuildings} Gebäude geprüft.`);
-      } else {
-        console.log(`Ergebnis: ${totalBuildings} Gebäude geprüft, ${totalErrors} Fehler gefunden`);
-        alert(`Prüfung abgeschlossen: ${totalBuildings} Gebäude geprüft, ${totalErrors} Fehler gefunden.`);
-      }
-
-      console.groupEnd();
-
-      // Reload data to reflect updated confidence/errors
-      await loadData();
-
-      // Re-render all views with fresh data
-      recreateMarkers(selectBuilding);
-      applyFilters();
-
-      // Refresh detail panel if a building is selected
-      if (state.selectedBuildingId) {
-        const updatedBuilding = buildings.find(b => b.id === state.selectedBuildingId);
-        if (updatedBuilding) renderDetailPanel(updatedBuilding);
-      }
-
-    } catch (err) {
-      console.error('[Checks] Fehlgeschlagen:', err);
-      console.groupEnd();
-      alert(`Fehler bei der Prüfung: ${err.message}`);
-    } finally {
-      setRunning(false);
-    }
+  runBtn.addEventListener('click', () => {
+    alert('Demo-Modus: Prüfungen benötigen eine aktive Rule-Engine.');
   });
 }
 
@@ -980,191 +751,12 @@ function formatNowSwiss() {
   });
 }
 
-// ========================================
-// GWR Enrich: Swisstopo API → Update GWR values
-// ========================================
-const SWISSTOPO_FIND_URL = 'https://api3.geo.admin.ch/rest/services/ech/MapServer/find';
-
-/**
- * Fetch GWR data for a single EGID from the Swisstopo API.
- * Returns mapped field values or null if not found.
- */
-async function fetchGwrByEgid(egid) {
-  const params = new URLSearchParams({
-    layer: 'ch.bfs.gebaeude_wohnungs_register',
-    searchText: egid,
-    searchField: 'egid',
-    returnGeometry: 'true',
-    contains: 'false',
-    sr: '4326'
-  });
-
-  const response = await fetch(`${SWISSTOPO_FIND_URL}?${params}`);
-  if (!response.ok) return null;
-
-  const data = await response.json();
-  if (!data.results || data.results.length === 0) return null;
-
-  const a = data.results[0].attributes;
-  const geom = data.results[0].geometry;
-
-  // Map GWR API attributes to our field keys
-  return {
-    egid: String(a.egid ?? ''),
-    egrid: a.egrid || '',
-    plz: String(a.dplz4 ?? ''),
-    ort: a.dplzname || '',
-    strasse: a.strname || '',
-    hausnummer: String(a.deinr ?? ''),
-    gemeinde: a.ggdename || '',
-    bfsNr: String(a.ggdenr ?? ''),
-    kanton: a.gdekt || '',
-    country: 'CH',
-    gstat: String(a.gstat ?? ''),
-    gkat: String(a.gkat ?? ''),
-    gklas: String(a.gklas ?? ''),
-    gbaup: String(a.gbaup ?? ''),
-    gbauj: String(a.gbauj ?? ''),
-    gastw: String(a.gastw ?? ''),
-    ganzwhg: String(a.ganzwhg ?? ''),
-    garea: String(a.garea ?? ''),
-    lat: geom ? String(geom.y) : '',
-    lng: geom ? String(geom.x) : '',
-  };
-}
-
 function setupGwrEnrichButton() {
   const runBtn = document.getElementById('run-gwr-enrich');
-  const abortBtn = document.getElementById('abort-gwr-enrich');
-  const progressEl = document.getElementById('progress-gwr-enrich');
-  const timeEl = document.getElementById('workflow-gwr-time');
-
   if (!runBtn) return;
 
-  let aborted = false;
-
-  function setRunning(running) {
-    const item = runBtn.closest('.workflow-item');
-    if (running) {
-      runBtn.innerHTML = '<i data-lucide="loader-circle" class="icon-sm"></i> Läuft...';
-      runBtn.classList.add('running');
-      abortBtn.hidden = false;
-      progressEl.hidden = false;
-      item.classList.add('running');
-    } else {
-      runBtn.innerHTML = '<i data-lucide="play" class="icon-sm"></i> Ausführen';
-      runBtn.classList.remove('running');
-      abortBtn.hidden = true;
-      progressEl.hidden = true;
-      item.classList.remove('running');
-      progressEl.querySelector('.workflow-progress-fill').style.width = '0%';
-    }
-    scheduleLucideRefresh();
-  }
-
-  function updateProgress(current, total) {
-    const pct = total > 0 ? Math.round((current / total) * 100) : 0;
-    progressEl.querySelector('.workflow-progress-fill').style.width = `${pct}%`;
-    progressEl.querySelector('.workflow-progress-text').textContent = `${current} / ${total}`;
-  }
-
-  abortBtn.addEventListener('click', () => { aborted = true; });
-
-  runBtn.addEventListener('click', async () => {
-    aborted = false;
-    setRunning(true);
-
-    try {
-      // Filter buildings that have a GWR EGID value
-      const withEgid = buildings.filter(b => b.egid?.gwr);
-      const total = withEgid.length;
-
-      console.group('[GWR] Daten aktualisieren');
-      console.log(`${total} Gebäude mit GWR-EGID gefunden`);
-
-      if (total === 0) {
-        alert('Keine Gebäude mit GWR-EGID gefunden.');
-        console.groupEnd();
-        return;
-      }
-
-      let updated = 0;
-      let notFound = 0;
-      let errors = 0;
-      const batchSize = 20;  // max concurrent Swisstopo requests
-
-      for (let i = 0; i < total; i += batchSize) {
-        if (aborted) {
-          console.warn(`Abgebrochen bei ${i}/${total}`);
-          break;
-        }
-
-        const batch = withEgid.slice(i, i + batchSize);
-        const batchNum = Math.floor(i / batchSize) + 1;
-
-        try {
-          // Phase 1: Fetch all GWR data in parallel (max 20 concurrent)
-          const fetchResults = await Promise.allSettled(
-            batch.map(building => fetchGwrByEgid(building.egid.gwr))
-          );
-
-          // Phase 2: Build DB rows from results
-          const dbRows = [];
-          for (let j = 0; j < batch.length; j++) {
-            const r = fetchResults[j];
-            if (r.status === 'fulfilled') {
-              const gwrData = r.value;
-              dbRows.push(buildGwrUpdateRow(batch[j].id, batch[j], gwrData));
-              if (gwrData) updated++;
-              else notFound++;
-            } else {
-              errors++;
-              console.error(`  Fetch fehlgeschlagen (${batch[j].id}):`, r.reason);
-            }
-          }
-
-          // Phase 3: Single batch upsert to Supabase
-          if (dbRows.length > 0) {
-            await batchUpdateBuildingGwrFields(dbRows);
-          }
-        } catch (batchErr) {
-          errors += batch.length;
-          console.error(`  Batch ${batchNum} fehlgeschlagen:`, batchErr);
-        }
-
-        // Update progress
-        const done = Math.min(i + batchSize, total);
-        console.log(`Batch ${batchNum}: ${done}/${total} — ${updated} OK, ${notFound} nicht gefunden, ${errors} Fehler`);
-        updateProgress(done, total);
-      }
-
-      // Update last run timestamp
-      if (timeEl) {
-        timeEl.textContent = formatNowSwiss();
-      }
-
-      const summary = `${updated} aktualisiert, ${notFound} nicht gefunden, ${errors} Fehler`;
-      if (aborted) {
-        console.warn(`Ergebnis (abgebrochen): ${summary}`);
-        alert(`GWR Aktualisierung abgebrochen:\n${summary}`);
-      } else {
-        console.log(`Ergebnis: ${summary}`);
-        alert(`GWR Aktualisierung abgeschlossen:\n${updated} aktualisiert\n${notFound} nicht im GWR gefunden\n${errors} Fehler`);
-      }
-
-      console.groupEnd();
-
-      // Reload data to reflect changes
-      await loadData();
-      applyFilters();
-
-    } catch (err) {
-      console.error('[GWR] Fehlgeschlagen:', err);
-      console.groupEnd();
-      alert(`Fehler bei GWR-Aktualisierung: ${err.message}`);
-    } finally {
-      setRunning(false);
-    }
+  runBtn.addEventListener('click', () => {
+    alert('Demo-Modus: GWR-Aktualisierung benötigt eine aktive Datenbankverbindung.');
   });
 }
 
@@ -1536,97 +1128,74 @@ function setupModuleCallbacks() {
 }
 
 // ========================================
+// Demo Mode Entry
+// ========================================
+async function enterDemoMode() {
+  const user = await initAuth();
+  setCurrentUser(user.name);
+  showApp();
+  hideAppError();
+
+  await loadData();
+
+  updateUIForAuthState();
+  scheduleLucideRefresh();
+
+  recreateMarkers(selectBuilding);
+
+  const filtered = getFilteredBuildings();
+  updateCounts(filtered);
+  updateStatistik(filtered);
+  renderKanbanBoard(filtered);
+  if (tableVisible) renderTableView(filtered);
+  renderRules();
+  renderUsersTable();
+
+  if (map) setTimeout(() => map.resize(), 100);
+}
+
+// Check URL param for auto-demo
+function shouldAutoDemo() {
+  return new URLSearchParams(window.location.search).has('demo');
+}
+
+// ========================================
 // Initialization
 // ========================================
 document.addEventListener('DOMContentLoaded', async () => {
   // Initialize Lucide icons
   if (typeof lucide !== 'undefined') lucide.createIcons();
 
-  // Initialize Supabase client
-  initSupabase();
-
-  // Setup login form handlers (needed even before auth check)
+  // Setup auth UI (no-ops in demo, but keeps event listeners working)
   setupLoginForm();
-  setupPasswordResetForm();
-  setupForgotPasswordForm();
-  setupInviteForm();
   setupUserDropdown();
-  // Password recovery/invite is handled in onAuthStateChange (PASSWORD_RECOVERY event)
 
-  // Show login landing immediately (prevents blank screen while auth resolves)
+  // Show login landing initially
   showLoginLanding();
 
-  // Initialize authentication
-  let user = null;
-  try {
-    user = await initAuth();
-  } catch (err) {
-    console.error('Auth initialization failed:', err);
-  }
-
-  // Track whether we already handled the initial session
-  let initialLoadDone = false;
-
-  // Setup auth state change handler (fires on future sign-in/sign-out)
-  onAuthStateChange(async (event, _session, appUser) => {
-    if (appUser) {
-      setCurrentUser(appUser.name);
-    } else {
-      setCurrentUser(null);
-    }
-
-    // Skip the initial SIGNED_IN if we already handled it below
-    if (event === 'SIGNED_IN' && initialLoadDone) {
-      // Check if this is an invite link (user needs to set password)
-      if (isPasswordRecoveryMode()) {
-        showPasswordResetModal();
-        return;
-      }
-      // This is a fresh sign-in (not the initial session replay)
-      showApp();
-      hideAppError();
-      await updateUserLastLogin(appUser.id);
-      await loadData();
-      recreateMarkers(selectBuilding);
-      updateCounts();
-      updateStatistik();
-      renderKanbanBoard();
-      if (tableVisible) renderTableView();
-      renderRules();
-      renderUsersTable();
-      if (map) setTimeout(() => map.resize(), 100);
-    } else if (event === 'PASSWORD_RECOVERY') {
-      // User arrived via reset or invite link — session is now ready
-      showPasswordResetModal();
-    } else if (event === 'SIGNED_OUT') {
-      showLoginLanding();
-      setData({ buildings: [], teamMembers: [], eventsData: {}, commentsData: {}, errorsData: {}, rulesConfig: null });
-    }
-
-    updateUIForAuthState();
-    scheduleLucideRefresh();
+  // Wire up demo button(s) — enter demo mode on click
+  document.querySelectorAll('[data-action="demo"]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await enterDemoMode();
+    });
   });
 
-  // Handle initial auth state
-  if (user) {
-    initialLoadDone = true;
-    setCurrentUser(user.name);
-    showApp();
-
-    await loadData();
-
-    updateUIForAuthState();
-    scheduleLucideRefresh();
-
-    renderRules();
-    renderUsersTable();
-  } else {
-    initialLoadDone = true;
-    showLoginLanding();
+  // Login form also enters demo mode (no real auth backend)
+  const landingForm = document.getElementById('landing-login-form');
+  if (landingForm) {
+    landingForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await enterDemoMode();
+    });
   }
 
   // Initialize map (needed for both states, will show when app is visible)
   initMap();
+
+  // If ?demo in URL, enter demo mode automatically
+  if (shouldAutoDemo()) {
+    await enterDemoMode();
+  }
 
   // Setup module callbacks
   setupModuleCallbacks();

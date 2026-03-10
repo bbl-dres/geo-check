@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "Anna Müller",
+    "initials": "AM",
+    "role": "Admin",
+    "email": "anna.mueller@bbl.admin.ch",
+    "avatar_url": null,
+    "last_login": "2026-03-10T08:00:00Z",
+    "auth_user_id": "demo-auth-001"
+  },
+  {
+    "id": 2,
+    "name": "Peter Keller",
+    "initials": "PK",
+    "role": "Bearbeiter",
+    "email": "peter.keller@bbl.admin.ch",
+    "avatar_url": null,
+    "last_login": "2026-03-09T14:30:00Z",
+    "auth_user_id": "demo-auth-002"
+  },
+  {
+    "id": 3,
+    "name": "Marco Bianchi",
+    "initials": "MB",
+    "role": "Bearbeiter",
+    "email": "marco.bianchi@bbl.admin.ch",
+    "avatar_url": null,
+    "last_login": "2026-03-08T10:15:00Z",
+    "auth_user_id": "demo-auth-003"
+  },
+  {
+    "id": 4,
+    "name": "Sophie Dumont",
+    "initials": "SD",
+    "role": "Leser",
+    "email": "sophie.dumont@bbl.admin.ch",
+    "avatar_url": null,
+    "last_login": "2026-03-07T09:00:00Z",
+    "auth_user_id": "demo-auth-004"
+  }
+]

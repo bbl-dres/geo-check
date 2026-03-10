@@ -1,136 +1,58 @@
 /**
- * supabase.js - Supabase Client & Database Queries
+ * supabase.js - Static Demo Data Layer
  *
- * Handles all Supabase interactions: client setup, database queries,
- * and data transformation between Supabase and app formats.
+ * Replaces Supabase with static JSON files for read-only demo mode.
+ * All mutations (status, assignee, comments, etc.) operate in-memory only.
  */
 
 // =============================================================================
-// CONFIGURATION
+// CONFIGURATION (kept for backwards-compat with imports)
 // =============================================================================
 
-const SUPABASE_URL = 'https://acjpfhljskbkyugnslgj.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_5JfXtTuHbeP75ejux9bSMg_CGoFCAHL';
+const SUPABASE_URL = '';
+const SUPABASE_KEY = '';
 
-// Initialize Supabase client (loaded via CDN in index.html)
-let supabase = null;
-
-/**
- * Initialize the Supabase client
- * Must be called after the Supabase SDK is loaded
- */
-export function initSupabase() {
-    if (typeof window.supabase === 'undefined') {
-        console.error('Supabase SDK not loaded. Include the CDN script in index.html');
-        return null;
-    }
-
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-        auth: {
-            autoRefreshToken: true,
-            persistSession: true,
-            detectSessionInUrl: true
-        }
-    });
-
-    return supabase;
-}
-
-/**
- * Get the Supabase client instance
- */
-export function getSupabase() {
-    if (!supabase) {
-        return initSupabase();
-    }
-    return supabase;
-}
+// No-op: Supabase client is not needed in demo mode
+export function initSupabase() { return null; }
+export function getSupabase() { return null; }
 
 // =============================================================================
-// DATA LOADING
+// DATA LOADING (from static JSON files)
 // =============================================================================
 
 /**
- * Fetch all rows from a table, paginating past the 1000-row default limit.
- * Returns { data, error } matching the Supabase query result shape.
- */
-async function fetchAllRowsInternal(client, table, pageSize = 1000) {
-    let allData = [];
-    let from = 0;
-    while (true) {
-        const { data, error } = await client
-            .from(table)
-            .select('*')
-            .range(from, from + pageSize - 1);
-        if (error) return { data: null, error };
-        if (!data || data.length === 0) break;
-        allData = allData.concat(data);
-        if (data.length < pageSize) break; // last page
-        from += pageSize;
-    }
-    return { data: allData, error: null };
-}
-
-/**
- * Load all application data from Supabase
- * Replaces the JSON file fetches in main.js
+ * Load all application data from static JSON files in data/
  */
 export async function loadAllData() {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not initialized');
-
-    // Fetch all data in parallel
-    // Note: Supabase default limit is 1000 rows. Use .range() for larger tables.
     const [
-        buildingsResult,
-        usersResult,
-        eventsResult,
-        commentsResult,
-        errorsResult,
+        buildingsRaw,
+        usersRaw,
+        eventsRaw,
+        commentsRaw,
+        errorsRaw,
         rulesJsonResult
     ] = await Promise.all([
-        fetchAllRowsInternal(client, 'buildings'),
-        client.from('users').select('*'),
-        client.from('events').select('*').order('created_at', { ascending: false }).range(0, 9999),
-        client.from('comments').select('*').order('created_at', { ascending: false }).range(0, 49999),
-        fetchAllRowsInternal(client, 'errors'),
+        fetch('data/buildings.json').then(r => r.json()),
+        fetch('data/users.json').then(r => r.json()),
+        fetch('data/events.json').then(r => r.json()),
+        fetch('data/comments.json').then(r => r.json()),
+        fetch('data/errors.json').then(r => r.json()),
         fetch('data/rules.json').then(r => r.json()).catch(() => null)
     ]);
 
-    // Check for errors
-    const errors = [
-        buildingsResult.error,
-        usersResult.error,
-        eventsResult.error,
-        commentsResult.error,
-        errorsResult.error
-    ].filter(Boolean);
+    const buildings = transformBuildingsFromDB(buildingsRaw, commentsRaw, errorsRaw);
+    const teamMembers = transformUsersFromDB(usersRaw);
 
-    if (errors.length > 0) {
-        console.error('Supabase fetch errors:', errors);
-        throw new Error('Failed to load data from Supabase');
-    }
-
-    // Transform data to match existing app format
-    const buildings = transformBuildingsFromDB(
-        buildingsResult.data,
-        commentsResult.data,
-        errorsResult.data
-    );
-
-    const teamMembers = transformUsersFromDB(usersResult.data);
-    const eventsFlat = transformEventsFromDB(eventsResult.data);
-    // Group events by buildingId for keyed lookup in detail panel
+    const eventsFlat = transformEventsFromDB(eventsRaw);
     const eventsData = {};
     eventsFlat.forEach(e => {
-      if (!eventsData[e.buildingId]) eventsData[e.buildingId] = [];
-      eventsData[e.buildingId].push(e);
+        if (!eventsData[e.buildingId]) eventsData[e.buildingId] = [];
+        eventsData[e.buildingId].push(e);
     });
-    const rulesConfig = rulesJsonResult;
 
-    // Also return raw keyed data for backwards compatibility
-    const commentsData = keyByBuildingId(commentsResult.data);
-    const errorsData = keyByBuildingId(errorsResult.data);
+    const commentsData = keyByBuildingId(commentsRaw);
+    const errorsData = keyByBuildingId(errorsRaw);
+    const rulesConfig = rulesJsonResult;
 
     return {
         buildings,
@@ -143,158 +65,85 @@ export async function loadAllData() {
 }
 
 // =============================================================================
-// TARGETED EXPORT QUERIES
+// TARGETED EXPORT QUERIES (demo: use in-memory data)
 // =============================================================================
 
-/**
- * Fetch fresh errors data for CSV export
- * Returns { errors (keyed by building_id), buildings (id + name list) }
- */
-/**
- * Fetch all rows from a table, paginating past the 1000-row limit.
- * @param {string} table - Table name
- * @param {string} select - Select clause
- * @param {function} [onProgress] - Optional callback(fetched, estimatedTotal)
- * @returns {Array} All rows
- */
 export async function fetchAllRows(table, select = '*', onProgress) {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not initialized');
-
-    const PAGE_SIZE = 1000;
-    let allRows = [];
-    let offset = 0;
-    let hasMore = true;
-
-    // Get count first for progress reporting
-    let total = 0;
-    if (onProgress) {
-        const { count } = await client.from(table).select('id', { count: 'exact', head: true });
-        total = count || 0;
-        onProgress(0, total);
-    }
-
-    while (hasMore) {
-        const { data, error } = await client
-            .from(table)
-            .select(select)
-            .range(offset, offset + PAGE_SIZE - 1);
-
-        if (error) throw error;
-
-        allRows = allRows.concat(data);
-        offset += PAGE_SIZE;
-        hasMore = data.length === PAGE_SIZE;
-
-        if (onProgress) onProgress(allRows.length, total);
-    }
-
-    return allRows;
+    const data = await fetch(`data/${table}.json`).then(r => r.json());
+    if (onProgress) onProgress(data.length, data.length);
+    return data;
 }
 
 export async function fetchErrorsForExport(onProgress) {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not initialized');
-
-    const [errors, buildingsResult] = await Promise.all([
-        fetchAllRows('errors', '*', onProgress),
-        client.from('buildings').select('id, name')
+    const [errors, buildingsRaw] = await Promise.all([
+        fetch('data/errors.json').then(r => r.json()),
+        fetch('data/buildings.json').then(r => r.json())
     ]);
 
-    if (buildingsResult.error) throw buildingsResult.error;
+    if (onProgress) onProgress(errors.length, errors.length);
 
     return {
         errors: keyByBuildingId(errors),
-        buildings: buildingsResult.data
+        buildings: buildingsRaw.map(b => ({ id: b.id, name: b.name }))
     };
 }
 
-/**
- * Fetch fresh events data for CSV export
- * Returns transformed array matching app format
- */
 export async function fetchEventsForExport() {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not initialized');
-
-    const { data, error } = await client
-        .from('events')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    return transformEventsFromDB(data);
+    const events = await fetch('data/events.json').then(r => r.json());
+    return transformEventsFromDB(events);
 }
 
 // =============================================================================
 // DATA TRANSFORMATIONS (DB → App Format)
 // =============================================================================
 
-/**
- * Transform buildings from DB format to app format
- * Maps snake_case DB columns to camelCase, enriches with comments and errors
- */
 function transformBuildingsFromDB(buildings, comments, errors) {
-    // Key comments and errors by building_id for quick lookup
     const commentsByBuilding = keyByBuildingId(comments);
     const errorsByBuilding = keyByBuildingId(errors);
 
-    return buildings.map(b => {
-        // Transform to app format
-        const building = {
-            id: b.id,
-            name: b.name,
-            portfolio: b.portfolio,
-            priority: b.priority,
-            confidence: b.confidence || { total: 0, georef: 0, sap: 0, gwr: 0 },
-            assignee: b.assignee,
-            assigneeId: b.assignee_id,
-            kanbanStatus: b.kanban_status,
-            dueDate: b.due_date,
-            lastUpdate: b.last_update,
-            lastUpdateBy: b.last_update_by,
-            inGwr: b.in_gwr,
-            mapLat: b.map_lat,
-            mapLng: b.map_lng,
-            images: b.images || [],
-
-            // Source comparison fields (individual JSONB columns)
-            country: b.country,
-            kanton: b.kanton,
-            gemeinde: b.gemeinde,
-            bfsNr: b.bfs_nr,
-            plz: b.plz,
-            ort: b.ort,
-            strasse: b.strasse,
-            hausnummer: b.hausnummer,
-            zusatz: b.zusatz,
-            egid: b.egid,
-            egrid: b.egrid,
-            lat: b.lat,
-            lng: b.lng,
-            gkat: b.gkat,
-            gklas: b.gklas,
-            gstat: b.gstat,
-            gbaup: b.gbaup,
-            gbauj: b.gbauj,
-            gastw: b.gastw,
-            ganzwhg: b.ganzwhg,
-            garea: b.garea,
-            parcelArea: b.parcel_area,
-
-            // Attach related data
-            comments: transformCommentsForBuilding(commentsByBuilding[b.id] || []),
-            errors: transformErrorsForBuilding(errorsByBuilding[b.id] || [])
-        };
-
-        return building;
-    });
+    return buildings.map(b => ({
+        id: b.id,
+        name: b.name,
+        portfolio: b.portfolio,
+        priority: b.priority,
+        confidence: b.confidence || { total: 0, georef: 0, sap: 0, gwr: 0 },
+        assignee: b.assignee,
+        assigneeId: b.assignee_id,
+        kanbanStatus: b.kanban_status,
+        dueDate: b.due_date,
+        lastUpdate: b.last_update,
+        lastUpdateBy: b.last_update_by,
+        inGwr: b.in_gwr,
+        mapLat: b.map_lat,
+        mapLng: b.map_lng,
+        images: b.images || [],
+        country: b.country,
+        kanton: b.kanton,
+        gemeinde: b.gemeinde,
+        bfsNr: b.bfs_nr,
+        plz: b.plz,
+        ort: b.ort,
+        strasse: b.strasse,
+        hausnummer: b.hausnummer,
+        zusatz: b.zusatz,
+        egid: b.egid,
+        egrid: b.egrid,
+        lat: b.lat,
+        lng: b.lng,
+        gkat: b.gkat,
+        gklas: b.gklas,
+        gstat: b.gstat,
+        gbaup: b.gbaup,
+        gbauj: b.gbauj,
+        gastw: b.gastw,
+        ganzwhg: b.ganzwhg,
+        garea: b.garea,
+        parcelArea: b.parcel_area,
+        comments: transformCommentsForBuilding(commentsByBuilding[b.id] || []),
+        errors: transformErrorsForBuilding(errorsByBuilding[b.id] || [])
+    }));
 }
 
-/**
- * Transform comments from DB format to app format
- */
 function transformCommentsForBuilding(comments) {
     return comments.map(c => ({
         id: c.id,
@@ -306,9 +155,6 @@ function transformCommentsForBuilding(comments) {
     }));
 }
 
-/**
- * Transform errors from DB format to app format
- */
 function transformErrorsForBuilding(errors) {
     return errors.map(e => ({
         id: e.id,
@@ -321,9 +167,6 @@ function transformErrorsForBuilding(errors) {
     }));
 }
 
-/**
- * Transform users from DB format to app format
- */
 function transformUsersFromDB(users) {
     return users.map(u => ({
         id: u.id,
@@ -337,9 +180,6 @@ function transformUsersFromDB(users) {
     }));
 }
 
-/**
- * Transform events from DB format to app format
- */
 function transformEventsFromDB(events) {
     return events.map(e => ({
         id: e.id,
@@ -354,223 +194,32 @@ function transformEventsFromDB(events) {
 }
 
 // =============================================================================
-// MUTATIONS (Write Operations)
+// MUTATIONS (In-Memory Only — Demo Mode)
 // =============================================================================
 
-/**
- * Update building status (kanban drag-drop)
- */
 export async function updateBuildingStatus(buildingId, newStatus, userId, userName) {
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('buildings')
-        .update({
-            kanban_status: newStatus,
-            last_update: new Date().toISOString(),
-            last_update_by: userName
-        })
-        .eq('id', buildingId);
-
-    if (error) throw error;
-
-    // Log event
-    await logEvent(buildingId, 'status', 'Status geändert', userId, userName,
-        `Status geändert zu: ${newStatus}`);
+    console.log(`[Demo] Status update: ${buildingId} → ${newStatus}`);
 }
 
-/**
- * Update building assignee
- */
 export async function updateBuildingAssignee(buildingId, assigneeId, assigneeName, userId, userName) {
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('buildings')
-        .update({
-            assignee_id: assigneeId,
-            assignee: assigneeName,
-            last_update: new Date().toISOString(),
-            last_update_by: userName
-        })
-        .eq('id', buildingId);
-
-    if (error) throw error;
-
-    // Log event
-    await logEvent(buildingId, 'assignment', 'Zugewiesen', userId, userName,
-        assigneeName ? `Zugewiesen an: ${assigneeName}` : 'Zuweisung entfernt');
+    console.log(`[Demo] Assignee update: ${buildingId} → ${assigneeName || 'unassigned'}`);
 }
 
-/**
- * Update building priority
- */
 export async function updateBuildingPriority(buildingId, newPriority, userId, userName) {
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('buildings')
-        .update({
-            priority: newPriority,
-            last_update: new Date().toISOString(),
-            last_update_by: userName
-        })
-        .eq('id', buildingId);
-
-    if (error) throw error;
+    console.log(`[Demo] Priority update: ${buildingId} → ${newPriority}`);
 }
 
-/**
- * Update building due date
- */
 export async function updateBuildingDueDate(buildingId, newDueDate, userId, userName) {
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('buildings')
-        .update({
-            due_date: newDueDate,
-            last_update: new Date().toISOString(),
-            last_update_by: userName
-        })
-        .eq('id', buildingId);
-
-    if (error) throw error;
+    console.log(`[Demo] Due date update: ${buildingId} → ${newDueDate}`);
 }
-
-/**
- * Update building comparison data (corrections)
- */
-/** Map camelCase app field names to snake_case DB column names */
-const FIELD_TO_COLUMN = {
-    bfsNr: 'bfs_nr',
-    parcelArea: 'parcel_area'
-};
 
 export async function updateBuildingComparisonData(buildingId, comparisonData, userId, userName) {
-    const client = getSupabase();
-
-    // Map camelCase keys to snake_case DB columns
-    const updatePayload = { last_update: new Date().toISOString(), last_update_by: userName };
-    for (const [key, value] of Object.entries(comparisonData)) {
-        const column = FIELD_TO_COLUMN[key] || key;
-        updatePayload[column] = value;
-    }
-
-    const { error } = await client
-        .from('buildings')
-        .update(updatePayload)
-        .eq('id', buildingId);
-
-    if (error) throw error;
-
-    // Log event
-    await logEvent(buildingId, 'correction', 'Korrektur angewendet', userId, userName,
-        'Datenkorrektur gespeichert');
+    console.log(`[Demo] Comparison data update: ${buildingId}`, comparisonData);
 }
 
-// GWR field map: app camelCase key → DB snake_case column
-// Only includes fields returned by the Swisstopo GWR API.
-// Excluded: zusatz (not in API), parcelArea (comes from ÖREB, not GWR)
-const GWR_FIELD_MAP = {
-    egid: 'egid', egrid: 'egrid', plz: 'plz', ort: 'ort',
-    strasse: 'strasse', hausnummer: 'hausnummer', gemeinde: 'gemeinde',
-    bfsNr: 'bfs_nr', kanton: 'kanton', country: 'country',
-    gstat: 'gstat', gkat: 'gkat', gklas: 'gklas', gbaup: 'gbaup',
-    gbauj: 'gbauj', gastw: 'gastw', ganzwhg: 'ganzwhg', garea: 'garea',
-    lat: 'lat', lng: 'lng'
-};
-
-/**
- * Build a DB update row for a building's GWR fields (pure, no HTTP).
- * @param {string} buildingId
- * @param {Object} building - Current building data (from state)
- * @param {Object|null} gwrData - Mapped GWR values (null = not found in GWR)
- * @returns {Object} Row object with id + updated columns
- */
-export function buildGwrUpdateRow(buildingId, building, gwrData) {
-    // Include name & portfolio: NOT NULL columns without defaults.
-    // Include ALL GWR_FIELD_MAP columns in every row so PostgREST batches
-    // have consistent columns (missing columns get NULL → NOT NULL violation).
-    const row = { id: buildingId, in_gwr: !!gwrData, name: building.name, portfolio: building.portfolio };
-
-    for (const [appKey, dbCol] of Object.entries(GWR_FIELD_MAP)) {
-        const current = building[appKey];
-
-        if (!gwrData || !(current && typeof current === 'object' && 'sap' in current)) {
-            // No GWR data or field isn't a TVP — keep existing value
-            row[dbCol] = current ?? {};
-            continue;
-        }
-
-        const sap = current.sap || '';
-        const korrektur = current.korrektur || '';
-        const gwr = String(gwrData[appKey] ?? '');
-        const match = (!sap && !gwr) || sap === gwr;
-        row[dbCol] = { sap, gwr, korrektur, match };
-    }
-
-    return row;
-}
-
-/**
- * Batch-update multiple buildings' GWR fields in a single upsert.
- * @param {Object[]} rows - Array of row objects from buildGwrUpdateRow()
- */
-export async function batchUpdateBuildingGwrFields(rows) {
-    if (rows.length === 0) return;
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('buildings')
-        .upsert(rows, { onConflict: 'id' });
-
-    if (error) {
-        console.error(`GWR batch update failed (${rows.length} rows):`, error);
-        throw error;
-    }
-}
-
-/**
- * Update a single building's GWR fields from Swisstopo API data.
- * Kept for single-building updates (e.g. detail panel refresh).
- * @param {string} buildingId
- * @param {Object} building - Current building data (from state)
- * @param {Object|null} gwrData - Mapped GWR values (null = not found in GWR)
- */
-export async function updateBuildingGwrFields(buildingId, building, gwrData) {
-    const row = buildGwrUpdateRow(buildingId, building, gwrData);
-    await batchUpdateBuildingGwrFields([row]);
-}
-
-/**
- * Add a comment to a building
- */
 export async function addComment(buildingId, text, userId, userName) {
-    const client = getSupabase();
-
-    // Generate comment ID
-    const { data: idData } = await client.rpc('generate_comment_id', {
-        p_building_id: buildingId
-    });
-
-    const commentId = idData || `cmt-${buildingId.split('/')[0]}-${Date.now()}`;
-
-    const { error } = await client
-        .from('comments')
-        .insert({
-            id: commentId,
-            building_id: buildingId,
-            author_id: userId,
-            author: userName,
-            text: text,
-            is_system: false
-        });
-
-    if (error) throw error;
-
-    // Log event
-    await logEvent(buildingId, 'comment', 'Kommentar hinzugefügt', userId, userName, text);
+    const commentId = `cmt-demo-${Date.now()}`;
+    console.log(`[Demo] Comment added: ${buildingId} — ${text}`);
 
     return {
         id: commentId,
@@ -582,148 +231,53 @@ export async function addComment(buildingId, text, userId, userName) {
     };
 }
 
-/**
- * Log an event to the activity log
- */
-async function logEvent(buildingId, type, action, userId, userName, details) {
-    const client = getSupabase();
-
-    const { error } = await client
-        .from('events')
-        .insert({
-            building_id: buildingId,
-            user_id: userId,
-            user_name: userName || 'System',
-            type: type,
-            action: action,
-            details: details
-        });
-
-    if (error) {
-        console.error('Failed to log event:', error);
-        // Don't throw - event logging shouldn't break the main operation
-    }
-}
-
-/**
- * Upload an image to Supabase Storage
- */
 export async function uploadImage(buildingId, file, userId, userName) {
-    const client = getSupabase();
+    console.log(`[Demo] Image upload (simulated): ${buildingId} — ${file.name}`);
 
-    // Generate unique filename
-    const ext = file.name.split('.').pop();
-    const filename = `${buildingId}/${Date.now()}.${ext}`;
-
-    // Upload to storage
-    const { data, error } = await client.storage
-        .from('building-images')
-        .upload(filename, file, {
-            cacheControl: '3600',
-            upsert: false
-        });
-
-    if (error) throw error;
-
-    // Get public URL
-    const { data: urlData } = client.storage
-        .from('building-images')
-        .getPublicUrl(filename);
-
-    const imageObj = {
-        id: `img-${Date.now()}`,
-        url: urlData.publicUrl,
+    return {
+        id: `img-demo-${Date.now()}`,
+        url: URL.createObjectURL(file),
         filename: file.name,
         uploadDate: new Date().toISOString(),
         uploadedBy: userName,
         uploadedById: userId
     };
+}
 
-    // Update building's images array
-    const { data: building } = await client
-        .from('buildings')
-        .select('images')
-        .eq('id', buildingId)
-        .single();
+export function buildGwrUpdateRow(buildingId, building, gwrData) {
+    console.log(`[Demo] GWR update row built for: ${buildingId}`);
+    return { id: buildingId };
+}
 
-    const images = [...(building?.images || []), imageObj];
+export async function batchUpdateBuildingGwrFields(rows) {
+    console.log(`[Demo] GWR batch update (${rows.length} rows) — no-op`);
+}
 
-    const { error: updateError } = await client
-        .from('buildings')
-        .update({ images })
-        .eq('id', buildingId);
-
-    if (updateError) throw updateError;
-
-    return imageObj;
+export async function updateBuildingGwrFields(buildingId, building, gwrData) {
+    console.log(`[Demo] GWR fields update: ${buildingId} — no-op`);
 }
 
 // =============================================================================
-// USER MANAGEMENT
+// USER MANAGEMENT (Demo No-ops)
 // =============================================================================
 
-/**
- * Update user's last login timestamp
- */
 export async function updateUserLastLogin(userId) {
-    const client = getSupabase();
-    if (!client) return;
-
-    const { error } = await client
-        .from('users')
-        .update({ last_login: new Date().toISOString() })
-        .eq('id', userId);
-
-    if (error) {
-        console.error('Error updating last login:', error);
-    }
+    console.log(`[Demo] User last login: ${userId}`);
 }
 
-/**
- * Update user role
- */
 export async function updateUserRole(userId, newRole) {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not available');
-
-    const { data, error } = await client
-        .from('users')
-        .update({ role: newRole })
-        .eq('id', userId)
-        .select()
-        .single();
-
-    if (error) {
-        throw error;
-    }
-
-    return data;
+    console.log(`[Demo] User role update: ${userId} → ${newRole}`);
+    return { id: userId, role: newRole };
 }
 
-/**
- * Remove user from project (delete from users table)
- */
 export async function removeUser(userId) {
-    const client = getSupabase();
-    if (!client) throw new Error('Supabase client not available');
-
-    const { error } = await client
-        .from('users')
-        .delete()
-        .eq('id', userId);
-
-    if (error) {
-        throw error;
-    }
+    console.log(`[Demo] User removed: ${userId}`);
 }
 
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
-/**
- * Key an array of objects by building_id
- */
 function keyByBuildingId(items) {
     const result = {};
     for (const item of items) {
@@ -734,19 +288,6 @@ function keyByBuildingId(items) {
         result[key].push(item);
     }
     return result;
-}
-
-/**
- * Format ISO date to Swiss format (dd.mm.yyyy)
- */
-function formatSwissDate(isoDate) {
-    if (!isoDate) return '';
-    const date = new Date(isoDate);
-    return date.toLocaleDateString('de-CH', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-    });
 }
 
 // =============================================================================

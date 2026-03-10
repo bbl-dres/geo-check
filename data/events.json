@@ -1,0 +1,152 @@
+[
+  {
+    "id": 1,
+    "building_id": "BBL/001",
+    "type": "status",
+    "action": "Status geändert",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-03-08T14:30:00Z",
+    "details": "Status geändert zu: done"
+  },
+  {
+    "id": 2,
+    "building_id": "BBL/002",
+    "type": "assignment",
+    "action": "Zugewiesen",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-03-07T10:00:00Z",
+    "details": "Zugewiesen an: Peter Keller"
+  },
+  {
+    "id": 3,
+    "building_id": "BBL/004",
+    "type": "correction",
+    "action": "Korrektur angewendet",
+    "user_name": "System",
+    "user_id": null,
+    "created_at": "2026-03-01T08:00:00Z",
+    "details": "Automatische Prüfung — 8 Fehler erkannt"
+  },
+  {
+    "id": 4,
+    "building_id": "BBL/005",
+    "type": "comment",
+    "action": "Kommentar hinzugefügt",
+    "user_name": "Marco Bianchi",
+    "user_id": 3,
+    "created_at": "2026-03-05T16:45:00Z",
+    "details": "Adresse beim Grundbuchamt Chiasso verifiziert, Hausnummer 12a ist korrekt."
+  },
+  {
+    "id": 5,
+    "building_id": "BBL/007",
+    "type": "status",
+    "action": "Status geändert",
+    "user_name": "System",
+    "user_id": null,
+    "created_at": "2026-02-28T13:00:00Z",
+    "details": "Status geändert zu: backlog"
+  },
+  {
+    "id": 6,
+    "building_id": "BBL/008",
+    "type": "assignment",
+    "action": "Zugewiesen",
+    "user_name": "Peter Keller",
+    "user_id": 2,
+    "created_at": "2026-03-06T09:00:00Z",
+    "details": "Zugewiesen an: Anna Müller"
+  },
+  {
+    "id": 7,
+    "building_id": "BBL/001",
+    "type": "correction",
+    "action": "Korrektur angewendet",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-03-07T11:20:00Z",
+    "details": "Datenkorrektur gespeichert"
+  },
+  {
+    "id": 8,
+    "building_id": "BBL/003",
+    "type": "status",
+    "action": "Status geändert",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-02-20T09:00:00Z",
+    "details": "Status geändert zu: done"
+  },
+  {
+    "id": 9,
+    "building_id": "BBL/012",
+    "type": "assignment",
+    "action": "Zugewiesen",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-03-04T15:00:00Z",
+    "details": "Zugewiesen an: Marco Bianchi"
+  },
+  {
+    "id": 10,
+    "building_id": "BBL/013",
+    "type": "comment",
+    "action": "Kommentar hinzugefügt",
+    "user_name": "Anna Müller",
+    "user_id": 1,
+    "created_at": "2026-03-09T08:45:00Z",
+    "details": "PLZ und Ort weichen ab — SAP nutzt Berner Postadresse, GWR die effektive Gemeinde Köniz/Liebefeld."
+  },
+  {
+    "id": 11,
+    "building_id": "BBL/017",
+    "type": "status",
+    "action": "Status geändert",
+    "user_name": "System",
+    "user_id": null,
+    "created_at": "2026-03-01T12:00:00Z",
+    "details": "Status geändert zu: backlog"
+  },
+  {
+    "id": 12,
+    "building_id": "BBL/019",
+    "type": "assignment",
+    "action": "Zugewiesen",
+    "user_name": "Peter Keller",
+    "user_id": 2,
+    "created_at": "2026-03-07T15:50:00Z",
+    "details": "Zugewiesen an: Anna Müller"
+  },
+  {
+    "id": 13,
+    "building_id": "BBL/006",
+    "type": "status",
+    "action": "Status geändert",
+    "user_name": "Peter Keller",
+    "user_id": 2,
+    "created_at": "2026-02-15T11:30:00Z",
+    "details": "Status geändert zu: done"
+  },
+  {
+    "id": 14,
+    "building_id": "BBL/009",
+    "type": "correction",
+    "action": "Korrektur angewendet",
+    "user_name": "Marco Bianchi",
+    "user_id": 3,
+    "created_at": "2026-02-10T14:00:00Z",
+    "details": "Datenkorrektur gespeichert"
+  },
+  {
+    "id": 15,
+    "building_id": "BBL/018",
+    "type": "comment",
+    "action": "Kommentar hinzugefügt",
+    "user_name": "Peter Keller",
+    "user_id": 2,
+    "created_at": "2026-03-03T10:20:00Z",
+    "details": "Rückfrage an Swisscom betreffend Adresszusatz 'Gebäude B'."
+  }
+]

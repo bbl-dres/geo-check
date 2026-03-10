@@ -5173,37 +5173,19 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 
 .login-landing.visible {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: var(--space-2xl) var(--space-lg);
+  flex-direction: column;
+  align-items: center;
 }
 
 .login-landing-container {
   width: 100%;
   max-width: 360px;
-  margin-top: 10vh;
   display: flex;
   flex-direction: column;
   gap: var(--space-lg);
 }
 
-/* Header text */
-.login-landing-header {
-  text-align: center;
-  margin-bottom: var(--space-sm);
-}
 
-.login-landing-org,
-.login-landing-dept,
-.login-landing-app {
-  font-size: var(--font-base);
-  color: var(--text-secondary);
-}
-
-.login-landing-org {
-  font-weight: var(--font-semibold);
-  color: var(--text-primary);
-}
 
 .login-landing-box {
   background: var(--bg-white);
@@ -5416,6 +5398,37 @@ input:focus-visible, select:focus-visible, textarea:focus-visible {
 .login-landing-footer-sep {
   color: var(--border-default);
 }
+
+/* Login Top Bar */
+.login-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: var(--bg-white);
+  border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
+}
+
+/* Prototype Badge */
+.prototype-badge {
+  font-weight: var(--font-bold);
+  color: var(--swiss-red);
+  font-size: var(--font-sm);
+  white-space: nowrap;
+}
+
+/* Login Container — center vertically in remaining space */
+.login-landing.visible .login-landing-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
 
 /* App Container visibility */
 .app-container {

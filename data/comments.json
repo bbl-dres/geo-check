@@ -1,0 +1,128 @@
+[
+  {
+    "id": "cmt-001-1",
+    "building_id": "BBL/001",
+    "author": "Anna Müller",
+    "author_id": 1,
+    "text": "Alle Daten stimmen überein. Bundeshaus West kann als abgeschlossen markiert werden.",
+    "is_system": false,
+    "created_at": "2026-03-07T11:20:00Z"
+  },
+  {
+    "id": "cmt-001-2",
+    "building_id": "BBL/001",
+    "author": "System",
+    "author_id": null,
+    "text": "Automatische Prüfung: 0 Fehler, Konfidenz 92%",
+    "is_system": true,
+    "created_at": "2026-03-08T14:30:00Z"
+  },
+  {
+    "id": "cmt-002-1",
+    "building_id": "BBL/002",
+    "author": "Peter Keller",
+    "author_id": 2,
+    "text": "Hausnummer weicht ab (SAP: 5, GWR: 3). Abklärung mit Grundbuchamt Bern läuft.",
+    "is_system": false,
+    "created_at": "2026-03-07T10:15:00Z"
+  },
+  {
+    "id": "cmt-004-1",
+    "building_id": "BBL/004",
+    "author": "System",
+    "author_id": null,
+    "text": "Automatische Prüfung: 8 Fehler erkannt. EGID, Adresse und Koordinaten weichen ab.",
+    "is_system": true,
+    "created_at": "2026-03-01T08:00:00Z"
+  },
+  {
+    "id": "cmt-004-2",
+    "building_id": "BBL/004",
+    "author": "Anna Müller",
+    "author_id": 1,
+    "text": "Dieses Gebäude hat vermutlich eine falsche EGID-Zuordnung im SAP. Bitte mit GWR-Team klären.",
+    "is_system": false,
+    "created_at": "2026-03-02T09:30:00Z"
+  },
+  {
+    "id": "cmt-005-1",
+    "building_id": "BBL/005",
+    "author": "Marco Bianchi",
+    "author_id": 3,
+    "text": "Adresse beim Grundbuchamt Chiasso verifiziert, Hausnummer 12a ist korrekt.",
+    "is_system": false,
+    "created_at": "2026-03-05T16:45:00Z"
+  },
+  {
+    "id": "cmt-005-2",
+    "building_id": "BBL/005",
+    "author": "Marco Bianchi",
+    "author_id": 3,
+    "text": "Rückfrage: Wohnungsanzahl (2 vs 0) — SAP sagt 2 Dienstwohnungen, GWR meldet keine. Noch offen.",
+    "is_system": false,
+    "created_at": "2026-03-06T10:00:00Z"
+  },
+  {
+    "id": "cmt-007-1",
+    "building_id": "BBL/007",
+    "author": "System",
+    "author_id": null,
+    "text": "Gebäude nicht im GWR gefunden. Alle GWR-Felder leer.",
+    "is_system": true,
+    "created_at": "2026-02-28T13:00:00Z"
+  },
+  {
+    "id": "cmt-008-1",
+    "building_id": "BBL/008",
+    "author": "Anna Müller",
+    "author_id": 1,
+    "text": "Strassenname-Abweichung ist nur eine Abkürzung (Rämistr. vs Rämistrasse). GWR-Wert übernehmen.",
+    "is_system": false,
+    "created_at": "2026-03-06T09:20:00Z"
+  },
+  {
+    "id": "cmt-010-1",
+    "building_id": "BBL/010",
+    "author": "System",
+    "author_id": null,
+    "text": "Automatische Prüfung: 5 Abweichungen (Hausnummer, Adresszusatz, EGRID, Koordinaten, Gebäudefläche).",
+    "is_system": true,
+    "created_at": "2026-03-02T07:30:00Z"
+  },
+  {
+    "id": "cmt-013-1",
+    "building_id": "BBL/013",
+    "author": "Anna Müller",
+    "author_id": 1,
+    "text": "PLZ und Ort weichen ab — SAP nutzt Berner Postadresse, GWR die effektive Gemeinde Köniz/Liebefeld.",
+    "is_system": false,
+    "created_at": "2026-03-09T08:45:00Z"
+  },
+  {
+    "id": "cmt-017-1",
+    "building_id": "BBL/017",
+    "author": "System",
+    "author_id": null,
+    "text": "Gebäude nicht im GWR gefunden. Alle GWR-Felder leer.",
+    "is_system": true,
+    "created_at": "2026-03-01T12:00:00Z"
+  },
+  {
+    "id": "cmt-018-1",
+    "building_id": "BBL/018",
+    "author": "Peter Keller",
+    "author_id": 2,
+    "text": "Rückfrage an Swisscom betreffend Adresszusatz 'Gebäude B'.",
+    "is_system": false,
+    "created_at": "2026-03-03T10:20:00Z"
+  },
+  {
+    "id": "cmt-019-1",
+    "building_id": "BBL/019",
+    "author": "Anna Müller",
+    "author_id": 1,
+    "text": "Gebäudeklasse weicht ab (SAP: 1264 Verwaltung, GWR: 1276 Asyl). GWR-Wert ist korrekt.",
+    "is_system": false,
+    "created_at": "2026-03-07T16:00:00Z"
+  }
+]
