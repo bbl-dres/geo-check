@@ -240,7 +240,7 @@ The processed file contains all original input columns plus appended GWR and mat
 | 48 | `match_region` | Match | Region match | Match Kt | Corresp. canton | Corrisp. cantone | string | Yes | No | |
 | 49 | `match_building_type` | Match | Category match | Match Kategorie | Corresp. catégorie | Corrisp. categoria | string | Yes | No | |
 | 50 | `match_coordinates` | Match | Coord. match | Match Koord. | Corresp. coord. | Corrisp. coord. | string | Yes | No | |
-| 51 | `gwr_match` | Match | Status | Status | Statut | Stato | string | Yes | Yes | `matched` / `not_found` / `skipped` |
+| 51 | `gwr_match` | Match | GWR Match | GWR Abgleich | Comparaison RFB | Confronto REA | string | Yes | Yes | `matched` / `not_found` / `skipped` |
 
 ---
 
@@ -365,7 +365,7 @@ Hidden by default: `gwr_egrid` and all detailed GWR attributes (14, 19–21, 23�
 |---------|----------|-------------|
 | Search | Left | Free-text search across all columns, with clear button |
 | Presets | After search | Quick confidence filters: All / High (≥ 80) / Medium (50–79) / Low (< 50) — labels are locale-aware (see §4.4) |
-| Filter pills | After presets | Active filters as removable pills (e.g. "Status: matched ×"). A "Reset all filters" pill appears when any filter is active. |
+| Filter pills | After presets | Active filters as removable pills (e.g. "GWR Abgleich: matched ×"). A "Reset all filters" pill appears when any filter is active. |
 | Export | Right | Dropdown: CSV / Excel / GeoJSON (see §7) |
 | Columns | Right | Column visibility dropdown with "Show all" / "Hide all" buttons, then per-column checkboxes (scrollable, max-height 320px) |
 | Filter | Right | Multi-select dropdown grouped by column, with a search bar. Multiple values per column use OR logic; filters across columns use AND logic. |

@@ -218,7 +218,7 @@ function showResults() {
 
     <div class="sp-section">
       <div class="sp-section-header">
-        <span class="sp-section-title">Status</span>
+        <span class="sp-section-title">GWR Abgleich</span>
         <span class="sp-section-count">${formatNumber(total)} Geb\u00e4ude</span>
       </div>
       <div class="sp-status-grid">

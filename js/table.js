@@ -84,12 +84,12 @@ const COLUMNS = [
   { key: "match_region", label: "Match Kt" },
   { key: "match_building_type", label: "Match Kategorie" },
   { key: "match_coordinates", label: "Match Koord." },
-  { key: "gwr_match", label: "Status" },
+  { key: "gwr_match", label: "GWR Abgleich" },
 ].map((c) => ({ ...c, visible: DEFAULT_VISIBLE.has(c.key) }));
 
 /** Columns available for the filter dropdown (categorical/useful ones) */
 const FILTERABLE_COLUMNS = [
-  { key: "gwr_match", label: "Status" },
+  { key: "gwr_match", label: "GWR Abgleich" },
   { key: "gwr_region", label: "Kanton" },
   { key: "gwr_building_type", label: "Geb\u00e4udekategorie" },
   { key: "gwr_building_class", label: "Geb\u00e4udeklasse" },
@@ -129,7 +129,8 @@ function readUrlParams() {
   for (const col of FILTERABLE_COLUMNS) {
     const values = params.getAll(col.key);
     for (const v of values) {
-      activeFilters.push({ key: col.key, value: v, label: `${col.label}: ${v}` });
+      const displayV = CODE_COLUMNS[col.key] ? codeLabel(CODE_COLUMNS[col.key], v) : v;
+      activeFilters.push({ key: col.key, value: v, label: `${col.label}: ${displayV}` });
     }
   }
 }
@@ -394,10 +395,11 @@ function renderFilterCheckboxList() {
     html += `<div class="filter-dd-group" data-group="${g.col.key}">${escapeHtml(g.col.label)}</div>`;
     for (const [val, count] of g.values) {
       const checked = activeSet.has(`${g.col.key}::${val}`) ? "checked" : "";
-      const searchText = (g.col.label + " " + val).toLowerCase();
+      const displayVal = CODE_COLUMNS[g.col.key] ? codeLabel(CODE_COLUMNS[g.col.key], val) : val;
+      const searchText = (g.col.label + " " + displayVal).toLowerCase();
       html += `<label class="filter-dd-check" data-group="${g.col.key}" data-search="${escapeHtml(searchText)}">
         <input type="checkbox" data-key="${g.col.key}" data-value="${escapeHtml(val)}" ${checked}>
-        <span class="filter-dd-check-label">${escapeHtml(val)}</span>
+        <span class="filter-dd-check-label">${escapeHtml(displayVal)}</span>
         <span class="filter-dd-count">${count}</span>
       </label>`;
     }
@@ -444,7 +446,8 @@ function toggleFilter(key, value) {
     activeFilters.splice(idx, 1);
   } else {
     const col = FILTERABLE_COLUMNS.find((c) => c.key === key);
-    activeFilters.push({ key, value, label: `${col ? col.label : key}: ${value}` });
+    const displayVal = CODE_COLUMNS[key] ? codeLabel(CODE_COLUMNS[key], value) : value;
+    activeFilters.push({ key, value, label: `${col ? col.label : key}: ${displayVal}` });
   }
   renderFilterPills();
   applyFilter();
@@ -495,7 +498,8 @@ function ensureFilter(key, value) {
   if (!FILTERABLE_KEYS.has(key)) return;
   if (activeFilters.some((f) => f.key === key && f.value === value)) return;
   const col = FILTERABLE_COLUMNS.find((c) => c.key === key);
-  activeFilters.push({ key, value, label: `${col.label}: ${value}` });
+  const displayVal = CODE_COLUMNS[key] ? codeLabel(CODE_COLUMNS[key], value) : value;
+  activeFilters.push({ key, value, label: `${col.label}: ${displayVal}` });
   renderFilterPills();
   applyFilter();
   renderBody();
