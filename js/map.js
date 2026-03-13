@@ -487,7 +487,7 @@ function buildPopup(row) {
   // External links
   const links = [];
   if (lat != null && lng != null) {
-    links.push(`<a href="https://map.geo.admin.ch/#/map?lang=de&center=${lng},${lat}&z=18&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage&crosshair=marker" target="_blank" rel="noopener">GWR</a>`);
+    links.push(`<a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">GWR</a>`);
     links.push(`<a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener">Google Maps</a>`);
     links.push(`<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">Street View</a>`);
   }
