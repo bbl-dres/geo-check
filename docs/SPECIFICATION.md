@@ -695,3 +695,114 @@ Only the 9 attributes used by Geo-Check are listed here. For the full catalogue 
 ### B.9 GENW1 — Primary hot water energy source (`gwr_hot_water_energy`)
 
 Same code set as GENH1 (§B.7) — codes 7500–7599.
+
+---
+
+## Appendix C — Roadmap
+
+Ideas and planned features for future iterations. Items are grouped by theme and roughly ordered by priority within each group.
+
+### C.1 Layer Panel & Map Enhancements
+
+A collapsible **accordion panel** on the left side of the map view, providing:
+
+- **Data layers** — toggle visibility of the uploaded building points, color-coded by match score or confidence. Support for multiple color schemes (by score, by confidence, by GWR status, by building type).
+- **Color legend** — dynamic legend reflecting the currently active color scheme, updating when the user switches modes.
+- **External background layers** — toggleable WMS/WMTS overlays from Swiss federal geodata services:
+
+  | Layer | Source | Purpose |
+  |-------|--------|---------|
+  | GWR Status (GSTAT) | `ch.bfs.gebaeude_wohnungs_register` | Visualize official building status across the map |
+  | ÖREB-Kataster | `ch.swisstopo-vd.geometa-oerbk` | Public-law restrictions on land ownership |
+  | Amtliche Vermessung | `ch.swisstopo-vd.amtliche-vermessung` | Official cadastral survey / parcel boundaries |
+  | Solar potential | `ch.bfe.solarenergie-eignung-daecher` | Roof-level solar energy suitability |
+  | Noise exposure | `ch.bafu.laerm-*` | Road / rail / air traffic noise levels |
+
+- **Layer opacity slider** — per-layer opacity control for overlaid WMS layers.
+- **Basemap selector** — move existing basemap switcher into the layer panel for a unified experience.
+
+### C.2 PDF Building Report
+
+A downloadable **per-building PDF report** accessible from the map popup's info panel. Designed as a comprehensive dossier for further research — one page per building, packed with all available data and visual context.
+
+#### Report header
+
+- Building address, EGID, EGRID, municipality, canton
+- Export date and Geo-Check version
+- Overall match score (0–100) with confidence badge
+
+#### Visual context — imagery & maps
+
+Embed as much visual information as possible from public sources:
+
+| Source | Content | API / Method |
+|--------|---------|-------------|
+| **Google Street View** | Street-level photo of the building façade (if available) | Static Street View API (`size=600x300`, `fov=90`, heading toward building coordinates) |
+| **Swisstopo aerial** | Satellite / orthophoto thumbnail centered on the building | Swisstopo WMTS `ch.swisstopo.swissimage` tile at ~zoom 18 |
+| **Google Earth 3D** | Link to 3D view (not embeddable, but a direct link to the location in Google Earth Web) | `https://earth.google.com/web/@{lat},{lng},0a,200d,35y,0h,45t,0r` |
+| **Location map** | Static map snapshot with building marker and surrounding context | MapLibre static image export or Swisstopo static map API |
+| **Cadastral plan** | Parcel boundaries around the building | Swisstopo WMTS `ch.swisstopo-vd.amtliche-vermessung` overlay |
+
+> **Note:** Google Street View Static API requires an API key and may incur costs at scale. The report should gracefully handle missing imagery (e.g., rural areas without Street View coverage) by showing a placeholder with "No street view available."
+
+#### GWR attributes
+
+All GWR data in a structured table with resolved labels:
+
+- Building type, class, status, construction period
+- Heating type & energy source, hot water type & energy source
+- Footprint area (m²), number of floors, number of dwellings
+- Year built, demolition year (if applicable)
+- Coordinates: WGS84 (lat/lng) and LV95 (E/N), coordinate source
+- Plot number, building name, EGRID
+
+#### Match analysis
+
+- **Score breakdown table** — per-field comparison (input value vs. GWR value) with individual field scores and match result (`exact` / `similar` / `mismatch` / `empty`)
+- **Score visualization** — small bar chart or radar chart showing the contribution of each field to the overall score
+- **Weight info** — which fields were scored and their effective weights (accounting for missing fields)
+
+#### Recommendations
+
+Auto-generated action items based on the match results:
+
+| Condition | Recommendation |
+|-----------|---------------|
+| `match_street = mismatch` | Verify street name in source system — GWR has "{gwr_street}" |
+| `match_zip = mismatch` | ZIP code discrepancy: input {zip} vs. GWR {gwr_zip} — check for municipal mergers |
+| `match_coordinates = mismatch` (> 200 m) | Coordinates are {distance}m apart — verify building location on cadastral plan |
+| `gwr_status = 1007` (demolished) | Building is marked as demolished in GWR — verify if record should be archived |
+| `gwr_status = 1001/1002/1003` | Building is not yet completed (status: {status_label}) — data may change |
+| `confidence = low` | Low confidence — manual review recommended before updating source data |
+| Multiple `mismatch` fields | Multiple discrepancies — consider on-site verification |
+
+#### Links for further research
+
+- GWR online entry: `https://www.housing-stat.ch/de/query/egid.html?egid={egid}`
+- ÖREB extract: `https://oereb.geo.admin.ch/?egrid={egrid}`
+- Swisstopo map viewer: `https://map.geo.admin.ch/?swisssearch={egid}`
+- Google Earth 3D: `https://earth.google.com/web/@{lat},{lng},0a,200d,35y,0h,45t,0r`
+- Google Maps Street View: `https://www.google.com/maps/@{lat},{lng},3a,75y,0h,90t`
+- Cadastral survey (cantonal portals vary by canton)
+
+#### Technical implementation
+
+Generated client-side using [jsPDF](https://github.com/parallax/jsPDF) or [pdf-lib](https://github.com/Hopding/pdf-lib). Images are fetched as blobs and embedded directly in the PDF. For sources requiring API keys (Google Street View), the key is configured via a settings panel or environment variable — never hardcoded.
+
+### C.3 Internationalization (i18n)
+
+Building on the existing `?lang=` URL parameter and `gwr-codes.json` multilingual labels:
+
+- Full UI translation (buttons, labels, tooltips, error messages) for DE, FR, IT, EN.
+- Language-aware column headers in the results table and exports.
+- Translation file format: simple JSON key-value per language in `data/i18n/`.
+
+### C.4 Additional Ideas
+
+- **Batch export** — generate PDF reports for all buildings (or filtered subset) as a ZIP archive.
+- **Comparison mode** — side-by-side diff view highlighting field-level changes between input and GWR data.
+- **Keyboard navigation** — arrow keys to step through table rows, with the map tracking the selected building.
+- **Offline / PWA mode** — service worker caching for the app shell so it loads instantly; only API calls require connectivity.
+- **Custom scoring weights** — let advanced users adjust the field weights (§4.4) via a settings panel before processing.
+- **EGID batch validation** — lightweight pre-check that verifies EGID format and existence before the full enrichment run, giving instant feedback on data quality.
+- **GeoJSON import** — accept GeoJSON as an input format alongside CSV/XLSX, extracting coordinates and properties automatically.
