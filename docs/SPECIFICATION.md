@@ -278,10 +278,58 @@ Split view:
 
 #### Table
 
-- All output columns, sortable by any column
-- Filter by match status (matched / not found / skipped) and score range
-- Click a row → highlight marker on map, show popup
-- Color-coded `match_score` cell (same thresholds as map)
+- Sortable by any column, filterable by match status and free-text search
+- Click a row → highlight marker on map
+- Color-coded `match_score` cell and confidence label (same thresholds as map)
+- **Column visibility**: users can show/hide columns via a "Spalten" dropdown in the toolbar
+- Pagination (100 rows per page) for large datasets
+
+##### Default visible columns
+
+| Column | Label | Description |
+|--------|-------|-------------|
+| `internal_id` | ID | User's internal building ID |
+| `gwr_egid` | EGID | Federal building identifier |
+| `gwr_street` | Strasse (GWR) | Street name from GWR |
+| `gwr_street_number` | Nr | House number from GWR |
+| `gwr_zip` | PLZ (GWR) | Postal code from GWR |
+| `gwr_city` | Ort (GWR) | City from GWR |
+| `match_score` | Score | Overall match percentage (0–100%) |
+| `confidence` | Konfidenz | Confidence label: Hoch (≥80%), Mittel (50–79%), Tief (<50%) |
+| `gwr_match` | Status | Overall status: matched / not_found / skipped |
+
+##### Hidden by default (toggle via column dropdown)
+
+**GWR detail attributes:**
+
+| Column | Label | Description |
+|--------|-------|-------------|
+| `gwr_region` | Kt | Canton abbreviation |
+| `gwr_building_type` | Typ (GWR) | Building category code |
+| `gwr_egrid` | EGRID | Real estate identifier |
+| `gwr_municipality` | Gemeinde | Municipality name |
+| `gwr_municipality_nr` | BFS-Nr | BFS municipality number |
+| `gwr_building_class` | Gebäudeklasse | Building class code |
+| `gwr_status` | Gebäudestatus | Building status code |
+| `gwr_year_built` | Baujahr | Construction year |
+| `gwr_construction_period` | Bauperiode | Construction period code |
+| `gwr_area` | Fläche (m²) | Building footprint area |
+| `gwr_floors` | Geschosse | Number of floors |
+| `gwr_dwellings` | Wohnungen | Number of dwellings |
+| `gwr_latitude` | Breite (GWR) | WGS84 latitude |
+| `gwr_longitude` | Länge (GWR) | WGS84 longitude |
+
+**Per-field match results:**
+
+| Column | Label | Values |
+|--------|-------|--------|
+| `match_street` | Match Strasse | exact / similar / mismatch / empty |
+| `match_street_number` | Match Nr | exact / mismatch / empty |
+| `match_zip` | Match PLZ | exact / mismatch / empty |
+| `match_city` | Match Ort | exact / similar / mismatch / empty |
+| `match_region` | Match Kt | exact / mismatch / empty |
+| `match_building_type` | Match Typ | exact / mismatch / empty |
+| `match_coordinates` | Match Koord. | exact / similar / mismatch / empty |
 
 ### 6.5 Responsive Behavior
 

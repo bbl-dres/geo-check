@@ -31,12 +31,12 @@
       </div>
     </div>
     <div class="header-right">
-      <div class="lang-selector">
-        <button class="lang-btn active">DE</button>
-        <button class="lang-btn">FR</button>
-        <button class="lang-btn">IT</button>
-        <button class="lang-btn">EN</button>
-      </div>
+      <select id="lang-select" class="lang-select">
+        <option value="de" selected>DE</option>
+        <option value="fr">FR</option>
+        <option value="it">IT</option>
+        <option value="en">EN</option>
+      </select>
       <button id="btn-download" class="btn btn-secondary" hidden>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Ergebnisse herunterladen
@@ -132,21 +132,39 @@
     <!-- STATE 3: Results -->
     <section id="state-results" class="app-state" hidden>
       <div class="results-container">
-        <div id="summary-bar"></div>
 
-        <!-- Map panel (top, takes remaining space) -->
-        <div id="map-panel" class="map-panel">
-          <div id="results-map"></div>
-          <button id="table-toggle" class="table-toggle" title="Tabelle ein-/ausblenden">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-            Tabelle
-          </button>
+        <!-- Left: map + table -->
+        <div class="results-main">
+          <!-- Map panel (top, takes remaining space) -->
+          <div id="map-panel" class="map-panel">
+            <div id="results-map"></div>
+            <button id="table-toggle" class="table-toggle" title="Tabelle ein-/ausblenden">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              Tabelle
+            </button>
+          </div>
+
+          <!-- Resize handle (between map and table) -->
+          <div id="tbl-resize-handle"></div>
+
+          <!-- Table panel (bottom, collapsible) -->
+          <div class="table-panel" id="results-table-container">
+            <!-- table.js renders here -->
+          </div>
         </div>
 
-        <!-- Table panel (bottom, collapsible) -->
-        <div class="table-panel" id="results-table-container">
-          <!-- table.js renders here -->
-        </div>
+        <!-- Right: summary side panel -->
+        <aside id="summary-panel" class="summary-panel">
+          <div class="sp-header">
+            <h3>Zusammenfassung</h3>
+            <button id="sp-close" class="sp-close">&times;</button>
+          </div>
+          <div class="sp-body" id="sp-body">
+            <!-- Populated by main.js -->
+          </div>
+        </aside>
+
+        <!-- Summary panel reopen is a MapLibre control (see map.js SummaryToggleControl) -->
 
       </div>
     </section>

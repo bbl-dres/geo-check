@@ -80,6 +80,15 @@ export function scoreClass(score) {
   return "score-poor";
 }
 
+/** Confidence label from match score */
+export function confidenceLabel(score) {
+  if (score == null || score === "") return "—";
+  const n = Number(score);
+  if (n >= 80) return "Hoch";
+  if (n >= 50) return "Mittel";
+  return "Tief";
+}
+
 /** Score color for map markers (hex) */
 export function scoreColor(score) {
   if (score == null) return "#9ca3af";

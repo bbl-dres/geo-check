@@ -23,6 +23,44 @@ const BASEMAPS = [
 
 let currentBasemap = "positron";
 
+/** Custom control: summary panel toggle */
+class SummaryToggleControl {
+  onAdd() {
+    this._container = document.createElement("div");
+    this._container.className = "maplibregl-ctrl maplibregl-ctrl-group";
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.id = "sp-open-map";
+    btn.title = "Zusammenfassung anzeigen";
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M3 14h7v7H3z"/><path d="M14 14h7v7h-7z"/></svg>`;
+    btn.addEventListener("click", () => {
+      if (summaryToggleCallback) summaryToggleCallback();
+    });
+    this._btn = btn;
+    this._container.appendChild(btn);
+    return this._container;
+  }
+  onRemove() {
+    this._container.remove();
+  }
+  setHidden(hidden) {
+    this._container.style.display = hidden ? "none" : "block";
+  }
+}
+
+let summaryToggleControl = null;
+let summaryToggleCallback = null;
+
+/** Register callback for the summary panel toggle control */
+export function onSummaryToggle(callback) {
+  summaryToggleCallback = callback;
+}
+
+/** Show/hide the summary toggle button on the map */
+export function setSummaryToggleVisible(visible) {
+  if (summaryToggleControl) summaryToggleControl.setHidden(!visible);
+}
+
 /** Custom control: reset view / zoom to extent */
 class ResetViewControl {
   onAdd(map) {
@@ -183,6 +221,9 @@ export function initMap(container, clickCallback) {
 
   map.addControl(new maplibregl.NavigationControl(), "top-right");
   map.addControl(new ResetViewControl(), "top-right");
+  summaryToggleControl = new SummaryToggleControl();
+  map.addControl(summaryToggleControl, "top-right");
+  summaryToggleControl.setHidden(true); // hidden by default, shown when panel is closed
   map.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-left");
   map.addControl(new maplibregl.AttributionControl({
     compact: false,
