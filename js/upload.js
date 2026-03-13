@@ -76,16 +76,17 @@ async function handleFile(file) {
     const lowerHeaders = parsedData.headers.map((h) => h.toLowerCase().trim());
     const missing = REQUIRED_COLUMNS.filter((c) => !lowerHeaders.includes(c));
     if (missing.length > 0) {
-      showError(
-        `Fehlende Pflichtspalten: <strong>${esc(missing.join(", "))}</strong>. ` +
-        `Ihre Datei enthält: ${esc(parsedData.headers.join(", "))}. ` +
-        `Verwenden Sie die <a href="#" id="error-demo-link">Demo-Datei</a> als Vorlage.`
-      );
-      // Re-attach demo link inside error
-      const link = document.getElementById("error-demo-link");
-      if (link) {
-        link.addEventListener("click", (e) => { e.preventDefault(); loadDemoFile(); });
-      }
+      const strong = document.createElement("strong");
+      strong.textContent = missing.join(", ");
+      const link = document.createElement("a");
+      link.href = "#";
+      link.textContent = "Demo-Datei";
+      link.addEventListener("click", (e) => { e.preventDefault(); loadDemoFile(); });
+      showErrorDOM([
+        "Fehlende Pflichtspalten: ", strong, ". ",
+        "Ihre Datei enthält: " + parsedData.headers.join(", ") + ". ",
+        "Verwenden Sie die ", link, " als Vorlage."
+      ]);
       return;
     }
 
@@ -103,19 +104,26 @@ async function handleFile(file) {
     if (onReady) onReady(parsedData);
   } catch (err) {
     console.error("File parse error:", err);
-    showError("Fehler beim Lesen der Datei: " + esc(err.message));
+    showError("Fehler beim Lesen der Datei: " + err.message);
   }
 }
 
 function showError(msg) {
   const el = document.getElementById("upload-error");
-  el.innerHTML = msg;
+  el.textContent = msg;
+  el.hidden = false;
+}
+
+function showErrorDOM(nodes) {
+  const el = document.getElementById("upload-error");
+  el.textContent = "";
+  for (const n of nodes) el.appendChild(typeof n === "string" ? document.createTextNode(n) : n);
   el.hidden = false;
 }
 
 function hideError() {
   const el = document.getElementById("upload-error");
-  el.innerHTML = "";
+  el.textContent = "";
   el.hidden = true;
 }
 
@@ -220,8 +228,3 @@ function loadScript(src) {
   });
 }
 
-function esc(s) {
-  const d = document.createElement("div");
-  d.textContent = String(s ?? "");
-  return d.innerHTML;
-}

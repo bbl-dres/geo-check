@@ -11,6 +11,9 @@ let dataBounds = null;
 let lastGeoJSON = { type: "FeatureCollection", features: [] };
 let searchMarker = null;
 
+/** Abort controller for document-level listeners; recreated each initMap() call */
+let mapAC = null;
+
 const SEARCH_API = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
 
 const BASEMAPS = [
@@ -81,15 +84,28 @@ class LocationSearchControl {
     panel.className = "loc-search-panel";
     panel.hidden = true;
 
+    const inputWrap = document.createElement("div");
+    inputWrap.className = "loc-search-input-wrap";
+
     const input = document.createElement("input");
     input.type = "text";
     input.className = "loc-search-input";
     input.placeholder = "Standort suchen\u2026";
 
+    const clearBtn = document.createElement("button");
+    clearBtn.type = "button";
+    clearBtn.className = "loc-search-clear";
+    clearBtn.title = "Suche leeren";
+    clearBtn.innerHTML = "\u00d7";
+    clearBtn.hidden = true;
+
+    inputWrap.appendChild(input);
+    inputWrap.appendChild(clearBtn);
+
     const resultsList = document.createElement("div");
     resultsList.className = "loc-search-results";
 
-    panel.appendChild(input);
+    panel.appendChild(inputWrap);
     panel.appendChild(resultsList);
     this._container.appendChild(btn);
     this._container.appendChild(panel);
@@ -117,7 +133,7 @@ class LocationSearchControl {
 
     document.addEventListener("click", (e) => {
       if (expanded && !this._container.contains(e.target)) collapse();
-    });
+    }, { signal: mapAC.signal });
 
     panel.addEventListener("click", (e) => e.stopPropagation());
 
@@ -180,7 +196,8 @@ function renderSearchResults(container, results, onSelect) {
 
 function placeSearchMarker(lat, lon, label) {
   if (searchMarker) searchMarker.remove();
-  searchMarker = new maplibregl.Marker({ color: "#1a365d" })
+  const blue = getComputedStyle(document.documentElement).getPropertyValue("--federal-blue").trim() || "#1a365d";
+  searchMarker = new maplibregl.Marker({ color: blue })
     .setLngLat([lon, lat])
     .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`<div class="map-popup">${label}</div>`))
     .addTo(map);
@@ -305,7 +322,7 @@ function createBasemapSwitcher(parentEl) {
     panelOpen = !panelOpen;
     panel.classList.toggle("open", panelOpen);
   });
-  document.addEventListener("click", () => { if (panelOpen) closePanel(); });
+  document.addEventListener("click", () => { if (panelOpen) closePanel(); }, { signal: mapAC.signal });
 
   wrap.appendChild(panel);
   wrap.appendChild(btn);
@@ -314,6 +331,10 @@ function createBasemapSwitcher(parentEl) {
 
 export function initMap(container, clickCallback) {
   onMarkerClick = clickCallback;
+
+  // Tear down previous document-level listeners
+  if (mapAC) mapAC.abort();
+  mapAC = new AbortController();
 
   if (map) {
     map.remove();
@@ -363,14 +384,17 @@ export function initMap(container, clickCallback) {
   // Basemap switcher
   createBasemapSwitcher(containerEl.parentElement);
 
-  map.on("load", () => {
-    // Hide loading spinner
-    if (spinner) spinner.style.display = "none";
+  return new Promise((resolve) => {
+    map.on("load", () => {
+      // Hide loading spinner
+      if (spinner) spinner.style.display = "none";
 
-    addLayers();
+      addLayers();
 
-    // If results were queued before load, plot them now
-    if (resultsData.length) plotOnMap();
+      // If results were queued before load, plot them now
+      if (resultsData.length) plotOnMap();
+      resolve();
+    });
   });
 }
 

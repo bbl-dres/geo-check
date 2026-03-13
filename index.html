@@ -20,6 +20,8 @@
 </head>
 <body>
 
+<a href="#main-content" class="skip-link">Zum Inhalt springen</a>
+
 <div class="app">
   <!-- ── Header ── -->
   <header id="header">
@@ -31,14 +33,14 @@
       </div>
     </div>
     <div class="header-right">
-      <select id="lang-select" class="lang-select">
+      <select id="lang-select" class="lang-select" aria-label="Sprache wählen">
         <option value="de" selected>DE</option>
         <option value="fr">FR</option>
         <option value="it">IT</option>
         <option value="en">EN</option>
       </select>
       <button id="btn-download" class="btn btn-secondary" hidden>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Ergebnisse herunterladen
       </button>
       <button id="btn-new" class="btn btn-primary" hidden>Neue Prüfung</button>
@@ -46,10 +48,10 @@
   </header>
 
   <!-- ── Main ── -->
-  <main>
+  <main id="main-content">
 
     <!-- STATE 1: Upload -->
-    <section id="state-upload" class="app-state">
+    <section id="state-upload" class="app-state" aria-label="Datei hochladen">
       <div class="upload-container">
         <!-- Initial: intro + drop zone -->
         <div id="upload-initial" class="upload-card">
@@ -65,26 +67,26 @@
           </div>
 
           <!-- 3-step flow -->
-          <div class="steps">
-            <div class="step">
+          <div class="steps" role="list">
+            <div class="step" role="listitem">
               <div class="step-number">1</div>
               <div class="step-label">Hochladen<br><span>CSV / XLSX</span></div>
             </div>
-            <div class="step-arrow">&#9654;</div>
-            <div class="step">
+            <div class="step-arrow" aria-hidden="true">&#9654;</div>
+            <div class="step" role="listitem">
               <div class="step-number">2</div>
               <div class="step-label">Abgleichen<br><span>mit GWR</span></div>
             </div>
-            <div class="step-arrow">&#9654;</div>
-            <div class="step">
+            <div class="step-arrow" aria-hidden="true">&#9654;</div>
+            <div class="step" role="listitem">
               <div class="step-number">3</div>
               <div class="step-label">Herunterladen<br><span>Ergebnisse</span></div>
             </div>
           </div>
 
           <!-- Drop zone -->
-          <div id="drop-zone" class="drop-zone">
-            <div class="drop-zone-icon">&#128194;</div>
+          <div id="drop-zone" class="drop-zone" role="button" tabindex="0" aria-label="Datei hier ablegen oder klicken zum Durchsuchen">
+            <div class="drop-zone-icon" aria-hidden="true">&#128194;</div>
             <h2>CSV- oder Excel-Datei hierher ziehen</h2>
             <p>oder klicken zum Durchsuchen</p>
             <p class="drop-zone-hint">
@@ -92,7 +94,7 @@
               Optional: street, zip, city, region, latitude, longitude, building_type, comment
             </p>
           </div>
-          <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.tsv,.txt" hidden>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.tsv,.txt" hidden aria-label="Datei auswählen">
           <p class="demo-link">
             <a href="assets/demo-buildings.csv" download="vorlage-gebaeude.csv">Vorlage herunterladen (CSV)</a>
           </p>
@@ -101,11 +103,11 @@
           </p>
 
           <!-- Error (shown inline when validation fails) -->
-          <div id="upload-error" class="upload-error" hidden></div>
+          <div id="upload-error" class="upload-error" role="alert" hidden></div>
 
           <!-- Privacy note -->
           <div class="privacy-note">
-            <span class="privacy-icon">&#128274;</span>
+            <span class="privacy-icon" aria-hidden="true">&#128274;</span>
             Ihre Daten bleiben im Browser. Kein Upload, kein Backend.
             Nur die EGID (öffentliche Gebäude-ID) wird an die GWR-API gesendet.
           </div>
@@ -114,11 +116,11 @@
     </section>
 
     <!-- STATE 2: Processing -->
-    <section id="state-processing" class="app-state" hidden>
+    <section id="state-processing" class="app-state" aria-label="Verarbeitung" hidden>
       <div class="processing-container">
         <div class="processing-card">
           <h2>Gebäude werden mit GWR abgeglichen...</h2>
-          <div class="progress-bar">
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
           </div>
           <div id="progress-text">Vorbereitung...</div>
@@ -130,7 +132,7 @@
     </section>
 
     <!-- STATE 3: Results -->
-    <section id="state-results" class="app-state" hidden>
+    <section id="state-results" class="app-state" aria-label="Ergebnisse" hidden>
       <div class="results-container">
 
         <!-- Left: map + table -->
@@ -138,14 +140,14 @@
           <!-- Map panel (top, takes remaining space) -->
           <div id="map-panel" class="map-panel">
             <div id="results-map"></div>
-            <button id="table-toggle" class="table-toggle" title="Tabelle ein-/ausblenden">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            <button id="table-toggle" class="table-toggle" aria-expanded="true" aria-controls="results-table-container" title="Tabelle ein-/ausblenden">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
               Tabelle
             </button>
           </div>
 
           <!-- Resize handle (between map and table) -->
-          <div id="tbl-resize-handle"></div>
+          <div id="tbl-resize-handle" role="separator" aria-orientation="horizontal"></div>
 
           <!-- Table panel (bottom, collapsible) -->
           <div class="table-panel" id="results-table-container">
@@ -154,10 +156,10 @@
         </div>
 
         <!-- Right: summary side panel -->
-        <aside id="summary-panel" class="summary-panel">
+        <aside id="summary-panel" class="summary-panel" aria-label="Zusammenfassung">
           <div class="sp-header">
             <h3>Zusammenfassung</h3>
-            <button id="sp-close" class="sp-close">&times;</button>
+            <button id="sp-close" class="close-btn" aria-label="Zusammenfassung schliessen">&times;</button>
           </div>
           <div class="sp-body" id="sp-body">
             <!-- Populated by main.js -->
@@ -172,29 +174,29 @@
   </main>
 
   <!-- ── Download modal ── -->
-  <div id="download-overlay" class="dl-overlay" hidden>
+  <div id="download-overlay" class="dl-overlay" role="dialog" aria-modal="true" aria-label="Ergebnisse herunterladen" hidden>
     <div class="dl-modal">
       <div class="dl-header">
         <h3>Ergebnisse herunterladen</h3>
-        <button id="dl-close" class="dl-close">&times;</button>
+        <button id="dl-close" class="close-btn close-btn--lg" aria-label="Dialog schliessen">&times;</button>
       </div>
       <div class="dl-body">
         <button class="dl-option" id="dl-csv">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <div class="dl-option-text">
             <strong>CSV</strong>
             <span>Semikolon-getrennt, UTF-8</span>
           </div>
         </button>
         <button class="dl-option" id="dl-xlsx">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           <div class="dl-option-text">
             <strong>Excel (.xlsx)</strong>
             <span>Ergebnisse + Zusammenfassung</span>
           </div>
         </button>
         <button class="dl-option" id="dl-geojson">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           <div class="dl-option-text">
             <strong>GeoJSON</strong>
             <span>Geodaten mit Koordinaten</span>
@@ -206,11 +208,11 @@
 
   <!-- ── Footer ── -->
   <footer id="footer">
-    <div class="footer-info">Daten: <a href="https://www.housing-stat.ch/" target="_blank">GWR</a> (<a href="https://api3.geo.admin.ch" target="_blank">API</a>) · Karte: <a href="https://carto.com" target="_blank">CARTO</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a></div>
+    <div class="footer-info">Daten: <a href="https://www.housing-stat.ch/" target="_blank" rel="noopener">GWR</a> (<a href="https://api3.geo.admin.ch" target="_blank" rel="noopener">API</a>) · Karte: <a href="https://carto.com" target="_blank" rel="noopener">CARTO</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OSM</a></div>
     <div class="footer-links">
-      <a href="https://github.com/bbl-dres/geo-check" target="_blank">Quellcode</a>
-      <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank">Rechtliches</a>
-      <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank">Kontakt</a>
+      <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
+      <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+      <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Kontakt</a>
     </div>
   </footer>
 </div>

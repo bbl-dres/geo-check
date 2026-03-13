@@ -16,6 +16,9 @@ let onRowClick = null;
 let currentPage = 0;
 let pageSize = 25;
 
+/** Abort controller for document-level listeners; recreated each initTable() call */
+let dropdownAC = null;
+
 const DEFAULT_VISIBLE = new Set([
   "internal_id", "gwr_egid", "gwr_street", "gwr_street_number",
   "gwr_zip", "gwr_city", "match_score", "confidence", "gwr_match"
@@ -134,12 +137,16 @@ function writeUrlParams() {
   }
   const qs = params.toString();
   const url = window.location.pathname + (qs ? "?" + qs : "");
-  window.history.replaceState(null, "", url);
+  window.history.pushState(null, "", url);
 }
 
 /* ── Init ── */
 
 export function initTable(container, clickCallback) {
+  // Tear down previous document-level listeners to prevent leaks
+  if (dropdownAC) dropdownAC.abort();
+  dropdownAC = new AbortController();
+
   onRowClick = clickCallback;
   COLUMNS.forEach((c) => (c.visible = DEFAULT_VISIBLE.has(c.key)));
 
@@ -148,6 +155,21 @@ export function initTable(container, clickCallback) {
 
   // Read URL params before rendering
   readUrlParams();
+
+  // Sync filter state when user navigates back/forward
+  window.addEventListener("popstate", () => {
+    readUrlParams();
+    applyFilter();
+    renderHeader();
+    renderBody();
+    renderFilterPills();
+    // Sync preset buttons
+    container.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+    container.querySelector(`.preset-btn[data-preset="${presetFilter}"]`)?.classList.add("active");
+    // Sync search input
+    const si = container.querySelector("#tbl-search");
+    if (si) { si.value = searchQuery; container.querySelector("#tbl-search-clear").hidden = !searchQuery; }
+  }, { signal: dropdownAC.signal });
 
   container.innerHTML = `
     <div class="table-toolbar">
@@ -165,12 +187,12 @@ export function initTable(container, clickCallback) {
       <div class="filter-pills" id="filter-pills"></div>
       <span class="toolbar-spacer"></span>
       <div class="export-dd-wrap" id="export-dd-wrap">
-        <button class="export-dd-btn" id="export-dd-btn">
+        <button class="toolbar-btn" id="export-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Export
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="export-dd-menu" id="export-dd-menu" hidden>
+        <div class="dropdown-menu export-dd-menu" id="export-dd-menu" hidden>
           <button class="export-dd-item" id="btn-csv">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             CSV herunterladen
@@ -186,20 +208,20 @@ export function initTable(container, clickCallback) {
         </div>
       </div>
       <div class="col-dd-wrap" id="col-dd-wrap">
-        <button class="col-dd-btn" id="col-dd-btn">
+        <button class="toolbar-btn" id="col-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
           Spalten
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="col-dd-menu" id="col-dd-menu" hidden></div>
+        <div class="dropdown-menu col-dd-menu" id="col-dd-menu" hidden></div>
       </div>
       <div class="filter-dd-wrap" id="filter-dd-wrap">
-        <button class="filter-dd-btn" id="filter-dd-btn">
+        <button class="toolbar-btn" id="filter-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
           Filter
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="filter-dd-menu" id="filter-dd-menu" hidden></div>
+        <div class="dropdown-menu filter-dd-menu" id="filter-dd-menu" hidden></div>
       </div>
     </div>
     <div class="table-scroll">
@@ -271,7 +293,7 @@ function initExportDropdown() {
     if (!document.getElementById("export-dd-wrap").contains(e.target)) {
       menu.hidden = true;
     }
-  });
+  }, { signal: dropdownAC.signal });
 
   menu.querySelectorAll(".export-dd-item").forEach((item) => {
     item.addEventListener("click", () => { menu.hidden = true; });
@@ -291,7 +313,7 @@ function initColumnDropdown() {
     if (!document.getElementById("col-dd-wrap").contains(e.target)) {
       menu.hidden = true;
     }
-  });
+  }, { signal: dropdownAC.signal });
 
   renderColumnMenu();
 }
@@ -357,7 +379,7 @@ function initFilterDropdown() {
     if (!wrap.contains(e.target)) {
       menu.hidden = true;
     }
-  });
+  }, { signal: dropdownAC.signal });
 }
 
 function renderFilterCheckboxList() {

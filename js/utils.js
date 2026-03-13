@@ -89,10 +89,15 @@ export function confidenceLabel(score) {
   return "Tief";
 }
 
-/** Score color for map markers (hex) */
+/** Read a CSS custom property from :root */
+function cssVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+/** Score color for map markers (reads from CSS tokens) */
 export function scoreColor(score) {
-  if (score == null) return "#9ca3af";
-  if (score >= 80) return "#22c55e";
-  if (score >= 50) return "#eab308";
-  return "#ef4444";
+  if (score == null) return cssVar("--color-none") || "#9ca3af";
+  if (score >= 80) return cssVar("--color-good") || "#22c55e";
+  if (score >= 50) return cssVar("--color-partial") || "#eab308";
+  return cssVar("--color-poor") || "#ef4444";
 }

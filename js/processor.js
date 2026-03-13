@@ -122,7 +122,12 @@ async function lookupEgid(egid) {
   const resp = await fetch(`${GWR_API}?${params}`);
   if (!resp.ok) return null;
 
-  const data = await resp.json();
+  let data;
+  try {
+    data = await resp.json();
+  } catch {
+    return null;
+  }
   if (!data.results || data.results.length === 0) return null;
   return data.results[0];
 }

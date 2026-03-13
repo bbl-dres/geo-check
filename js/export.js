@@ -28,7 +28,12 @@ export function downloadCSV(results, filename = "geo-check-results.csv") {
  */
 export async function downloadXLSX(results, filename = "geo-check-results.xlsx") {
   if (!results.length) return;
-  await ensureXLSX();
+  try {
+    await ensureXLSX();
+  } catch {
+    alert("Excel-Bibliothek konnte nicht geladen werden. Bitte prüfen Sie Ihre Internetverbindung oder verwenden Sie den CSV-Export.");
+    return;
+  }
 
   const headers = Object.keys(results[0]).filter((k) => !k.startsWith("_"));
   const data = results.map((row) => {

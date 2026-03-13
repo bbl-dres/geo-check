@@ -36,12 +36,18 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btn-download").hidden = true;
     document.getElementById("file-input").value = "";
     const err = document.getElementById("upload-error");
-    if (err) { err.hidden = true; err.innerHTML = ""; }
+    if (err) { err.hidden = true; err.textContent = ""; }
   }
 
   document.getElementById("btn-new").addEventListener("click", resetToUpload);
-  document.querySelector(".header-left").addEventListener("click", resetToUpload);
-  document.querySelector(".header-left").style.cursor = "pointer";
+  const headerLeft = document.querySelector(".header-left");
+  headerLeft.addEventListener("click", resetToUpload);
+  headerLeft.style.cursor = "pointer";
+
+  // Language switcher — update <html lang> attribute
+  document.getElementById("lang-select").addEventListener("change", (e) => {
+    document.documentElement.lang = e.target.value;
+  });
 
   // Summary panel toggle
   document.getElementById("sp-close").addEventListener("click", () => {
@@ -105,7 +111,10 @@ function updateProgress(progress, startTime) {
   const { processed, total, matched, notFound, skipped } = progress;
   const pct = total > 0 ? ((processed / total) * 100).toFixed(1) : 0;
 
+  const progressBar = document.querySelector(".progress-bar");
   document.getElementById("progress-bar-fill").style.width = `${pct}%`;
+  progressBar.setAttribute("aria-valuenow", Math.round(pct));
+  progressBar.setAttribute("aria-valuetext", `Gebäude ${formatNumber(processed)} von ${formatNumber(total)}`);
   document.getElementById("progress-text").textContent =
     `Gebäude ${formatNumber(processed)} von ${formatNumber(total)} — ${pct}%`;
 
@@ -250,8 +259,8 @@ function showResults() {
   document.getElementById("btn-new").hidden = false;
 
   // Initialize map after DOM reflow so the container has dimensions
-  requestAnimationFrame(() => {
-    initMap("results-map", (index) => {
+  requestAnimationFrame(async () => {
+    await initMap("results-map", (index) => {
       highlightRow(index);
     });
     plotResults(processedResults);
