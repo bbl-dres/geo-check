@@ -8,10 +8,20 @@ import { initTable, populateTable, highlightRow } from "./table.js";
 import { downloadCSV, downloadXLSX, downloadGeoJSON } from "./export.js";
 import { formatNumber, scoreColor, confidenceLabel } from "./utils.js";
 
+const SUPPORTED_LANGS = ["de", "fr", "it", "en"];
+
 let processedResults = [];
 let tableOpen = true;
 
+function initLang() {
+  const param = new URLSearchParams(window.location.search).get("lang");
+  const lang = SUPPORTED_LANGS.includes(param) ? param : "de";
+  document.documentElement.lang = lang;
+  return lang;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  initLang();
   initUpload(onStartProcessing);
 
   // Cancel button
@@ -40,14 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   document.getElementById("btn-new").addEventListener("click", resetToUpload);
-  const headerLeft = document.querySelector(".header-left");
-  headerLeft.addEventListener("click", resetToUpload);
-  headerLeft.style.cursor = "pointer";
-
-  // Language switcher — update <html lang> attribute
-  document.getElementById("lang-select").addEventListener("change", (e) => {
-    document.documentElement.lang = e.target.value;
-  });
+  document.querySelector(".header-left").addEventListener("click", resetToUpload);
 
   // Summary panel toggle
   document.getElementById("sp-close").addEventListener("click", () => {
@@ -63,26 +66,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Download modal
   const dlOverlay = document.getElementById("download-overlay");
-  document.getElementById("btn-download").addEventListener("click", () => {
+  const dlModal = dlOverlay.querySelector(".dl-modal");
+  let lastFocusedEl = null;
+
+  function openDownloadModal() {
+    lastFocusedEl = document.activeElement;
     dlOverlay.hidden = false;
-  });
-  document.getElementById("dl-close").addEventListener("click", () => {
+    // Focus first option for keyboard users
+    const firstOption = dlModal.querySelector(".dl-option");
+    if (firstOption) firstOption.focus();
+  }
+
+  function closeDownloadModal() {
     dlOverlay.hidden = true;
+    if (lastFocusedEl) lastFocusedEl.focus();
+  }
+
+  // Focus trap: keep Tab within the modal
+  dlOverlay.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { closeDownloadModal(); return; }
+    if (e.key !== "Tab") return;
+    const focusable = dlModal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
+    }
   });
+
+  document.getElementById("btn-download").addEventListener("click", openDownloadModal);
+  document.getElementById("dl-close").addEventListener("click", closeDownloadModal);
   dlOverlay.addEventListener("click", (e) => {
-    if (e.target === dlOverlay) dlOverlay.hidden = true;
+    if (e.target === dlOverlay) closeDownloadModal();
   });
   document.getElementById("dl-csv").addEventListener("click", () => {
     downloadCSV(processedResults);
-    dlOverlay.hidden = true;
+    closeDownloadModal();
   });
   document.getElementById("dl-xlsx").addEventListener("click", () => {
     downloadXLSX(processedResults);
-    dlOverlay.hidden = true;
+    closeDownloadModal();
   });
   document.getElementById("dl-geojson").addEventListener("click", () => {
     downloadGeoJSON(processedResults);
-    dlOverlay.hidden = true;
+    closeDownloadModal();
   });
 });
 
@@ -103,6 +135,10 @@ async function onStartProcessing(parsedData) {
   processedResults = await processRows(parsedData.rows, (progress) => {
     updateProgress(progress, startTime);
   });
+
+  // Fill progress bar to 100% for visual closure
+  document.getElementById("progress-bar-fill").style.width = "100%";
+  document.querySelector(".progress-bar").setAttribute("aria-valuenow", "100");
 
   showResults();
 }
@@ -242,16 +278,14 @@ function showResults() {
     highlightMarker(index);
   });
 
-  // Wire export buttons (now inside the table toolbar)
-  document.getElementById("btn-csv").addEventListener("click", () => downloadCSV(processedResults));
-  document.getElementById("btn-xlsx").addEventListener("click", () => downloadXLSX(processedResults));
-  document.getElementById("btn-geojson").addEventListener("click", () => downloadGeoJSON(processedResults));
-
   populateTable(processedResults);
 
   // Show header buttons
   document.getElementById("btn-download").hidden = false;
   document.getElementById("btn-new").hidden = false;
+
+  // Mobile tab toggle (map / table)
+  initMobileTabs();
 
   // Initialize map after DOM reflow so the container has dimensions
   requestAnimationFrame(async () => {
@@ -259,5 +293,36 @@ function showResults() {
       highlightRow(index);
     });
     plotResults(processedResults);
+  });
+}
+
+function initMobileTabs() {
+  const main = document.querySelector(".results-main");
+  if (!main || main.querySelector(".mobile-tabs")) return;
+
+  const tabs = document.createElement("div");
+  tabs.className = "mobile-tabs";
+  tabs.innerHTML = `
+    <button class="mobile-tab active" data-tab="map">Karte</button>
+    <button class="mobile-tab" data-tab="table">Tabelle</button>
+  `;
+  main.insertBefore(tabs, main.firstChild);
+
+  const mapPanel = main.querySelector(".map-panel");
+  const tablePanel = main.querySelector(".table-panel");
+
+  tabs.addEventListener("click", (e) => {
+    const btn = e.target.closest(".mobile-tab");
+    if (!btn) return;
+    tabs.querySelectorAll(".mobile-tab").forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    if (btn.dataset.tab === "map") {
+      mapPanel.classList.remove("mobile-hidden");
+      tablePanel.classList.add("mobile-hidden");
+      setTimeout(() => resizeMap(), 50);
+    } else {
+      mapPanel.classList.add("mobile-hidden");
+      tablePanel.classList.remove("mobile-hidden");
+    }
   });
 }

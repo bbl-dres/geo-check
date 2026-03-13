@@ -246,6 +246,11 @@ class ResetViewControl {
 function addLayers() {
   if (map.getSource("buildings")) return;
 
+  const isDark = currentBasemap === "dark-matter";
+  const strokeColor = isDark ? "#2d2d2d" : "#fff";
+  const textColor = isDark ? "#e5e7eb" : "#1a1a2e";
+  const haloColor = isDark ? "#1a1a2e" : "#fff";
+
   map.addSource("buildings", {
     type: "geojson",
     data: lastGeoJSON
@@ -258,7 +263,7 @@ function addLayers() {
     paint: {
       "circle-radius": 7,
       "circle-color": ["get", "color"],
-      "circle-stroke-color": "#fff",
+      "circle-stroke-color": strokeColor,
       "circle-stroke-width": 1.5,
       "circle-opacity": 0.85
     }
@@ -279,8 +284,8 @@ function addLayers() {
       "text-optional": true
     },
     paint: {
-      "text-color": "#1a1a2e",
-      "text-halo-color": "#fff",
+      "text-color": textColor,
+      "text-halo-color": haloColor,
       "text-halo-width": 1.5
     }
   });

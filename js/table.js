@@ -191,18 +191,6 @@ export function initTable(container, clickCallback) {
       </div>
       <div class="filter-pills" id="filter-pills"></div>
       <span class="toolbar-spacer"></span>
-      <div class="export-dd-wrap" id="export-dd-wrap">
-        <button class="toolbar-btn" id="export-dd-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
-        </button>
-        <div class="dropdown-menu export-dd-menu" id="export-dd-menu" hidden>
-          <button class="export-dd-item" id="btn-csv">CSV herunterladen</button>
-          <button class="export-dd-item" id="btn-xlsx">Excel herunterladen</button>
-          <button class="export-dd-item" id="btn-geojson">GeoJSON herunterladen</button>
-        </div>
-      </div>
       <div class="col-dd-wrap" id="col-dd-wrap">
         <button class="toolbar-btn" id="col-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -269,9 +257,6 @@ export function initTable(container, clickCallback) {
   // Column toggle dropdown
   initColumnDropdown();
 
-  // Export dropdown
-  initExportDropdown();
-
   // Filter dropdown
   initFilterDropdown();
 
@@ -281,36 +266,14 @@ export function initTable(container, clickCallback) {
 
 /* ── Dropdowns ── */
 
-/** Close all toolbar dropdowns (export, columns, filter) */
+/** Close all toolbar dropdowns (columns, filter) */
 function closeAllDropdowns(except) {
-  const ids = ["export-dd-menu", "col-dd-menu", "filter-dd-menu"];
+  const ids = ["col-dd-menu", "filter-dd-menu"];
   for (const id of ids) {
     if (id === except) continue;
     const el = document.getElementById(id);
     if (el) el.hidden = true;
   }
-}
-
-function initExportDropdown() {
-  const btn = document.getElementById("export-dd-btn");
-  const menu = document.getElementById("export-dd-menu");
-
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    const opening = menu.hidden;
-    closeAllDropdowns();
-    menu.hidden = !opening;
-  });
-
-  document.addEventListener("click", (e) => {
-    if (!document.getElementById("export-dd-wrap").contains(e.target)) {
-      menu.hidden = true;
-    }
-  }, { signal: dropdownAC.signal });
-
-  menu.querySelectorAll(".export-dd-item").forEach((item) => {
-    item.addEventListener("click", () => { menu.hidden = true; });
-  });
 }
 
 function initColumnDropdown() {
@@ -357,7 +320,8 @@ function renderColumnMenu() {
 
   document.getElementById("col-hide-all").addEventListener("click", (e) => {
     e.stopPropagation();
-    COLUMNS.forEach((c) => (c.visible = false));
+    // Always keep at least internal_id visible
+    COLUMNS.forEach((c) => (c.visible = c.key === "internal_id"));
     renderColumnMenu();
     renderHeader();
     renderBody();
@@ -366,7 +330,13 @@ function renderColumnMenu() {
   menu.querySelectorAll("input[type=checkbox]").forEach((cb) => {
     cb.addEventListener("change", () => {
       const col = COLUMNS.find((c) => c.key === cb.dataset.col);
-      if (col) col.visible = cb.checked;
+      if (!col) return;
+      // Prevent unchecking the last visible column
+      if (!cb.checked && visibleCols().length <= 1) {
+        cb.checked = true;
+        return;
+      }
+      col.visible = cb.checked;
       renderHeader();
       renderBody();
     });
