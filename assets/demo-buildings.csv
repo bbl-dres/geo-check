@@ -1,0 +1,8 @@
+internal_id;egid;latitude;longitude;building_type;country;region;city;zip;street;street_number;comment
+SAP-001;1231641;46.958;7.431;1020;CH;BE;Bern;3012;Beaulieustrasse;2;Perfect match expected
+SAP-002;190640;46.801;8.038;1020;CH;LU;Sörenberg;6174;Bürsel;;Close match
+SAP-003;1069883;47.422;9.370;1020;CH;SG;St. Gallen;9014;Bernhardswiesweg;7;Should match well
+SAP-004;280884;46.975;8.418;1020;CH;NW;Buochs;6374;Güterstrasse;25;Should match
+SAP-005;9999999;;;;;;;;;;Non-existent EGID test
+SAP-006;abc;;;;;;;;;;Invalid EGID format test
+SAP-007;1231641;47.000;7.500;1040;CH;BE;Bern;3000;Beaulieustr.;2;Partial match - wrong zip and type
