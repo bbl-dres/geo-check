@@ -126,9 +126,19 @@ class LocationSearchControl {
       btn.classList.toggle("active", expanded);
       if (expanded) {
         input.value = "";
+        clearBtn.hidden = true;
         resultsList.innerHTML = "";
         setTimeout(() => input.focus(), 50);
       }
+    });
+
+    clearBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      input.value = "";
+      clearBtn.hidden = true;
+      resultsList.innerHTML = "";
+      clearTimeout(debounceTimer);
+      input.focus();
     });
 
     document.addEventListener("click", (e) => {
@@ -140,6 +150,7 @@ class LocationSearchControl {
     input.addEventListener("input", () => {
       clearTimeout(debounceTimer);
       const q = input.value.trim();
+      clearBtn.hidden = !q;
       if (q.length < 2) { resultsList.innerHTML = ""; return; }
       debounceTimer = setTimeout(async () => {
         const results = await fetchLocations(q);
@@ -250,6 +261,27 @@ function addLayers() {
       "circle-stroke-color": "#fff",
       "circle-stroke-width": 1.5,
       "circle-opacity": 0.85
+    }
+  });
+
+  map.addLayer({
+    id: "buildings-label",
+    type: "symbol",
+    source: "buildings",
+    minzoom: 13,
+    layout: {
+      "text-field": ["get", "label"],
+      "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+      "text-size": 11,
+      "text-anchor": "bottom",
+      "text-offset": [0, -0.8],
+      "text-allow-overlap": false,
+      "text-optional": true
+    },
+    paint: {
+      "text-color": "#1a1a2e",
+      "text-halo-color": "#fff",
+      "text-halo-width": 1.5
     }
   });
 
@@ -400,7 +432,7 @@ export function initMap(container, clickCallback) {
 
 export function plotResults(results) {
   resultsData = results;
-  if (map && map.isStyleLoaded() && map.getSource("buildings")) {
+  if (map && map.getSource("buildings")) {
     plotOnMap();
   }
 }
@@ -425,6 +457,7 @@ function plotOnMap() {
       properties: {
         rowIndex: i,
         color,
+        label: row.internal_id || "",
         popupHtml: buildPopup(row)
       }
     });

@@ -44,14 +44,14 @@
   --font-mono: "SF Mono", "Cascadia Code", "Consolas", monospace;
 
   /* Typography — sizes */
-  --text-2xs: 0.625rem;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 2rem;
+  --text-2xs: 0.75rem;
+  --text-xs: 0.875rem;
+  --text-sm: 1rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
 
   /* Typography — weights */
   --font-normal: 400;
@@ -80,13 +80,13 @@
   --space-12: 3rem;
 
   /* Control heights */
-  --control-sm: 28px;
-  --control-md: 30px;
-  --control-lg: 36px;
+  --control-sm: 32px;
+  --control-md: 36px;
+  --control-lg: 40px;
 
   /* Layout */
-  --header-height: 56px;
-  --footer-height: 32px;
+  --header-height: 60px;
+  --footer-height: 36px;
   --summary-width: 320px;
   --search-panel-width: 280px;
 

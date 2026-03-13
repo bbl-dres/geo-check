@@ -20,54 +20,60 @@ let pageSize = 25;
 let dropdownAC = null;
 
 const DEFAULT_VISIBLE = new Set([
-  "internal_id", "gwr_egid", "gwr_street", "gwr_street_number",
-  "gwr_zip", "gwr_city", "match_score", "confidence", "gwr_match"
+  // Input columns (all visible by default)
+  "internal_id", "egid", "street", "street_number", "zip", "city",
+  "region", "building_type", "latitude", "longitude", "country", "comment",
+  // GWR columns (selected — see §5)
+  "gwr_egid", "gwr_street", "gwr_street_number", "gwr_zip", "gwr_city",
+  "gwr_building_type", "gwr_building_class", "gwr_year_built", "gwr_area",
+  // Match columns (summary visible, per-field hidden by default)
+  "match_score", "confidence", "gwr_match",
 ]);
 
 const COLUMNS = [
   // --- Input columns (passed through) ---
-  { key: "internal_id", label: "ID" },
+  { key: "internal_id", label: "Interne ID" },
   { key: "egid", label: "EGID" },
   { key: "street", label: "Strasse" },
   { key: "street_number", label: "Nr" },
   { key: "zip", label: "PLZ" },
   { key: "city", label: "Ort" },
   { key: "region", label: "Kanton" },
-  { key: "building_type", label: "Typ" },
+  { key: "building_type", label: "Kategorie" },
   { key: "latitude", label: "Breite" },
   { key: "longitude", label: "L\u00e4nge" },
   { key: "country", label: "Land" },
   { key: "comment", label: "Kommentar" },
   // --- GWR output columns (from API) ---
   { key: "gwr_egid", label: "EGID (GWR)" },
-  { key: "gwr_egrid", label: "EGRID" },
+  { key: "gwr_egrid", label: "EGRID (GWR)" },
   { key: "gwr_street", label: "Strasse (GWR)" },
   { key: "gwr_street_number", label: "Nr (GWR)" },
   { key: "gwr_zip", label: "PLZ (GWR)" },
   { key: "gwr_city", label: "Ort (GWR)" },
-  { key: "gwr_municipality", label: "Gemeinde" },
-  { key: "gwr_municipality_nr", label: "BFS-Nr" },
+  { key: "gwr_municipality", label: "Gemeinde (GWR)" },
+  { key: "gwr_municipality_nr", label: "BFS-Nr (GWR)" },
   { key: "gwr_region", label: "Kt (GWR)" },
-  { key: "gwr_building_type", label: "Typ (GWR)" },
-  { key: "gwr_building_class", label: "Geb\u00e4udeklasse" },
-  { key: "gwr_status", label: "Geb\u00e4udestatus" },
-  { key: "gwr_year_built", label: "Baujahr" },
-  { key: "gwr_construction_period", label: "Bauperiode" },
-  { key: "gwr_area", label: "Fl\u00e4che (m\u00b2)" },
-  { key: "gwr_floors", label: "Geschosse" },
-  { key: "gwr_dwellings", label: "Wohnungen" },
+  { key: "gwr_building_type", label: "Kategorie (GWR)" },
+  { key: "gwr_building_class", label: "Geb\u00e4udeklasse (GWR)" },
+  { key: "gwr_status", label: "Geb\u00e4udestatus (GWR)" },
+  { key: "gwr_year_built", label: "Baujahr (GWR)" },
+  { key: "gwr_construction_period", label: "Bauperiode (GWR)" },
+  { key: "gwr_area", label: "Grundfl\u00e4che m\u00b2 (GWR)" },
+  { key: "gwr_floors", label: "Anz. Geschosse (GWR)" },
+  { key: "gwr_dwellings", label: "Wohnungen (GWR)" },
   { key: "gwr_latitude", label: "Breite (GWR)" },
   { key: "gwr_longitude", label: "L\u00e4nge (GWR)" },
   { key: "gwr_coord_e", label: "E-Koord. (LV95)" },
   { key: "gwr_coord_n", label: "N-Koord. (LV95)" },
-  { key: "gwr_coord_source", label: "Koord.-Herkunft" },
-  { key: "gwr_demolition_year", label: "Abbruchjahr" },
-  { key: "gwr_plot_nr", label: "Parzelle" },
-  { key: "gwr_building_name", label: "Geb\u00e4udename" },
-  { key: "gwr_heating_type", label: "Heizung" },
-  { key: "gwr_heating_energy", label: "Energietr\u00e4ger Heiz." },
-  { key: "gwr_hot_water_type", label: "Warmwasser" },
-  { key: "gwr_hot_water_energy", label: "Energietr\u00e4ger WW" },
+  { key: "gwr_coord_source", label: "Koord.-Herkunft (GWR)" },
+  { key: "gwr_demolition_year", label: "Abbruchjahr (GWR)" },
+  { key: "gwr_plot_nr", label: "Parzelle (GWR)" },
+  { key: "gwr_building_name", label: "Geb\u00e4udename (GWR)" },
+  { key: "gwr_heating_type", label: "Heizung (GWR)" },
+  { key: "gwr_heating_energy", label: "Energietr. Heiz. (GWR)" },
+  { key: "gwr_hot_water_type", label: "Warmwasser (GWR)" },
+  { key: "gwr_hot_water_energy", label: "Energietr. WW (GWR)" },
   // --- Match results (computed) ---
   { key: "match_score", label: "Score" },
   { key: "confidence", label: "Konfidenz" },
@@ -76,7 +82,7 @@ const COLUMNS = [
   { key: "match_zip", label: "Match PLZ" },
   { key: "match_city", label: "Match Ort" },
   { key: "match_region", label: "Match Kt" },
-  { key: "match_building_type", label: "Match Typ" },
+  { key: "match_building_type", label: "Match Kategorie" },
   { key: "match_coordinates", label: "Match Koord." },
   { key: "gwr_match", label: "Status" },
 ].map((c) => ({ ...c, visible: DEFAULT_VISIBLE.has(c.key) }));
@@ -85,7 +91,7 @@ const COLUMNS = [
 const FILTERABLE_COLUMNS = [
   { key: "gwr_match", label: "Status" },
   { key: "gwr_region", label: "Kanton" },
-  { key: "gwr_building_type", label: "Geb\u00e4udetyp" },
+  { key: "gwr_building_type", label: "Geb\u00e4udekategorie" },
   { key: "gwr_building_class", label: "Geb\u00e4udeklasse" },
   { key: "gwr_status", label: "Geb\u00e4udestatus" },
   { key: "gwr_municipality", label: "Gemeinde" },
@@ -95,7 +101,7 @@ const FILTERABLE_COLUMNS = [
   { key: "match_zip", label: "Match PLZ" },
   { key: "match_city", label: "Match Ort" },
   { key: "match_region", label: "Match Kt" },
-  { key: "match_building_type", label: "Match Typ" },
+  { key: "match_building_type", label: "Match Kategorie" },
   { key: "match_coordinates", label: "Match Koord." },
 ];
 
@@ -150,7 +156,7 @@ export function initTable(container, clickCallback) {
   onRowClick = clickCallback;
   COLUMNS.forEach((c) => (c.visible = DEFAULT_VISIBLE.has(c.key)));
 
-  // Load GWR code labels
+  // Kick off GWR code label fetch (awaited in populateTable before first render)
   loadCodes();
 
   // Read URL params before rendering
@@ -179,10 +185,9 @@ export function initTable(container, clickCallback) {
         <button class="tbl-search-clear" id="tbl-search-clear" ${searchQuery ? "" : "hidden"}>&times;</button>
       </div>
       <div class="table-presets" id="table-presets">
-        <button class="preset-btn ${presetFilter === "all" ? "active" : ""}" data-preset="all">Alle</button>
-        <button class="preset-btn score-good ${presetFilter === "high" ? "active" : ""}" data-preset="high">Hoch</button>
-        <button class="preset-btn score-partial ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">Mittel</button>
-        <button class="preset-btn score-poor ${presetFilter === "low" ? "active" : ""}" data-preset="low">Tief</button>
+        <button class="preset-btn ${presetFilter === "high" ? "active" : ""}" data-preset="high">Konfidenz: Hoch</button>
+        <button class="preset-btn ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">Konfidenz: Mittel</button>
+        <button class="preset-btn ${presetFilter === "low" ? "active" : ""}" data-preset="low">Konfidenz: Tief</button>
       </div>
       <div class="filter-pills" id="filter-pills"></div>
       <span class="toolbar-spacer"></span>
@@ -252,12 +257,17 @@ export function initTable(container, clickCallback) {
     writeUrlParams();
   });
 
-  // Preset buttons (confidence-based)
+  // Preset buttons (confidence-based, toggle behavior)
   container.querySelectorAll(".preset-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      const isActive = btn.classList.contains("active");
       container.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      presetFilter = btn.dataset.preset;
+      if (isActive) {
+        presetFilter = "all";
+      } else {
+        btn.classList.add("active");
+        presetFilter = btn.dataset.preset;
+      }
       renderFilterPills();
       applyFilter();
       renderBody();
@@ -480,7 +490,6 @@ function clearAllFilters() {
   activeFilters = [];
   presetFilter = "all";
   document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
-  document.querySelector('.preset-btn[data-preset="all"]')?.classList.add("active");
   renderFilterPills();
   applyFilter();
   renderBody();
@@ -491,10 +500,13 @@ function clearAllFilters() {
 
 /** Activate a preset filter (used by confidence badge clicks) */
 function activatePreset(preset) {
-  if (preset === presetFilter) return;
-  presetFilter = preset;
   document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
-  document.querySelector(`.preset-btn[data-preset="${preset}"]`)?.classList.add("active");
+  if (preset === presetFilter) {
+    presetFilter = "all";
+  } else {
+    presetFilter = preset;
+    document.querySelector(`.preset-btn[data-preset="${preset}"]`)?.classList.add("active");
+  }
   renderFilterPills();
   applyFilter();
   renderBody();
@@ -552,7 +564,6 @@ function renderFilterPills() {
     presetPill.addEventListener("click", () => {
       presetFilter = "all";
       document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
-      document.querySelector('.preset-btn[data-preset="all"]')?.classList.add("active");
       renderFilterPills();
       applyFilter();
       renderBody();
@@ -571,8 +582,9 @@ function renderFilterPills() {
 
 /* ── Data ── */
 
-export function populateTable(results) {
+export async function populateTable(results) {
   allResults = results.map((r, i) => ({ ...r, _index: i }));
+  await loadCodes();
   applyFilter();
   renderHeader();
   renderBody();
