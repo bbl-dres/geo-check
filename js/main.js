@@ -176,22 +176,15 @@ function showResults() {
         <div class="sp-donut-label">\u00d8 Score</div>
       </div>
     </div>
-    <div class="sp-donut-conf">\u25cf ${confLabel}</div>
+    <div class="sp-donut-conf">\u25cf Konfidenz: ${confLabel}</div>
 
     <div class="sp-divider"></div>
 
-    <div class="sp-stat-big">${formatNumber(total)}</div>
-    <div class="sp-stat-label">Geb\u00e4ude gepr\u00fcft</div>
-
     <div class="sp-section">
-      <div class="sp-row">
-        <span>Gefunden</span>
-        <strong>${matchedPct}%</strong>
+      <div class="sp-section-header">
+        <span class="sp-section-title">Status</span>
+        <span class="sp-section-count">${formatNumber(total)} Geb\u00e4ude</span>
       </div>
-      <div class="sp-bar"><div class="sp-bar-fill sp-bar-good" style="width:${matchedPct}%"></div></div>
-    </div>
-
-    <div class="sp-section">
       <div class="sp-status-grid">
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-good">${formatNumber(matched)}</div>
@@ -199,14 +192,16 @@ function showResults() {
         </div>
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-poor">${formatNumber(notFound)}</div>
-          <div class="sp-status-key">Nicht gef.</div>
+          <div class="sp-status-key">Nicht gefunden</div>
         </div>
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-none">${formatNumber(skipped)}</div>
-          <div class="sp-status-key">\u00dcberspr.</div>
+          <div class="sp-status-key">\u00dcbersprungen</div>
         </div>
       </div>
     </div>
+
+    <div class="sp-divider"></div>
 
     <div class="sp-section">
       <div class="sp-section-title">Konfidenz</div>
@@ -226,7 +221,7 @@ function showResults() {
         <span class="sp-dist-val">${formatNumber(low)}</span>
       </div>
       <div class="sp-dist-row">
-        <span class="sp-dist-label score-badge score-none">N/A</span>
+        <span class="sp-dist-label score-badge score-none">k.A.</span>
         <div class="sp-dist-bar"><div class="sp-dist-fill sp-bar-none" style="width:${(noScore / maxBar) * 100}%"></div></div>
         <span class="sp-dist-val">${formatNumber(noScore)}</span>
       </div>

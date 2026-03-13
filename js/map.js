@@ -76,7 +76,7 @@ class LocationSearchControl {
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.title = "Standort suchen";
+    btn.title = "Adresse oder Ort suchen";
     btn.className = "loc-search-toggle";
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
 
@@ -90,7 +90,7 @@ class LocationSearchControl {
     const input = document.createElement("input");
     input.type = "text";
     input.className = "loc-search-input";
-    input.placeholder = "Standort suchen\u2026";
+    input.placeholder = "Adresse oder Ort suchen\u2026";
 
     const clearBtn = document.createElement("button");
     clearBtn.type = "button";
@@ -224,7 +224,7 @@ class ResetViewControl {
     this._container.className = "maplibregl-ctrl maplibregl-ctrl-group";
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.title = "Gesamtansicht";
+    btn.title = "Alle Geb\u00e4ude anzeigen";
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M9 21H3v-6"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/></svg>`;
     btn.addEventListener("click", () => {
       if (dataBounds) {
@@ -334,7 +334,7 @@ function createBasemapSwitcher(parentEl) {
   const btn = document.createElement("button");
   btn.className = "bm-btn";
   btn.id = "bm-btn";
-  btn.title = "Hintergrund wechseln";
+  btn.title = "Kartenansicht wechseln";
   btn.innerHTML =
     `<img id="bm-current-thumb" src="${bm.thumb}" alt="Hintergrund">` +
     `<span>Hintergrund</span>`;
@@ -411,7 +411,7 @@ export function initMap(container, clickCallback) {
     customAttribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> · <a href="https://carto.com/attributions" target="_blank">CARTO</a> · <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
   }), "bottom-right");
 
-  popup = new maplibregl.Popup({ closeButton: true, closeOnClick: false, maxWidth: "260px" });
+  popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, maxWidth: "280px" });
 
   // Basemap switcher
   createBasemapSwitcher(containerEl.parentElement);
@@ -484,29 +484,44 @@ function buildPopup(row) {
   const lat = parseFloat(row.gwr_latitude) || parseFloat(row.latitude) || null;
   const lng = parseFloat(row.gwr_longitude) || parseFloat(row.longitude) || null;
 
-  // External links
-  const links = [];
+  // External links (two rows: Swiss maps, Google maps)
+  let linksHtml = "";
   if (lat != null && lng != null) {
-    links.push(`<a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">GWR</a>`);
-    links.push(`<a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener">Google Maps</a>`);
-    links.push(`<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">Street View</a>`);
+    linksHtml = `<div class="popup-links">
+      <div class="popup-link-row">
+        <a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">GWR-Karte</a>
+        <span class="popup-link-sep">\u00b7</span>
+        <a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.swisstopo-vd.stand-oerebkataster&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">\u00d6REB-Kataster</a>
+      </div>
+      <div class="popup-link-row">
+        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener">Google Maps</a>
+        <span class="popup-link-sep">\u00b7</span>
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">Street View</a>
+      </div>
+    </div>`;
   }
+
+  const color = scoreColor(numScore);
 
   return `<div class="map-popup">
   <div class="popup-header">
-    <span class="popup-id">${escapeHtml(row.internal_id || "—")}</span>
-    <span class="popup-egid">${escapeHtml(egid || "—")}</span>
+    <div class="popup-header-text">
+      <span class="popup-id">${escapeHtml(row.internal_id || "—")}</span>
+      <span class="popup-egid">${escapeHtml(egid || "—")}</span>
+    </div>
+    <button class="popup-close" aria-label="Schliessen" onclick="this.closest('.maplibregl-popup').remove()">&times;</button>
   </div>
-  <div class="popup-divider"></div>
   <div class="popup-address">
     ${escapeHtml(row.gwr_street || row.street || "")} ${escapeHtml(row.gwr_street_number || row.street_number || "")}<br>
     ${escapeHtml(row.gwr_zip || row.zip || "")} ${escapeHtml(row.gwr_city || row.city || "")}
   </div>
-  <div class="popup-divider"></div>
   <div class="popup-match">
-    Score: ${scorePct} · ${escapeHtml(conf)} · ${escapeHtml(status)}
+    <span class="popup-score-dot" style="background:${color}"></span>
+    <span class="popup-score">${scorePct}</span>
+    <span class="popup-conf">${escapeHtml(conf)}</span>
+    <span class="popup-status">${escapeHtml(status)}</span>
   </div>
-  ${links.length ? `<div class="popup-divider"></div><div class="popup-links">${links.join(" · ")}</div>` : ""}
+  ${linksHtml}
 </div>`;
 }
 

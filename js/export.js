@@ -51,17 +51,17 @@ export async function downloadXLSX(results, filename = "geo-check-results.xlsx")
   // Sheet 2: Summary
   const stats = computeStats(results);
   const summaryData = [
-    { Metric: "Total buildings", Value: stats.total },
-    { Metric: "Matched", Value: stats.matched },
-    { Metric: "Not found", Value: stats.notFound },
-    { Metric: "Skipped", Value: stats.skipped },
-    { Metric: "Average score", Value: stats.avgScore + "%" },
-    { Metric: "Score >= 80%", Value: stats.good },
-    { Metric: "Score 50-79%", Value: stats.partial },
-    { Metric: "Score < 50%", Value: stats.poor }
+    { Kennzahl: "Geb\u00e4ude gesamt", Wert: stats.total },
+    { Kennzahl: "Gefunden", Wert: stats.matched },
+    { Kennzahl: "Nicht gefunden", Wert: stats.notFound },
+    { Kennzahl: "\u00dcbersprungen", Wert: stats.skipped },
+    { Kennzahl: "\u00d8 Score", Wert: stats.avgScore + "%" },
+    { Kennzahl: "Score \u2265 80%", Wert: stats.good },
+    { Kennzahl: "Score 50\u201379%", Wert: stats.partial },
+    { Kennzahl: "Score < 50%", Wert: stats.poor }
   ];
   const ws2 = XLSX.utils.json_to_sheet(summaryData);
-  XLSX.utils.book_append_sheet(wb, ws2, "Summary");
+  XLSX.utils.book_append_sheet(wb, ws2, "Zusammenfassung");
 
   const wbOut = XLSX.write(wb, { bookType: "xlsx", type: "array" });
   const blob = new Blob([wbOut], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });

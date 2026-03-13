@@ -91,8 +91,8 @@
             <h2>CSV- oder Excel-Datei hierher ziehen</h2>
             <p>oder klicken zum Durchsuchen</p>
             <p class="drop-zone-hint">
-              Erforderlich: internal_id, egid &middot;
-              Optional: street, zip, city, region, latitude, longitude, building_type, comment
+              Erforderlich: Interne ID, EGID &middot;
+              Optional: Adresse, Koordinaten, Gebäudekategorie, Kommentar
             </p>
           </div>
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.tsv,.txt" hidden aria-label="Datei auswählen">
@@ -100,7 +100,7 @@
             <a href="assets/demo-buildings.csv" download="vorlage-gebaeude.csv">Vorlage herunterladen (CSV)</a>
           </p>
           <p class="demo-link">
-            Oder testen Sie mit <a href="#" id="load-demo">demo-buildings.csv</a>
+            Oder testen Sie mit <a href="#" id="load-demo">Beispieldaten</a>
           </p>
 
           <!-- Error (shown inline when validation fails) -->
@@ -120,11 +120,11 @@
     <section id="state-processing" class="app-state" aria-label="Verarbeitung" hidden>
       <div class="processing-container">
         <div class="processing-card">
-          <h2>Gebäude werden mit GWR abgeglichen...</h2>
+          <h2>Ihre Gebäude werden mit dem GWR abgeglichen...</h2>
           <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             <div id="progress-bar-fill" class="progress-bar-fill"></div>
           </div>
-          <div id="progress-text">Vorbereitung...</div>
+          <div id="progress-text">Datei wird verarbeitet...</div>
           <div id="progress-eta"></div>
           <div id="progress-stats"></div>
           <button id="btn-cancel" class="btn btn-danger">Abbrechen</button>

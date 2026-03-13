@@ -185,9 +185,9 @@ export function initTable(container, clickCallback) {
         <button class="tbl-search-clear" id="tbl-search-clear" ${searchQuery ? "" : "hidden"}>&times;</button>
       </div>
       <div class="table-presets" id="table-presets">
-        <button class="preset-btn ${presetFilter === "high" ? "active" : ""}" data-preset="high">Konfidenz: Hoch</button>
-        <button class="preset-btn ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">Konfidenz: Mittel</button>
-        <button class="preset-btn ${presetFilter === "low" ? "active" : ""}" data-preset="low">Konfidenz: Tief</button>
+        <button class="preset-btn ${presetFilter === "high" ? "active" : ""}" data-preset="high">Hoch</button>
+        <button class="preset-btn ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">Mittel</button>
+        <button class="preset-btn ${presetFilter === "low" ? "active" : ""}" data-preset="low">Tief</button>
       </div>
       <div class="filter-pills" id="filter-pills"></div>
       <span class="toolbar-spacer"></span>
@@ -562,7 +562,7 @@ function renderFilterPills() {
       <button class="filter-pill-x" data-key="${f.key}" data-value="${escapeHtml(f.value)}" title="Filter entfernen">&times;</button>
     </span>`;
   }
-  html += `<button class="filter-reset-pill" id="filter-reset-all">Alle Filter zur\u00fccksetzen</button>`;
+  html += `<button class="filter-reset-pill" id="filter-reset-all">Filter zur\u00fccksetzen</button>`;
   container.innerHTML = html;
 
   // Preset pill remove
