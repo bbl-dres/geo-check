@@ -57,7 +57,9 @@
       "Bash(openssl dgst:*)",
       "Bash(openssl base64:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git merge:*)",
+      "Bash(git push:*)"
     ]
   }
 }
