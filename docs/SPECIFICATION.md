@@ -21,7 +21,7 @@ Organizations managing Swiss building portfolios need to verify that their inter
 ┌──────────┐     ┌───────────┐     ┌──────────────┐     ┌──────────────┐
 │  Upload   │ ──▸ │  Process   │ ──▸ │  Review Map  │ ──▸ │   Download   │
 │  CSV/XLSX │     │  vs. GWR   │     │  + Table     │     │  CSV/XLSX/   │
-│           │     │            │     │              │     │  GeoJSON/PDF │
+│           │     │            │     │              │     │  GeoJSON     │
 └──────────┘     └───────────┘     └──────────────┘     └──────────────┘
 ```
 
@@ -260,13 +260,13 @@ Split view:
 │                        │                          │
 ├────────────────────────┴─────────────────────────┤
 │  [Download CSV] [Download XLSX] [Download GeoJSON]│
-│  [Download PDF Report]  [Start New Check]         │
+│  [Start New Check]                                │
 └──────────────────────────────────────────────────┘
 ```
 
 #### Map
 
-- Base map: Swisstopo or OpenStreetMap (no Mapbox dependency — avoid API key requirement)
+- Base map: CARTO Positron via MapLibre GL JS (no API key required)
 - Buildings plotted at GWR coordinates (fallback to input coordinates if GWR not found)
 - Color coding by match score:
   - **Green** (≥80%): good match
@@ -313,14 +313,6 @@ Split view:
 - Properties: all output columns
 - Buildings without any coordinates are excluded (noted in export dialog)
 
-### 7.4 PDF Report
-
-- Generated client-side (jsPDF or similar)
-- Page 1: Summary statistics, score distribution chart
-- Page 2+: Table of buildings with poor matches (<50%) and not-found buildings
-- Map snapshot (static image rendered from the interactive map)
-- Header with date, file name, total buildings processed
-
 ---
 
 ## 8. Technology Stack
@@ -329,12 +321,9 @@ Split view:
 |---------|-----------|-----------|
 | Framework | Vanilla JS (ES6 modules) | No build step, no dependencies to audit, same as prototype |
 | File parsing | [Papa Parse](https://www.papaparse.com/) (CSV) + [SheetJS](https://sheetjs.com/) (XLSX) | Battle-tested, client-side, MIT licensed |
-| Map | [Leaflet](https://leafletjs.com/) + Swisstopo tiles | Free, no API key, Swiss national map tiles |
-| Map tiles | `https://wmts.geo.admin.ch/` (Swisstopo WMTS) | Official Swiss federal map service, free |
+| Map | [MapLibre GL JS](https://maplibre.org/) + CARTO Positron | Free, no API key, vector basemap |
 | String matching | Custom (Levenshtein / Jaro-Winkler) | ~50 lines of code, no library needed |
 | Excel export | SheetJS (write mode) | Already used in prototype |
-| PDF export | [jsPDF](https://github.com/parallax/jsPDF) + [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable) | Client-side PDF generation |
-| Charts (PDF) | [html2canvas](https://html2canvas.hertzen.com/) or Chart snapshot | For map image in PDF |
 | Styling | CSS custom properties (design tokens) | Carry over design system from prototype |
 | Icons | [Lucide](https://lucide.dev/) | Lightweight, already in use |
 
@@ -354,7 +343,7 @@ All API calls go directly from the browser to `api3.geo.admin.ch`. This API:
 - **No cookies or tracking**: no analytics, no third-party scripts beyond map tiles.
 - **No backend**: no server logs, no database, no infrastructure to secure.
 - **API calls**: only the EGID (a public identifier) is sent to the GWR API. No personal data, no internal IDs, no addresses are transmitted.
-- **CSP**: strict Content Security Policy allowing only Swisstopo, Leaflet CDN, and font resources.
+- **CSP**: no CSP meta tag — external resources (CARTO basemap, CDN scripts, Google Fonts) loaded directly.
 - **Offline-capable**: once loaded, the app works offline except for GWR API calls and map tiles. Could be packaged as a downloadable HTML file for air-gapped environments.
 
 ---
@@ -374,7 +363,7 @@ These features from the prototype are **intentionally removed**:
 - ~~Multi-user / roles~~ — single user, no auth
 - ~~Image uploads~~ — not relevant
 - ~~Supabase / Edge Functions~~ — no backend
-- ~~Mapbox~~ — replaced by free Leaflet + Swisstopo
+- ~~Mapbox~~ — replaced by free MapLibre GL JS + CARTO Positron
 
 ---
 
@@ -390,9 +379,9 @@ geo-check/
 │   ├── main.js             # App state machine (upload → processing → results)
 │   ├── upload.js            # File parsing, column detection, mapping UI
 │   ├── processor.js         # GWR API calls, batching, match scoring
-│   ├── map.js               # Leaflet map, markers, clustering, popups
+│   ├── map.js               # MapLibre GL map, markers, popups
 │   ├── table.js             # Results table, sorting, filtering
-│   ├── export.js            # CSV, XLSX, GeoJSON, PDF generation
+│   ├── export.js            # CSV, XLSX, GeoJSON generation
 │   └── utils.js             # String similarity, helpers
 ├── assets/
 │   └── swiss-logo-flag.svg  # Branding

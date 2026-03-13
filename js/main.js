@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     processedResults = [];
     showState("upload");
     document.getElementById("btn-new").hidden = true;
+    document.getElementById("btn-download").hidden = true;
     document.getElementById("file-input").value = "";
     const err = document.getElementById("upload-error");
     if (err) { err.hidden = true; err.innerHTML = ""; }
@@ -41,6 +42,30 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btn-new").addEventListener("click", resetToUpload);
   document.querySelector(".header-left").addEventListener("click", resetToUpload);
   document.querySelector(".header-left").style.cursor = "pointer";
+
+  // Download modal
+  const dlOverlay = document.getElementById("download-overlay");
+  document.getElementById("btn-download").addEventListener("click", () => {
+    dlOverlay.hidden = false;
+  });
+  document.getElementById("dl-close").addEventListener("click", () => {
+    dlOverlay.hidden = true;
+  });
+  dlOverlay.addEventListener("click", (e) => {
+    if (e.target === dlOverlay) dlOverlay.hidden = true;
+  });
+  document.getElementById("dl-csv").addEventListener("click", () => {
+    downloadCSV(processedResults);
+    dlOverlay.hidden = true;
+  });
+  document.getElementById("dl-xlsx").addEventListener("click", () => {
+    downloadXLSX(processedResults);
+    dlOverlay.hidden = true;
+  });
+  document.getElementById("dl-geojson").addEventListener("click", () => {
+    downloadGeoJSON(processedResults);
+    dlOverlay.hidden = true;
+  });
 });
 
 function showState(state) {
@@ -119,7 +144,8 @@ function showResults() {
 
   populateTable(processedResults);
 
-  // Show "Neue Prüfung" in header
+  // Show header buttons
+  document.getElementById("btn-download").hidden = false;
   document.getElementById("btn-new").hidden = false;
 
   // Initialize map after DOM reflow so the container has dimensions

@@ -49,10 +49,26 @@ export function initTable(container, clickCallback) {
         <button class="filter-btn" data-filter="skipped">\u00dcbersprungen</button>
       </div>
       <span class="toolbar-spacer"></span>
-      <div class="toolbar-export">
-        <button id="btn-csv" class="btn btn-secondary btn-sm">CSV</button>
-        <button id="btn-xlsx" class="btn btn-secondary btn-sm">XLSX</button>
-        <button id="btn-geojson" class="btn btn-secondary btn-sm">GeoJSON</button>
+      <div class="export-dd-wrap" id="export-dd-wrap">
+        <button class="export-dd-btn" id="export-dd-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="export-dd-menu" id="export-dd-menu" hidden>
+          <button class="export-dd-item" id="btn-csv">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            CSV herunterladen
+          </button>
+          <button class="export-dd-item" id="btn-xlsx">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Excel herunterladen
+          </button>
+          <button class="export-dd-item" id="btn-geojson">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            GeoJSON herunterladen
+          </button>
+        </div>
       </div>
       <div class="col-dd-wrap" id="col-dd-wrap">
         <button class="col-dd-btn" id="col-dd-btn">
@@ -102,6 +118,30 @@ export function initTable(container, clickCallback) {
 
   // Column toggle dropdown
   initColumnDropdown();
+
+  // Export dropdown
+  initExportDropdown();
+}
+
+function initExportDropdown() {
+  const btn = document.getElementById("export-dd-btn");
+  const menu = document.getElementById("export-dd-menu");
+
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.hidden = !menu.hidden;
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!document.getElementById("export-dd-wrap").contains(e.target)) {
+      menu.hidden = true;
+    }
+  });
+
+  // Close after clicking an item
+  menu.querySelectorAll(".export-dd-item").forEach((item) => {
+    item.addEventListener("click", () => { menu.hidden = true; });
+  });
 }
 
 function initColumnDropdown() {

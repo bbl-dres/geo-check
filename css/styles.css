@@ -523,9 +523,65 @@ main {
   flex: 1;
 }
 
-.toolbar-export {
-  display: flex;
+/* Export dropdown */
+.export-dd-wrap {
+  position: relative;
+}
+
+.export-dd-btn {
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-1);
+  height: 30px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  background: #fff;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--gray-600);
+  cursor: pointer;
+}
+
+.export-dd-btn:hover {
+  background: var(--gray-100);
+}
+
+.export-dd-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 100;
+  min-width: 200px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-1) 0;
+}
+
+.export-dd-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--gray-700);
+  cursor: pointer;
+  text-align: left;
+}
+
+.export-dd-item:hover {
+  background: var(--gray-100);
+}
+
+.export-dd-item svg {
+  flex-shrink: 0;
+  color: var(--gray-400);
 }
 
 .btn-sm {
@@ -813,6 +869,266 @@ main {
   color: var(--gray-500);
 }
 
+/* ── Download modal ── */
+.dl-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dl-modal {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  overflow: hidden;
+}
+
+.dl-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.dl-header h3 {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.dl-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  font-size: 20px;
+  color: var(--gray-400);
+  cursor: pointer;
+}
+
+.dl-close:hover {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+
+.dl-body {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.dl-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  background: #fff;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dl-option:hover {
+  border-color: var(--federal-blue);
+  background: rgba(26, 54, 93, 0.03);
+}
+
+.dl-option svg {
+  flex-shrink: 0;
+  color: var(--gray-400);
+}
+
+.dl-option:hover svg {
+  color: var(--federal-blue);
+}
+
+.dl-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dl-option-text strong {
+  font-size: var(--text-sm);
+  color: var(--gray-800);
+}
+
+.dl-option-text span {
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+}
+
+/* ── Map loading spinner ── */
+.map-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-50);
+}
+
+.map-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--gray-200);
+  border-top-color: var(--federal-blue);
+  border-radius: 50%;
+  animation: map-spin 0.7s linear infinite;
+}
+
+@keyframes map-spin {
+  to { transform: rotate(360deg); }
+}
+
+.map-loading-text {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--gray-500);
+}
+
+/* ── Basemap switcher ── */
+#basemap-switcher {
+  position: absolute;
+  bottom: 50px;
+  right: var(--space-2);
+  z-index: 5;
+}
+
+.bm-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: #fff;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: 5px;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  color: var(--gray-700);
+  cursor: pointer;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.15s;
+}
+
+.bm-btn:hover {
+  border-color: var(--federal-blue);
+  color: var(--federal-blue);
+}
+
+.bm-btn img {
+  width: 80px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: block;
+  object-fit: cover;
+}
+
+.bm-btn span {
+  font-size: var(--text-xs);
+  color: var(--gray-700);
+  line-height: 1;
+}
+
+.bm-panel {
+  position: absolute;
+  bottom: 0;
+  right: calc(100% + var(--space-3));
+  background: #fff;
+  border: 1.5px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  display: flex;
+  gap: var(--space-3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+  white-space: nowrap;
+}
+
+.bm-panel.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.bm-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: none;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  padding: 3px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.bm-option:hover {
+  border-color: var(--gray-400);
+}
+
+.bm-option.active {
+  border-color: var(--federal-blue);
+}
+
+.bm-option img {
+  width: 70px;
+  height: 50px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  display: block;
+  object-fit: cover;
+}
+
+.bm-opt-label {
+  font-size: var(--text-xs);
+  color: var(--gray-700);
+}
+
+.bm-option.active .bm-opt-label {
+  color: var(--federal-blue);
+  font-weight: 600;
+}
+
+/* ── Map attribution ── */
+.maplibregl-ctrl-attrib {
+  font-family: var(--font-family);
+  font-size: 10px;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 2px 6px;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: var(--federal-blue);
+  text-decoration: none;
+}
+
+.maplibregl-ctrl-attrib a:hover {
+  text-decoration: underline;
+}
 
 /* ── Map popup ── */
 .map-popup {

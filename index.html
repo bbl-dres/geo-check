@@ -37,6 +37,10 @@
         <button class="lang-btn">IT</button>
         <button class="lang-btn">EN</button>
       </div>
+      <button id="btn-download" class="btn btn-secondary" hidden>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Ergebnisse herunterladen
+      </button>
       <button id="btn-new" class="btn btn-primary" hidden>Neue Prüfung</button>
     </div>
   </header>
@@ -148,6 +152,39 @@
     </section>
 
   </main>
+
+  <!-- ── Download modal ── -->
+  <div id="download-overlay" class="dl-overlay" hidden>
+    <div class="dl-modal">
+      <div class="dl-header">
+        <h3>Ergebnisse herunterladen</h3>
+        <button id="dl-close" class="dl-close">&times;</button>
+      </div>
+      <div class="dl-body">
+        <button class="dl-option" id="dl-csv">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div class="dl-option-text">
+            <strong>CSV</strong>
+            <span>Semikolon-getrennt, UTF-8</span>
+          </div>
+        </button>
+        <button class="dl-option" id="dl-xlsx">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <div class="dl-option-text">
+            <strong>Excel (.xlsx)</strong>
+            <span>Ergebnisse + Zusammenfassung</span>
+          </div>
+        </button>
+        <button class="dl-option" id="dl-geojson">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <div class="dl-option-text">
+            <strong>GeoJSON</strong>
+            <span>Geodaten mit Koordinaten</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ── Footer ── -->
   <footer id="footer">
