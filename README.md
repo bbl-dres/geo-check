@@ -7,7 +7,8 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen?logo=github)](https://bbl-dres.github.io/geo-check/)
 [![JavaScript](https://img.shields.io/badge/javascript-ES_modules-F7DF1E?logo=javascript&logoColor=000)](js/)
 [![No Backend](https://img.shields.io/badge/backend-none-blue)](#privacy)
-[![License: Swiss Federal](https://img.shields.io/badge/org-Swiss_Federal_Admin-d8232a)](https://www.bbl.admin.ch/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Swiss Federal Admin](https://img.shields.io/badge/org-Swiss_Federal_Admin-d8232a)](https://www.bbl.admin.ch/)
 [![MapLibre](https://img.shields.io/badge/map-MapLibre_GL-396CB2?logo=maplibre&logoColor=fff)](https://maplibre.org/)
 [![GWR API](https://img.shields.io/badge/data-swisstopo_GWR_API-1a365d)](https://api3.geo.admin.ch)
 
@@ -19,10 +20,13 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 
 ## How It Works
 
-```
-Upload CSV/XLSX  ──>  Enrich vs. GWR  ──>  Review (Map + Table)  ──>  Download
-      ^                                                                   │
-      └──────────────────  Fix source data  <─────────────────────────────┘
+```mermaid
+graph LR
+    A["Upload<br/>CSV / XLSX"] --> B["Enrich<br/>vs. GWR"]
+    B --> C["Review<br/>Map + Table"]
+    C --> D["Download<br/>enriched file"]
+    D --> E["Fix source data"]
+    E --> A
 ```
 
 1. **Upload** a CSV or Excel file with your building data (requires `internal_id` and `egid` columns)
@@ -138,4 +142,4 @@ Geo-Check uses two public swisstopo endpoints (no API key required):
 
 ## License
 
-This project is developed by the [Bundesamt für Bauten und Logistik (BBL)](https://www.bbl.admin.ch/) of the Swiss Federal Administration.
+[MIT](LICENSE) — developed by the [Bundesamt für Bauten und Logistik (BBL)](https://www.bbl.admin.ch/) of the Swiss Federal Administration.
