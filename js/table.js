@@ -3,6 +3,7 @@
  */
 import { escapeHtml, scoreClass, confidenceLabel } from "./utils.js";
 import { resizeMap } from "./map.js";
+import { loadCodes, codeLabel, CODE_COLUMNS } from "./gwr-codes.js";
 
 let allResults = [];
 let filteredResults = [];
@@ -21,23 +22,30 @@ const DEFAULT_VISIBLE = new Set([
 ]);
 
 const COLUMNS = [
-  // --- Core identifiers & address ---
+  // --- Input columns (passed through) ---
   { key: "internal_id", label: "ID" },
-  { key: "gwr_egid", label: "EGID" },
+  { key: "egid", label: "EGID" },
+  { key: "street", label: "Strasse" },
+  { key: "street_number", label: "Nr" },
+  { key: "zip", label: "PLZ" },
+  { key: "city", label: "Ort" },
+  { key: "region", label: "Kanton" },
+  { key: "building_type", label: "Typ" },
+  { key: "latitude", label: "Breite" },
+  { key: "longitude", label: "L\u00e4nge" },
+  { key: "country", label: "Land" },
+  { key: "comment", label: "Kommentar" },
+  // --- GWR output columns (from API) ---
+  { key: "gwr_egid", label: "EGID (GWR)" },
+  { key: "gwr_egrid", label: "EGRID" },
   { key: "gwr_street", label: "Strasse (GWR)" },
-  { key: "gwr_street_number", label: "Nr" },
+  { key: "gwr_street_number", label: "Nr (GWR)" },
   { key: "gwr_zip", label: "PLZ (GWR)" },
   { key: "gwr_city", label: "Ort (GWR)" },
-  { key: "gwr_region", label: "Kt" },
-  { key: "gwr_building_type", label: "Typ (GWR)" },
-  // --- Results ---
-  { key: "match_score", label: "Score" },
-  { key: "confidence", label: "Konfidenz" },
-  { key: "gwr_match", label: "Status" },
-  // --- GWR detail attributes ---
-  { key: "gwr_egrid", label: "EGRID" },
   { key: "gwr_municipality", label: "Gemeinde" },
   { key: "gwr_municipality_nr", label: "BFS-Nr" },
+  { key: "gwr_region", label: "Kt (GWR)" },
+  { key: "gwr_building_type", label: "Typ (GWR)" },
   { key: "gwr_building_class", label: "Geb\u00e4udeklasse" },
   { key: "gwr_status", label: "Geb\u00e4udestatus" },
   { key: "gwr_year_built", label: "Baujahr" },
@@ -47,7 +55,19 @@ const COLUMNS = [
   { key: "gwr_dwellings", label: "Wohnungen" },
   { key: "gwr_latitude", label: "Breite (GWR)" },
   { key: "gwr_longitude", label: "L\u00e4nge (GWR)" },
-  // --- Per-field match results ---
+  { key: "gwr_coord_e", label: "E-Koord. (LV95)" },
+  { key: "gwr_coord_n", label: "N-Koord. (LV95)" },
+  { key: "gwr_coord_source", label: "Koord.-Herkunft" },
+  { key: "gwr_demolition_year", label: "Abbruchjahr" },
+  { key: "gwr_plot_nr", label: "Parzelle" },
+  { key: "gwr_building_name", label: "Geb\u00e4udename" },
+  { key: "gwr_heating_type", label: "Heizung" },
+  { key: "gwr_heating_energy", label: "Energietr\u00e4ger Heiz." },
+  { key: "gwr_hot_water_type", label: "Warmwasser" },
+  { key: "gwr_hot_water_energy", label: "Energietr\u00e4ger WW" },
+  // --- Match results (computed) ---
+  { key: "match_score", label: "Score" },
+  { key: "confidence", label: "Konfidenz" },
   { key: "match_street", label: "Match Strasse" },
   { key: "match_street_number", label: "Match Nr" },
   { key: "match_zip", label: "Match PLZ" },
@@ -55,6 +75,7 @@ const COLUMNS = [
   { key: "match_region", label: "Match Kt" },
   { key: "match_building_type", label: "Match Typ" },
   { key: "match_coordinates", label: "Match Koord." },
+  { key: "gwr_match", label: "Status" },
 ].map((c) => ({ ...c, visible: DEFAULT_VISIBLE.has(c.key) }));
 
 /** Columns available for the filter dropdown (categorical/useful ones) */
@@ -67,10 +88,15 @@ const FILTERABLE_COLUMNS = [
   { key: "gwr_municipality", label: "Gemeinde" },
   { key: "gwr_zip", label: "PLZ" },
   { key: "match_street", label: "Match Strasse" },
+  { key: "match_street_number", label: "Match Nr" },
   { key: "match_zip", label: "Match PLZ" },
   { key: "match_city", label: "Match Ort" },
+  { key: "match_region", label: "Match Kt" },
+  { key: "match_building_type", label: "Match Typ" },
   { key: "match_coordinates", label: "Match Koord." },
 ];
+
+const FILTERABLE_KEYS = new Set(FILTERABLE_COLUMNS.map((c) => c.key));
 
 function visibleCols() {
   return COLUMNS.filter((c) => c.visible);
@@ -116,6 +142,9 @@ function writeUrlParams() {
 export function initTable(container, clickCallback) {
   onRowClick = clickCallback;
   COLUMNS.forEach((c) => (c.visible = DEFAULT_VISIBLE.has(c.key)));
+
+  // Load GWR code labels
+  loadCodes();
 
   // Read URL params before rendering
   readUrlParams();
@@ -207,6 +236,7 @@ export function initTable(container, clickCallback) {
       container.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
       presetFilter = btn.dataset.preset;
+      renderFilterPills();
       applyFilter();
       renderBody();
       writeUrlParams();
@@ -426,6 +456,9 @@ function removeFilter(key, value) {
 
 function clearAllFilters() {
   activeFilters = [];
+  presetFilter = "all";
+  document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+  document.querySelector('.preset-btn[data-preset="all"]')?.classList.add("active");
   renderFilterPills();
   applyFilter();
   renderBody();
@@ -434,16 +467,54 @@ function clearAllFilters() {
   if (menu && !menu.hidden) renderFilterCheckboxList();
 }
 
+/** Activate a preset filter (used by confidence badge clicks) */
+function activatePreset(preset) {
+  if (preset === presetFilter) return;
+  presetFilter = preset;
+  document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+  document.querySelector(`.preset-btn[data-preset="${preset}"]`)?.classList.add("active");
+  renderFilterPills();
+  applyFilter();
+  renderBody();
+  writeUrlParams();
+}
+
+/** Add a filter if not already active (used by badge clicks) */
+function ensureFilter(key, value) {
+  if (!FILTERABLE_KEYS.has(key)) return;
+  if (activeFilters.some((f) => f.key === key && f.value === value)) return;
+  const col = FILTERABLE_COLUMNS.find((c) => c.key === key);
+  activeFilters.push({ key, value, label: `${col.label}: ${value}` });
+  renderFilterPills();
+  applyFilter();
+  renderBody();
+  writeUrlParams();
+  const menu = document.getElementById("filter-dd-menu");
+  if (menu && !menu.hidden) renderFilterCheckboxList();
+}
+
+const PRESET_LABELS = { high: "Hoch", medium: "Mittel", low: "Tief" };
+
 function renderFilterPills() {
   const container = document.getElementById("filter-pills");
   if (!container) return;
 
-  if (!activeFilters.length) {
+  const hasPreset = presetFilter !== "all";
+  if (!activeFilters.length && !hasPreset) {
     container.innerHTML = "";
     return;
   }
 
   let html = "";
+
+  // Preset pill
+  if (hasPreset) {
+    html += `<span class="filter-pill">
+      Konfidenz: ${PRESET_LABELS[presetFilter]}
+      <button class="filter-pill-x" id="filter-pill-preset" title="Filter entfernen">&times;</button>
+    </span>`;
+  }
+
   for (const f of activeFilters) {
     html += `<span class="filter-pill">
       ${escapeHtml(f.label)}
@@ -453,7 +524,21 @@ function renderFilterPills() {
   html += `<button class="filter-reset-pill" id="filter-reset-all">Alle Filter zur\u00fccksetzen</button>`;
   container.innerHTML = html;
 
-  container.querySelectorAll(".filter-pill-x").forEach((btn) => {
+  // Preset pill remove
+  const presetPill = document.getElementById("filter-pill-preset");
+  if (presetPill) {
+    presetPill.addEventListener("click", () => {
+      presetFilter = "all";
+      document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+      document.querySelector('.preset-btn[data-preset="all"]')?.classList.add("active");
+      renderFilterPills();
+      applyFilter();
+      renderBody();
+      writeUrlParams();
+    });
+  }
+
+  container.querySelectorAll(".filter-pill-x[data-key]").forEach((btn) => {
     btn.addEventListener("click", () => {
       removeFilter(btn.dataset.key, btn.dataset.value);
     });
@@ -570,18 +655,27 @@ function renderBody() {
     html += `<tr data-index="${row._index}">`;
     for (const col of cols) {
       const val = row[col.key] ?? "";
-      if (col.key === "match_score" && val !== "") {
-        html += `<td><span class="score-badge ${scoreClass(Number(val))}">${escapeHtml(val)}%</span></td>`;
+      const filterable = FILTERABLE_KEYS.has(col.key) && val !== "";
+      const filterAttr = filterable ? ` data-filter-key="${col.key}" data-filter-value="${escapeHtml(val)}"` : "";
+      const filterCls = filterable ? " filterable-badge" : "";
+
+      if (col.key === "match_score") {
+        html += `<td>${val !== "" ? escapeHtml(val) + "%" : ""}</td>`;
       } else if (col.key === "confidence") {
         const score = row.match_score;
         const label = confidenceLabel(score);
         const cls = score != null && score !== "" ? scoreClass(Number(score)) : "score-none";
-        html += `<td><span class="score-badge ${cls}">${escapeHtml(label)}</span></td>`;
+        const confPreset = { "Hoch": "high", "Mittel": "medium", "Tief": "low" }[label] || "";
+        const confClick = confPreset ? ` filterable-badge" data-conf-preset="${confPreset}` : "";
+        html += `<td><span class="score-badge ${cls}${confClick}">${escapeHtml(label)}</span></td>`;
       } else if (col.key === "gwr_match") {
-        html += `<td><span class="status-badge status-${val}">${escapeHtml(val)}</span></td>`;
+        html += `<td><span class="status-badge status-${val}${filterCls}"${filterAttr}>${escapeHtml(val)}</span></td>`;
       } else if (col.key.startsWith("match_") && val) {
         const mcls = val === "exact" ? "score-good" : val === "similar" ? "score-partial" : val === "mismatch" ? "score-poor" : "score-none";
-        html += `<td><span class="score-badge ${mcls}">${escapeHtml(val)}</span></td>`;
+        html += `<td><span class="score-badge ${mcls}${filterCls}"${filterAttr}>${escapeHtml(val)}</span></td>`;
+      } else if (CODE_COLUMNS[col.key] && val !== "") {
+        const label = codeLabel(CODE_COLUMNS[col.key], val);
+        html += `<td title="${escapeHtml(val)}">${escapeHtml(label)}</td>`;
       } else {
         html += `<td>${escapeHtml(val)}</td>`;
       }
@@ -596,6 +690,18 @@ function renderBody() {
       if (onRowClick) onRowClick(idx);
       tbody.querySelectorAll("tr").forEach((r) => r.classList.remove("selected"));
       tr.classList.add("selected");
+    });
+  });
+
+  // Clickable badge filters
+  tbody.querySelectorAll(".filterable-badge").forEach((badge) => {
+    badge.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (badge.dataset.confPreset) {
+        activatePreset(badge.dataset.confPreset);
+      } else {
+        ensureFilter(badge.dataset.filterKey, badge.dataset.filterValue);
+      }
     });
   });
 

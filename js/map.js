@@ -9,6 +9,9 @@ let onMarkerClick = null;
 let resultsData = [];
 let dataBounds = null;
 let lastGeoJSON = { type: "FeatureCollection", features: [] };
+let searchMarker = null;
+
+const SEARCH_API = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
 
 const BASEMAPS = [
   { id: "positron",    label: "Hell",    thumb: "https://a.basemaps.cartocdn.com/light_all/7/66/45.png",
@@ -59,6 +62,130 @@ export function onSummaryToggle(callback) {
 /** Show/hide the summary toggle button on the map */
 export function setSummaryToggleVisible(visible) {
   if (summaryToggleControl) summaryToggleControl.setHidden(!visible);
+}
+
+/** Custom control: location search via Swisstopo */
+class LocationSearchControl {
+  onAdd(mapInstance) {
+    this._map = mapInstance;
+    this._container = document.createElement("div");
+    this._container.className = "maplibregl-ctrl maplibregl-ctrl-group loc-search-ctrl";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.title = "Standort suchen";
+    btn.className = "loc-search-toggle";
+    btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+
+    const panel = document.createElement("div");
+    panel.className = "loc-search-panel";
+    panel.hidden = true;
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "loc-search-input";
+    input.placeholder = "Standort suchen\u2026";
+
+    const resultsList = document.createElement("div");
+    resultsList.className = "loc-search-results";
+
+    panel.appendChild(input);
+    panel.appendChild(resultsList);
+    this._container.appendChild(btn);
+    this._container.appendChild(panel);
+
+    let expanded = false;
+    let debounceTimer = null;
+
+    const collapse = () => {
+      expanded = false;
+      panel.hidden = true;
+      btn.classList.remove("active");
+    };
+
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      expanded = !expanded;
+      panel.hidden = !expanded;
+      btn.classList.toggle("active", expanded);
+      if (expanded) {
+        input.value = "";
+        resultsList.innerHTML = "";
+        setTimeout(() => input.focus(), 50);
+      }
+    });
+
+    document.addEventListener("click", (e) => {
+      if (expanded && !this._container.contains(e.target)) collapse();
+    });
+
+    panel.addEventListener("click", (e) => e.stopPropagation());
+
+    input.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      const q = input.value.trim();
+      if (q.length < 2) { resultsList.innerHTML = ""; return; }
+      debounceTimer = setTimeout(async () => {
+        const results = await fetchLocations(q);
+        renderSearchResults(resultsList, results, collapse);
+      }, 300);
+    });
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") collapse();
+    });
+
+    return this._container;
+  }
+  onRemove() {
+    this._container.remove();
+    this._map = null;
+  }
+}
+
+async function fetchLocations(query) {
+  try {
+    const params = new URLSearchParams({
+      searchText: query,
+      type: "locations",
+      sr: "4326",
+      limit: "5"
+    });
+    const resp = await fetch(`${SEARCH_API}?${params}`);
+    if (!resp.ok) return [];
+    const data = await resp.json();
+    return data.results || [];
+  } catch {
+    return [];
+  }
+}
+
+function renderSearchResults(container, results, onSelect) {
+  if (!results.length) {
+    container.innerHTML = `<div class="loc-search-empty">Keine Ergebnisse</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  for (const r of results) {
+    const item = document.createElement("button");
+    item.className = "loc-search-item";
+    item.innerHTML = r.attrs.label;
+    item.addEventListener("click", () => {
+      placeSearchMarker(r.attrs.lat, r.attrs.lon, r.attrs.label);
+      onSelect();
+    });
+    container.appendChild(item);
+  }
+}
+
+function placeSearchMarker(lat, lon, label) {
+  if (searchMarker) searchMarker.remove();
+  searchMarker = new maplibregl.Marker({ color: "#1a365d" })
+    .setLngLat([lon, lat])
+    .setPopup(new maplibregl.Popup({ offset: 25 }).setHTML(`<div class="map-popup">${label}</div>`))
+    .addTo(map);
+  searchMarker.togglePopup();
+  map.flyTo({ center: [lon, lat], zoom: 15 });
 }
 
 /** Custom control: reset view / zoom to extent */
@@ -219,6 +346,7 @@ export function initMap(container, clickCallback) {
     attributionControl: false
   });
 
+  map.addControl(new LocationSearchControl(), "top-right");
   map.addControl(new maplibregl.NavigationControl(), "top-right");
   map.addControl(new ResetViewControl(), "top-right");
   summaryToggleControl = new SummaryToggleControl();

@@ -1,0 +1,680 @@
+{
+  "GKSCE": {
+    "901": {
+      "de": "Amtliche Vermessung, DM.01",
+      "fr": "Mensuration officielle, MD01",
+      "it": "Misurazione ufficiale, DM.01"
+    },
+    "902": {
+      "de": "Aus amtlicher Vermessung hergeleitet",
+      "fr": "Produites à partir de la mensuration officielle",
+      "it": "Derivazione dalla misurazione ufficiale"
+    },
+    "903": {
+      "de": "Angabe Nachführungsgeometer",
+      "fr": "Indication du géomètre conservateur",
+      "it": "Indicazione del geometra revisore"
+    },
+    "904": {
+      "de": "Angabe Baugesuch",
+      "fr": "Indication de la demande de permis de construire",
+      "it": "Indicazione domanda di costruzione"
+    },
+    "905": {
+      "de": "Bundesamt für Statistik",
+      "fr": "Office fédéral de la statistique",
+      "it": "Ufficio federale di statistica"
+    },
+    "906": {
+      "de": "Datensatz GeoPost",
+      "fr": "Données de GeoPost",
+      "it": "Dati GeoPost"
+    },
+    "909": {
+      "de": "Andere Datenquelle",
+      "fr": "Autre source",
+      "it": "Altra fonte di dati"
+    }
+  },
+  "GSTAT": {
+    "1001": {
+      "de": "Gebäude projektiert",
+      "fr": "Bâtiment en projet",
+      "it": "Edificio in progetto"
+    },
+    "1002": {
+      "de": "Gebäude bewilligt",
+      "fr": "Bâtiment autorisé",
+      "it": "Edificio autorizzato"
+    },
+    "1003": {
+      "de": "Gebäude im Bau",
+      "fr": "Bâtiment en construction",
+      "it": "Edificio in costruzione"
+    },
+    "1004": {
+      "de": "Gebäude bestehend",
+      "fr": "Bâtiment existant",
+      "it": "Edificio esistente"
+    },
+    "1005": {
+      "de": "Gebäude nicht nutzbar",
+      "fr": "Bâtiment non utilisable",
+      "it": "Edificio non utilizzabile"
+    },
+    "1007": {
+      "de": "Gebäude abgebrochen",
+      "fr": "Bâtiment démoli",
+      "it": "Edificio demolito"
+    },
+    "1008": {
+      "de": "Gebäude nicht realisiert",
+      "fr": "Bâtiment non réalisé",
+      "it": "Edificio non realizzato"
+    }
+  },
+  "GKAT": {
+    "1010": {
+      "de": "Provisorische Unterkunft",
+      "fr": "Habitation provisoire",
+      "it": "Abitazione provvisoria"
+    },
+    "1020": {
+      "de": "Gebäude mit ausschliesslicher Wohnnutzung",
+      "fr": "Bâtiment exclusivement à usage d'habitation",
+      "it": "Edificio ad uso esclusivamente abitativo"
+    },
+    "1021": {
+      "de": "Einfamilienhaus, ohne Nebennutzung",
+      "fr": "Maison individuelle",
+      "it": "Casa unifamiliare senza utilizzazione accessoria"
+    },
+    "1025": {
+      "de": "Mehrfamilienhaus, ohne Nebennutzung",
+      "fr": "Maison à plusieurs logements",
+      "it": "Casa plurifamiliare senza utilizzazione accessoria"
+    },
+    "1030": {
+      "de": "Andere Wohngebäude (Wohngebäude mit Nebennutzung)",
+      "fr": "Autre bâtiment d'habitation (Bâtiment d'habitation à usage annexe)",
+      "it": "Altro edificio abitativo (con utilizzazione accessoria)"
+    },
+    "1040": {
+      "de": "Gebäude mit teilweiser Wohnnutzung",
+      "fr": "Bâtiment partiellement à usage d'habitation",
+      "it": "Edificio ad uso parzialmente abitativo"
+    },
+    "1060": {
+      "de": "Gebäude ohne Wohnnutzung",
+      "fr": "Bâtiment sans usage d'habitation",
+      "it": "Edificio ad uso non abitativo"
+    },
+    "1080": {
+      "de": "Sonderbau",
+      "fr": "Construction particulière",
+      "it": "Costruzione speciale"
+    }
+  },
+  "GKLAS": {
+    "1110": {
+      "de": "Gebäude mit einer Wohnung",
+      "fr": "Maison à un logement",
+      "it": "Edifici ad una abitazione"
+    },
+    "1121": {
+      "de": "Gebäude mit zwei  Wohnungen",
+      "fr": "Maison à deux logements",
+      "it": "Edifici a due abitazioni"
+    },
+    "1122": {
+      "de": "Gebäude mit drei oder mehr Wohnungen",
+      "fr": "Immeuble à trois logements ou plus",
+      "it": "Edifici a tre e più abitazioni"
+    },
+    "1130": {
+      "de": "Wohngebäude für Gemeinschaften",
+      "fr": "Habitat communautaire",
+      "it": "Residenze per collettività"
+    },
+    "1211": {
+      "de": "Hotelgebäude",
+      "fr": "Hôtel",
+      "it": "Edifici alberghieri"
+    },
+    "1212": {
+      "de": "Andere Gebäude für kurzfristige Beherbergung",
+      "fr": "Autre bâtiment d'hébergement de tourisme",
+      "it": "Altri edifici per alloggio di breve durata"
+    },
+    "1220": {
+      "de": "Bürogebäude",
+      "fr": "Immeuble de bureaux",
+      "it": "Fabbricati per uffici"
+    },
+    "1230": {
+      "de": "Gross-und Einzelhandelsgebäude",
+      "fr": "Bâtiment commercial",
+      "it": "Fabbricati per il commercio all'ingrosso e al dettaglio"
+    },
+    "1231": {
+      "de": "Restaurants und Bars in Gebäuden ohne Wohnnutzung",
+      "fr": "Restaurants et bars dans des bâtiments sans usage résidentiel",
+      "it": "Ristoranti e bar in edifici non residenziali"
+    },
+    "1241": {
+      "de": "Gebäude des Verkehrs- und Nachrichtenwesens ohne Garagen",
+      "fr": "Bâtiment des transports et des communications sans garage",
+      "it": "Edificio dei trasporti e delle comunicazioni senza garage"
+    },
+    "1242": {
+      "de": "Garagengebäude",
+      "fr": "Garage",
+      "it": "Fabbricati per garage"
+    },
+    "1251": {
+      "de": "Industriegebäude",
+      "fr": "Bâtiment industriel",
+      "it": "Fabbricati industriali"
+    },
+    "1252": {
+      "de": "Behälter, Silos und Lagergebäude",
+      "fr": "Réservoir, silo et entrepôt",
+      "it": "Serbatoi, sili e depositi"
+    },
+    "1261": {
+      "de": "Gebäude für Kultur- und Freizeitzwecke",
+      "fr": "Bâtiment à usage culturel ou récréatif",
+      "it": "Edifici desinati ad attività ricreative"
+    },
+    "1262": {
+      "de": "Museen und Bibliotheken",
+      "fr": "Musée et bibliothèque",
+      "it": "Musei e biblioteche"
+    },
+    "1263": {
+      "de": "Schul- und Hochschulgebäude, Forschungseinrichtungen",
+      "fr": "Bâtiment pour l'enseignement et la recherche",
+      "it": "Edifici scolastici, universitari ed edifici di ricerca"
+    },
+    "1264": {
+      "de": "Krankenhäuser und Facheinrichtungen des Gesundheitswesens",
+      "fr": "Hôpital et établissement de santé",
+      "it": "Edifici per fini ospedalieri e di assistenza sociale"
+    },
+    "1265": {
+      "de": "Sporthallen",
+      "fr": "Salle de sport",
+      "it": "Sale sportive"
+    },
+    "1271": {
+      "de": "Landwirtschaftliche Betriebsgebäude",
+      "fr": "Bâtiment d'exploitation agricole",
+      "it": "Fabbricati rurali non residenziali"
+    },
+    "1272": {
+      "de": "Kirchen und sonstige Kultgebäude",
+      "fr": "Édifice cultuel et religieux",
+      "it": "Ed.  utilizzati come luoghi di culto e per attività relig."
+    },
+    "1273": {
+      "de": "Denkmäler oder unter Denkmalschutz stehende Bauwerke",
+      "fr": "Monument historique ou classé",
+      "it": "Monumenti storici o protetti"
+    },
+    "1274": {
+      "de": "Sonstige Hochbauten, anderweitig nicht genannt",
+      "fr": "Autre bâtiment non classé ailleurs",
+      "it": "Altri edifici, n.c.a."
+    },
+    "1275": {
+      "de": "Andere Gebäude für die kollektive Unterkunft",
+      "fr": "Autres bâtiments pour l'hébergement collectif",
+      "it": "Altri edifici che ospitano collettività"
+    },
+    "1276": {
+      "de": "Gebäude für die Tierhaltung",
+      "fr": "Bâtiments pour la garde d'animaux",
+      "it": "Edifici per la tenuta di animali"
+    },
+    "1277": {
+      "de": "Gebäude für den Pflanzenbau",
+      "fr": "Bâtiments pour les cultures végétales",
+      "it": "Edifici per le colture vegetali"
+    },
+    "1278": {
+      "de": "Andere landwirtschaftliche Gebäude",
+      "fr": "Autres bâtiments d'exploitation agricole",
+      "it": "Altri fabbricati rurali non residenziali"
+    }
+  },
+  "GWAERZH1": {
+    "7400": {
+      "de": "Kein Wärmeerzeuger",
+      "fr": "Pas de générateur de chaleur",
+      "it": "Senza generatore di calore"
+    },
+    "7410": {
+      "de": "Wärmepumpe für ein Gebäude",
+      "fr": "Pompe à chaleur PAC pour un seul bâtiment",
+      "it": "Pompa di calore PAC per un solo edificio"
+    },
+    "7411": {
+      "de": "Wärmepumpe für mehrere Gebäude",
+      "fr": "Pompe à chaleur PAC pour plusieurs bâtiments",
+      "it": "Pompa di calore PAC per più edifici"
+    },
+    "7420": {
+      "de": "Thermische Solaranlage für ein Gebäude",
+      "fr": "Installation solaire thermique pour un seul bâtiment",
+      "it": "Impianto solare termico per un solo edificio"
+    },
+    "7421": {
+      "de": "Thermische Solaranlage für mehrere Gebäude",
+      "fr": "Installation solaire thermique pour plusieurs bâtiments",
+      "it": "Impianto solare termico per più edifici"
+    },
+    "7430": {
+      "de": "Heizkessel (generisch) für ein Gebäude",
+      "fr": "Chaudière (générique) pour un seul bâtiment",
+      "it": "Caldaia (generica) per un solo edificio"
+    },
+    "7431": {
+      "de": "Heizkessel (generisch) für mehrere Gebäude",
+      "fr": "Chaudière (générique) pour plusieurs bâtiments",
+      "it": "Caldaia (generica) per più edifici"
+    },
+    "7432": {
+      "de": "Heizkessel nicht kondensierend für ein Gebäude",
+      "fr": "Chaudière standard pour un seul bâtiment",
+      "it": "Caldaia standard per un solo edificio"
+    },
+    "7433": {
+      "de": "Heizkessel nicht kondensierend für mehrere Gebäude",
+      "fr": "Chaudière standard pour plusieurs bâtiments",
+      "it": "Caldaia standard per più edifici"
+    },
+    "7434": {
+      "de": "Heizkessel kondensierend für ein Gebäude",
+      "fr": "Chaudière à condensation pour un seul bâtiment",
+      "it": "Caldaia a condensazione per un solo edificio"
+    },
+    "7435": {
+      "de": "Heizkessel kondensierend für mehrere Gebäude",
+      "fr": "Chaudière à condensation pour plusieurs bâtiments",
+      "it": "Caldaia a condensazione per più edifici"
+    },
+    "7436": {
+      "de": "Ofen",
+      "fr": "Poêle",
+      "it": "Stufa"
+    },
+    "7440": {
+      "de": "Wärmekraftkopplungsanlage für ein Gebäude",
+      "fr": "Installation couplage chaleur-force pour un seul bâtiment",
+      "it": "Impianto di cogenerazione di energia elettrica e termica per un solo edificio"
+    },
+    "7441": {
+      "de": "Wärmekraftkopplungsanlage für mehrere Gebäude",
+      "fr": "Installation couplage chaleur-force pour plusieurs bâtiments",
+      "it": "Impianto di cogenerazione di energia elettrica e termica per più edifici"
+    },
+    "7450": {
+      "de": "Elektrospeicher-Zentralheizung für ein Gebäude",
+      "fr": "Chauffage central électrique pour un seul bâtiment",
+      "it": "Riscaldamento centrale elettrico per un solo edificio"
+    },
+    "7451": {
+      "de": "Elektrospeicher-Zentralheizung für mehrere Gebäude",
+      "fr": "Chauffage central électrique pour plusieurs bâtiments",
+      "it": "Riscaldamento centrale elettrico per più edifici"
+    },
+    "7452": {
+      "de": "Elektro direkt",
+      "fr": "Chauffage électrique direct (y compris radiateur infra-rouge)",
+      "it": "Radiatori elettrici (compresi quelli a infrarossi)"
+    },
+    "7460": {
+      "de": "Wärmetauscher (einschliesslich für Fernwärme) für ein Gebäude",
+      "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour un seul bâtiment",
+      "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per un solo edificio"
+    },
+    "7461": {
+      "de": "Wärmetauscher (einschliesslich für Fernwärme) für mehrere Gebäude",
+      "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour plusieurs bâtiments",
+      "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per più edifici"
+    },
+    "7499": {
+      "de": "Andere",
+      "fr": "Autre",
+      "it": "Altro"
+    }
+  },
+  "GENH1": {
+    "7500": {
+      "de": "Keine",
+      "fr": "Aucune",
+      "it": "Nessuna"
+    },
+    "7501": {
+      "de": "Luft",
+      "fr": "Air",
+      "it": "Aria"
+    },
+    "7510": {
+      "de": "Erdwärme (generisch)",
+      "fr": "Géothermie (générique)",
+      "it": "Geotermia (generica)"
+    },
+    "7511": {
+      "de": "Erdwärmesonde",
+      "fr": "Sonde géothermique",
+      "it": "Sonda geotermica"
+    },
+    "7512": {
+      "de": "Erdregister",
+      "fr": "Serpentin géothermique",
+      "it": "Serpentina geotermica"
+    },
+    "7513": {
+      "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+      "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+      "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+    },
+    "7520": {
+      "de": "Gas",
+      "fr": "Gaz",
+      "it": "Gas"
+    },
+    "7530": {
+      "de": "Heizöl",
+      "fr": "Mazout",
+      "it": "Olio da riscaldamento"
+    },
+    "7540": {
+      "de": "Holz (generisch)",
+      "fr": "Bois (générique)",
+      "it": "Legna (generica)"
+    },
+    "7541": {
+      "de": "Holz (Stückholz)",
+      "fr": "Bois (bûches)",
+      "it": "Legna (ceppi)"
+    },
+    "7542": {
+      "de": "Holz (Pellets)",
+      "fr": "Bois (granulés - pellets)",
+      "it": "Legna (granulati pellet)"
+    },
+    "7543": {
+      "de": "Holz (Schnitzel)",
+      "fr": "Bois (bois déchiqueté, copeaux)",
+      "it": "Legna (cippato, trucioli)"
+    },
+    "7550": {
+      "de": "Abwärme (innerhalb des Gebäudes)",
+      "fr": "Rejets thermiques (dans le bâtiment)",
+      "it": "Scarichi termici (nell'edificio)"
+    },
+    "7560": {
+      "de": "Elektrizität",
+      "fr": "Electricité",
+      "it": "Elettricità"
+    },
+    "7570": {
+      "de": "Sonne (thermisch)",
+      "fr": "Soleil (thermique)",
+      "it": "Sole (termico)"
+    },
+    "7580": {
+      "de": "Fernwärme (generisch)",
+      "fr": "Chaleur produite à distance (générique)",
+      "it": "Calore prodotto a distanza (generico)"
+    },
+    "7581": {
+      "de": "Fernwärme (Hochtemperatur)",
+      "fr": "Chaleur produite à distance (haute température)",
+      "it": "Calore prodotto a distanza (alta temperatura)"
+    },
+    "7582": {
+      "de": "Fernwärme (Niedertemperatur)",
+      "fr": "Chaleur produite à distance (basse température)",
+      "it": "Calore prodotto a distanza (bassa temperatura)"
+    },
+    "7598": {
+      "de": "Unbestimmt",
+      "fr": "Indéterminé",
+      "it": "Indeterminata"
+    },
+    "7599": {
+      "de": "Andere",
+      "fr": "Autre",
+      "it": "Altro"
+    }
+  },
+  "GENW1": {
+    "7500": {
+      "de": "Keine",
+      "fr": "Aucune",
+      "it": "Nessuna"
+    },
+    "7501": {
+      "de": "Luft",
+      "fr": "Air",
+      "it": "Aria"
+    },
+    "7510": {
+      "de": "Erdwärme (generisch)",
+      "fr": "Géothermie (générique)",
+      "it": "Geotermia (generica)"
+    },
+    "7511": {
+      "de": "Erdwärmesonde",
+      "fr": "Sonde géothermique",
+      "it": "Sonda geotermica"
+    },
+    "7512": {
+      "de": "Erdregister",
+      "fr": "Serpentin géothermique",
+      "it": "Serpentina geotermica"
+    },
+    "7513": {
+      "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+      "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+      "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+    },
+    "7520": {
+      "de": "Gas",
+      "fr": "Gaz",
+      "it": "Gas"
+    },
+    "7530": {
+      "de": "Heizöl",
+      "fr": "Mazout",
+      "it": "Olio da riscaldamento"
+    },
+    "7540": {
+      "de": "Holz (generisch)",
+      "fr": "Bois (générique)",
+      "it": "Legna (generica)"
+    },
+    "7541": {
+      "de": "Holz (Stückholz)",
+      "fr": "Bois (bûches)",
+      "it": "Legna (ceppi)"
+    },
+    "7542": {
+      "de": "Holz (Pellets)",
+      "fr": "Bois (granulés - pellets)",
+      "it": "Legna (granulati pellet)"
+    },
+    "7543": {
+      "de": "Holz (Schnitzel)",
+      "fr": "Bois (bois déchiqueté, copeaux)",
+      "it": "Legna (cippato, trucioli)"
+    },
+    "7550": {
+      "de": "Abwärme (innerhalb des Gebäudes)",
+      "fr": "Rejets thermiques (dans le bâtiment)",
+      "it": "Scarichi termici (nell'edificio)"
+    },
+    "7560": {
+      "de": "Elektrizität",
+      "fr": "Electricité",
+      "it": "Elettricità"
+    },
+    "7570": {
+      "de": "Sonne (thermisch)",
+      "fr": "Soleil (thermique)",
+      "it": "Sole (termico)"
+    },
+    "7580": {
+      "de": "Fernwärme (generisch)",
+      "fr": "Chaleur produite à distance (générique)",
+      "it": "Calore prodotto a distanza (generico)"
+    },
+    "7581": {
+      "de": "Fernwärme (Hochtemperatur)",
+      "fr": "Chaleur produite à distance (haute température)",
+      "it": "Calore prodotto a distanza (alta temperatura)"
+    },
+    "7582": {
+      "de": "Fernwärme (Niedertemperatur)",
+      "fr": "Chaleur produite à distance (basse température)",
+      "it": "Calore prodotto a distanza (bassa temperatura)"
+    },
+    "7598": {
+      "de": "Unbestimmt",
+      "fr": "Indéterminé",
+      "it": "Indeterminata"
+    },
+    "7599": {
+      "de": "Andere",
+      "fr": "Autre",
+      "it": "Altro"
+    }
+  },
+  "GWAERZW1": {
+    "7600": {
+      "de": "Kein Wärmeerzeuger",
+      "fr": "Pas de générateur de chaleur",
+      "it": "Senza generatore di calore"
+    },
+    "7610": {
+      "de": "Wärmepumpe",
+      "fr": "Pompe à chaleur PAC",
+      "it": "Pompa di calore PAC"
+    },
+    "7620": {
+      "de": "Thermische Solaranlage",
+      "fr": "Installation solaire thermique",
+      "it": "Impianto solare termico"
+    },
+    "7630": {
+      "de": "Heizkessel (generisch)",
+      "fr": "Chaudière (générique)",
+      "it": "Caldaia (generica)"
+    },
+    "7632": {
+      "de": "Heizkessel nicht kondensierend",
+      "fr": "Chaudière standard",
+      "it": "Caldaia standard"
+    },
+    "7634": {
+      "de": "Heizkessel kondensierend",
+      "fr": "Chaudière à condensation",
+      "it": "Caldaia a condensazione"
+    },
+    "7640": {
+      "de": "Wärmekraftkopplungsanlage",
+      "fr": "Installation couplage chaleur-force",
+      "it": "Impianto di cogenerazione di energia elettrica e termica"
+    },
+    "7650": {
+      "de": "Zentraler Elektroboiler",
+      "fr": "Boiler électrique central",
+      "it": "Boiler centrale elettrico"
+    },
+    "7651": {
+      "de": "Kleinboiler",
+      "fr": "Petit boiler",
+      "it": "Piccolo boiler"
+    },
+    "7660": {
+      "de": "Wärmetauscher (einschliesslich für Fernwärme)",
+      "fr": "Echangeur de chaleur (y compris pour la chaleur à distance)",
+      "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento"
+    },
+    "7699": {
+      "de": "Andere",
+      "fr": "Autre",
+      "it": "Altro"
+    }
+  },
+  "GBAUP": {
+    "8011": {
+      "de": "Periode vor 1919",
+      "fr": "Période avant 1919",
+      "it": "Periodo prima del 1919"
+    },
+    "8012": {
+      "de": "Periode von 1919 bis 1945",
+      "fr": "Période de 1919 à 1945",
+      "it": "Periodo dal 1919 al 1945"
+    },
+    "8013": {
+      "de": "Periode von 1946 bis 1960",
+      "fr": "Période de 1946 à 1960",
+      "it": "Periodo dal 1946 al 1960"
+    },
+    "8014": {
+      "de": "Periode von 1961 bis 1970",
+      "fr": "Période de 1961 à 1970",
+      "it": "Periodo dal 1961 al 1970"
+    },
+    "8015": {
+      "de": "Periode von 1971 bis 1980",
+      "fr": "Période de 1971 à 1980",
+      "it": "Periodo dal 1971 al 1980"
+    },
+    "8016": {
+      "de": "Periode von 1981 bis 1985",
+      "fr": "Période de 1981 à 1985",
+      "it": "Periodo dal 1981 al 1985"
+    },
+    "8017": {
+      "de": "Periode von 1986 bis 1990",
+      "fr": "Période de 1986 à 1990",
+      "it": "Periodo dal 1986 al 1990"
+    },
+    "8018": {
+      "de": "Periode von 1991 bis 1995",
+      "fr": "Période de 1991 à 1995",
+      "it": "Periodo dal 1991 al 1995"
+    },
+    "8019": {
+      "de": "Periode von 1996 bis 2000",
+      "fr": "Période de 1996 à 2000",
+      "it": "Periodo dal 1996 al 2000"
+    },
+    "8020": {
+      "de": "Periode von 2001 bis 2005",
+      "fr": "Période de 2001 à 2005",
+      "it": "Periodo dal 2001 al 2005"
+    },
+    "8021": {
+      "de": "Periode von 2006 bis 2010",
+      "fr": "Période de 2006 à 2010",
+      "it": "Periodo dal 2006 al 2010"
+    },
+    "8022": {
+      "de": "Periode von 2011 bis 2015",
+      "fr": "Période de 2011 à 2015",
+      "it": "Periodo dal 2011 al 2015"
+    },
+    "8023": {
+      "de": "Periode nach 2015",
+      "fr": "Période après 2015",
+      "it": "Periodo dopo il 2015"
+    }
+  }
+}

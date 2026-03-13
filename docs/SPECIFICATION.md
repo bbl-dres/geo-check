@@ -17,12 +17,11 @@ Organizations managing Swiss building portfolios need to verify that their inter
 
 ## 2. Core Workflow
 
-```
-┌──────────┐     ┌───────────┐     ┌──────────────┐     ┌──────────────┐
-│  Upload   │ ──▸ │  Process   │ ──▸ │  Review Map  │ ──▸ │   Download   │
-│  CSV/XLSX │     │  vs. GWR   │     │  + Table     │     │  CSV/XLSX/   │
-│           │     │            │     │              │     │  GeoJSON     │
-└──────────┘     └───────────┘     └──────────────┘     └──────────────┘
+```mermaid
+graph LR
+    A["Upload<br/>CSV / XLSX"] --> B["Process<br/>vs. GWR"]
+    B --> C["Review<br/>Map + Table"]
+    C --> D["Download<br/>CSV / XLSX / GeoJSON"]
 ```
 
 **One direction. No side quests.**
@@ -114,39 +113,67 @@ GET https://api3.geo.admin.ch/rest/services/ech/MapServer/find
 
 > Note: `strname` is an **array** (supports multilingual street names). `deinr` is a separate string field for the house number. `dplz4` is an integer. `gkat`/`gklas`/`gstat` are integer codes. `gbauj` (construction year) is often null — `gbaup` (construction period) is more reliable.
 
-**Response fields used:**
+**Response fields used** (see §5.2 for full column descriptions and multilingual aliases):
 
-| API field | Type | Mapped to | Description |
-|-----------|------|-----------|-------------|
-| `egid` | string | `gwr_egid` | Confirmed EGID |
-| `egrid` | string | `gwr_egrid` | Real estate identifier (EGRID) |
-| `strname[0]` | string (from array) | `gwr_street` | Street name (first/primary language) |
-| `deinr` | string | `gwr_street_number` | House number |
-| `dplz4` | integer | `gwr_zip` | Postal code |
-| `dplzname` | string | `gwr_city` | City / locality name |
-| `ggdename` | string | `gwr_municipality` | Municipality name |
-| `ggdenr` | integer | `gwr_municipality_nr` | BFS municipality number |
-| `gdekt` | string | `gwr_region` | Canton abbreviation |
-| `gkat` | integer | `gwr_building_type` | Building category code |
-| `gklas` | integer | `gwr_building_class` | Building class code |
-| `gstat` | integer | `gwr_status` | Building status code |
-| `gbauj` | integer/null | `gwr_year_built` | Construction year (often null) |
-| `gbaup` | integer | `gwr_construction_period` | Construction period code |
-| `garea` | integer | `gwr_area` | Building footprint area (m²) |
-| `gastw` | integer | `gwr_floors` | Number of floors |
-| `ganzwhg` | integer | `gwr_dwellings` | Number of dwellings |
-| `geometry.y` | float | `gwr_latitude` | WGS84 latitude (when `sr=4326`) |
-| `geometry.x` | float | `gwr_longitude` | WGS84 longitude (when `sr=4326`) |
+| API field | Type | Mapped to |
+|-----------|------|-----------|
+| `egid` | string | `gwr_egid` |
+| `egrid` | string | `gwr_egrid` |
+| `strname[0]` | string (from array) | `gwr_street` |
+| `deinr` | string | `gwr_street_number` |
+| `dplz4` | integer | `gwr_zip` |
+| `dplzname` | string | `gwr_city` |
+| `ggdename` | string | `gwr_municipality` |
+| `ggdenr` | integer | `gwr_municipality_nr` |
+| `gdekt` | string | `gwr_region` |
+| `gkat` | integer | `gwr_building_type` |
+| `gklas` | integer | `gwr_building_class` |
+| `gstat` | integer | `gwr_status` |
+| `gbauj` | integer/null | `gwr_year_built` |
+| `gbaup` | integer | `gwr_construction_period` |
+| `garea` | integer | `gwr_area` |
+| `gastw` | integer | `gwr_floors` |
+| `ganzwhg` | integer | `gwr_dwellings` |
+| `geometry.y` | float | `gwr_latitude` |
+| `geometry.x` | float | `gwr_longitude` |
+| `gkode` | float | `gwr_coord_e` |
+| `gkodn` | float | `gwr_coord_n` |
+| `gksce` | integer | `gwr_coord_source` |
+| `gabbj` | integer/null | `gwr_demolition_year` |
+| `lparz` | string | `gwr_plot_nr` |
+| `gbez` | string | `gwr_building_name` |
+| `gwaerzh1` | integer | `gwr_heating_type` |
+| `genh1` | integer | `gwr_heating_energy` |
+| `gwaerzw1` | integer | `gwr_hot_water_type` |
+| `genw1` | integer | `gwr_hot_water_energy` |
 
 If the EGID is not found in GWR, the row is marked with `gwr_match = "not_found"`.
 
-### 4.2 Rate Limiting & Batching
+### 4.2 Code Resolution
+
+Several GWR fields return integer codes (e.g., `gkat=1020`, `gstat=1004`). The app resolves these to multilingual labels at render time using `data/gwr-codes.json` (generated from `assets/GWR Codes.xlsx`). The raw code is preserved in the data; labels are shown in the table with the code as tooltip. Resolved attributes:
+
+| Code attribute | Column | Example code | Example label (DE) |
+|---------------|--------|-------------|-------------------|
+| GKAT | `gwr_building_type` | 1020 | Gebäude mit ausschliesslicher Wohnnutzung |
+| GKLAS | `gwr_building_class` | 1122 | Gebäude mit drei oder mehr Wohnungen |
+| GSTAT | `gwr_status` | 1004 | Gebäude bestehend |
+| GBAUP | `gwr_construction_period` | 8012 | Periode von 1919 bis 1945 |
+| GKSCE | `gwr_coord_source` | 901 | Amtliche Vermessung, DM.01 |
+| GWAERZH1 | `gwr_heating_type` | 7460 | Wärmetauscher (einschl. Fernwärme) |
+| GENH1 | `gwr_heating_energy` | 7580 | Fernwärme (generisch) |
+| GWAERZW1 | `gwr_hot_water_type` | 7660 | Wärmetauscher (einschl. Fernwärme) |
+| GENW1 | `gwr_hot_water_energy` | 7580 | Fernwärme (generisch) |
+
+Labels are available in DE, FR, and IT. Language follows the app's current locale setting.
+
+### 4.3 Rate Limiting & Batching
 
 - Requests are sent sequentially or in small batches (max 5 concurrent) with a configurable delay (default: 100ms between batches) to respect the public API.
 - A progress bar shows `processed / total` with estimated time remaining.
 - The user can cancel processing at any time; already-processed rows are kept.
 
-### 4.3 Match Scoring
+### 4.4 Match Scoring
 
 After retrieving GWR data, the app computes a **match score (0–100%)** per building by comparing input columns against GWR values. Only columns that exist in both input and GWR are scored.
 
@@ -172,38 +199,75 @@ After retrieving GWR data, the app computes a **match score (0–100%)** per bui
 
 ## 5. Output Columns
 
-The processed file contains **all original input columns** plus the following appended columns:
+The processed file contains **all original input columns** plus appended GWR and match result columns. Column order: input first, then GWR output, then match results — matching the table UI.
 
-| Column | Description |
-|--------|-------------|
-| `gwr_egid` | EGID as confirmed by GWR |
-| `gwr_egrid` | Real estate identifier (EGRID) from GWR |
-| `gwr_street` | Street name from GWR (`strname[0]`) |
-| `gwr_street_number` | House number from GWR (`deinr`) |
-| `gwr_zip` | Postal code from GWR (`dplz4`) |
-| `gwr_city` | City from GWR (`dplzname`) |
-| `gwr_municipality` | Municipality from GWR (`ggdename`) |
-| `gwr_municipality_nr` | BFS municipality number (`ggdenr`) |
-| `gwr_region` | Canton from GWR (`gdekt`) |
-| `gwr_building_type` | Building category code from GWR (`gkat`) |
-| `gwr_building_class` | Building class code from GWR (`gklas`) |
-| `gwr_status` | Building status code from GWR (`gstat`) |
-| `gwr_year_built` | Construction year from GWR (`gbauj`, may be empty) |
-| `gwr_construction_period` | Construction period code from GWR (`gbaup`) |
-| `gwr_area` | Building footprint area in m² from GWR (`garea`) |
-| `gwr_floors` | Number of floors from GWR (`gastw`) |
-| `gwr_dwellings` | Number of dwellings from GWR (`ganzwhg`) |
-| `gwr_latitude` | WGS84 latitude from GWR |
-| `gwr_longitude` | WGS84 longitude from GWR |
-| `match_score` | Overall match percentage (0–100) |
-| `match_street` | Street comparison result |
-| `match_street_number` | Street number comparison result |
-| `match_zip` | Zip comparison result |
-| `match_city` | City comparison result |
-| `match_region` | Region comparison result |
-| `match_building_type` | Building type comparison result |
-| `match_coordinates` | Coordinate distance comparison result |
-| `gwr_match` | Overall status: `matched`, `not_found`, `skipped` |
+> **Register abbreviations:** GWR (DE) = RFB (FR) = REA (IT) — Gebäude- und Wohnungsregister / Registre fédéral des bâtiments / Registro federale degli edifici.
+
+### 5.1 Input Columns (passed through)
+
+| # | Column | EN | DE | FR | IT | Description |
+|---|--------|----|----|----|-----|-------------|
+| 1 | `internal_id` | Internal ID | Interne ID | ID interne | ID interno | Organization's internal building identifier |
+| 2 | `egid` | EGID | EGID | EGID | EGID | Federal building identifier as provided in input |
+| 3 | `street` | Street | Strasse | Rue | Via | Street name from input |
+| 4 | `street_number` | Number | Nr | Numéro | Numero | House number from input |
+| 5 | `zip` | ZIP | PLZ | NPA | NPA | Postal code from input |
+| 6 | `city` | City | Ort | Localité | Località | City / locality from input |
+| 7 | `region` | Region | Kanton | Canton | Cantone | Canton abbreviation from input |
+| 8 | `building_type` | Building type | Typ | Type de bâtiment | Tipo di edificio | Building category code from input |
+| 9 | `latitude` | Latitude | Breite | Latitude | Latitudine | WGS84 latitude from input |
+| 10 | `longitude` | Longitude | Länge | Longitude | Longitudine | WGS84 longitude from input |
+| 11 | `country` | Country | Land | Pays | Paese | Country code from input |
+| 12 | `comment` | Comment | Kommentar | Commentaire | Commento | Free-text note (passed through, not processed) |
+
+### 5.2 GWR Output Columns (from API)
+
+| # | Column | EN | DE | FR | IT | Description |
+|---|--------|----|----|----|-----|-------------|
+| 13 | `gwr_egid` | EGID (GWR) | EGID (GWR) | EGID (RFB) | EGID (REA) | EGID as confirmed by GWR |
+| 14 | `gwr_egrid` | EGRID | EGRID | EGRID | EGRID | Real estate identifier (EGRID) from GWR |
+| 15 | `gwr_street` | Street (GWR) | Strasse (GWR) | Rue (RFB) | Via (REA) | Street name from GWR (`strname[0]`) |
+| 16 | `gwr_street_number` | Number (GWR) | Nr (GWR) | N° (RFB) | N. (REA) | House number from GWR (`deinr`) |
+| 17 | `gwr_zip` | ZIP (GWR) | PLZ (GWR) | NPA (RFB) | NPA (REA) | Postal code from GWR (`dplz4`) |
+| 18 | `gwr_city` | City (GWR) | Ort (GWR) | Localité (RFB) | Località (REA) | City from GWR (`dplzname`) |
+| 19 | `gwr_municipality` | Municipality | Gemeinde | Commune | Comune | Municipality from GWR (`ggdename`) |
+| 20 | `gwr_municipality_nr` | Municipality nr. | BFS-Nr | N° OFS | N. UST | BFS municipality number (`ggdenr`) |
+| 21 | `gwr_region` | Canton (GWR) | Kt (GWR) | Canton (RFB) | Cantone (REA) | Canton from GWR (`gdekt`) |
+| 22 | `gwr_building_type` | Building type (GWR) | Typ (GWR) | Type (RFB) | Tipo (REA) | Building category code from GWR (`gkat`) |
+| 23 | `gwr_building_class` | Building class | Gebäudeklasse | Classe de bâtiment | Classe di edificio | Building class code from GWR (`gklas`) |
+| 24 | `gwr_status` | Building status | Gebäudestatus | Statut du bâtiment | Stato dell'edificio | Building status code from GWR (`gstat`) |
+| 25 | `gwr_year_built` | Year built | Baujahr | Année de construction | Anno di costruzione | Construction year from GWR (`gbauj`, may be empty) |
+| 26 | `gwr_construction_period` | Constr. period | Bauperiode | Période de constr. | Periodo di costr. | Construction period code from GWR (`gbaup`) |
+| 27 | `gwr_area` | Area (m²) | Fläche (m²) | Surface (m²) | Superficie (m²) | Building footprint area from GWR (`garea`) |
+| 28 | `gwr_floors` | Floors | Geschosse | Étages | Piani | Number of floors from GWR (`gastw`) |
+| 29 | `gwr_dwellings` | Dwellings | Wohnungen | Logements | Abitazioni | Number of dwellings from GWR (`ganzwhg`) |
+| 30 | `gwr_latitude` | Latitude (GWR) | Breite (GWR) | Latitude (RFB) | Latitudine (REA) | WGS84 latitude from GWR |
+| 31 | `gwr_longitude` | Longitude (GWR) | Länge (GWR) | Longitude (RFB) | Longitudine (REA) | WGS84 longitude from GWR |
+| 32 | `gwr_coord_e` | E-coord (LV95) | E-Koord. (LV95) | E-coord (MN95) | E-coord (MN95) | Swiss LV95 easting (`gkode`) |
+| 33 | `gwr_coord_n` | N-coord (LV95) | N-Koord. (LV95) | N-coord (MN95) | N-coord (MN95) | Swiss LV95 northing (`gkodn`) |
+| 34 | `gwr_coord_source` | Coord. source | Koord.-Herkunft | Source coord. | Origine coord. | Coordinate origin code (`gksce`) |
+| 35 | `gwr_demolition_year` | Demolition year | Abbruchjahr | Année de démolition | Anno di demolizione | Demolition year (`gabbj`, may be empty) |
+| 36 | `gwr_plot_nr` | Plot nr. | Parzelle | N° parcelle | N. particella | Plot / parcel number (`lparz`) |
+| 37 | `gwr_building_name` | Building name | Gebäudename | Nom du bâtiment | Nome dell'edificio | Building name (`gbez`, often empty) |
+| 38 | `gwr_heating_type` | Heating type | Heizung | Type de chauffage | Tipo di riscald. | Primary heating generator code (`gwaerzh1`) |
+| 39 | `gwr_heating_energy` | Heating energy | Energietr. Heiz. | Source d'énergie chauff. | Fonte en. risc. | Primary heating energy source (`genh1`) |
+| 40 | `gwr_hot_water_type` | Hot water type | Warmwasser | Type eau chaude | Tipo acqua calda | Primary hot water generator code (`gwaerzw1`) |
+| 41 | `gwr_hot_water_energy` | Hot water energy | Energietr. WW | Source d'énergie EC | Fonte en. AC | Primary hot water energy source (`genw1`) |
+
+### 5.3 Match Result Columns (computed)
+
+| # | Column | EN | DE | FR | IT | Description |
+|---|--------|----|----|----|-----|-------------|
+| 42 | `match_score` | Score | Score | Score | Score | Overall match percentage (0–100) |
+| 43 | `confidence` | Confidence | Konfidenz | Confiance | Confidenza | Confidence label based on score thresholds |
+| 44 | `match_street` | Street match | Match Strasse | Corresp. rue | Corrisp. via | Street comparison result |
+| 45 | `match_street_number` | Number match | Match Nr | Corresp. n° | Corrisp. n. | Street number comparison result |
+| 46 | `match_zip` | ZIP match | Match PLZ | Corresp. NPA | Corrisp. NPA | Zip comparison result |
+| 47 | `match_city` | City match | Match Ort | Corresp. localité | Corrisp. località | City comparison result |
+| 48 | `match_region` | Region match | Match Kt | Corresp. canton | Corrisp. cantone | Region comparison result |
+| 49 | `match_building_type` | Type match | Match Typ | Corresp. type | Corrisp. tipo | Building type comparison result |
+| 50 | `match_coordinates` | Coord. match | Match Koord. | Corresp. coord. | Corrisp. coord. | Coordinate distance comparison result |
+| 51 | `gwr_match` | Status | Status | Statut | Stato | Overall status: `matched`, `not_found`, `skipped` |
 
 ---
 
@@ -213,18 +277,12 @@ The processed file contains **all original input columns** plus the following ap
 
 Single page, three states:
 
-```
-┌─────────────────────────────────────────────────┐
-│  [Logo]  Geo-Check          [Language: DE/FR/IT] │
-├─────────────────────────────────────────────────┤
-│                                                  │
-│          State 1: UPLOAD                         │
-│          State 2: PROCESSING                     │
-│          State 3: RESULTS                        │
-│                                                  │
-├─────────────────────────────────────────────────┤
-│  Footer: API info · Version · GitHub link        │
-└─────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    Header["Header: 🇨🇭 Geo-Check · Language DE / FR / IT"]
+    Content["Content — one of:<br/>① Upload · ② Processing · ③ Results"]
+    Footer["Footer: API info · Version · GitHub link"]
+    Header --> Content --> Footer
 ```
 
 ### 6.2 State 1 — Upload
@@ -247,26 +305,29 @@ Single page, three states:
 
 ### 6.4 State 3 — Results
 
-Split view:
+Split view with collapsible summary panel:
 
-```
-┌──────────────────────────────────────────────────┐
-│  Summary bar: 1,230 buildings · 89% matched ·    │
-│  avg score: 74% · 42 not found · 8 skipped       │
-├────────────────────────┬─────────────────────────┤
-│                        │                          │
-│       Map              │     Table (scrollable)   │
-│   (interactive)        │     sortable, filterable  │
-│                        │                          │
-├────────────────────────┴─────────────────────────┤
-│  [Download CSV] [Download XLSX] [Download GeoJSON]│
-│  [Start New Check]                                │
-└──────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    subgraph top[" "]
+        direction LR
+        Map["Map — interactive<br/>🔍 +/- ⤢ ◫<br/>Basemap switcher"]
+        Summary["Summary Panel<br/>320px<br/>Donut · Stats"]
+    end
+    Handle["═══ drag handle · resize ═══"]
+    Toolbar["Search │ Alle│Hoch│Mittel│Tief │ pills… │ Export▾ │ Spalten▾ │ Filter▾"]
+    Table["Table — sortable, filterable, paginated"]
+    Pagination["1–25 von 1230 · « ‹ 1 2 3 … › » · 25/Seite"]
+    top --> Handle --> Toolbar --> Table --> Pagination
 ```
 
 #### Map
 
-- Base map: CARTO Positron via MapLibre GL JS (no API key required)
+- **Basemaps**: 4 options via basemap switcher (bottom-right):
+  - CARTO Positron (Hell) — default
+  - CARTO Dark Matter (Dunkel)
+  - CARTO Voyager (Farbe)
+  - Swisstopo Luftbild (satellite imagery)
 - Buildings plotted at GWR coordinates (fallback to input coordinates if GWR not found)
 - Color coding by match score:
   - **Green** (≥80%): good match
@@ -274,62 +335,143 @@ Split view:
   - **Red** (<50%): poor match
   - **Grey**: not found / skipped
 - Click a marker → highlight row in table, show popup with key fields
-- Clustering for large datasets (>500 buildings)
+
+##### Map controls (top-right, stacked)
+
+| Control | Description |
+|---------|-------------|
+| **Location search** | Search icon → expands input panel to the left. Queries Swisstopo SearchServer (`type=locations`, `sr=4326`). Shows up to 5 suggestions with highlighted matches. Clicking a result places a marker and flies to zoom 15. |
+| **Navigation** | MapLibre default zoom +/− and compass |
+| **Reset view** | Zoom to fit all data points (`fitBounds`) |
+| **Summary toggle** | Re-opens the summary panel when closed (hidden while panel is open) |
+
+##### Location search API
+
+```
+GET https://api3.geo.admin.ch/rest/services/ech/SearchServer
+  ?searchText={query}
+  &type=locations
+  &sr=4326
+  &limit=5
+```
+
+Response: `results[].attrs.label` (HTML with `<b>` highlights), `results[].attrs.lat`, `results[].attrs.lon` (WGS84).
+
+#### Summary Panel
+
+- Width: 320px, collapsible with close button
+- **Donut chart**: SVG ring chart showing overall average confidence score (percentage + "Hoch"/"Mittel"/"Tief" label)
+- Statistics: total buildings, matched/not found/skipped counts, confidence distribution bars
+- When collapsed, a MapLibre control button appears to re-open it
 
 #### Table
 
-- Sortable by any column, filterable by match status and free-text search
-- Click a row → highlight marker on map
-- Color-coded `match_score` cell and confidence label (same thresholds as map)
-- **Column visibility**: users can show/hide columns via a "Spalten" dropdown in the toolbar
-- Pagination (100 rows per page) for large datasets
+- **Default height**: 40vh (35vh on tablet), resizable via drag handle between map and table
+- Sortable by any column (click header)
+- Click a row → highlight marker on map, fly to location
+- `match_score` rendered as plain text (e.g. "85%")
+- `confidence` badges (Hoch/Mittel/Tief) color-coded with score thresholds
+- Status badges (`matched`/`not_found`/`skipped`) and match result badges (`exact`/`similar`/`mismatch`) color-coded
+- Code columns display resolved labels (see §4.2 for code resolution details)
+- **Clickable badges**: all categorical badges are clickable filters — clicking adds the corresponding value as an active filter. Confidence badges activate the corresponding preset.
+
+##### Table toolbar
+
+| Element | Position | Description |
+|---------|----------|-------------|
+| **Search** | Left | Free-text search across all columns, with clear button |
+| **Presets** | After search | Confidence-based quick filters: Alle / Hoch (≥80%) / Mittel (50–79%) / Tief (<50%) |
+| **Filter pills** | After presets | Active filters shown as removable pills (e.g. "Status: matched ×", "Konfidenz: Hoch ×"). Includes "Alle Filter zurücksetzen" reset pill when any filters are active. |
+| **Export** | Right | Dropdown: CSV / Excel / GeoJSON |
+| **Spalten** | Right | Column visibility dropdown with "Alle anzeigen" / "Alle ausblenden" buttons at top, then checkboxes per column (max-height 320px, scrollable) |
+| **Filter** | Right | Multi-select checkbox dropdown grouped by column, with search bar at top. Supports multiple values per column (OR within same column, AND across columns). |
+
+##### Filter system
+
+- **URL sync**: all filters (preset, search, column filters) are persisted in URL query parameters via `replaceState`. Supports multiple values per key via `append`.
+- **Multi-select**: multiple values for the same column use OR logic; filters across different columns use AND logic.
+- **Filterable columns**: Status, Kanton, Gebäudetyp, Gebäudeklasse, Gebäudestatus, Gemeinde, PLZ, and all per-field match results.
+
+##### Pagination
+
+Green-inventory style: entries info (left), page buttons with ellipsis (center), page size dropdown (right). Page sizes: 10, 25 (default), 50, 100.
 
 ##### Default visible columns
 
-| Column | Label | Description |
-|--------|-------|-------------|
-| `internal_id` | ID | User's internal building ID |
-| `gwr_egid` | EGID | Federal building identifier |
-| `gwr_street` | Strasse (GWR) | Street name from GWR |
-| `gwr_street_number` | Nr | House number from GWR |
-| `gwr_zip` | PLZ (GWR) | Postal code from GWR |
-| `gwr_city` | Ort (GWR) | City from GWR |
-| `match_score` | Score | Overall match percentage (0–100%) |
-| `confidence` | Konfidenz | Confidence label: Hoch (≥80%), Mittel (50–79%), Tief (<50%) |
-| `gwr_match` | Status | Overall status: matched / not_found / skipped |
+See §5 for full descriptions and multilingual aliases.
+
+| # | Column | Label |
+|---|--------|-------|
+| 1 | `internal_id` | ID |
+| 13 | `gwr_egid` | EGID (GWR) |
+| 15 | `gwr_street` | Strasse (GWR) |
+| 16 | `gwr_street_number` | Nr (GWR) |
+| 17 | `gwr_zip` | PLZ (GWR) |
+| 18 | `gwr_city` | Ort (GWR) |
+| 42 | `match_score` | Score |
+| 43 | `confidence` | Konfidenz |
+| 51 | `gwr_match` | Status |
 
 ##### Hidden by default (toggle via column dropdown)
 
-**GWR detail attributes:**
+See §5 for full descriptions and multilingual aliases.
 
-| Column | Label | Description |
-|--------|-------|-------------|
-| `gwr_region` | Kt | Canton abbreviation |
-| `gwr_building_type` | Typ (GWR) | Building category code |
-| `gwr_egrid` | EGRID | Real estate identifier |
-| `gwr_municipality` | Gemeinde | Municipality name |
-| `gwr_municipality_nr` | BFS-Nr | BFS municipality number |
-| `gwr_building_class` | Gebäudeklasse | Building class code |
-| `gwr_status` | Gebäudestatus | Building status code |
-| `gwr_year_built` | Baujahr | Construction year |
-| `gwr_construction_period` | Bauperiode | Construction period code |
-| `gwr_area` | Fläche (m²) | Building footprint area |
-| `gwr_floors` | Geschosse | Number of floors |
-| `gwr_dwellings` | Wohnungen | Number of dwellings |
-| `gwr_latitude` | Breite (GWR) | WGS84 latitude |
-| `gwr_longitude` | Länge (GWR) | WGS84 longitude |
+**Input columns:**
+
+| # | Column | Label |
+|---|--------|-------|
+| 2 | `egid` | EGID |
+| 3 | `street` | Strasse |
+| 4 | `street_number` | Nr |
+| 5 | `zip` | PLZ |
+| 6 | `city` | Ort |
+| 7 | `region` | Kanton |
+| 8 | `building_type` | Typ |
+| 9 | `latitude` | Breite |
+| 10 | `longitude` | Länge |
+| 11 | `country` | Land |
+| 12 | `comment` | Kommentar |
+
+**GWR detail columns:**
+
+| # | Column | Label |
+|---|--------|-------|
+| 14 | `gwr_egrid` | EGRID |
+| 19 | `gwr_municipality` | Gemeinde |
+| 20 | `gwr_municipality_nr` | BFS-Nr |
+| 21 | `gwr_region` | Kt (GWR) |
+| 22 | `gwr_building_type` | Typ (GWR) |
+| 23 | `gwr_building_class` | Gebäudeklasse |
+| 24 | `gwr_status` | Gebäudestatus |
+| 25 | `gwr_year_built` | Baujahr |
+| 26 | `gwr_construction_period` | Bauperiode |
+| 27 | `gwr_area` | Fläche (m²) |
+| 28 | `gwr_floors` | Geschosse |
+| 29 | `gwr_dwellings` | Wohnungen |
+| 30 | `gwr_latitude` | Breite (GWR) |
+| 31 | `gwr_longitude` | Länge (GWR) |
+| 32 | `gwr_coord_e` | E-Koord. (LV95) |
+| 33 | `gwr_coord_n` | N-Koord. (LV95) |
+| 34 | `gwr_coord_source` | Koord.-Herkunft |
+| 35 | `gwr_demolition_year` | Abbruchjahr |
+| 36 | `gwr_plot_nr` | Parzelle |
+| 37 | `gwr_building_name` | Gebäudename |
+| 38 | `gwr_heating_type` | Heizung |
+| 39 | `gwr_heating_energy` | Energietr. Heiz. |
+| 40 | `gwr_hot_water_type` | Warmwasser |
+| 41 | `gwr_hot_water_energy` | Energietr. WW |
 
 **Per-field match results:**
 
-| Column | Label | Values |
-|--------|-------|--------|
-| `match_street` | Match Strasse | exact / similar / mismatch / empty |
-| `match_street_number` | Match Nr | exact / mismatch / empty |
-| `match_zip` | Match PLZ | exact / mismatch / empty |
-| `match_city` | Match Ort | exact / similar / mismatch / empty |
-| `match_region` | Match Kt | exact / mismatch / empty |
-| `match_building_type` | Match Typ | exact / mismatch / empty |
-| `match_coordinates` | Match Koord. | exact / similar / mismatch / empty |
+| # | Column | Label |
+|---|--------|-------|
+| 44 | `match_street` | Match Strasse |
+| 45 | `match_street_number` | Match Nr |
+| 46 | `match_zip` | Match PLZ |
+| 47 | `match_city` | Match Ort |
+| 48 | `match_region` | Match Kt |
+| 49 | `match_building_type` | Match Typ |
+| 50 | `match_coordinates` | Match Koord. |
 
 ### 6.5 Responsive Behavior
 
@@ -377,11 +519,16 @@ Split view:
 
 ### No Backend Required
 
-All API calls go directly from the browser to `api3.geo.admin.ch`. This API:
-- Is public (no API key)
-- Supports CORS
-- Returns JSON
-- Has no documented rate limits (but we throttle to be respectful)
+All API calls go directly from the browser to `api3.geo.admin.ch`. Two endpoints are used:
+
+1. **MapServer/find** — EGID lookup for building data matching (see §4.1)
+2. **SearchServer** — Location search for map navigation (`type=locations`, see §6.4)
+
+Both APIs:
+- Are public (no API key)
+- Support CORS
+- Return JSON
+- Have no documented rate limits (but we throttle EGID lookups to be respectful)
 
 ---
 
@@ -396,26 +543,19 @@ All API calls go directly from the browser to `api3.geo.admin.ch`. This API:
 
 ---
 
-## 10. Non-Goals (Explicitly Out of Scope)
+## 10. Out of Scope
 
-These features from the prototype are **intentionally removed**:
+This tool is intentionally minimal. The following are not planned:
 
-- ~~User authentication / login~~ — not needed
-- ~~Database / persistence~~ — session only
-- ~~Backend API / rule engine~~ — processing is client-side
-- ~~Kanban board / task management~~ — not a workflow tool
-- ~~Comments / events / audit log~~ — no collaboration
-- ~~Detail panel with edit mode~~ — read-only results
-- ~~Confidence scoring (5 dimensions)~~ — replaced by simple match score
-- ~~Statistics dashboard~~ — summary bar is sufficient
-- ~~Multi-user / roles~~ — single user, no auth
-- ~~Image uploads~~ — not relevant
-- ~~Supabase / Edge Functions~~ — no backend
-- ~~Mapbox~~ — replaced by free MapLibre GL JS + CARTO Positron
+- User authentication, roles, or multi-user collaboration
+- Server-side processing, databases, or persistent storage
+- Workflow features (kanban, task management, comments, audit logs)
+- Editing or writing back to GWR — results are read-only
+- Building image uploads or document attachments
 
 ---
 
-## 11. File Structure (Planned)
+## 11. File Structure
 
 ```
 geo-check/
@@ -430,7 +570,10 @@ geo-check/
 │   ├── map.js               # MapLibre GL map, markers, popups
 │   ├── table.js             # Results table, sorting, filtering
 │   ├── export.js            # CSV, XLSX, GeoJSON generation
+│   ├── gwr-codes.js         # Code → label resolution (loads gwr-codes.json)
 │   └── utils.js             # String similarity, helpers
+├── data/
+│   └── gwr-codes.json       # GWR code tables (DE/FR/IT) from GWR Codes.xlsx
 ├── assets/
 │   └── swiss-logo-flag.svg  # Branding
 ├── docs/
@@ -446,6 +589,5 @@ No `node_modules`, no `package.json`, no build step. All dependencies loaded via
 
 1. **Map provider**: Swisstopo WMTS is free but only covers Switzerland. Do we need a fallback for buildings with coordinates outside CH? (Likely not — GWR is CH-only.)
 2. **Batch size**: What's a practical limit? 10,000 buildings at ~100ms per request ≈ 17 minutes. Should we warn for files >5,000 rows?
-3. **GWR code labels**: Should we resolve `gkat=1020` to "Einfamilienhaus" in the output, or keep raw codes? Recommendation: add a `gwr_building_type_label` column with the German label.
-4. **Multi-language**: The prototype is German-only. Should v2 support FR/IT given the Swiss context? Low effort if we externalize strings from the start.
-5. **Downloadable version**: Should we offer a single-file HTML download for offline/air-gapped use? The only barrier is CDN dependencies — we could inline them.
+3. **Multi-language**: Multilingual column aliases are now specified in §5. Remaining question: should the full UI (labels, buttons, messages) support runtime language switching between DE/FR/IT?
+4. **Downloadable version**: Should we offer a single-file HTML download for offline/air-gapped use? The only barrier is CDN dependencies — we could inline them.

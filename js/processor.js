@@ -86,6 +86,16 @@ async function processOne(row) {
     result.gwr_dwellings = String(attr.ganzwhg ?? "");
     result.gwr_latitude = gwrData.geometry ? String(gwrData.geometry.y) : "";
     result.gwr_longitude = gwrData.geometry ? String(gwrData.geometry.x) : "";
+    result.gwr_coord_e = String(attr.gkode ?? "");
+    result.gwr_coord_n = String(attr.gkodn ?? "");
+    result.gwr_coord_source = String(attr.gksce ?? "");
+    result.gwr_demolition_year = String(attr.gabbj ?? "");
+    result.gwr_plot_nr = String(attr.lparz ?? "");
+    result.gwr_building_name = attr.gbez || "";
+    result.gwr_heating_type = String(attr.gwaerzh1 ?? "");
+    result.gwr_heating_energy = String(attr.genh1 ?? "");
+    result.gwr_hot_water_type = String(attr.gwaerzw1 ?? "");
+    result.gwr_hot_water_energy = String(attr.genw1 ?? "");
     result.gwr_match = "matched";
 
     computeMatchScore(result, row);
@@ -123,7 +133,11 @@ function setGwrEmpty(result) {
     "gwr_zip", "gwr_city", "gwr_municipality", "gwr_municipality_nr",
     "gwr_region", "gwr_building_type", "gwr_building_class", "gwr_status",
     "gwr_year_built", "gwr_construction_period", "gwr_area", "gwr_floors",
-    "gwr_dwellings", "gwr_latitude", "gwr_longitude"
+    "gwr_dwellings", "gwr_latitude", "gwr_longitude",
+    "gwr_coord_e", "gwr_coord_n", "gwr_coord_source",
+    "gwr_demolition_year", "gwr_plot_nr", "gwr_building_name",
+    "gwr_heating_type", "gwr_heating_energy",
+    "gwr_hot_water_type", "gwr_hot_water_energy"
   ];
   for (const f of fields) result[f] = "";
   result.match_street = "";
