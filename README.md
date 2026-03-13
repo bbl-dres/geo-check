@@ -1,4 +1,5 @@
 # Geo-Check
+![Geo-Check — Results view with map, summary panel, and data table](assets/Preview1.jpg)
 
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen?logo=github)](https://bbl-dres.github.io/geo-check/)
 [![JavaScript](https://img.shields.io/badge/javascript-ES_modules-F7DF1E?logo=javascript&logoColor=000)](js/)
@@ -7,13 +8,15 @@
 [![MapLibre](https://img.shields.io/badge/map-MapLibre_GL-396CB2?logo=maplibre&logoColor=fff)](https://maplibre.org/)
 [![GWR API](https://img.shields.io/badge/data-swisstopo_GWR_API-1a365d)](https://api3.geo.admin.ch)
 
-**Swiss building data quality tool** by [Bundesamt für Bauten und Logistik (BBL)](https://www.bbl.admin.ch/)
-
 Verify your building records against the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/) — identify mismatches, download enriched results, fix your source data, and re-upload to improve quality iteratively.
 
-**[Open Geo-Check](https://bbl-dres.github.io/geo-check/)** · [Prototype (v1)](https://bbl-dres.github.io/geo-check/prototype1) · [Specification](docs/SPECIFICATION.md)
+**Open Geo-Check:** https://bbl-dres.github.io/geo-check/ 
 
-![Geo-Check — Results view with map, summary panel, and data table](assets/Preview1.jpg)
+**Prototype with Project Management:** https://bbl-dres.github.io/geo-check/prototype1
+
+**Specification:** docs/SPECIFICATION.md
+
+
 
 ---
 
