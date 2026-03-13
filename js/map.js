@@ -1,7 +1,7 @@
 /**
  * MapLibre GL JS map with CARTO basemap, circle markers, popups
  */
-import { scoreColor, escapeHtml } from "./utils.js";
+import { scoreColor, confidenceLabel, escapeHtml } from "./utils.js";
 
 let map = null;
 let popup = null;
@@ -476,17 +476,40 @@ function plotOnMap() {
 }
 
 function buildPopup(row) {
-  const score = row.match_score !== "" && row.match_score != null ? row.match_score + "%" : "N/A";
+  const numScore = row.match_score !== "" && row.match_score != null ? Number(row.match_score) : null;
+  const scorePct = numScore != null ? numScore + "%" : "N/A";
+  const conf = confidenceLabel(numScore);
   const status = row.gwr_match || "";
-  return `
-    <div class="map-popup">
-      <strong>${escapeHtml(row.internal_id || row.gwr_egid || "—")}</strong><br>
-      EGID: ${escapeHtml(row.gwr_egid || row.egid || "—")}<br>
-      ${escapeHtml(row.gwr_street || "")} ${escapeHtml(row.gwr_street_number || "")}<br>
-      ${escapeHtml(row.gwr_zip || "")} ${escapeHtml(row.gwr_city || "")}<br>
-      <strong>Score: ${score}</strong> · ${escapeHtml(status)}
-    </div>
-  `;
+  const egid = row.gwr_egid || row.egid || "";
+  const lat = parseFloat(row.gwr_latitude) || parseFloat(row.latitude) || null;
+  const lng = parseFloat(row.gwr_longitude) || parseFloat(row.longitude) || null;
+
+  // External links
+  const links = [];
+  if (egid) {
+    links.push(`<a href="https://www.housing-stat.ch/de/madd/public/building.html?egid=${encodeURIComponent(egid)}" target="_blank" rel="noopener">GWR</a>`);
+  }
+  if (lat != null && lng != null) {
+    links.push(`<a href="https://www.google.com/maps/@${lat},${lng},18z" target="_blank" rel="noopener">Google Maps</a>`);
+    links.push(`<a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">Street View</a>`);
+  }
+
+  return `<div class="map-popup">
+  <div class="popup-header">
+    <span class="popup-id">${escapeHtml(row.internal_id || "—")}</span>
+    <span class="popup-egid">${escapeHtml(egid || "—")}</span>
+  </div>
+  <div class="popup-divider"></div>
+  <div class="popup-address">
+    ${escapeHtml(row.gwr_street || row.street || "")} ${escapeHtml(row.gwr_street_number || row.street_number || "")}<br>
+    ${escapeHtml(row.gwr_zip || row.zip || "")} ${escapeHtml(row.gwr_city || row.city || "")}
+  </div>
+  <div class="popup-divider"></div>
+  <div class="popup-match">
+    Score: ${scorePct} · ${escapeHtml(conf)} · ${escapeHtml(status)}
+  </div>
+  ${links.length ? `<div class="popup-divider"></div><div class="popup-links">${links.join(" · ")}</div>` : ""}
+</div>`;
 }
 
 export function highlightMarker(rowIndex) {

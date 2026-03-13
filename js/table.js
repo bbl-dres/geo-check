@@ -198,18 +198,9 @@ export function initTable(container, clickCallback) {
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="dropdown-menu export-dd-menu" id="export-dd-menu" hidden>
-          <button class="export-dd-item" id="btn-csv">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            CSV herunterladen
-          </button>
-          <button class="export-dd-item" id="btn-xlsx">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Excel herunterladen
-          </button>
-          <button class="export-dd-item" id="btn-geojson">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            GeoJSON herunterladen
-          </button>
+          <button class="export-dd-item" id="btn-csv">CSV herunterladen</button>
+          <button class="export-dd-item" id="btn-xlsx">Excel herunterladen</button>
+          <button class="export-dd-item" id="btn-geojson">GeoJSON herunterladen</button>
         </div>
       </div>
       <div class="col-dd-wrap" id="col-dd-wrap">
@@ -290,13 +281,25 @@ export function initTable(container, clickCallback) {
 
 /* ── Dropdowns ── */
 
+/** Close all toolbar dropdowns (export, columns, filter) */
+function closeAllDropdowns(except) {
+  const ids = ["export-dd-menu", "col-dd-menu", "filter-dd-menu"];
+  for (const id of ids) {
+    if (id === except) continue;
+    const el = document.getElementById(id);
+    if (el) el.hidden = true;
+  }
+}
+
 function initExportDropdown() {
   const btn = document.getElementById("export-dd-btn");
   const menu = document.getElementById("export-dd-menu");
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    menu.hidden = !menu.hidden;
+    const opening = menu.hidden;
+    closeAllDropdowns();
+    menu.hidden = !opening;
   });
 
   document.addEventListener("click", (e) => {
@@ -316,7 +319,9 @@ function initColumnDropdown() {
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    menu.hidden = !menu.hidden;
+    const opening = menu.hidden;
+    closeAllDropdowns();
+    menu.hidden = !opening;
   });
 
   document.addEventListener("click", (e) => {
@@ -377,7 +382,9 @@ function initFilterDropdown() {
 
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (menu.hidden) {
+    const opening = menu.hidden;
+    closeAllDropdowns();
+    if (opening) {
       renderFilterCheckboxList();
       menu.hidden = false;
     } else {
@@ -648,8 +655,10 @@ function renderHeader() {
   const thead = document.querySelector("#results-table thead");
   let html = "<tr>";
   for (const col of cols) {
-    const arrow = sortField === col.key ? (sortAsc ? " \u25b2" : " \u25bc") : "";
-    html += `<th class="sortable" data-field="${col.key}">${escapeHtml(col.label)}${arrow}</th>`;
+    const isSorted = sortField === col.key;
+    const arrow = isSorted ? (sortAsc ? " \u25b2" : " \u25bc") : "";
+    const ariaSort = isSorted ? (sortAsc ? ' aria-sort="ascending"' : ' aria-sort="descending"') : "";
+    html += `<th class="sortable" data-field="${col.key}"${ariaSort}>${escapeHtml(col.label)}${arrow}</th>`;
   }
   html += "</tr>";
   thead.innerHTML = html;

@@ -19,12 +19,14 @@ Organizations managing Swiss building portfolios need to verify that their inter
 
 ```mermaid
 graph LR
-    A["Upload<br/>CSV / XLSX"] --> B["Process<br/>vs. GWR"]
+    A["Upload<br/>CSV / XLSX"] --> B["Enrich<br/>vs. GWR"]
     B --> C["Review<br/>Map + Table"]
-    C --> D["Download<br/>CSV / XLSX / GeoJSON"]
+    C --> D["Download<br/>enriched file"]
+    D --> E["Fix source data"]
+    E --> A
 ```
 
-**One direction. No side quests.**
+**Iterative quality loop.** Users upload their building data, review mismatches visually, download the enriched results, fix their source data, and re-upload to verify corrections. Each cycle improves data quality.
 
 ---
 
