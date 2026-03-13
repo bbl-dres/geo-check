@@ -202,7 +202,7 @@ The processed file contains all original input columns plus appended GWR and mat
 | 10 | `longitude` | Input | Longitude | Länge | Longitude | Longitudine | float | No | Yes | WGS84 |
 | 11 | `country` | Input | Country | Land | Pays | Paese | string | Yes | Yes | ISO 3166-1 alpha-2 |
 | 12 | `comment` | Input | Comment | Kommentar | Commentaire | Commento | string | No | Yes | Passed through, not processed |
-| 13 | `gwr_egid` | GWR | EGID (GWR) | EGID (GWR) | EGID (RegBL) | EGID (REA) | integer | No | Yes | EGID confirmed by GWR |
+| 13 | `gwr_egid` | GWR | EGID (GWR) | EGID (GWR) | EGID (RegBL) | EGID (REA) | integer | No | No | EGID confirmed by GWR |
 | 14 | `gwr_egrid` | GWR | EGRID (GWR) | EGRID (GWR) | EGRID (RegBL) | EGRID (REA) | string | No | No | Real estate identifier (`egrid`) |
 | 15 | `gwr_street` | GWR | Street (GWR) | Strasse (GWR) | Rue (RegBL) | Via (REA) | string | No | Yes | `strname[0]` |
 | 16 | `gwr_street_number` | GWR | Number (GWR) | Nr (GWR) | N° (RegBL) | N. (REA) | string | No | Yes | `deinr` |

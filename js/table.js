@@ -24,7 +24,7 @@ const DEFAULT_VISIBLE = new Set([
   "internal_id", "egid", "street", "street_number", "zip", "city",
   "region", "building_type", "latitude", "longitude", "country", "comment",
   // GWR columns (selected — see §5)
-  "gwr_egid", "gwr_street", "gwr_street_number", "gwr_zip", "gwr_city",
+  "gwr_street", "gwr_street_number", "gwr_zip", "gwr_city",
   "gwr_building_type", "gwr_building_class", "gwr_year_built", "gwr_area",
   // Match columns (summary visible, per-field hidden by default)
   "match_score", "confidence", "gwr_match",
