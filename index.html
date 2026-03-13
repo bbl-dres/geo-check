@@ -3,1189 +3,165 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self';
-    script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://api.mapbox.com 'unsafe-eval';
-    style-src 'self' https://fonts.googleapis.com https://api.mapbox.com https://unpkg.com 'unsafe-inline';
-    font-src 'self' https://fonts.gstatic.com;
-    img-src 'self' data: blob: https://*.mapbox.com https://*.geo.admin.ch;
-    connect-src 'self' https://api.mapbox.com https://*.mapbox.com https://*.geo.admin.ch https://api3.geo.admin.ch https://unpkg.com https://cdn.jsdelivr.net;
-    worker-src blob:;
-    child-src blob:;
-  ">
-  <title>BBL Liegenschaftsinventar - Korrekturen</title>
+  <title>Geo-Check — Gebäudedaten-Verifikation Schweiz</title>
 
-  <!-- Google Fonts -->
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Mapbox GL JS CSS -->
-  <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
+  <!-- MapLibre GL JS -->
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 
-  <!-- Lucide Icons -->
-  <script defer src="https://unpkg.com/lucide@0.563.0/dist/umd/lucide.min.js" integrity="sha384-aRB6X3zBuyu5EQF6GZFp0RCYdOwxYAOdFk4nViPfqSXYxc+MrZlqbM+nUYRwDQn1" crossorigin="anonymous"></script>
-
-  <!-- ApexCharts -->
-  <script defer src="https://cdn.jsdelivr.net/npm/apexcharts@5.3.6" integrity="sha384-mrR3K8Jvv+o9bZ6Yu9HWI0M8tuzo5VWNi4fWcmmbFq3NbB+WvjW/tF/wnELivEnc" crossorigin="anonymous"></script>
-
-  <!-- SheetJS loaded on-demand by js/xlsx-loader.js -->
-
-  <!-- CSS -->
+  <!-- App CSS -->
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- Login Landing Page (shown when not authenticated) -->
-  <div class="login-landing" id="login-landing">
-    <!-- Top Bar -->
-    <div class="login-topbar">
-      <div class="logo">
-        <img src="assets/swiss-logo-flag.svg" alt="Schweizerische Eidgenossenschaft" class="logo-flag">
-        <div class="logo-text">
-          <div class="logo-text-primary">Bundesamt für Bauten und Logistik</div>
-          <div class="logo-text-secondary">Korrekturen Liegenschaftsinventar</div>
-        </div>
-      </div>
-      <span class="prototype-badge">Prototyp – nur zur Demonstration</span>
-      <button class="btn btn-primary" data-action="demo">Demo</button>
-    </div>
 
-    <div class="login-landing-container">
-      <!-- Login Card -->
-      <div class="login-landing-box">
-        <h2 class="login-landing-box-title">Anmelden</h2>
-        <p class="login-landing-box-text">Melden Sie sich mit Ihrem Benutzer Konto an.</p>
-
-        <form id="landing-login-form" class="login-landing-form">
-          <div class="login-landing-error" id="landing-login-error"></div>
-          <div class="login-landing-field">
-            <label for="landing-email">E-Mail-Adresse</label>
-            <input type="email" id="landing-email" name="email" placeholder="name@bbl.admin.ch" autocomplete="email">
-          </div>
-          <div class="login-landing-field">
-            <label for="landing-password">Passwort</label>
-            <input type="password" id="landing-password" name="password" placeholder="Passwort" autocomplete="current-password">
-          </div>
-          <button type="submit" class="login-landing-submit">Anmelden / Demo</button>
-          <div class="login-landing-links">
-            <a href="#" id="landing-forgot-password" class="login-landing-forgot">Passwort vergessen?</a>
-            <span class="login-landing-links-sep">·</span>
-            <a href="mailto:david.rasner@bbl.admin.ch?subject=Zugangsanfrage%20Geo-Check&body=Guten%20Tag%2C%0A%0AIch%20m%C3%B6chte%20Zugang%20zu%20Geo-Check%20beantragen.%0A%0AFreundliche%20Gr%C3%BCsse" class="login-landing-forgot">Zugang beantragen</a>
-          </div>
-        </form>
+<div class="app">
+  <!-- ── Header ── -->
+  <header id="header">
+    <div class="header-left">
+      <img src="assets/swiss-logo-flag.svg" alt="" class="header-flag" width="20" height="22">
+      <div class="header-title">
+        <span class="header-agency">Bundesamt für Bauten und Logistik</span>
+        <span class="header-app">Geo-Check</span>
       </div>
     </div>
-
-    <!-- Footer (same as app footer) -->
-    <footer class="app-footer">
-      <div class="footer-version">v0.1.0</div>
-      <div class="footer-links">
-        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
-        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
-        <a href="mailto:dres@bbl.admin.ch">Kontakt</a>
+    <div class="header-right">
+      <div class="lang-selector">
+        <button class="lang-btn active">DE</button>
+        <button class="lang-btn">FR</button>
+        <button class="lang-btn">IT</button>
+        <button class="lang-btn">EN</button>
       </div>
-      <span class="prototype-badge">Prototyp – nur zur Demonstration</span>
-    </footer>
-  </div>
-
-  <!-- App Container (shown when authenticated) -->
-  <div class="app-container" id="app-container">
-    <!-- App Error Message -->
-    <div class="app-error" id="app-error" style="display: none;"></div>
-
-    <!-- Header -->
-    <header class="header">
-    <div class="logo">
-      <img src="assets/swiss-logo-flag.svg" alt="Schweizerische Eidgenossenschaft" class="logo-flag">
-      <div class="logo-text">
-        <div class="logo-text-primary">Bundesamt für Bauten und Logistik</div>
-        <div class="logo-text-secondary">Korrekturen Liegenschaftsinventar</div>
-      </div>
-    </div>
-
-    <nav class="nav-tabs">
-      <button class="nav-tab active" data-tab="karte">Karte</button>
-      <button class="nav-tab" data-tab="aufgaben">Aufgaben</button>
-      <button class="nav-tab" data-tab="statistik">Statistik</button>
-      <button class="nav-tab" data-tab="settings">Einstellungen & Workflows</button>
-    </nav>
-
-    <div class="header-actions">
-      <div class="search-container" id="search-container">
-        <button class="search-toggle" id="search-toggle" type="button">
-          <i data-lucide="search" class="icon"></i>
-        </button>
-        <input type="text" class="search-input" placeholder="Ort suchen..." id="globalSearch" autocomplete="off">
-        <button class="search-clear" id="search-clear" type="button">
-          <i data-lucide="x" class="icon-sm"></i>
-        </button>
-        <div class="search-dropdown" id="search-dropdown">
-          <div class="search-results" id="search-results"></div>
-        </div>
-      </div>
-      <button class="filter-toggle active" id="filter-toggle" type="button">
-        <i data-lucide="sliders-horizontal" class="icon"></i>
-      </button>
-      <div class="user-menu" id="user-menu">
-        <!-- Login button (shown when not authenticated) -->
-        <button class="btn btn-primary btn-sm" id="login-btn" onclick="window.auth.showLoginModal()">
-          Anmelden
-        </button>
-        <!-- User dropdown trigger (shown when authenticated) -->
-        <button class="user-trigger" id="user-trigger" style="display: none;">
-          <span class="user-initials" id="user-initials">??</span>
-        </button>
-        <!-- Dropdown menu -->
-        <div class="user-dropdown" id="user-dropdown">
-          <div class="user-dropdown-header">
-            <span class="user-dropdown-name" id="user-dropdown-name">Name</span>
-            <span class="user-dropdown-role" id="user-dropdown-role">Rolle</span>
-          </div>
-          <div class="user-dropdown-divider"></div>
-          <button class="user-dropdown-item" onclick="window.auth.signOut()">
-            <i data-lucide="log-out" class="icon-sm"></i>
-            <span>Abmelden</span>
-          </button>
-        </div>
-      </div>
+      <button id="btn-new" class="btn btn-primary" hidden>Neue Prüfung</button>
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- Global Filter Bar -->
-    <div class="filter-bar" id="filter-bar">
-      <div class="filter-chips">
-        <button class="filter-chip" data-filter="high">
-          <i data-lucide="chevrons-up" class="icon-sm"></i>
-          <span>Hoch</span>
-          <span class="count" id="count-high">(0)</span>
-        </button>
-        <button class="filter-chip" data-filter="medium">
-          <i data-lucide="chevron-up" class="icon-sm"></i>
-          <span>Mittel</span>
-          <span class="count" id="count-medium">(0)</span>
-        </button>
-        <button class="filter-chip" data-filter="low">
-          <i data-lucide="minus" class="icon-sm"></i>
-          <span>Niedrig</span>
-          <span class="count" id="count-low">(0)</span>
-        </button>
-      </div>
-      <div class="filter-divider"></div>
-      <button class="filter-chip" data-filter="my-tasks">Meine Aufgaben</button>
-      <div class="filter-divider"></div>
+  <!-- ── Main ── -->
+  <main>
 
-      <!-- Multi-select: Kanton -->
-      <div class="multi-select" id="filter-kanton">
-        <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label">Kanton</span>
-          <i data-lucide="chevron-down" class="icon-sm"></i>
-        </button>
-        <div class="multi-select-dropdown">
-          <div class="multi-select-actions">
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
-          </div>
-          <div class="multi-select-options"></div>
-        </div>
-      </div>
+    <!-- STATE 1: Upload -->
+    <section id="state-upload" class="app-state">
+      <div class="upload-container">
+        <!-- Initial: intro + drop zone -->
+        <div id="upload-initial" class="upload-card">
 
-      <!-- Multi-select: Konfidenz -->
-      <div class="multi-select" id="filter-confidence">
-        <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label" title="Datenqualität basierend auf Übereinstimmung der Quellen">Konfidenz</span>
-          <i data-lucide="chevron-down" class="icon-sm"></i>
-        </button>
-        <div class="multi-select-dropdown">
-          <div class="multi-select-actions">
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
-          </div>
-          <div class="multi-select-options"></div>
-        </div>
-      </div>
-
-      <!-- Multi-select: Portfolio -->
-      <div class="multi-select" id="filter-portfolio">
-        <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label">Portfolio</span>
-          <i data-lucide="chevron-down" class="icon-sm"></i>
-        </button>
-        <div class="multi-select-dropdown">
-          <div class="multi-select-actions">
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
-          </div>
-          <div class="multi-select-options"></div>
-        </div>
-      </div>
-
-      <!-- Multi-select: Status -->
-      <div class="multi-select" id="filter-status">
-        <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label">Status</span>
-          <i data-lucide="chevron-down" class="icon-sm"></i>
-        </button>
-        <div class="multi-select-dropdown">
-          <div class="multi-select-actions">
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
-          </div>
-          <div class="multi-select-options"></div>
-        </div>
-      </div>
-
-      <!-- Multi-select: Zugewiesen -->
-      <div class="multi-select" id="filter-assignee">
-        <button class="multi-select-trigger" type="button">
-          <span class="multi-select-label">Zugewiesen</span>
-          <i data-lucide="chevron-down" class="icon-sm"></i>
-        </button>
-        <div class="multi-select-dropdown">
-          <div class="multi-select-actions">
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="all">Alle</button>
-            <button type="button" class="btn btn-outline btn-sm multi-select-action" data-action="none">Keine</button>
-          </div>
-          <div class="multi-select-options"></div>
-        </div>
-      </div>
-
-      <div class="filter-divider"></div>
-      <button class="filter-reset-btn" id="filter-reset" type="button">
-        <i data-lucide="rotate-ccw" class="icon-sm"></i>
-        <span>Zurücksetzen</span>
-      </button>
-
-      <div class="filter-spacer"></div>
-      <div class="filter-total" id="filter-total">
-        <span id="filtered-count">0</span> / <span id="total-count">0</span> Gebäude
-      </div>
-    </div>
-
-    <!-- Content with shared detail panel -->
-    <div class="content-with-panel">
-      <div class="tabs-content">
-
-    <!-- Karte Tab -->
-    <div class="tab-content active" id="tab-karte">
-      <div class="karte-layout">
-        <!-- Map Container (map + table) -->
-        <div class="map-container">
-          <!-- Map Panel -->
-          <div class="map-panel">
-            <div id="map"></div>
-
-            <!-- Layer Visibility Widget -->
-            <div class="layer-widget" id="layer-widget">
-              <button class="layer-widget-trigger" id="layer-widget-trigger" title="Kartenebenen">
-                <i data-lucide="layers" class="icon"></i>
-              </button>
-              <div class="layer-widget-panel" id="layer-widget-panel">
-                <div class="layer-widget-header" title="Einklappen">
-                  <i data-lucide="layers" class="icon"></i>
-                  <span>Kartenebenen</span>
-                  <i data-lucide="chevron-up" class="icon-sm"></i>
-                </div>
-                <div class="layer-widget-content">
-                  <label class="layer-item">
-                    <input type="checkbox" id="layer-buildings" data-layer="buildings" checked>
-                    <span class="layer-name">Gebäude</span>
-                    <button class="layer-info-btn" data-layer="buildings" title="Layer-Info">
-                      <i data-lucide="info" class="icon-sm"></i>
-                    </button>
-                  </label>
-                  <div class="layer-divider"></div>
-                  <label class="layer-item">
-                    <input type="checkbox" id="layer-oereb" data-layer="ch.swisstopo-vd.stand-oerebkataster">
-                    <span class="layer-name">ÖREB Verfügbarkeit</span>
-                    <button class="layer-info-btn" data-layer="ch.swisstopo-vd.stand-oerebkataster" title="Layer-Info">
-                      <i data-lucide="info" class="icon-sm"></i>
-                    </button>
-                  </label>
-                  <label class="layer-item">
-                    <input type="checkbox" id="layer-gwr" data-layer="ch.bfs.gebaeude_wohnungs_register">
-                    <span class="layer-name">GWR Gebäudestatus</span>
-                    <button class="layer-info-btn" data-layer="ch.bfs.gebaeude_wohnungs_register" title="Layer-Info">
-                      <i data-lucide="info" class="icon-sm"></i>
-                    </button>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div class="basemap-selector" id="basemap-selector">
-              <div class="basemap-panel" id="basemap-panel">
-                <button class="basemap-option" data-basemap="none">
-                  <div class="basemap-thumb basemap-none"><span>Kein HG</span></div>
-                </button>
-                <button class="basemap-option active" data-basemap="grey">
-                  <div class="basemap-thumb basemap-grey"><span>Grau</span></div>
-                </button>
-                <button class="basemap-option" data-basemap="color">
-                  <div class="basemap-thumb basemap-color"><span>Farbig</span></div>
-                </button>
-                <button class="basemap-option" data-basemap="satellite">
-                  <div class="basemap-thumb basemap-satellite"><span>Luftbild</span></div>
-                </button>
-              </div>
-              <button class="basemap-trigger" id="basemap-trigger" title="Hintergrund wechseln">
-                <div class="basemap-thumb basemap-grey" id="basemap-trigger-thumb">
-                  <span id="basemap-trigger-label">Grau</span>
-                  <i data-lucide="chevron-right" class="icon-sm trigger-chevron"></i>
-                </div>
-              </button>
-            </div>
-
-            <button class="btn btn-outline btn-sm table-toggle-btn active" id="table-toggle-btn">
-              <i data-lucide="chevron-up" class="icon-sm chevron"></i>
-              <span>Tabelle</span>
-            </button>
+          <!-- Intro -->
+          <div class="intro">
+            <h1 class="intro-title">Gebäudedaten mit dem eidgenössischen Gebäude- und Wohnungsregister (GWR) abgleichen</h1>
+            <p class="intro-desc">
+              Laden Sie eine CSV- oder Excel-Datei mit Ihren Gebäudedaten hoch.
+              Geo-Check gleicht jede EGID mit der GWR-Datenbank ab
+              und vergleicht Adressen, Koordinaten und Gebäudetypen.
+            </p>
           </div>
 
-          <!-- Table View Panel (hidden by default) -->
-          <div class="table-panel visible" id="table-panel">
-            <div class="table-resize-handle" id="table-resize-handle">
-              <div class="resize-handle-bar"></div>
+          <!-- 3-step flow -->
+          <div class="steps">
+            <div class="step">
+              <div class="step-number">1</div>
+              <div class="step-label">Hochladen<br><span>CSV / XLSX</span></div>
             </div>
-            <div class="table-panel-header">
-              <div class="table-search">
-                <i data-lucide="search" class="icon-sm"></i>
-                <input type="text" id="table-search-input" placeholder="Suchen..." autocomplete="off">
-                <button class="table-search-clear" id="table-search-clear" type="button">
-                  <i data-lucide="x" class="icon-sm"></i>
-                </button>
-              </div>
-              <div class="table-columns-container">
-                <button class="btn btn-outline btn-sm" id="table-columns-btn" type="button" title="Spalten ein-/ausblenden">
-                  <i data-lucide="columns-3" class="icon-sm"></i>
-                  <span>Spalten</span>
-                  <i data-lucide="chevron-down" class="icon-sm"></i>
-                </button>
-                <div class="table-columns-dropdown" id="table-columns-dropdown">
-                  <div class="columns-dropdown-label">Spalten anzeigen</div>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="priority" checked>
-                    <span>Priorität</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="id" checked disabled>
-                    <span>ID</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="name" checked disabled>
-                    <span>Name</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="kanton">
-                    <span>Kanton</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="portfolio">
-                    <span>Portfolio</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="status" checked>
-                    <span>Status</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="confidence" checked>
-                    <span>Konfidenz</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="errors">
-                    <span>Fehlertypen</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="assignee" checked>
-                    <span>Zugewiesen</span>
-                  </label>
-                  <label class="columns-dropdown-item">
-                    <input type="checkbox" data-col="updated" checked>
-                    <span>Aktualisiert</span>
-                  </label>
-                </div>
-              </div>
-              <div class="table-export-container">
-                <button class="btn btn-outline btn-sm" id="table-export-btn" type="button">
-                  <i data-lucide="download" class="icon-sm"></i>
-                  <span>Exportieren</span>
-                  <i data-lucide="chevron-down" class="icon-sm"></i>
-                </button>
-                <div class="table-export-dropdown" id="table-export-dropdown">
-                  <div class="export-dropdown-section">
-                    <div class="export-dropdown-label">Alle exportieren</div>
-                    <button class="export-dropdown-item" data-export="all-csv">Als CSV</button>
-                    <button class="export-dropdown-item" data-export="all-xlsx">Als XLSX</button>
-                    <button class="export-dropdown-item" data-export="all-geojson">Als GeoJSON</button>
-                  </div>
-                  <div class="export-dropdown-section export-selection-section" id="export-selection-section" style="display: none;">
-                    <div class="export-dropdown-label">Auswahl exportieren</div>
-                    <button class="export-dropdown-item" data-export="selection-csv">Als CSV</button>
-                    <button class="export-dropdown-item" data-export="selection-xlsx">Als XLSX</button>
-                    <button class="export-dropdown-item" data-export="selection-geojson">Als GeoJSON</button>
-                  </div>
-                </div>
-              </div>
-              <button class="btn btn-icon" id="table-close-btn" type="button">
-                <i data-lucide="x" class="icon"></i>
-              </button>
+            <div class="step-arrow">&#9654;</div>
+            <div class="step">
+              <div class="step-number">2</div>
+              <div class="step-label">Abgleichen<br><span>mit GWR</span></div>
             </div>
-            <div class="table-panel-content">
-              <table class="buildings-table">
-                <thead>
-                  <tr>
-                    <th class="col-checkbox"><input type="checkbox" id="table-select-all-header" title="Alle auf dieser Seite auswählen"></th>
-                    <th data-col="priority">Priorität</th>
-                    <th data-col="id">ID</th>
-                    <th data-col="name">Name</th>
-                    <th data-col="kanton" class="col-hidden">Kanton</th>
-                    <th data-col="portfolio" class="col-hidden">Portfolio</th>
-                    <th data-col="status">Status</th>
-                    <th data-col="confidence">Konfidenz</th>
-                    <th data-col="errors" class="col-hidden">Fehlertypen</th>
-                    <th data-col="assignee">Zugewiesen</th>
-                    <th data-col="updated">Aktualisiert</th>
-                  </tr>
-                </thead>
-                <tbody id="table-body">
-                  <!-- Populated by JS -->
-                </tbody>
-              </table>
-            </div>
-            <div class="table-panel-footer">
-              <div class="table-footer-left">
-                <span class="table-selection-count" id="table-selection-count"></span>
-              </div>
-              <div class="table-footer-center">
-                <div class="table-pagination" id="table-pagination">
-                  <button class="btn btn-icon" id="pagination-prev" type="button" disabled>
-                    <i data-lucide="chevron-left" class="icon-sm"></i>
-                  </button>
-                  <div class="pagination-pages" id="pagination-pages"></div>
-                  <button class="btn btn-icon" id="pagination-next" type="button">
-                    <i data-lucide="chevron-right" class="icon-sm"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="table-footer-right">
-                <span class="table-count" id="table-count">0 Gebäude</span>
-                <div class="table-page-size">
-                  <select id="table-page-size">
-                    <option value="100" selected>100</option>
-                    <option value="500">500</option>
-                    <option value="1000">1000</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- NO detail panel here anymore -->
-      </div>
-    </div>
-
-    <!-- Aufgaben Tab -->
-    <div class="tab-content" id="tab-aufgaben">
-      <div class="aufgaben-layout">
-        <div class="kanban-container">
-          <div class="kanban-column">
-            <div class="kanban-header">
-              <span class="kanban-header-icon"><i data-lucide="layers" class="icon"></i></span>
-              <span class="kanban-header-title">Offen</span>
-              <span class="kanban-header-count" id="kanban-backlog-count">0</span>
-            </div>
-            <div class="kanban-cards" id="kanban-backlog">
-              <!-- Populated by JS -->
+            <div class="step-arrow">&#9654;</div>
+            <div class="step">
+              <div class="step-number">3</div>
+              <div class="step-label">Herunterladen<br><span>Ergebnisse</span></div>
             </div>
           </div>
 
-          <div class="kanban-column">
-            <div class="kanban-header">
-              <span class="kanban-header-icon"><i data-lucide="play-circle" class="icon"></i></span>
-              <span class="kanban-header-title">In Bearbeitung</span>
-              <span class="kanban-header-count" id="kanban-inprogress-count">0</span>
-            </div>
-            <div class="kanban-cards" id="kanban-inprogress">
-              <!-- Populated by JS -->
-            </div>
+          <!-- Drop zone -->
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-icon">&#128194;</div>
+            <h2>CSV- oder Excel-Datei hierher ziehen</h2>
+            <p>oder klicken zum Durchsuchen</p>
+            <p class="drop-zone-hint">
+              Erforderlich: internal_id, egid &middot;
+              Optional: street, zip, city, region, latitude, longitude, building_type, comment
+            </p>
           </div>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls,.tsv,.txt" hidden>
+          <p class="demo-link">
+            <a href="assets/demo-buildings.csv" download="vorlage-gebaeude.csv">Vorlage herunterladen (CSV)</a>
+          </p>
+          <p class="demo-link">
+            Oder testen Sie mit <a href="#" id="load-demo">demo-buildings.csv</a>
+          </p>
 
-          <div class="kanban-column">
-            <div class="kanban-header">
-              <span class="kanban-header-icon"><i data-lucide="help-circle" class="icon"></i></span>
-              <span class="kanban-header-title">Rückfrage</span>
-              <span class="kanban-header-count" id="kanban-clarification-count">0</span>
-            </div>
-            <div class="kanban-cards" id="kanban-clarification">
-              <!-- Populated by JS -->
-            </div>
-          </div>
+          <!-- Error (shown inline when validation fails) -->
+          <div id="upload-error" class="upload-error" hidden></div>
 
-          <div class="kanban-column">
-            <div class="kanban-header">
-              <span class="kanban-header-icon"><i data-lucide="check-circle" class="icon"></i></span>
-              <span class="kanban-header-title">Erledigt</span>
-              <span class="kanban-header-count" id="kanban-done-count">0</span>
-            </div>
-            <div class="kanban-cards" id="kanban-done">
-              <!-- Populated by JS -->
-            </div>
+          <!-- Privacy note -->
+          <div class="privacy-note">
+            <span class="privacy-icon">&#128274;</span>
+            Ihre Daten bleiben im Browser. Kein Upload, kein Backend.
+            Nur die EGID (öffentliche Gebäude-ID) wird an die GWR-API gesendet.
           </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Statistik Tab -->
-    <div class="tab-content" id="tab-statistik">
-      <div class="statistik-content">
-        <div class="stat-cards stat-cards-6">
-          <div class="stat-card">
-            <div class="stat-label">Fortschritt</div>
-            <div class="stat-value" id="stat-progress">0/0</div>
-            <div class="stat-sublabel" id="stat-progress-pct">0% erledigt</div>
+    <!-- STATE 2: Processing -->
+    <section id="state-processing" class="app-state" hidden>
+      <div class="processing-container">
+        <div class="processing-card">
+          <h2>Gebäude werden mit GWR abgeglichen...</h2>
+          <div class="progress-bar">
+            <div id="progress-bar-fill" class="progress-bar-fill"></div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Datenqualität</div>
-            <div class="stat-value" id="stat-quality">0%</div>
-            <div class="stat-sublabel">Ø Konfidenz</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Kritisch</div>
-            <div class="stat-value error" id="stat-critical">0</div>
-            <div class="stat-sublabel">Konfidenz &lt; 50%</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">In Bearbeitung</div>
-            <div class="stat-value" id="stat-inprogress">0</div>
-            <div class="stat-sublabel">Aktive Aufgaben</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Nicht zugewiesen</div>
-            <div class="stat-value warning" id="stat-unassigned">0</div>
-            <div class="stat-sublabel">Ohne Bearbeiter</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Überfällig</div>
-            <div class="stat-value error" id="stat-overdue">0</div>
-            <div class="stat-sublabel">Fälligkeit überschritten</div>
-          </div>
-        </div>
-
-        <div class="charts-grid">
-          <!-- Confidence Distribution -->
-          <div class="chart-card">
-            <h3 class="chart-title">Konfidenz-Verteilung</h3>
-            <div id="chart-confidence"></div>
-          </div>
-
-          <!-- Status Distribution -->
-          <div class="chart-card">
-            <h3 class="chart-title">Status-Verteilung</h3>
-            <div id="chart-status"></div>
-          </div>
-
-          <!-- Errors by Source -->
-          <div class="chart-card">
-            <h3 class="chart-title">Abweichungen nach Quelle</h3>
-            <div id="chart-source"></div>
-          </div>
-
-          <!-- Due Dates -->
-          <div class="chart-card">
-            <h3 class="chart-title">Fälligkeiten</h3>
-            <div id="chart-duedate"></div>
-          </div>
-
-          <!-- Tasks per Assignee -->
-          <div class="chart-card">
-            <h3 class="chart-title">Aufgaben pro Bearbeiter</h3>
-            <div id="chart-assignee"></div>
-          </div>
-
-          <!-- Priority Distribution -->
-          <div class="chart-card">
-            <h3 class="chart-title">Prioritäten</h3>
-            <div id="chart-priority"></div>
-          </div>
+          <div id="progress-text">Vorbereitung...</div>
+          <div id="progress-eta"></div>
+          <div id="progress-stats"></div>
+          <button id="btn-cancel" class="btn btn-danger">Abbrechen</button>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Einstellungen & Workflows Tab -->
-    <div class="tab-content" id="tab-settings">
-      <div class="settings-content">
-        <!-- User Management Section -->
-        <div class="settings-section">
-          <div class="section-header-with-action">
-            <h2 class="settings-section-title section-title-icon"><i data-lucide="users" class="icon-lg"></i> Benutzerverwaltung</h2>
-            <div class="header-actions">
-              <button class="btn btn-ghost btn-sm" id="btn-edit-users">
-                <i data-lucide="pencil" class="icon-sm"></i>
-                Bearbeiten
-              </button>
-              <button class="btn btn-primary btn-sm" onclick="window.inviteUser.show()">
-                <i data-lucide="user-plus" class="icon-sm"></i>
-                Einladen
-              </button>
-            </div>
-          </div>
-          <table class="users-table">
-            <thead>
-              <tr>
-                <th>Benutzer</th>
-                <th>Rolle</th>
-                <th>Letzter Login</th>
-              </tr>
-            </thead>
-            <tbody id="users-table-body">
-              <!-- Users will be loaded dynamically -->
-            </tbody>
-          </table>
+    <!-- STATE 3: Results -->
+    <section id="state-results" class="app-state" hidden>
+      <div class="results-container">
+        <div id="summary-bar"></div>
+
+        <!-- Map panel (top, takes remaining space) -->
+        <div id="map-panel" class="map-panel">
+          <div id="results-map"></div>
+          <button id="table-toggle" class="table-toggle" title="Tabelle ein-/ausblenden">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            Tabelle
+          </button>
         </div>
 
-        <!-- Workflows Section -->
-        <div class="settings-section">
-          <h2 class="settings-section-title section-title-icon"><i data-lucide="workflow" class="icon-lg"></i> Workflows</h2>
-          <p class="section-description">Automatisierte Prozesse zur Datenverarbeitung, -prüfung und Export.</p>
-          <div class="workflow-list">
-            <div class="workflow-item">
-              <div class="workflow-info">
-                <div class="workflow-icon"><i data-lucide="play-circle" class="icon-md"></i></div>
-                <div class="workflow-details">
-                  <span class="workflow-name">Alle Prüfungen ausführen</span>
-                  <span class="workflow-description">Führt alle aktiven Prüfregeln auf dem gesamten Gebäudebestand aus.</span>
-                </div>
-              </div>
-              <div class="workflow-actions">
-                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-checks-time">28.01.2026, 14:32</span></span>
-                <div class="workflow-btn-group">
-                  <button class="btn btn-ghost btn-sm workflow-run-btn" id="run-all-checks">
-                    <i data-lucide="play" class="icon-sm"></i>
-                    Ausführen
-                  </button>
-                  <button class="btn btn-ghost btn-sm workflow-abort-btn" id="abort-all-checks" hidden>
-                    <i data-lucide="square" class="icon-sm"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="workflow-progress" id="progress-all-checks" hidden>
-                <div class="workflow-progress-track"><div class="workflow-progress-fill"></div></div>
-                <span class="workflow-progress-text"></span>
-              </div>
-            </div>
-            <div class="workflow-item">
-              <div class="workflow-info">
-                <div class="workflow-icon"><i data-lucide="database" class="icon-md"></i></div>
-                <div class="workflow-details">
-                  <span class="workflow-name">GWR Daten aktualisieren</span>
-                  <span class="workflow-description">Aktualisiert Gebäudedaten aus dem Gebäude- und Wohnungsregister (GWR).</span>
-                </div>
-              </div>
-              <div class="workflow-actions">
-                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-gwr-time">26.01.2026, 09:15</span></span>
-                <div class="workflow-btn-group">
-                  <button class="btn btn-ghost btn-sm workflow-run-btn" id="run-gwr-enrich">
-                    <i data-lucide="play" class="icon-sm"></i>
-                    Ausführen
-                  </button>
-                  <button class="btn btn-ghost btn-sm workflow-abort-btn" id="abort-gwr-enrich" hidden>
-                    <i data-lucide="square" class="icon-sm"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="workflow-progress" id="progress-gwr-enrich" hidden>
-                <div class="workflow-progress-track"><div class="workflow-progress-fill"></div></div>
-                <span class="workflow-progress-text"></span>
-              </div>
-            </div>
-            <div class="workflow-item">
-              <div class="workflow-info">
-                <div class="workflow-icon"><i data-lucide="file-spreadsheet" class="icon-md"></i></div>
-                <div class="workflow-details">
-                  <span class="workflow-name">Fehlerbericht exportieren</span>
-                  <span class="workflow-description">Exportiert alle aktuellen Validierungsfehler als Excel-Datei.</span>
-                </div>
-              </div>
-              <div class="workflow-actions">
-                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-errors-time">27.01.2026, 09:15</span></span>
-                <button class="btn btn-ghost btn-sm workflow-run-btn" id="export-errors">
-                  <i data-lucide="download" class="icon-sm"></i>
-                  Exportieren
-                </button>
-              </div>
-              <div class="workflow-progress" id="progress-export-errors" hidden>
-                <div class="workflow-progress-track"><div class="workflow-progress-fill"></div></div>
-                <span class="workflow-progress-text"></span>
-              </div>
-            </div>
-            <div class="workflow-item">
-              <div class="workflow-info">
-                <div class="workflow-icon"><i data-lucide="history" class="icon-md"></i></div>
-                <div class="workflow-details">
-                  <span class="workflow-name">Ereignisse exportieren</span>
-                  <span class="workflow-description">Exportiert das Aktivitätsprotokoll als Excel-Datei.</span>
-                </div>
-              </div>
-              <div class="workflow-meta">
-                <span class="workflow-last-run">Letzte Ausführung: <span id="workflow-events-time">26.01.2026, 16:48</span></span>
-                <button class="btn btn-ghost btn-sm workflow-run-btn" id="export-events">
-                  <i data-lucide="download" class="icon-sm"></i>
-                  Exportieren
-                </button>
-              </div>
-            </div>
-          </div>
+        <!-- Table panel (bottom, collapsible) -->
+        <div class="table-panel" id="results-table-container">
+          <!-- table.js renders here -->
         </div>
 
-        <!-- Checking Rules Section -->
-        <div class="settings-section">
-          <div class="section-header-with-action">
-            <h2 class="settings-section-title section-title-icon"><i data-lucide="shield-check" class="icon-lg"></i> Prüfregeln</h2>
-            <button class="btn btn-ghost btn-sm" id="download-pruefplan">
-              <i data-lucide="download" class="icon-sm"></i>
-              Prüfplan (Excel)
-            </button>
-          </div>
-          <p class="section-description">Diese Regeln werden automatisch auf alle Gebäude angewendet.</p>
-          <div class="rules-container" id="rules-container">
-            <div class="rules-loading">Regeln werden geladen...</div>
-          </div>
-        </div>
       </div>
-    </div>
+    </section>
 
-    <!-- API Documentation Tab -->
-    <div class="tab-content" id="tab-api">
-      <div class="api-container">
-        <div class="api-loading" id="api-loading">
-          <i data-lucide="loader" class="icon-lg spinner"></i>
-          <p>API-Dokumentation wird geladen...</p>
-        </div>
-        <div id="swagger-ui" style="display:none"></div>
-      </div>
-    </div>
-
-      </div><!-- /tabs-content -->
-
-      <!-- Shared Detail Panel (moved here from inside tab-karte) -->
-      <div class="detail-panel" id="detail-panel">
-        <div class="detail-resize-handle" id="detail-resize-handle">
-          <div class="resize-handle-bar-vertical"></div>
-        </div>
-        <div class="detail-content" id="detail-content">
-          <div class="detail-header">
-            <button class="detail-close-btn" id="detail-close-btn" title="Schliessen">
-              <i data-lucide="x" class="icon-sm"></i>
-            </button>
-            <h2 class="detail-title" id="detail-title">Building Name</h2>
-            <p class="detail-subtitle" id="detail-sap-id">SAP ID</p>
-          </div>
-
-          <div class="detail-section accordion open" data-accordion="images">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Anhang und Bilder</span>
-              <span class="accordion-count" id="images-count"></span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <div class="image-widget" id="image-widget">
-                <!-- Empty state (shown when no images) -->
-                <div class="image-empty-state" id="image-empty-state">
-                  <div class="image-empty-icon"><i data-lucide="image" class="icon-lg"></i></div>
-                  <p class="image-empty-text">Keine Bilder vorhanden</p>
-                  <label class="btn btn-primary btn-sm image-upload-btn">
-                    <i data-lucide="plus" class="icon-sm"></i>
-                    Datei hochladen
-                    <input type="file" id="image-upload-input" multiple hidden>
-                  </label>
-                </div>
-                <!-- Carousel (shown when images exist) -->
-                <div class="image-carousel" id="image-carousel" style="display: none;">
-                  <div class="carousel-main">
-                    <img class="carousel-image" id="carousel-image" src="" alt="Gebäudebild">
-                    <!-- Top-left: Filename overlay -->
-                    <div class="carousel-filename-overlay" id="carousel-filename"></div>
-                    <!-- Top-right: Actions (Add, Download, Fullscreen, Delete) -->
-                    <div class="carousel-actions">
-                      <label class="carousel-action-btn add" title="Datei hinzufügen">
-                        <i data-lucide="plus" class="icon-sm"></i>
-                        <input type="file" id="carousel-add-input" multiple hidden>
-                      </label>
-                      <button class="carousel-action-btn" id="carousel-download" type="button" title="Herunterladen">
-                        <i data-lucide="download" class="icon-sm"></i>
-                      </button>
-                      <button class="carousel-action-btn" id="carousel-fullscreen" type="button" title="Vollbild">
-                        <i data-lucide="maximize-2" class="icon-sm"></i>
-                      </button>
-                      <button class="carousel-action-btn delete" id="carousel-delete" type="button" title="Löschen">
-                        <i data-lucide="trash-2" class="icon-sm"></i>
-                      </button>
-                    </div>
-                    <!-- Navigation arrows -->
-                    <button class="carousel-nav prev" id="carousel-prev" type="button">
-                      <i data-lucide="chevron-left" class="icon-sm"></i>
-                    </button>
-                    <button class="carousel-nav next" id="carousel-next" type="button">
-                      <i data-lucide="chevron-right" class="icon-sm"></i>
-                    </button>
-                    <!-- Center-bottom: Dot carousel -->
-                    <div class="carousel-dots" id="carousel-dots">
-                      <!-- Dots populated by JS -->
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion open" data-accordion="konfidenz">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title" title="Datenqualität: Wie gut stimmen SAP und GWR überein?">Konfidenz</span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <div class="conf-container">
-                <div class="conf-total" id="confidence-total">67%</div>
-                <div class="conf-bars" id="confidence-bars">
-                  <!-- Populated by JS -->
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion open" data-accordion="status">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Zuständigkeiten</span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <div class="status-section">
-                <div class="status-row">
-                  <span class="status-label">Priorität</span>
-                  <div class="priority-display" id="priority-display">
-                    <!-- Populated by JS -->
-                  </div>
-                </div>
-                <div class="status-row">
-                  <span class="status-label">Status</span>
-                  <div class="status-display" id="status-display">
-                    <!-- Populated by JS -->
-                  </div>
-                </div>
-                <div class="status-row">
-                  <span class="status-label">Zugewiesen</span>
-                  <div class="assignee-display" id="assignee-display">
-                    <!-- Populated by JS -->
-                  </div>
-                </div>
-                <div class="status-row">
-                  <span class="status-label">Fälligkeit</span>
-                  <div class="duedate-display" id="duedate-display">
-                    <!-- Populated by JS -->
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion" data-accordion="fehler">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Fehler</span>
-              <span class="accordion-count" id="error-count"></span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <table class="error-table" id="error-table">
-                <thead>
-                  <tr>
-                    <th class="col-check-id">ID</th>
-                    <th class="col-desc">Beschreibung</th>
-                    <th class="col-level">Level</th>
-                  </tr>
-                </thead>
-                <tbody id="error-tbody">
-                  <!-- Populated by JS -->
-                </tbody>
-              </table>
-              <div class="error-empty-state" id="error-empty-state" style="display: none;">
-                <i data-lucide="check-circle" class="icon-lg"></i>
-                <span>Keine Fehler gefunden</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion open" data-accordion="datenvergleich">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Korrektur</span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th class="col-attr">Attribut</th>
-                    <th class="col-sap" title="Daten aus SAP RE-FX (Immobilienverwaltung)">SAP</th>
-                    <th class="col-gwr" title="Daten aus dem Gebäude- und Wohnungsregister">GWR</th>
-                    <th class="col-korrektur" title="Manuelle Korrekturen überschreiben GWR-Werte">Korrektur</th>
-                    <th class="col-match" title="✓ = SAP und GWR stimmen überein, ✗ = Werte unterscheiden sich"></th>
-                  </tr>
-                </thead>
-                <tbody id="data-comparison">
-                  <!-- Populated by JS -->
-                </tbody>
-              </table>
-              <div class="data-actions">
-                <button class="btn btn-ghost btn-sm" id="btn-toggle-fields" type="button">
-                  <i data-lucide="chevron-down" class="icon-sm"></i> Mehr Attribute
-                </button>
-                <button class="btn btn-secondary btn-sm" id="btn-correct" type="button">Daten bearbeiten</button>
-                <div class="edit-actions" id="edit-actions" style="display: none;">
-                  <button class="btn btn-secondary btn-sm" id="btn-edit-cancel" type="button">Abbrechen</button>
-                  <button class="btn btn-primary btn-sm" id="btn-edit-save" type="button">Speichern</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion" data-accordion="kommentare">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Kommentare</span>
-              <span class="accordion-count" id="comments-count"></span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <div id="comments-list">
-                <!-- Populated by JS -->
-              </div>
-              <div class="comment-input-section">
-                <textarea class="comment-input" id="comment-input" placeholder="Kommentar schreiben..." rows="2"></textarea>
-                <div class="comment-actions">
-                  <button class="btn btn-secondary btn-sm" id="btn-cancel-comment" type="button">Abbrechen</button>
-                  <button class="btn btn-primary btn-sm" id="btn-submit-comment" type="button">Speichern</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="detail-section accordion" data-accordion="ereignisse">
-            <button class="accordion-header" type="button">
-              <span class="accordion-title">Ereignisse</span>
-              <span class="accordion-count" id="events-count"></span>
-              <i data-lucide="chevron-down" class="icon-sm accordion-chevron"></i>
-            </button>
-            <div class="accordion-content">
-              <div class="events-list" id="events-list">
-                <!-- Populated by JS -->
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /content-with-panel -->
   </main>
 
-    <!-- Footer -->
-    <footer class="app-footer">
-      <div class="footer-version">v0.1.0</div>
-      <div class="footer-links">
-        <a href="#" id="footer-api-link">API</a>
-        <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
-        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
-        <a href="mailto:dres@bbl.admin.ch">Kontakt</a>
-      </div>
-      <span class="prototype-badge">Prototyp – nur zur Demonstration</span>
-    </footer>
-  </div><!-- /app-container -->
+  <!-- ── Footer ── -->
+  <footer id="footer">
+    <div class="footer-info">Daten: <a href="https://www.housing-stat.ch/" target="_blank">GWR</a> (<a href="https://api3.geo.admin.ch" target="_blank">API</a>) · Karte: <a href="https://carto.com" target="_blank">CARTO</a> · <a href="https://www.openstreetmap.org/copyright" target="_blank">OSM</a></div>
+    <div class="footer-links">
+      <a href="https://github.com/bbl-dres/geo-check" target="_blank">Quellcode</a>
+      <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank">Rechtliches</a>
+      <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank">Kontakt</a>
+    </div>
+  </footer>
+</div>
 
-  <!-- Invite User Modal -->
-  <div class="modal-overlay" id="modal-invite-user">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Benutzer einladen</h3>
-        <button class="btn btn-icon" onclick="window.inviteUser.hide()">×</button>
-      </div>
-      <!-- Step 1: Invite form -->
-      <div id="invite-form-step">
-        <form id="invite-user-form">
-          <div class="modal-body">
-            <div class="invite-error" id="invite-error" style="display: none;"></div>
-            <label class="modal-label">E-Mail-Adresse</label>
-            <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required>
+<!-- App JS (ES modules) -->
+<script type="module" src="js/main.js"></script>
 
-            <label class="modal-label">Rolle</label>
-            <select name="role" class="modal-select">
-              <option value="Leser">Leser - Nur Ansicht</option>
-              <option value="Bearbeiter" selected>Bearbeiter - Kann Daten bearbeiten</option>
-              <option value="Admin">Admin - Voller Zugriff</option>
-            </select>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="window.inviteUser.hide()">Abbrechen</button>
-            <button type="submit" class="btn btn-primary">Einladung senden</button>
-          </div>
-        </form>
-      </div>
-      <!-- Step 2: Confirmation -->
-      <div id="invite-confirm-step" style="display: none;">
-        <div class="modal-body">
-          <div class="invite-confirm">
-            <i data-lucide="user-check" class="invite-confirm-icon"></i>
-            <h4>Einladung gesendet</h4>
-            <p id="invite-confirm-email"></p>
-          </div>
-        </div>
-        <div class="modal-footer" style="justify-content: center;">
-          <button type="button" class="btn btn-primary" onclick="window.inviteUser.hide()">Schliessen</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Layer Info Modal -->
-  <div id="layer-info-modal" class="layer-info-modal">
-    <div class="layer-info-modal-content">
-      <div class="layer-info-modal-header">
-        <span class="layer-info-modal-title" id="layer-info-modal-title">Layer Information</span>
-        <button class="btn btn-icon" id="layer-info-modal-close">
-          <i data-lucide="x" class="icon-sm"></i>
-        </button>
-      </div>
-      <div class="layer-info-modal-body" id="layer-info-modal-body">
-        <div class="layer-info-loading">Laden...</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Map Context Menu (Right-Click) -->
-  <div id="map-context-menu" class="map-context-menu">
-    <div class="context-menu-item context-menu-coords" id="context-menu-coords" title="Klicken zum Kopieren">
-      <i data-lucide="copy" class="icon-sm"></i>
-      <span id="context-menu-coords-text">47.37623, 8.53048</span>
-    </div>
-    <div class="context-menu-divider"></div>
-    <div class="context-menu-item" id="context-menu-share">
-      <i data-lucide="share-2" class="icon-sm"></i>
-      <span>Teilen</span>
-    </div>
-    <div class="context-menu-item" id="context-menu-center">
-      <i data-lucide="crosshair" class="icon-sm"></i>
-      <span>Hier zentrieren</span>
-    </div>
-    <div class="context-menu-item" id="context-menu-nearest">
-      <i data-lucide="map-pin" class="icon-sm"></i>
-      <span>Nächstes Objekt</span>
-    </div>
-    <div class="context-menu-divider"></div>
-    <div class="context-menu-item" id="context-menu-swisstopo">
-      <i data-lucide="building-2" class="icon-sm"></i>
-      <span>In Gebäude- und Wohnungsregister öffnen</span>
-    </div>
-    <div class="context-menu-item" id="context-menu-google-maps">
-      <i data-lucide="map" class="icon-sm"></i>
-      <span>In Google Maps öffnen</span>
-    </div>
-    <div class="context-menu-item" id="context-menu-google-earth">
-      <i data-lucide="globe" class="icon-sm"></i>
-      <span>In Google Earth 3D öffnen</span>
-    </div>
-  </div>
-
-  <!-- Login Modal -->
-  <div class="modal-overlay" id="login-modal">
-    <div class="modal login-modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Anmelden</h3>
-        <button class="btn btn-icon" onclick="window.auth.hideLoginModal()">×</button>
-      </div>
-      <form id="login-form">
-        <div class="modal-body">
-          <div class="login-error" style="display: none;"></div>
-          <label class="modal-label">E-Mail-Adresse</label>
-          <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required autocomplete="email">
-          <label class="modal-label">Passwort</label>
-          <input type="password" name="password" class="modal-input" placeholder="Passwort" required autocomplete="current-password">
-          <a href="#" id="forgot-password-link" class="forgot-password-link">Passwort vergessen?</a>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" onclick="window.auth.hideLoginModal()">Abbrechen</button>
-          <button type="submit" class="btn btn-primary">Anmelden</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Forgot Password Modal -->
-  <div class="modal-overlay" id="forgot-password-modal">
-    <div class="modal login-modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Passwort zurücksetzen</h3>
-        <button class="btn btn-icon" onclick="window.auth.hideForgotPasswordModal()">×</button>
-      </div>
-      <!-- Step 1: Email input -->
-      <div id="forgot-password-form-step">
-        <form id="forgot-password-form">
-          <div class="modal-body">
-            <div class="forgot-password-error" id="forgot-password-error" style="display: none;"></div>
-            <p class="modal-description">Geben Sie Ihre E-Mail-Adresse ein. Sie erhalten einen Link zum Zurücksetzen Ihres Passworts.</p>
-            <label class="modal-label">E-Mail-Adresse</label>
-            <input type="email" name="email" class="modal-input" placeholder="name@bbl.admin.ch" required autocomplete="email">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" onclick="window.auth.hideForgotPasswordModal()">Abbrechen</button>
-            <button type="submit" class="btn btn-primary">Link senden</button>
-          </div>
-        </form>
-      </div>
-      <!-- Step 2: Confirmation -->
-      <div id="forgot-password-confirm-step" style="display: none;">
-        <div class="modal-body">
-          <div class="forgot-password-confirm">
-            <i data-lucide="mail-check" class="forgot-password-confirm-icon"></i>
-            <h4>E-Mail gesendet</h4>
-            <p>Prüfen Sie Ihren Posteingang und klicken Sie auf den Link, um Ihr Passwort zurückzusetzen.</p>
-          </div>
-        </div>
-        <div class="modal-footer" style="justify-content: center;">
-          <button type="button" class="btn btn-primary" onclick="window.auth.hideForgotPasswordModal()">Schliessen</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Password Reset Modal -->
-  <div class="modal-overlay" id="password-reset-modal">
-    <div class="modal login-modal">
-      <div class="modal-header">
-        <h3 class="modal-title">Neues Passwort setzen</h3>
-      </div>
-      <form id="password-reset-form">
-        <div class="modal-body">
-          <div class="password-reset-error" id="password-reset-error" style="display: none;"></div>
-          <div class="password-reset-success" id="password-reset-success" style="display: none;"></div>
-          <label class="modal-label">Neues Passwort</label>
-          <input type="password" name="password" class="modal-input" id="pw-reset-password" placeholder="Mindestens 6 Zeichen" required autocomplete="new-password" minlength="6">
-          <label class="modal-label">Passwort bestätigen</label>
-          <input type="password" name="password-confirm" class="modal-input" id="pw-reset-confirm" placeholder="Passwort wiederholen" required autocomplete="new-password">
-          <div class="pw-match-hint" id="pw-match-hint"></div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-ghost" id="pw-reset-cancel">Abbrechen</button>
-          <button type="submit" class="btn btn-primary" id="pw-reset-submit">Passwort speichern</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Toast notifications -->
-  <div id="toast-container"></div>
-
-  <!-- Mapbox GL JS -->
-  <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
-
-  <!-- Application JavaScript (ES Modules) -->
-  <script type="module" src="js/main.js"></script>
 </body>
 </html>
