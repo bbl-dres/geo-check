@@ -1,6 +1,7 @@
 /**
  * Export: CSV, XLSX, GeoJSON
  */
+import { t } from "./i18n.js";
 
 /**
  * Download processed results as CSV (semicolon-delimited, UTF-8 BOM)
@@ -31,7 +32,7 @@ export async function downloadXLSX(results, filename = "geo-check-results.xlsx")
   try {
     await ensureXLSX();
   } catch {
-    alert("Excel-Bibliothek konnte nicht geladen werden. Bitte prüfen Sie Ihre Internetverbindung oder verwenden Sie den CSV-Export.");
+    alert(t("export.xlsxError"));
     return;
   }
 
@@ -51,17 +52,17 @@ export async function downloadXLSX(results, filename = "geo-check-results.xlsx")
   // Sheet 2: Summary
   const stats = computeStats(results);
   const summaryData = [
-    { Kennzahl: "Geb\u00e4ude gesamt", Wert: stats.total },
-    { Kennzahl: "Gefunden", Wert: stats.matched },
-    { Kennzahl: "Nicht gefunden", Wert: stats.notFound },
-    { Kennzahl: "\u00dcbersprungen", Wert: stats.skipped },
-    { Kennzahl: "\u00d8 Score", Wert: stats.avgScore + "%" },
-    { Kennzahl: "Score \u2265 80%", Wert: stats.good },
-    { Kennzahl: "Score 50\u201379%", Wert: stats.partial },
-    { Kennzahl: "Score < 50%", Wert: stats.poor }
+    { [t("export.colMetric")]: t("export.statTotal"), [t("export.colValue")]: stats.total },
+    { [t("export.colMetric")]: t("export.statFound"), [t("export.colValue")]: stats.matched },
+    { [t("export.colMetric")]: t("export.statNotFound"), [t("export.colValue")]: stats.notFound },
+    { [t("export.colMetric")]: t("export.statSkipped"), [t("export.colValue")]: stats.skipped },
+    { [t("export.colMetric")]: t("export.statAvgScore"), [t("export.colValue")]: stats.avgScore + "%" },
+    { [t("export.colMetric")]: t("export.statHigh"), [t("export.colValue")]: stats.good },
+    { [t("export.colMetric")]: t("export.statMedium"), [t("export.colValue")]: stats.partial },
+    { [t("export.colMetric")]: t("export.statLow"), [t("export.colValue")]: stats.poor }
   ];
   const ws2 = XLSX.utils.json_to_sheet(summaryData);
-  XLSX.utils.book_append_sheet(wb, ws2, "Zusammenfassung");
+  XLSX.utils.book_append_sheet(wb, ws2, t("export.summarySheet"));
 
   const wbOut = XLSX.write(wb, { bookType: "xlsx", type: "array" });
   const blob = new Blob([wbOut], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });

@@ -7,22 +7,32 @@ import { initMap, plotResults, highlightMarker, resizeMap, onSummaryToggle, setS
 import { initTable, populateTable, highlightRow } from "./table.js";
 import { downloadCSV, downloadXLSX, downloadGeoJSON } from "./export.js";
 import { formatNumber, scoreColor, confidenceLabel } from "./utils.js";
-
-const SUPPORTED_LANGS = ["de", "fr", "it", "en"];
+import { initLang, setLang, t } from "./i18n.js";
 
 let processedResults = [];
 let tableOpen = true;
 
-function initLang() {
-  const param = new URLSearchParams(window.location.search).get("lang");
-  const lang = SUPPORTED_LANGS.includes(param) ? param : "de";
-  document.documentElement.lang = lang;
-  return lang;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   initLang();
   initUpload(onStartProcessing);
+
+  // Language selector
+  const langSelect = document.getElementById("lang-select");
+  if (langSelect) {
+    langSelect.addEventListener("change", (e) => setLang(e.target.value));
+  }
+
+  // Re-render dynamic content on language change
+  window.addEventListener("langchange", () => {
+    if (processedResults.length) updateSummaryPanel();
+    // Re-render mobile tabs if present
+    const tabs = document.querySelector(".mobile-tabs");
+    if (tabs) {
+      const btns = tabs.querySelectorAll(".mobile-tab");
+      if (btns[0]) btns[0].textContent = t("results.mobileMap");
+      if (btns[1]) btns[1].textContent = t("results.mobileTable");
+    }
+  });
 
   // Cancel button
   document.getElementById("btn-cancel").addEventListener("click", () => {
@@ -150,9 +160,9 @@ function updateProgress(progress, startTime) {
   const progressBar = document.querySelector(".progress-bar");
   document.getElementById("progress-bar-fill").style.width = `${pct}%`;
   progressBar.setAttribute("aria-valuenow", Math.round(pct));
-  progressBar.setAttribute("aria-valuetext", `Gebäude ${formatNumber(processed)} von ${formatNumber(total)}`);
+  progressBar.setAttribute("aria-valuetext", t("processing.progressAria", { processed: formatNumber(processed), total: formatNumber(total) }));
   document.getElementById("progress-text").textContent =
-    `Gebäude ${formatNumber(processed)} von ${formatNumber(total)} — ${pct}%`;
+    t("processing.progress", { processed: formatNumber(processed), total: formatNumber(total), pct });
 
   const elapsed = Date.now() - startTime;
   const perItem = processed > 0 ? elapsed / processed : 0;
@@ -161,32 +171,26 @@ function updateProgress(progress, startTime) {
   const etaMin = Math.floor(etaSeconds / 60);
   const etaSec = etaSeconds % 60;
   document.getElementById("progress-eta").textContent =
-    processed < total ? `~${etaMin}m ${etaSec}s verbleibend` : "Wird abgeschlossen...";
+    processed < total ? t("processing.eta", { min: etaMin, sec: etaSec }) : t("processing.completing");
 
   document.getElementById("progress-stats").textContent =
-    `Gefunden: ${matched} · Nicht gefunden: ${notFound} · Übersprungen: ${skipped}`;
+    t("processing.stats", { matched, notFound, skipped });
 }
 
-function showResults() {
-  showState("results");
-
-  // Compute stats
+function updateSummaryPanel() {
   const total = processedResults.length;
   const matched = processedResults.filter((r) => r.gwr_match === "matched").length;
   const notFound = processedResults.filter((r) => r.gwr_match === "not_found").length;
   const skipped = processedResults.filter((r) => r.gwr_match === "skipped").length;
   const scores = processedResults.filter((r) => r.match_score !== "" && r.match_score != null).map((r) => Number(r.match_score));
   const avgScore = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
-  const matchedPct = total > 0 ? Math.round((matched / total) * 100) : 0;
 
-  // Confidence distribution
   const high = scores.filter((s) => s >= 80).length;
   const medium = scores.filter((s) => s >= 50 && s < 80).length;
   const low = scores.filter((s) => s < 50).length;
   const noScore = total - scores.length;
   const maxBar = Math.max(high, medium, low, noScore, 1);
 
-  // SVG donut chart calculations
   const donutRadius = 54;
   const donutStroke = 10;
   const donutCirc = 2 * Math.PI * donutRadius;
@@ -195,7 +199,6 @@ function showResults() {
   const donutColor = scoreColor(avgScore);
   const confLabel = confidenceLabel(avgScore);
 
-  // Populate summary panel
   document.getElementById("sp-body").innerHTML = `
     <div class="sp-donut-wrap">
       <svg class="sp-donut" viewBox="0 0 128 128">
@@ -209,30 +212,30 @@ function showResults() {
       </svg>
       <div class="sp-donut-text">
         <div class="sp-donut-value">${avgScore}%</div>
-        <div class="sp-donut-label">\u00d8 Score</div>
+        <div class="sp-donut-label">${t("summary.score")}</div>
       </div>
     </div>
-    <div class="sp-donut-conf">\u25cf Konfidenz: ${confLabel}</div>
+    <div class="sp-donut-conf">${t("summary.confidence", { label: confLabel })}</div>
 
     <div class="sp-divider"></div>
 
     <div class="sp-section">
       <div class="sp-section-header">
-        <span class="sp-section-title">GWR Abgleich</span>
-        <span class="sp-section-count">${formatNumber(total)} Geb\u00e4ude</span>
+        <span class="sp-section-title">${t("summary.gwrMatch")}</span>
+        <span class="sp-section-count">${t("summary.buildings", { total: formatNumber(total) })}</span>
       </div>
       <div class="sp-status-grid">
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-good">${formatNumber(matched)}</div>
-          <div class="sp-status-key">Gefunden</div>
+          <div class="sp-status-key">${t("summary.found")}</div>
         </div>
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-poor">${formatNumber(notFound)}</div>
-          <div class="sp-status-key">Nicht gefunden</div>
+          <div class="sp-status-key">${t("summary.notFound")}</div>
         </div>
         <div class="sp-status-cell">
           <div class="sp-status-value sp-color-none">${formatNumber(skipped)}</div>
-          <div class="sp-status-key">\u00dcbersprungen</div>
+          <div class="sp-status-key">${t("summary.skipped")}</div>
         </div>
       </div>
     </div>
@@ -240,29 +243,35 @@ function showResults() {
     <div class="sp-divider"></div>
 
     <div class="sp-section">
-      <div class="sp-section-title">Konfidenz</div>
+      <div class="sp-section-title">${t("summary.confSection")}</div>
       <div class="sp-dist-row">
-        <span class="sp-dist-label score-badge score-good">Hoch</span>
+        <span class="sp-dist-label score-badge score-good">${t("common.high")}</span>
         <div class="sp-dist-bar"><div class="sp-dist-fill sp-bar-good" style="width:${(high / maxBar) * 100}%"></div></div>
         <span class="sp-dist-val">${formatNumber(high)}</span>
       </div>
       <div class="sp-dist-row">
-        <span class="sp-dist-label score-badge score-partial">Mittel</span>
+        <span class="sp-dist-label score-badge score-partial">${t("common.medium")}</span>
         <div class="sp-dist-bar"><div class="sp-dist-fill sp-bar-partial" style="width:${(medium / maxBar) * 100}%"></div></div>
         <span class="sp-dist-val">${formatNumber(medium)}</span>
       </div>
       <div class="sp-dist-row">
-        <span class="sp-dist-label score-badge score-poor">Tief</span>
+        <span class="sp-dist-label score-badge score-poor">${t("common.low")}</span>
         <div class="sp-dist-bar"><div class="sp-dist-fill sp-bar-poor" style="width:${(low / maxBar) * 100}%"></div></div>
         <span class="sp-dist-val">${formatNumber(low)}</span>
       </div>
       <div class="sp-dist-row">
-        <span class="sp-dist-label score-badge score-none">k.A.</span>
+        <span class="sp-dist-label score-badge score-none">${t("common.na")}</span>
         <div class="sp-dist-bar"><div class="sp-dist-fill sp-bar-none" style="width:${(noScore / maxBar) * 100}%"></div></div>
         <span class="sp-dist-val">${formatNumber(noScore)}</span>
       </div>
     </div>
   `;
+}
+
+function showResults() {
+  showState("results");
+
+  updateSummaryPanel();
 
   // Reset panel state
   document.getElementById("summary-panel").classList.remove("collapsed");
@@ -303,8 +312,8 @@ function initMobileTabs() {
   const tabs = document.createElement("div");
   tabs.className = "mobile-tabs";
   tabs.innerHTML = `
-    <button class="mobile-tab active" data-tab="map">Karte</button>
-    <button class="mobile-tab" data-tab="table">Tabelle</button>
+    <button class="mobile-tab active" data-tab="map">${t("results.mobileMap")}</button>
+    <button class="mobile-tab" data-tab="table">${t("results.mobileTable")}</button>
   `;
   main.insertBefore(tabs, main.firstChild);
 

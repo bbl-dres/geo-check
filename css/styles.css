@@ -109,6 +109,38 @@ html, body {
   gap: var(--space-3);
 }
 
+.lang-select {
+  height: var(--control-md);
+  padding: var(--space-2) var(--space-4);
+  appearance: none;
+  background-color: var(--color-white);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right var(--space-3) center;
+  color: var(--gray-700);
+  border: var(--space-px) solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: background-color var(--duration-fast), border-color var(--duration-fast);
+  padding-right: var(--space-8);
+}
+
+.lang-select:hover {
+  background-color: var(--gray-100);
+}
+
+.lang-select:active {
+  background-color: var(--gray-200);
+}
+
+.lang-select:focus-visible {
+  outline: 2px solid var(--federal-blue);
+  outline-offset: 2px;
+}
+
 main {
   flex: 1;
   display: flex;

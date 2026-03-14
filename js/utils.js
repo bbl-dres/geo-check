@@ -1,6 +1,7 @@
 /**
  * String similarity and helper utilities
  */
+import { t, getLocale } from "./i18n.js";
 
 /** Levenshtein distance between two strings */
 export function levenshtein(a, b) {
@@ -69,7 +70,7 @@ export function escapeHtml(str) {
 
 /** Format a number with locale grouping */
 export function formatNumber(n) {
-  return Number(n).toLocaleString("de-CH");
+  return Number(n).toLocaleString(getLocale());
 }
 
 /** Score color class based on match score */
@@ -84,9 +85,9 @@ export function scoreClass(score) {
 export function confidenceLabel(score) {
   if (score == null || score === "") return "—";
   const n = Number(score);
-  if (n >= 80) return "Hoch";
-  if (n >= 50) return "Mittel";
-  return "Tief";
+  if (n >= 80) return t("common.high");
+  if (n >= 50) return t("common.medium");
+  return t("common.low");
 }
 
 /** Read a CSS custom property from :root */

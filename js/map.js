@@ -2,6 +2,7 @@
  * MapLibre GL JS map with CARTO basemap, circle markers, popups
  */
 import { scoreColor, confidenceLabel, escapeHtml } from "./utils.js";
+import { t, getLang } from "./i18n.js";
 
 let map = null;
 let popup = null;
@@ -17,13 +18,13 @@ let mapAC = null;
 const SEARCH_API = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
 
 const BASEMAPS = [
-  { id: "positron",    label: "Hell",    thumb: "https://a.basemaps.cartocdn.com/light_all/7/66/45.png",
+  { id: "positron",    labelKey: "map.basemapLight",  thumb: "https://a.basemaps.cartocdn.com/light_all/7/66/45.png",
     url: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json" },
-  { id: "dark-matter", label: "Dunkel",  thumb: "https://a.basemaps.cartocdn.com/dark_all/7/66/45.png",
+  { id: "dark-matter", labelKey: "map.basemapDark",   thumb: "https://a.basemaps.cartocdn.com/dark_all/7/66/45.png",
     url: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json" },
-  { id: "voyager",     label: "Farbe",   thumb: "https://a.basemaps.cartocdn.com/rastertiles/voyager/7/66/45.png",
+  { id: "voyager",     labelKey: "map.basemapColor",  thumb: "https://a.basemaps.cartocdn.com/rastertiles/voyager/7/66/45.png",
     url: "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json" },
-  { id: "swisstopo",   label: "Luftbild", thumb: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/8/133/91.jpeg",
+  { id: "swisstopo",   labelKey: "map.basemapAerial", thumb: "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/8/133/91.jpeg",
     url: "https://vectortiles.geo.admin.ch/styles/ch.swisstopo.imagerybasemap.vt/style.json" },
 ];
 
@@ -37,7 +38,7 @@ class SummaryToggleControl {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.id = "sp-open-map";
-    btn.title = "Zusammenfassung anzeigen";
+    btn.title = t("map.summaryToggle");
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3z"/><path d="M14 3h7v7h-7z"/><path d="M3 14h7v7H3z"/><path d="M14 14h7v7h-7z"/></svg>`;
     btn.addEventListener("click", () => {
       if (summaryToggleCallback) summaryToggleCallback();
@@ -76,7 +77,7 @@ class LocationSearchControl {
 
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.title = "Adresse oder Ort suchen";
+    btn.title = t("map.searchTitle");
     btn.className = "loc-search-toggle";
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
 
@@ -90,12 +91,12 @@ class LocationSearchControl {
     const input = document.createElement("input");
     input.type = "text";
     input.className = "loc-search-input";
-    input.placeholder = "Adresse oder Ort suchen\u2026";
+    input.placeholder = t("map.searchPlaceholder");
 
     const clearBtn = document.createElement("button");
     clearBtn.type = "button";
     clearBtn.className = "loc-search-clear";
-    clearBtn.title = "Suche leeren";
+    clearBtn.title = t("map.searchClear");
     clearBtn.innerHTML = "\u00d7";
     clearBtn.hidden = true;
 
@@ -189,7 +190,7 @@ async function fetchLocations(query) {
 
 function renderSearchResults(container, results, onSelect) {
   if (!results.length) {
-    container.innerHTML = `<div class="loc-search-empty">Keine Ergebnisse</div>`;
+    container.innerHTML = `<div class="loc-search-empty">${t("common.noResults")}</div>`;
     return;
   }
   container.innerHTML = "";
@@ -224,7 +225,7 @@ class ResetViewControl {
     this._container.className = "maplibregl-ctrl maplibregl-ctrl-group";
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.title = "Alle Geb\u00e4ude anzeigen";
+    btn.title = t("map.resetView");
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`;
     btn.addEventListener("click", () => {
       if (dataBounds) {
@@ -317,12 +318,13 @@ function createBasemapSwitcher(parentEl) {
   panel.id = "bm-panel";
 
   BASEMAPS.forEach((bm) => {
+    const label = t(bm.labelKey);
     const opt = document.createElement("button");
     opt.className = "bm-option" + (bm.id === currentBasemap ? " active" : "");
     opt.dataset.id = bm.id;
     opt.innerHTML =
-      `<img src="${bm.thumb}" alt="${bm.label}">` +
-      `<span class="bm-opt-label">${bm.label}</span>`;
+      `<img src="${bm.thumb}" alt="${label}">` +
+      `<span class="bm-opt-label">${label}</span>`;
     opt.addEventListener("click", (e) => {
       e.stopPropagation();
       if (bm.id === currentBasemap) { closePanel(); return; }
@@ -339,10 +341,10 @@ function createBasemapSwitcher(parentEl) {
   const btn = document.createElement("button");
   btn.className = "bm-btn";
   btn.id = "bm-btn";
-  btn.title = "Kartenansicht wechseln";
+  btn.title = t("map.basemapSwitch");
   btn.innerHTML =
-    `<img id="bm-current-thumb" src="${bm.thumb}" alt="Hintergrund">` +
-    `<span>Hintergrund</span>`;
+    `<img id="bm-current-thumb" src="${bm.thumb}" alt="${t("map.basemapLabel")}">` +
+    `<span>${t("map.basemapLabel")}</span>`;
 
   let panelOpen = false;
   function closePanel() { panelOpen = false; panel.classList.remove("open"); }
@@ -384,7 +386,7 @@ export function initMap(container, clickCallback) {
   if (!spinner) {
     spinner = document.createElement("div");
     spinner.className = "map-loading";
-    spinner.innerHTML = `<div class="map-spinner"></div><div class="map-loading-text">Karte wird geladen\u2026</div>`;
+    spinner.innerHTML = `<div class="map-spinner"></div><div class="map-loading-text">${t("map.loading")}</div>`;
     containerEl.appendChild(spinner);
   }
   spinner.style.display = "flex";
@@ -488,20 +490,21 @@ function buildPopup(row) {
   const egid = row.gwr_egid || row.egid || "";
   const lat = parseFloat(row.gwr_latitude) || parseFloat(row.latitude) || null;
   const lng = parseFloat(row.gwr_longitude) || parseFloat(row.longitude) || null;
+  const lang = getLang();
 
   // External links (two rows: Swiss maps, Google maps)
   let linksHtml = "";
   if (lat != null && lng != null) {
     linksHtml = `<div class="popup-links">
       <div class="popup-link-row">
-        <a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">GWR-Karte</a>
+        <a href="https://map.geo.admin.ch/#/map?lang=${lang}&swisssearch=${lng},${lat}&topic=ech&layers=ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">${t("map.gwrMap")}</a>
         <span class="popup-link-sep">\u00b7</span>
-        <a href="https://map.geo.admin.ch/#/map?lang=de&swisssearch=${lng},${lat}&topic=ech&layers=ch.swisstopo-vd.stand-oerebkataster&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">\u00d6REB-Kataster</a>
+        <a href="https://map.geo.admin.ch/#/map?lang=${lang}&swisssearch=${lng},${lat}&topic=ech&layers=ch.swisstopo-vd.stand-oerebkataster&bgLayer=ch.swisstopo.swissimage" target="_blank" rel="noopener">${t("map.oereb")}</a>
       </div>
       <div class="popup-link-row">
-        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener">Google Maps</a>
+        <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lng}" target="_blank" rel="noopener">${t("map.googleMaps")}</a>
         <span class="popup-link-sep">\u00b7</span>
-        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">Street View</a>
+        <a href="https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${lat},${lng}" target="_blank" rel="noopener">${t("map.streetView")}</a>
       </div>
     </div>`;
   }
@@ -511,10 +514,10 @@ function buildPopup(row) {
   return `<div class="map-popup">
   <div class="popup-header">
     <div class="popup-header-text">
-      <span class="popup-id">${escapeHtml(row.internal_id || "—")}</span>
-      <span class="popup-egid">${escapeHtml(egid || "—")}</span>
+      <span class="popup-id">${escapeHtml(row.internal_id || "\u2014")}</span>
+      <span class="popup-egid">${escapeHtml(egid || "\u2014")}</span>
     </div>
-    <button class="popup-close" aria-label="Schliessen" onclick="this.closest('.maplibregl-popup').remove()">&times;</button>
+    <button class="popup-close" aria-label="${t("map.popupClose")}" onclick="this.closest('.maplibregl-popup').remove()">&times;</button>
   </div>
   <div class="popup-address">
     ${escapeHtml(row.gwr_street || row.street || "")} ${escapeHtml(row.gwr_street_number || row.street_number || "")}<br>

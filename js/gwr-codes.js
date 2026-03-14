@@ -2,6 +2,7 @@
  * GWR code → multilingual label resolution.
  * Loads data/gwr-codes.json once, provides lookup helpers.
  */
+import { getLang } from "./i18n.js";
 
 let codes = null;
 let loadPromise = null;
@@ -28,7 +29,8 @@ export function loadCodes() {
  * @param {string} [lang="de"]  Language: "de", "fr", or "it"
  * @returns {string} Resolved label, or the raw code if not found
  */
-export function codeLabel(attribute, code, lang = "de") {
+export function codeLabel(attribute, code, lang) {
+  lang = lang || getLang();
   if (!codes || code === "" || code == null) return "";
   const entry = codes[attribute]?.[String(code)];
   if (!entry) return String(code);

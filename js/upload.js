@@ -1,6 +1,7 @@
 /**
  * File parsing and validation — no preview, straight to processing.
  */
+import { t } from "./i18n.js";
 
 const REQUIRED_COLUMNS = ["internal_id", "egid"];
 
@@ -47,7 +48,7 @@ async function loadDemoFile() {
     handleFile(file);
   } catch (err) {
     console.error("Failed to load demo file:", err);
-    showError("Demo-Datei konnte nicht geladen werden.");
+    showError(t("upload.errDemo"));
   }
 }
 
@@ -63,12 +64,12 @@ async function handleFile(file) {
     } else if (ext === "xlsx" || ext === "xls") {
       parsedData = await parseExcel(file);
     } else {
-      showError("Nicht unterstütztes Dateiformat. Bitte laden Sie eine CSV- oder Excel-Datei hoch.");
+      showError(t("upload.errFormat"));
       return;
     }
 
     if (!parsedData.headers.length || !parsedData.rows.length) {
-      showError("Die Datei scheint leer zu sein.");
+      showError(t("upload.errEmpty"));
       return;
     }
 
@@ -80,12 +81,12 @@ async function handleFile(file) {
       strong.textContent = missing.join(", ");
       const link = document.createElement("a");
       link.href = "#";
-      link.textContent = "Demo-Datei";
+      link.textContent = t("upload.errTemplateLink");
       link.addEventListener("click", (e) => { e.preventDefault(); loadDemoFile(); });
       showErrorDOM([
-        "Fehlende Pflichtspalten: ", strong, ". ",
-        "Ihre Datei enthält: " + parsedData.headers.join(", ") + ". ",
-        "Verwenden Sie die ", link, " als Vorlage."
+        t("upload.errMissing"), strong, ". ",
+        t("upload.errContains") + parsedData.headers.join(", ") + ". ",
+        t("upload.errTemplate"), link, t("upload.errTemplateSuffix")
       ]);
       return;
     }
@@ -104,7 +105,7 @@ async function handleFile(file) {
     if (onReady) onReady(parsedData);
   } catch (err) {
     console.error("File parse error:", err);
-    showError("Fehler beim Lesen der Datei: " + err.message);
+    showError(t("upload.errRead") + err.message);
   }
 }
 
@@ -141,7 +142,7 @@ function parseCSV(file) {
       else if (tabs > commas) delimiter = "\t";
 
       const lines = text.split(/\r?\n/).filter((l) => l.trim());
-      if (lines.length < 2) return reject(new Error("Die Datei muss eine Kopfzeile und mindestens eine Datenzeile enthalten"));
+      if (lines.length < 2) return reject(new Error(t("upload.errHeader")));
 
       const headers = parseLine(lines[0], delimiter);
       const rows = [];
@@ -201,7 +202,7 @@ async function parseExcel(file) {
         const wb = XLSX.read(e.target.result, { type: "array" });
         const ws = wb.Sheets[wb.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(ws, { defval: "" });
-        if (!jsonData.length) return reject(new Error("Leere Tabelle"));
+        if (!jsonData.length) return reject(new Error(t("upload.errEmptySheet")));
         const headers = Object.keys(jsonData[0]);
         const rows = jsonData.map((row) => {
           const clean = {};
@@ -227,4 +228,3 @@ function loadScript(src) {
     document.head.appendChild(s);
   });
 }
-

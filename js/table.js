@@ -4,6 +4,7 @@
 import { escapeHtml, scoreClass, confidenceLabel } from "./utils.js";
 import { resizeMap } from "./map.js";
 import { loadCodes, codeLabel, CODE_COLUMNS } from "./gwr-codes.js";
+import { t, getLang } from "./i18n.js";
 
 let allResults = [];
 let filteredResults = [];
@@ -30,85 +31,49 @@ const DEFAULT_VISIBLE = new Set([
   "match_score", "confidence", "gwr_match",
 ]);
 
-const COLUMNS = [
-  // --- Input columns (passed through) ---
-  { key: "internal_id", label: "Interne ID" },
-  { key: "egid", label: "EGID" },
-  { key: "street", label: "Strasse" },
-  { key: "street_number", label: "Nr" },
-  { key: "zip", label: "PLZ" },
-  { key: "city", label: "Ort" },
-  { key: "region", label: "Kanton" },
-  { key: "building_type", label: "Kategorie" },
-  { key: "latitude", label: "Breite" },
-  { key: "longitude", label: "L\u00e4nge" },
-  { key: "country", label: "Land" },
-  { key: "comment", label: "Kommentar" },
-  // --- GWR output columns (from API) ---
-  { key: "gwr_egid", label: "EGID (GWR)" },
-  { key: "gwr_egrid", label: "EGRID (GWR)" },
-  { key: "gwr_street", label: "Strasse (GWR)" },
-  { key: "gwr_street_number", label: "Nr (GWR)" },
-  { key: "gwr_zip", label: "PLZ (GWR)" },
-  { key: "gwr_city", label: "Ort (GWR)" },
-  { key: "gwr_municipality", label: "Gemeinde (GWR)" },
-  { key: "gwr_municipality_nr", label: "BFS-Nr (GWR)" },
-  { key: "gwr_region", label: "Kt (GWR)" },
-  { key: "gwr_building_type", label: "Kategorie (GWR)" },
-  { key: "gwr_building_class", label: "Geb\u00e4udeklasse (GWR)" },
-  { key: "gwr_status", label: "Geb\u00e4udestatus (GWR)" },
-  { key: "gwr_year_built", label: "Baujahr (GWR)" },
-  { key: "gwr_construction_period", label: "Bauperiode (GWR)" },
-  { key: "gwr_area", label: "Grundfl\u00e4che m\u00b2 (GWR)" },
-  { key: "gwr_floors", label: "Anz. Geschosse (GWR)" },
-  { key: "gwr_dwellings", label: "Wohnungen (GWR)" },
-  { key: "gwr_latitude", label: "Breite (GWR)" },
-  { key: "gwr_longitude", label: "L\u00e4nge (GWR)" },
-  { key: "gwr_coord_e", label: "E-Koord. (LV95)" },
-  { key: "gwr_coord_n", label: "N-Koord. (LV95)" },
-  { key: "gwr_coord_source", label: "Koord.-Herkunft (GWR)" },
-  { key: "gwr_demolition_year", label: "Abbruchjahr (GWR)" },
-  { key: "gwr_plot_nr", label: "Parzelle (GWR)" },
-  { key: "gwr_building_name", label: "Geb\u00e4udename (GWR)" },
-  { key: "gwr_heating_type", label: "Heizung (GWR)" },
-  { key: "gwr_heating_energy", label: "Energietr. Heiz. (GWR)" },
-  { key: "gwr_hot_water_type", label: "Warmwasser (GWR)" },
-  { key: "gwr_hot_water_energy", label: "Energietr. WW (GWR)" },
-  // --- Match results (computed) ---
-  { key: "match_score", label: "Score" },
-  { key: "confidence", label: "Konfidenz" },
-  { key: "match_street", label: "Match Strasse" },
-  { key: "match_street_number", label: "Match Nr" },
-  { key: "match_zip", label: "Match PLZ" },
-  { key: "match_city", label: "Match Ort" },
-  { key: "match_region", label: "Match Kt" },
-  { key: "match_building_type", label: "Match Kategorie" },
-  { key: "match_coordinates", label: "Match Koord." },
-  { key: "gwr_match", label: "GWR Abgleich" },
-].map((c) => ({ ...c, visible: DEFAULT_VISIBLE.has(c.key) }));
-
-/** Columns available for the filter dropdown (categorical/useful ones) */
-const FILTERABLE_COLUMNS = [
-  { key: "gwr_match", label: "GWR Abgleich" },
-  { key: "gwr_region", label: "Kanton" },
-  { key: "gwr_building_type", label: "Geb\u00e4udekategorie" },
-  { key: "gwr_building_class", label: "Geb\u00e4udeklasse" },
-  { key: "gwr_status", label: "Geb\u00e4udestatus" },
-  { key: "gwr_municipality", label: "Gemeinde" },
-  { key: "gwr_zip", label: "PLZ" },
-  { key: "match_street", label: "Match Strasse" },
-  { key: "match_street_number", label: "Match Nr" },
-  { key: "match_zip", label: "Match PLZ" },
-  { key: "match_city", label: "Match Ort" },
-  { key: "match_region", label: "Match Kt" },
-  { key: "match_building_type", label: "Match Kategorie" },
-  { key: "match_coordinates", label: "Match Koord." },
+/** Column keys — labels resolved via t() at render time */
+const COLUMN_KEYS = [
+  // Input columns
+  "internal_id", "egid", "street", "street_number", "zip", "city",
+  "region", "building_type", "latitude", "longitude", "country", "comment",
+  // GWR output columns
+  "gwr_egid", "gwr_egrid", "gwr_street", "gwr_street_number", "gwr_zip", "gwr_city",
+  "gwr_municipality", "gwr_municipality_nr", "gwr_region",
+  "gwr_building_type", "gwr_building_class", "gwr_status",
+  "gwr_year_built", "gwr_construction_period", "gwr_area", "gwr_floors", "gwr_dwellings",
+  "gwr_latitude", "gwr_longitude", "gwr_coord_e", "gwr_coord_n", "gwr_coord_source",
+  "gwr_demolition_year", "gwr_plot_nr", "gwr_building_name",
+  "gwr_heating_type", "gwr_heating_energy", "gwr_hot_water_type", "gwr_hot_water_energy",
+  // Match results
+  "match_score", "confidence",
+  "match_street", "match_street_number", "match_zip", "match_city",
+  "match_region", "match_building_type", "match_coordinates", "gwr_match",
 ];
 
-const FILTERABLE_KEYS = new Set(FILTERABLE_COLUMNS.map((c) => c.key));
+let columns = COLUMN_KEYS.map((key) => ({ key, visible: DEFAULT_VISIBLE.has(key) }));
+
+/** Resolve column label at render time */
+function colLabel(key) {
+  return t(`col.${key}`);
+}
+
+/** Columns available for the filter dropdown (categorical/useful ones) */
+const FILTERABLE_KEYS_LIST = [
+  "gwr_match", "gwr_region", "gwr_building_type", "gwr_building_class",
+  "gwr_status", "gwr_municipality", "gwr_zip",
+  "match_street", "match_street_number", "match_zip", "match_city",
+  "match_region", "match_building_type", "match_coordinates",
+];
+
+const FILTERABLE_KEYS = new Set(FILTERABLE_KEYS_LIST);
+
+/** Resolve filterable column label */
+function fcolLabel(key) {
+  return t(`fcol.${key}`);
+}
 
 function visibleCols() {
-  return COLUMNS.filter((c) => c.visible);
+  return columns.filter((c) => c.visible);
 }
 
 /* ── URL Parameter Sync ── */
@@ -126,17 +91,20 @@ function readUrlParams() {
 
   // Column filters (multiple values per key)
   activeFilters = [];
-  for (const col of FILTERABLE_COLUMNS) {
-    const values = params.getAll(col.key);
+  for (const key of FILTERABLE_KEYS_LIST) {
+    const values = params.getAll(key);
     for (const v of values) {
-      const displayV = CODE_COLUMNS[col.key] ? codeLabel(CODE_COLUMNS[col.key], v) : v;
-      activeFilters.push({ key: col.key, value: v, label: `${col.label}: ${displayV}` });
+      const displayV = CODE_COLUMNS[key] ? codeLabel(CODE_COLUMNS[key], v) : v;
+      activeFilters.push({ key, value: v, label: `${fcolLabel(key)}: ${displayV}` });
     }
   }
 }
 
 function writeUrlParams() {
   const params = new URLSearchParams();
+  // Preserve language param
+  const lang = getLang();
+  if (lang !== "de") params.set("lang", lang);
   if (presetFilter !== "all") params.set("preset", presetFilter);
   if (searchQuery) params.set("q", searchQuery);
   for (const f of activeFilters) {
@@ -155,7 +123,7 @@ export function initTable(container, clickCallback) {
   dropdownAC = new AbortController();
 
   onRowClick = clickCallback;
-  COLUMNS.forEach((c) => (c.visible = DEFAULT_VISIBLE.has(c.key)));
+  columns = COLUMN_KEYS.map((key) => ({ key, visible: DEFAULT_VISIBLE.has(key) }));
 
   // Kick off GWR code label fetch (awaited in populateTable before first render)
   loadCodes();
@@ -178,24 +146,44 @@ export function initTable(container, clickCallback) {
     if (si) { si.value = searchQuery; container.querySelector("#tbl-search-clear").hidden = !searchQuery; }
   }, { signal: dropdownAC.signal });
 
+  // Re-render on language change
+  window.addEventListener("langchange", () => {
+    renderHeader();
+    renderBody();
+    renderFilterPills();
+    renderColumnMenu();
+    // Update toolbar button text
+    const colBtn = document.getElementById("col-dd-btn");
+    if (colBtn) colBtn.querySelector("span")?.replaceWith(Object.assign(document.createTextNode(t("table.columns"))));
+    const filterBtn = document.getElementById("filter-dd-btn");
+    if (filterBtn) filterBtn.querySelector("span")?.replaceWith(Object.assign(document.createTextNode(t("table.filter"))));
+    // Update search placeholder
+    const si = document.getElementById("tbl-search");
+    if (si) si.placeholder = t("table.search");
+    // Update preset button labels
+    container.querySelectorAll(".preset-btn").forEach((b) => {
+      b.textContent = t(`common.${b.dataset.preset}`);
+    });
+  }, { signal: dropdownAC.signal });
+
   container.innerHTML = `
     <div class="table-toolbar">
       <div class="tbl-search-wrap">
         <svg class="tbl-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="tbl-search" class="tbl-search" placeholder="Suche\u2026" value="${escapeHtml(searchQuery)}">
+        <input type="text" id="tbl-search" class="tbl-search" placeholder="${escapeHtml(t("table.search"))}" value="${escapeHtml(searchQuery)}">
         <button class="tbl-search-clear" id="tbl-search-clear" ${searchQuery ? "" : "hidden"}>&times;</button>
       </div>
       <div class="table-presets" id="table-presets">
-        <button class="preset-btn ${presetFilter === "high" ? "active" : ""}" data-preset="high">Hoch</button>
-        <button class="preset-btn ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">Mittel</button>
-        <button class="preset-btn ${presetFilter === "low" ? "active" : ""}" data-preset="low">Tief</button>
+        <button class="preset-btn ${presetFilter === "high" ? "active" : ""}" data-preset="high">${t("common.high")}</button>
+        <button class="preset-btn ${presetFilter === "medium" ? "active" : ""}" data-preset="medium">${t("common.medium")}</button>
+        <button class="preset-btn ${presetFilter === "low" ? "active" : ""}" data-preset="low">${t("common.low")}</button>
       </div>
       <div class="filter-pills" id="filter-pills"></div>
       <span class="toolbar-spacer"></span>
       <div class="col-dd-wrap" id="col-dd-wrap">
         <button class="toolbar-btn" id="col-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          Spalten
+          <span>${t("table.columns")}</span>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="dropdown-menu col-dd-menu" id="col-dd-menu" hidden></div>
@@ -203,7 +191,7 @@ export function initTable(container, clickCallback) {
       <div class="filter-dd-wrap" id="filter-dd-wrap">
         <button class="toolbar-btn" id="filter-dd-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Filter
+          <span>${t("table.filter")}</span>
           <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="dropdown-menu filter-dd-menu" id="filter-dd-menu" hidden></div>
@@ -299,21 +287,22 @@ function initColumnDropdown() {
 
 function renderColumnMenu() {
   const menu = document.getElementById("col-dd-menu");
+  if (!menu) return;
   let html = `<div class="col-dd-actions">
-    <button class="col-dd-action" id="col-show-all">Alle anzeigen</button>
-    <button class="col-dd-action" id="col-hide-all">Alle ausblenden</button>
+    <button class="col-dd-action" id="col-show-all">${t("table.showAll")}</button>
+    <button class="col-dd-action" id="col-hide-all">${t("table.hideAll")}</button>
   </div>`;
-  for (const col of COLUMNS) {
+  for (const col of columns) {
     html += `<label class="col-dd-item">
       <input type="checkbox" data-col="${col.key}" ${col.visible ? "checked" : ""}>
-      ${escapeHtml(col.label)}
+      ${escapeHtml(colLabel(col.key))}
     </label>`;
   }
   menu.innerHTML = html;
 
   document.getElementById("col-show-all").addEventListener("click", (e) => {
     e.stopPropagation();
-    COLUMNS.forEach((c) => (c.visible = true));
+    columns.forEach((c) => (c.visible = true));
     renderColumnMenu();
     renderHeader();
     renderBody();
@@ -322,7 +311,7 @@ function renderColumnMenu() {
   document.getElementById("col-hide-all").addEventListener("click", (e) => {
     e.stopPropagation();
     // Always keep at least internal_id visible
-    COLUMNS.forEach((c) => (c.visible = c.key === "internal_id"));
+    columns.forEach((c) => (c.visible = c.key === "internal_id"));
     renderColumnMenu();
     renderHeader();
     renderBody();
@@ -330,7 +319,7 @@ function renderColumnMenu() {
 
   menu.querySelectorAll("input[type=checkbox]").forEach((cb) => {
     cb.addEventListener("change", () => {
-      const col = COLUMNS.find((c) => c.key === cb.dataset.col);
+      const col = columns.find((c) => c.key === cb.dataset.col);
       if (!col) return;
       // Prevent unchecking the last visible column
       if (!cb.checked && visibleCols().length <= 1) {
@@ -376,29 +365,30 @@ function renderFilterCheckboxList() {
 
   // Collect distinct values per column
   const groups = [];
-  for (const col of FILTERABLE_COLUMNS) {
+  for (const key of FILTERABLE_KEYS_LIST) {
+    const label = fcolLabel(key);
     const counts = new Map();
     for (const row of allResults) {
-      const v = String(row[col.key] ?? "").trim();
+      const v = String(row[key] ?? "").trim();
       if (v) counts.set(v, (counts.get(v) || 0) + 1);
     }
     if (counts.size === 0) continue;
     const sorted = [...counts.entries()].sort((a, b) => b[1] - a[1]);
-    groups.push({ col, values: sorted });
+    groups.push({ key, label, values: sorted });
   }
 
   let html = `<div class="filter-dd-search-wrap">
-    <input type="text" class="filter-dd-search" id="filter-dd-search" placeholder="Filter suchen\u2026">
+    <input type="text" class="filter-dd-search" id="filter-dd-search" placeholder="${escapeHtml(t("table.filterSearch"))}">
   </div>`;
 
   for (const g of groups) {
-    html += `<div class="filter-dd-group" data-group="${g.col.key}">${escapeHtml(g.col.label)}</div>`;
+    html += `<div class="filter-dd-group" data-group="${g.key}">${escapeHtml(g.label)}</div>`;
     for (const [val, count] of g.values) {
-      const checked = activeSet.has(`${g.col.key}::${val}`) ? "checked" : "";
-      const displayVal = CODE_COLUMNS[g.col.key] ? codeLabel(CODE_COLUMNS[g.col.key], val) : val;
-      const searchText = (g.col.label + " " + displayVal).toLowerCase();
-      html += `<label class="filter-dd-check" data-group="${g.col.key}" data-search="${escapeHtml(searchText)}">
-        <input type="checkbox" data-key="${g.col.key}" data-value="${escapeHtml(val)}" ${checked}>
+      const checked = activeSet.has(`${g.key}::${val}`) ? "checked" : "";
+      const displayVal = CODE_COLUMNS[g.key] ? codeLabel(CODE_COLUMNS[g.key], val) : val;
+      const searchText = (g.label + " " + displayVal).toLowerCase();
+      html += `<label class="filter-dd-check" data-group="${g.key}" data-search="${escapeHtml(searchText)}">
+        <input type="checkbox" data-key="${g.key}" data-value="${escapeHtml(val)}" ${checked}>
         <span class="filter-dd-check-label">${escapeHtml(displayVal)}</span>
         <span class="filter-dd-count">${count}</span>
       </label>`;
@@ -406,7 +396,7 @@ function renderFilterCheckboxList() {
   }
 
   if (!groups.length) {
-    html += `<div class="filter-dd-empty">Keine Filter verf\u00fcgbar</div>`;
+    html += `<div class="filter-dd-empty">${t("table.noFilters")}</div>`;
   }
 
   menu.innerHTML = html;
@@ -445,9 +435,8 @@ function toggleFilter(key, value) {
   if (idx >= 0) {
     activeFilters.splice(idx, 1);
   } else {
-    const col = FILTERABLE_COLUMNS.find((c) => c.key === key);
     const displayVal = CODE_COLUMNS[key] ? codeLabel(CODE_COLUMNS[key], value) : value;
-    activeFilters.push({ key, value, label: `${col ? col.label : key}: ${displayVal}` });
+    activeFilters.push({ key, value, label: `${fcolLabel(key)}: ${displayVal}` });
   }
   renderFilterPills();
   applyFilter();
@@ -497,9 +486,8 @@ function activatePreset(preset) {
 function ensureFilter(key, value) {
   if (!FILTERABLE_KEYS.has(key)) return;
   if (activeFilters.some((f) => f.key === key && f.value === value)) return;
-  const col = FILTERABLE_COLUMNS.find((c) => c.key === key);
   const displayVal = CODE_COLUMNS[key] ? codeLabel(CODE_COLUMNS[key], value) : value;
-  activeFilters.push({ key, value, label: `${col.label}: ${displayVal}` });
+  activeFilters.push({ key, value, label: `${fcolLabel(key)}: ${displayVal}` });
   renderFilterPills();
   applyFilter();
   renderBody();
@@ -507,8 +495,6 @@ function ensureFilter(key, value) {
   const menu = document.getElementById("filter-dd-menu");
   if (menu && !menu.hidden) renderFilterCheckboxList();
 }
-
-const PRESET_LABELS = { high: "Hoch", medium: "Mittel", low: "Tief" };
 
 function renderFilterPills() {
   const container = document.getElementById("filter-pills");
@@ -525,18 +511,18 @@ function renderFilterPills() {
   // Preset pill
   if (hasPreset) {
     html += `<span class="filter-pill">
-      Konfidenz: ${PRESET_LABELS[presetFilter]}
-      <button class="filter-pill-x" id="filter-pill-preset" title="Filter entfernen">&times;</button>
+      ${t("table.confidence")} ${t(`common.${presetFilter}`)}
+      <button class="filter-pill-x" id="filter-pill-preset" title="${t("table.filterRemove")}">&times;</button>
     </span>`;
   }
 
   for (const f of activeFilters) {
     html += `<span class="filter-pill">
       ${escapeHtml(f.label)}
-      <button class="filter-pill-x" data-key="${f.key}" data-value="${escapeHtml(f.value)}" title="Filter entfernen">&times;</button>
+      <button class="filter-pill-x" data-key="${f.key}" data-value="${escapeHtml(f.value)}" title="${t("table.filterRemove")}">&times;</button>
     </span>`;
   }
-  html += `<button class="filter-reset-pill" id="filter-reset-all">Filter zur\u00fccksetzen</button>`;
+  html += `<button class="filter-reset-pill" id="filter-reset-all">${t("table.filterReset")}</button>`;
   container.innerHTML = html;
 
   // Preset pill remove
@@ -597,7 +583,7 @@ function applyFilter() {
   if (searchQuery) {
     const q = searchQuery.toLowerCase();
     filteredResults = filteredResults.filter((r) =>
-      COLUMNS.some((c) => String(r[c.key] ?? "").toLowerCase().includes(q))
+      columns.some((c) => String(r[c.key] ?? "").toLowerCase().includes(q))
     );
   }
 
@@ -627,12 +613,14 @@ function sortResults() {
 function renderHeader() {
   const cols = visibleCols();
   const thead = document.querySelector("#results-table thead");
+  if (!thead) return;
   let html = "<tr>";
   for (const col of cols) {
+    const label = colLabel(col.key);
     const isSorted = sortField === col.key;
     const arrow = isSorted ? (sortAsc ? " \u25b2" : " \u25bc") : "";
     const ariaSort = isSorted ? (sortAsc ? ' aria-sort="ascending"' : ' aria-sort="descending"') : "";
-    html += `<th class="sortable" data-field="${col.key}"${ariaSort}>${escapeHtml(col.label)}${arrow}</th>`;
+    html += `<th class="sortable" data-field="${col.key}"${ariaSort}>${escapeHtml(label)}${arrow}</th>`;
   }
   html += "</tr>";
   thead.innerHTML = html;
@@ -656,8 +644,9 @@ function renderHeader() {
 function renderBody() {
   const cols = visibleCols();
   const tbody = document.querySelector("#results-table tbody");
+  if (!tbody) return;
   if (!filteredResults.length) {
-    tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty-state">Keine Ergebnisse</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="${cols.length}" class="empty-state">${t("table.empty")}</td></tr>`;
     renderPagination();
     return;
   }
@@ -682,7 +671,7 @@ function renderBody() {
         const score = row.match_score;
         const label = confidenceLabel(score);
         const cls = score != null && score !== "" ? scoreClass(Number(score)) : "score-none";
-        const confPreset = { "Hoch": "high", "Mittel": "medium", "Tief": "low" }[label] || "";
+        const confPreset = score != null && score !== "" ? (Number(score) >= 80 ? "high" : Number(score) >= 50 ? "medium" : "low") : "";
         const confClick = confPreset ? ` filterable-badge" data-conf-preset="${confPreset}` : "";
         html += `<td><span class="score-badge ${cls}${confClick}">${escapeHtml(label)}</span></td>`;
       } else if (col.key === "gwr_match") {
@@ -737,19 +726,19 @@ function renderPagination() {
   const end = Math.min((currentPage + 1) * pageSize, total);
 
   el.innerHTML = `
-    <span class="pg-info">${total === 0 ? "Keine Eintr\u00e4ge" : `${start}\u2013${end} von ${total}`}</span>
+    <span class="pg-info">${total === 0 ? t("table.noEntries") : `${start}\u2013${end} / ${total}`}</span>
     <div class="pg-spacer"></div>
-    <button class="pg-btn" id="pg-first" title="Erste Seite" ${currentPage === 0 ? "disabled" : ""}>\u00ab</button>
-    <button class="pg-btn" id="pg-prev" title="Vorherige Seite" ${currentPage === 0 ? "disabled" : ""}>\u2039</button>
+    <button class="pg-btn" id="pg-first" title="${t("table.firstPage")}" ${currentPage === 0 ? "disabled" : ""}>\u00ab</button>
+    <button class="pg-btn" id="pg-prev" title="${t("table.prevPage")}" ${currentPage === 0 ? "disabled" : ""}>\u2039</button>
     <div class="pg-pages" id="pg-pages"></div>
-    <button class="pg-btn" id="pg-next" title="N\u00e4chste Seite" ${currentPage >= totalPages - 1 ? "disabled" : ""}>\u203a</button>
-    <button class="pg-btn" id="pg-last" title="Letzte Seite" ${currentPage >= totalPages - 1 ? "disabled" : ""}>\u00bb</button>
+    <button class="pg-btn" id="pg-next" title="${t("table.nextPage")}" ${currentPage >= totalPages - 1 ? "disabled" : ""}>\u203a</button>
+    <button class="pg-btn" id="pg-last" title="${t("table.lastPage")}" ${currentPage >= totalPages - 1 ? "disabled" : ""}>\u00bb</button>
     <div class="pg-spacer"></div>
-    <select class="pg-size-select" id="pg-size-select" title="Zeilen pro Seite">
-      <option value="10" ${pageSize === 10 ? "selected" : ""}>10 / Seite</option>
-      <option value="25" ${pageSize === 25 ? "selected" : ""}>25 / Seite</option>
-      <option value="50" ${pageSize === 50 ? "selected" : ""}>50 / Seite</option>
-      <option value="100" ${pageSize === 100 ? "selected" : ""}>100 / Seite</option>
+    <select class="pg-size-select" id="pg-size-select" title="${t("table.rowsPerPage")}">
+      <option value="10" ${pageSize === 10 ? "selected" : ""}>10 ${t("table.perPage")}</option>
+      <option value="25" ${pageSize === 25 ? "selected" : ""}>25 ${t("table.perPage")}</option>
+      <option value="50" ${pageSize === 50 ? "selected" : ""}>50 ${t("table.perPage")}</option>
+      <option value="100" ${pageSize === 100 ? "selected" : ""}>100 ${t("table.perPage")}</option>
     </select>
   `;
 
