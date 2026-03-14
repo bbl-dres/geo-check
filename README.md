@@ -5,8 +5,8 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 ![Geo-Check — Results view with map, summary panel, and data table](assets/Preview1.jpg)
 
 <p align="center">
-  <img src="assets/Preview1.jpg" width="45%" style="vertical-align: top;"/>
   <img src="assets/Preview2.jpg" width="45%" style="vertical-align: top;"/>
+  <img src="assets/Preview3.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen?logo=github)](https://bbl-dres.github.io/geo-check/)
