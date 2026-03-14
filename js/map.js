@@ -308,6 +308,16 @@ function addLayers() {
 
   map.on("mouseenter", "buildings-circle", () => { map.getCanvas().style.cursor = "pointer"; });
   map.on("mouseleave", "buildings-circle", () => { map.getCanvas().style.cursor = ""; });
+
+  // Footer coordinate display
+  const coordsEl = document.getElementById("footer-coords");
+  if (coordsEl) {
+    map.on("mousemove", (e) => {
+      const { lng, lat } = e.lngLat;
+      coordsEl.textContent = `WGS 84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    });
+    map.on("mouseout", () => { coordsEl.textContent = "\u2014"; });
+  }
 }
 
 /** Create the basemap switcher widget */

@@ -178,6 +178,12 @@ main {
   flex-shrink: 0;
 }
 
+#footer-coords {
+  font-family: var(--font-mono);
+  color: var(--gray-500);
+  letter-spacing: -0.02em;
+}
+
 .footer-info a,
 .footer-links a {
   color: var(--federal-blue);

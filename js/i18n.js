@@ -209,6 +209,7 @@ const translations = {
     "table.nextPage": "N\u00e4chste Seite",
     "table.lastPage": "Letzte Seite",
     "table.perPage": "/ Seite",
+    "table.rowsPerPage": "Zeilen pro Seite",
     "table.confidence": "Konfidenz:",
 
     // Table column labels
@@ -300,7 +301,6 @@ const translations = {
     "report.internalId": "Interne ID",
     "report.egid": "EGID",
     "report.address": "Adresse",
-    "report.canton": "Kanton",
     "report.gwrStatus": "GWR-Status",
     "report.statusMatched": "Gefunden",
     "report.statusNotFound": "Nicht gefunden",
@@ -455,6 +455,7 @@ const translations = {
     "table.nextPage": "Page suivante",
     "table.lastPage": "Derni\u00e8re page",
     "table.perPage": "/ page",
+    "table.rowsPerPage": "Lignes par page",
     "table.confidence": "Confiance\u00a0:",
 
     "col.internal_id": "ID interne",
@@ -543,7 +544,6 @@ const translations = {
     "report.internalId": "ID interne",
     "report.egid": "EGID",
     "report.address": "Adresse",
-    "report.canton": "Canton",
     "report.gwrStatus": "Statut RegBL",
     "report.statusMatched": "Trouv\u00e9",
     "report.statusNotFound": "Non trouv\u00e9",
@@ -698,6 +698,7 @@ const translations = {
     "table.nextPage": "Pagina successiva",
     "table.lastPage": "Ultima pagina",
     "table.perPage": "/ pagina",
+    "table.rowsPerPage": "Righe per pagina",
     "table.confidence": "Confidenza:",
 
     "col.internal_id": "ID interno",
@@ -786,7 +787,6 @@ const translations = {
     "report.internalId": "ID interno",
     "report.egid": "EGID",
     "report.address": "Indirizzo",
-    "report.canton": "Cantone",
     "report.gwrStatus": "Stato REA",
     "report.statusMatched": "Trovato",
     "report.statusNotFound": "Non trovato",
@@ -941,6 +941,7 @@ const translations = {
     "table.nextPage": "Next page",
     "table.lastPage": "Last page",
     "table.perPage": "/ page",
+    "table.rowsPerPage": "Rows per page",
     "table.confidence": "Confidence:",
 
     "col.internal_id": "Internal ID",
@@ -1029,7 +1030,6 @@ const translations = {
     "report.internalId": "Internal ID",
     "report.egid": "EGID",
     "report.address": "Address",
-    "report.canton": "Canton",
     "report.gwrStatus": "GWR Status",
     "report.statusMatched": "Found",
     "report.statusNotFound": "Not found",
