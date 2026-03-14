@@ -60,7 +60,10 @@
       "Bash(git commit:*)",
       "Bash(git merge:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:geo.admin.ch)"
+      "WebFetch(domain:geo.admin.ch)",
+      "WebFetch(domain:wmts.geo.admin.ch)",
+      "WebFetch(domain:www.geo.admin.ch)",
+      "WebFetch(domain:wms.geo.admin.ch)"
     ]
   }
 }

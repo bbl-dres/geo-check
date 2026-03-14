@@ -3,6 +3,7 @@
  */
 import { scoreColor, confidenceLabel, escapeHtml } from "./utils.js";
 import { t, getLang } from "./i18n.js";
+import { generateBuildingReport } from "./report.js";
 
 let map = null;
 let popup = null;
@@ -301,6 +302,7 @@ function addLayers() {
       .setHTML(props.popupHtml)
       .addTo(map);
 
+    wirePopupReportBtn();
     if (onMarkerClick) onMarkerClick(idx);
   });
 
@@ -465,7 +467,7 @@ function plotOnMap() {
         rowIndex: i,
         color,
         label: row.internal_id || "",
-        popupHtml: buildPopup(row)
+        popupHtml: buildPopup(row, i)
       }
     });
 
@@ -482,7 +484,7 @@ function plotOnMap() {
   }
 }
 
-function buildPopup(row) {
+function buildPopup(row, rowIndex) {
   const numScore = row.match_score !== "" && row.match_score != null ? Number(row.match_score) : null;
   const scorePct = numScore != null ? numScore + "%" : "N/A";
   const conf = confidenceLabel(numScore);
@@ -509,6 +511,14 @@ function buildPopup(row) {
     </div>`;
   }
 
+  // PDF report button
+  const reportHtml = `<div class="popup-report">
+    <button class="popup-report-btn" data-row-index="${rowIndex}">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      ${t("report.popupBtn")}
+    </button>
+  </div>`;
+
   const color = scoreColor(numScore);
 
   return `<div class="map-popup">
@@ -530,7 +540,28 @@ function buildPopup(row) {
     <span class="popup-status">${escapeHtml(status)}</span>
   </div>
   ${linksHtml}
+  ${reportHtml}
 </div>`;
+}
+
+/** Wire up the PDF report button inside the currently open popup */
+function wirePopupReportBtn() {
+  const el = popup.getElement();
+  if (!el) return;
+  const btn = el.querySelector(".popup-report-btn");
+  if (!btn) return;
+  btn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    const idx = parseInt(btn.dataset.rowIndex);
+    if (resultsData[idx]) {
+      btn.disabled = true;
+      btn.textContent = "\u2026";
+      generateBuildingReport(resultsData[idx]).finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> ${t("report.popupBtn")}`;
+      });
+    }
+  });
 }
 
 export function highlightMarker(rowIndex) {
@@ -543,9 +574,10 @@ export function highlightMarker(rowIndex) {
 
   popup
     .setLngLat([lng, lat])
-    .setHTML(buildPopup(row))
+    .setHTML(buildPopup(row, rowIndex))
     .addTo(map);
 
+  wirePopupReportBtn();
   map.flyTo({ center: [lng, lat], zoom: Math.max(map.getZoom(), 13) });
 }
 
