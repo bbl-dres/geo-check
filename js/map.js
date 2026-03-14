@@ -218,177 +218,361 @@ function placeSearchMarker(lat, lon, label) {
   map.flyTo({ center: [lon, lat], zoom: 15 });
 }
 
-/** WMTS overlay layer definitions */
-const WMTS_LAYERS = [
-  { id: "gwr-status",  key: "map.layerGwrStatus",  layer: "ch.bfs.gebaeude_wohnungs_register" },
-  { id: "oereb",       key: "map.layerOereb",       layer: "ch.swisstopo-vd.stand-oerebkataster" },
-  { id: "cadastre",    key: "map.layerCadastre",     layer: "ch.swisstopo-vd.amtliche-vermessung" },
+/** Overlay layer definitions (WMS for layers that don't support EPSG:3857 WMTS) */
+const OVERLAY_LAYERS = [
+  { id: "gwr-status",  key: "map.layerGwrStatus",  layer: "ch.bfs.gebaeude_wohnungs_register", mode: "wmts" },
+  { id: "oereb",       key: "map.layerOereb",       layer: "ch.swisstopo-vd.stand-oerebkataster", mode: "wms" },
+  { id: "cadastre",    key: "map.layerCadastre",     layer: "ch.swisstopo-vd.amtliche-vermessung", mode: "wms" },
 ];
 
-function wmtsTileUrl(layerName) {
-  return `https://wmts.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.png`;
+function overlayTileUrl(wl) {
+  if (wl.mode === "wms") {
+    return `https://wms.geo.admin.ch/?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=${wl.layer}&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&STYLES=&WIDTH=256&HEIGHT=256&BBOX={bbox-epsg-3857}`;
+  }
+  return `https://wmts.geo.admin.ch/1.0.0/${wl.layer}/default/current/3857/{z}/{x}/{y}.png`;
 }
 
-/** Custom control: map content panel (accordion with legend + external layers) */
-class MapPanelControl {
-  onAdd(mapInstance) {
-    this._map = mapInstance;
-    const container = document.createElement("div");
-    container.className = "maplibregl-ctrl map-panel-ctrl";
+/** Get approximate map scale */
+function getMapScale() {
+  if (!map) return 25000;
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+  const metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, zoom);
+  const pixelsPerMeter = 96 / 0.0254;
+  return Math.round(metersPerPixel * pixelsPerMeter);
+}
 
-    // ── Print button ──
-    const printBtn = document.createElement("button");
-    printBtn.type = "button";
-    printBtn.className = "map-panel-print";
-    printBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span>${t("map.print")}</span>`;
-    printBtn.addEventListener("click", () => window.print());
-    container.appendChild(printBtn);
+/** Print the current map view via browser print dialog */
+function printMap() {
+  const orientationEl = document.getElementById("map-print-orientation");
+  const scaleEl = document.getElementById("map-print-scale");
+  const legendEl = document.getElementById("map-print-legend");
+  const btn = document.getElementById("map-print-btn");
 
-    // ── Accordion header ──
-    const accHeader = document.createElement("button");
-    accHeader.type = "button";
-    accHeader.className = "map-panel-acc-header";
-    accHeader.setAttribute("aria-expanded", "true");
-    accHeader.innerHTML = `<svg class="map-panel-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg> <span>${t("map.panelTitle")}</span>`;
+  const orientation = orientationEl.value;
+  const scaleVal = scaleEl.value;
+  const includeLegend = legendEl.checked;
 
-    const accBody = document.createElement("div");
-    accBody.className = "map-panel-acc-body";
+  const origText = btn.textContent;
+  btn.textContent = t("map.printGenerating");
+  btn.disabled = true;
 
-    accHeader.addEventListener("click", () => {
-      const open = accBody.classList.toggle("collapsed");
-      accHeader.setAttribute("aria-expanded", String(!open));
-      accHeader.querySelector(".map-panel-chevron").classList.toggle("rotated", open);
-    });
+  const dims = {
+    "landscape-a4": { width: 297, height: 210 },
+    "portrait-a4":  { width: 210, height: 297 },
+    "landscape-a3": { width: 420, height: 297 },
+    "portrait-a3":  { width: 297, height: 420 },
+  }[orientation] || { width: 297, height: 210 };
 
-    container.appendChild(accHeader);
+  const pc = document.createElement("div");
+  pc.id = "print-container";
+  pc.style.cssText = `position:fixed;top:0;left:0;width:${dims.width}mm;height:${dims.height}mm;background:white;z-index:10000;padding:10mm;box-sizing:border-box;display:flex;flex-direction:column;`;
 
-    // ── Buildings sub-section ──
-    const buildSec = document.createElement("div");
-    buildSec.className = "map-panel-section";
+  // Header
+  const hdr = document.createElement("div");
+  hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid #ccc;flex-shrink:0;";
+  hdr.innerHTML = `<div style="font-size:14pt;font-weight:bold;">Geo-Check</div><div style="font-size:10pt;color:#666;">${new Date().toLocaleDateString("de-CH")}</div>`;
+  pc.appendChild(hdr);
 
-    const buildLabel = document.createElement("label");
-    buildLabel.className = "map-panel-layer-label";
-    const buildCb = document.createElement("input");
-    buildCb.type = "checkbox";
-    buildCb.checked = true;
-    buildLabel.appendChild(buildCb);
-    buildLabel.appendChild(document.createTextNode(" " + t("map.layerBuildings")));
-    buildSec.appendChild(buildLabel);
+  // Map canvas
+  const mapBox = document.createElement("div");
+  mapBox.style.cssText = "flex:1;border:1px solid #ccc;position:relative;overflow:hidden;min-height:0;";
+  if (map) {
+    const srcCanvas = map.getCanvas();
+    const clone = document.createElement("canvas");
+    clone.width = srcCanvas.width;
+    clone.height = srcCanvas.height;
+    clone.getContext("2d").drawImage(srcCanvas, 0, 0);
+    clone.style.cssText = "width:100%;height:100%;object-fit:contain;";
+    mapBox.appendChild(clone);
 
-    // Color legend
-    const legend = document.createElement("div");
-    legend.className = "map-panel-legend";
-    const legendItems = [
-      { key: "map.legendGood",    color: "var(--color-good)" },
-      { key: "map.legendPartial", color: "var(--color-partial)" },
-      { key: "map.legendPoor",    color: "var(--color-poor)" },
-      { key: "map.legendNone",    color: "var(--color-none)" },
-    ];
-    for (const item of legendItems) {
-      const row = document.createElement("div");
-      row.className = "map-panel-legend-item";
-      row.innerHTML = `<span class="map-panel-dot" style="background:${item.color}"></span> ${t(item.key)}`;
-      legend.appendChild(row);
+    // Scale bar
+    const sb = document.createElement("div");
+    sb.style.cssText = "position:absolute;bottom:5mm;left:5mm;background:rgba(255,255,255,0.9);padding:2mm 3mm;border-radius:2px;font-size:8pt;";
+    const currentScale = scaleVal === "auto" ? getMapScale() : parseInt(scaleVal);
+    sb.textContent = `Massstab 1:${currentScale.toLocaleString("de-CH")}`;
+    mapBox.appendChild(sb);
+  }
+  pc.appendChild(mapBox);
+
+  // Legend
+  if (includeLegend) {
+    const leg = document.createElement("div");
+    leg.style.cssText = "margin-top:5mm;padding:3mm;border:1px solid #ccc;font-size:9pt;flex-shrink:0;";
+    const colors = { good: "#22c55e", partial: "#eab308", poor: "#ef4444", none: "#9ca3af" };
+    const labels = { good: t("map.legendGood"), partial: t("map.legendPartial"), poor: t("map.legendPoor"), none: t("map.legendNone") };
+    let items = "";
+    for (const [k, c] of Object.entries(colors)) {
+      items += `<span style="display:inline-flex;align-items:center;gap:3px;"><span style="display:inline-block;width:12px;height:8px;background:${c};border-radius:2px;border:1px solid rgba(0,0,0,0.12);"></span>${labels[k]}</span>`;
     }
-    buildSec.appendChild(legend);
-
-    // Toggle buildings visibility
-    buildCb.addEventListener("change", () => {
-      const vis = buildCb.checked ? "visible" : "none";
-      if (this._map.getLayer("buildings-circle")) this._map.setLayoutProperty("buildings-circle", "visibility", vis);
-      if (this._map.getLayer("buildings-label")) this._map.setLayoutProperty("buildings-label", "visibility", vis);
-    });
-
-    accBody.appendChild(buildSec);
-
-    // ── External layers sub-section ──
-    const extTitle = document.createElement("div");
-    extTitle.className = "map-panel-ext-title";
-    extTitle.textContent = t("map.externalLayers");
-    accBody.appendChild(extTitle);
-
-    for (const wl of WMTS_LAYERS) {
-      const label = document.createElement("label");
-      label.className = "map-panel-layer-label";
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.dataset.wmtsId = wl.id;
-      label.appendChild(cb);
-      label.appendChild(document.createTextNode(" " + t(wl.key)));
-      accBody.appendChild(label);
-
-      cb.addEventListener("change", () => {
-        const sourceId = `wmts-${wl.id}`;
-        const layerId = `wmts-layer-${wl.id}`;
-        if (cb.checked) {
-          if (!this._map.getSource(sourceId)) {
-            this._map.addSource(sourceId, {
-              type: "raster",
-              tiles: [wmtsTileUrl(wl.layer)],
-              tileSize: 256,
-              attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
-            });
-          }
-          if (!this._map.getLayer(layerId)) {
-            // Insert below building layers so markers stay on top
-            const beforeLayer = this._map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
-            this._map.addLayer({
-              id: layerId,
-              type: "raster",
-              source: sourceId,
-              paint: { "raster-opacity": 0.6 }
-            }, beforeLayer);
-          }
-        } else {
-          if (this._map.getLayer(layerId)) this._map.removeLayer(layerId);
-          if (this._map.getSource(sourceId)) this._map.removeSource(sourceId);
-        }
-      });
-    }
-
-    container.appendChild(accBody);
-    this._container = container;
-
-    // Store references for re-adding after style change
-    this._buildCb = buildCb;
-    this._wmtsCheckboxes = container.querySelectorAll("[data-wmts-id]");
-
-    return container;
+    leg.innerHTML = `<div style="font-weight:bold;margin-bottom:2mm;">${t("map.printLegend")}</div><div style="display:flex;gap:10mm;flex-wrap:wrap;">${items}</div>`;
+    pc.appendChild(leg);
   }
 
-  onRemove() {
-    this._container.remove();
-    this._map = null;
+  // Footer
+  const ftr = document.createElement("div");
+  ftr.style.cssText = "margin-top:3mm;padding-top:3mm;border-top:1px solid #ccc;font-size:8pt;color:#666;display:flex;justify-content:space-between;flex-shrink:0;";
+  ftr.innerHTML = `<span>Quelle: Geo-Check</span><span>\u00a9 ${new Date().getFullYear()} Bundesamt f\u00fcr Bauten und Logistik</span>`;
+  pc.appendChild(ftr);
+
+  document.body.appendChild(pc);
+
+  const printStyles = document.createElement("style");
+  printStyles.id = "gc-print-styles";
+  printStyles.textContent = `@media print { body > *:not(#print-container) { display: none !important; } #print-container { position: static !important; } @page { size: ${orientation.includes("landscape") ? "landscape" : "portrait"}; margin: 0; } }`;
+  document.head.appendChild(printStyles);
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      pc.remove();
+      printStyles.remove();
+      btn.textContent = origText;
+      btn.disabled = false;
+    }, 500);
+  }, 100);
+}
+
+/** Create the map accordion panel (property-inventory style) */
+function createMapPanel(parentEl) {
+  const oldPanel = parentEl.querySelector(".map-acc-wrapper");
+  if (oldPanel) oldPanel.remove();
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "map-acc-wrapper";
+
+  const panel = document.createElement("div");
+  panel.className = "map-acc-panel";
+  panel.id = "map-acc-panel";
+
+  // Track all headers/contents for mutual exclusivity
+  const allHeaders = [];
+  const allContents = [];
+
+  function toggleAcc(header, content) {
+    const wasActive = header.classList.contains("active");
+    allHeaders.forEach(h => { h.classList.remove("active"); h.setAttribute("aria-expanded", "false"); });
+    allContents.forEach(c => c.classList.remove("show"));
+    if (!wasActive) {
+      header.classList.add("active");
+      header.setAttribute("aria-expanded", "true");
+      content.classList.add("show");
+    }
   }
 
-  /** Re-add WMTS layers after a basemap style change */
-  reapplyLayers() {
-    for (const cb of this._wmtsCheckboxes) {
+  const chevronSvg = `<span class="map-acc-arrow"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 6 15 12 9 18"/></svg></span>`;
+
+  // ═══ Accordion 1: Print ═══
+  const printItem = document.createElement("div");
+  printItem.className = "map-acc-item";
+
+  const printHeader = document.createElement("button");
+  printHeader.type = "button";
+  printHeader.className = "map-acc-header";
+  printHeader.setAttribute("aria-expanded", "false");
+  printHeader.innerHTML = `${chevronSvg} <span>${t("map.print")}</span>`;
+
+  const printContent = document.createElement("div");
+  printContent.className = "map-acc-content";
+
+  // Print form
+  const printPanel = document.createElement("div");
+  printPanel.className = "map-acc-print-panel";
+
+  // Orientation row
+  const oriRow = document.createElement("div");
+  oriRow.className = "map-acc-form-row";
+  oriRow.innerHTML = `<label for="map-print-orientation" class="map-acc-form-label">${t("map.printOrientation")}</label>`;
+  const oriSel = document.createElement("select");
+  oriSel.id = "map-print-orientation";
+  oriSel.className = "map-acc-select";
+  oriSel.innerHTML = `<option value="landscape-a4">A4 landscape</option><option value="portrait-a4">A4 portrait</option><option value="landscape-a3">A3 landscape</option><option value="portrait-a3">A3 portrait</option>`;
+  oriRow.appendChild(oriSel);
+  printPanel.appendChild(oriRow);
+
+  // Scale row
+  const scaleRow = document.createElement("div");
+  scaleRow.className = "map-acc-form-row";
+  scaleRow.innerHTML = `<label for="map-print-scale" class="map-acc-form-label">${t("map.printScale")}</label>`;
+  const scaleSel = document.createElement("select");
+  scaleSel.id = "map-print-scale";
+  scaleSel.className = "map-acc-select";
+  scaleSel.innerHTML = `<option value="auto">${t("map.printScaleAuto")}</option><option value="500">1:500</option><option value="1000">1:1'000</option><option value="2500">1:2'500</option><option value="5000">1:5'000</option><option value="10000">1:10'000</option><option value="25000">1:25'000</option><option value="50000">1:50'000</option><option value="100000">1:100'000</option>`;
+  scaleRow.appendChild(scaleSel);
+  printPanel.appendChild(scaleRow);
+
+  // Legend checkbox
+  const legRow = document.createElement("label");
+  legRow.className = "map-acc-print-check";
+  legRow.innerHTML = `<input type="checkbox" id="map-print-legend" checked> <span>${t("map.printLegend")}</span>`;
+  printPanel.appendChild(legRow);
+
+  // Print button
+  const printBtn = document.createElement("button");
+  printBtn.type = "button";
+  printBtn.id = "map-print-btn";
+  printBtn.className = "map-acc-print-btn";
+  printBtn.textContent = t("map.printBtn");
+  printBtn.addEventListener("click", printMap);
+  printPanel.appendChild(printBtn);
+
+  printContent.appendChild(printPanel);
+  printItem.appendChild(printHeader);
+  printItem.appendChild(printContent);
+  panel.appendChild(printItem);
+
+  allHeaders.push(printHeader);
+  allContents.push(printContent);
+  printHeader.addEventListener("click", () => toggleAcc(printHeader, printContent));
+
+  // ═══ Accordion 2: Karteninhalt ═══
+  const mapItem = document.createElement("div");
+  mapItem.className = "map-acc-item";
+
+  const mapHeader = document.createElement("button");
+  mapHeader.type = "button";
+  mapHeader.className = "map-acc-header active";
+  mapHeader.setAttribute("aria-expanded", "true");
+  mapHeader.innerHTML = `${chevronSvg} <span>${t("map.panelTitle")}</span>`;
+
+  const mapContent = document.createElement("div");
+  mapContent.className = "map-acc-content show";
+
+  // Buildings layer
+  const buildItem = document.createElement("div");
+  buildItem.className = "map-acc-layer-item";
+  const buildCb = document.createElement("input");
+  buildCb.type = "checkbox";
+  buildCb.className = "map-acc-checkbox";
+  buildCb.checked = true;
+  const buildLabel = document.createElement("span");
+  buildLabel.className = "map-acc-layer-title";
+  buildLabel.textContent = t("map.layerBuildings");
+  buildItem.appendChild(buildCb);
+  buildItem.appendChild(buildLabel);
+  mapContent.appendChild(buildItem);
+
+  buildCb.addEventListener("change", () => {
+    const vis = buildCb.checked ? "visible" : "none";
+    if (map.getLayer("buildings-circle")) map.setLayoutProperty("buildings-circle", "visibility", vis);
+    if (map.getLayer("buildings-label")) map.setLayoutProperty("buildings-label", "visibility", vis);
+    legendEl.style.opacity = buildCb.checked ? "1" : "0.3";
+  });
+
+  // Legend
+  const legendEl = document.createElement("div");
+  legendEl.className = "map-acc-legend";
+  for (const item of [
+    { key: "map.legendGood",    color: "var(--color-good)" },
+    { key: "map.legendPartial", color: "var(--color-partial)" },
+    { key: "map.legendPoor",    color: "var(--color-poor)" },
+    { key: "map.legendNone",    color: "var(--color-none)" },
+  ]) {
+    const row = document.createElement("div");
+    row.className = "map-acc-legend-item";
+    row.innerHTML = `<span class="map-acc-swatch" style="background:${item.color}"></span><span class="map-acc-legend-label">${t(item.key)}</span>`;
+    legendEl.appendChild(row);
+  }
+  mapContent.appendChild(legendEl);
+
+  // External layers
+  const extLabel = document.createElement("div");
+  extLabel.className = "map-acc-group-label";
+  extLabel.textContent = t("map.externalLayers");
+  mapContent.appendChild(extLabel);
+
+  for (const wl of OVERLAY_LAYERS) {
+    const layerItem = document.createElement("div");
+    layerItem.className = "map-acc-layer-item";
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.className = "map-acc-checkbox";
+    cb.dataset.overlayId = wl.id;
+    const span = document.createElement("span");
+    span.className = "map-acc-layer-title";
+    span.textContent = t(wl.key);
+    layerItem.appendChild(cb);
+    layerItem.appendChild(span);
+    mapContent.appendChild(layerItem);
+
+    cb.addEventListener("change", () => {
+      const sourceId = `overlay-${wl.id}`;
+      const layerId = `overlay-layer-${wl.id}`;
       if (cb.checked) {
-        const wl = WMTS_LAYERS.find((w) => w.id === cb.dataset.wmtsId);
-        if (!wl) continue;
-        const sourceId = `wmts-${wl.id}`;
-        const layerId = `wmts-layer-${wl.id}`;
-        if (!this._map.getSource(sourceId)) {
-          this._map.addSource(sourceId, {
+        if (!map.getSource(sourceId)) {
+          map.addSource(sourceId, {
             type: "raster",
-            tiles: [wmtsTileUrl(wl.layer)],
+            tiles: [overlayTileUrl(wl)],
             tileSize: 256,
             attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
           });
         }
-        if (!this._map.getLayer(layerId)) {
-          const beforeLayer = this._map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
-          this._map.addLayer({
-            id: layerId,
-            type: "raster",
-            source: sourceId,
-            paint: { "raster-opacity": 0.6 }
-          }, beforeLayer);
+        if (!map.getLayer(layerId)) {
+          const beforeLayer = map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
+          map.addLayer({ id: layerId, type: "raster", source: sourceId, paint: { "raster-opacity": 0.6 } }, beforeLayer);
+        }
+      } else {
+        if (map.getLayer(layerId)) map.removeLayer(layerId);
+        if (map.getSource(sourceId)) map.removeSource(sourceId);
+      }
+    });
+  }
+
+  mapItem.appendChild(mapHeader);
+  mapItem.appendChild(mapContent);
+  panel.appendChild(mapItem);
+
+  allHeaders.push(mapHeader);
+  allContents.push(mapContent);
+  mapHeader.addEventListener("click", () => toggleAcc(mapHeader, mapContent));
+
+  wrapper.appendChild(panel);
+
+  // ── Menu toggle ──
+  const toggle = document.createElement("div");
+  toggle.className = "map-acc-toggle";
+  const toggleIcon = document.createElement("span");
+  toggleIcon.className = "map-acc-toggle-icon";
+  toggleIcon.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 15 12 9 18 15"/></svg>`;
+  const toggleText = document.createElement("span");
+  toggleText.textContent = t("map.menuClose");
+  toggle.appendChild(toggleIcon);
+  toggle.appendChild(toggleText);
+
+  let menuOpen = true;
+  toggle.addEventListener("click", () => {
+    menuOpen = !menuOpen;
+    panel.classList.toggle("collapsed", !menuOpen);
+    toggleText.textContent = menuOpen ? t("map.menuClose") : t("map.menuOpen");
+    toggleIcon.innerHTML = menuOpen
+      ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 15 12 9 18 15"/></svg>`
+      : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+  });
+
+  wrapper.appendChild(toggle);
+  parentEl.appendChild(wrapper);
+
+  const overlayCheckboxes = mapContent.querySelectorAll("[data-overlay-id]");
+
+  return {
+    reapplyLayers() {
+      for (const cb of overlayCheckboxes) {
+        if (cb.checked) {
+          const wl = OVERLAY_LAYERS.find((w) => w.id === cb.dataset.overlayId);
+          if (!wl) continue;
+          const sourceId = `overlay-${wl.id}`;
+          const layerId = `overlay-layer-${wl.id}`;
+          if (!map.getSource(sourceId)) {
+            map.addSource(sourceId, { type: "raster", tiles: [overlayTileUrl(wl)], tileSize: 256 });
+          }
+          if (!map.getLayer(layerId)) {
+            const beforeLayer = map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
+            map.addLayer({ id: layerId, type: "raster", source: sourceId, paint: { "raster-opacity": 0.6 } }, beforeLayer);
+          }
         }
       }
     }
-  }
+  };
 }
 
 let mapPanelControl = null;
@@ -419,9 +603,15 @@ class ResetViewControl {
   }
 }
 
+/** Whether map-level (non-layer) handlers have been registered */
+let mapHandlersRegistered = false;
+
 /** Add data source + layer + event handlers (called on initial load and after style switch) */
 function addLayers() {
-  if (map.getSource("buildings")) return;
+  // Clean up existing layers/source first (makes this idempotent for style switches)
+  if (map.getLayer("buildings-label")) map.removeLayer("buildings-label");
+  if (map.getLayer("buildings-circle")) map.removeLayer("buildings-circle");
+  if (map.getSource("buildings")) map.removeSource("buildings");
 
   const isDark = currentBasemap === "dark-matter";
   const strokeColor = isDark ? "#2d2d2d" : "#fff";
@@ -467,6 +657,7 @@ function addLayers() {
     }
   });
 
+  // Layer-specific handlers must be re-registered after each style change
   map.on("click", "buildings-circle", (e) => {
     if (!e.features.length) return;
     const props = e.features[0].properties;
@@ -484,14 +675,17 @@ function addLayers() {
   map.on("mouseenter", "buildings-circle", () => { map.getCanvas().style.cursor = "pointer"; });
   map.on("mouseleave", "buildings-circle", () => { map.getCanvas().style.cursor = ""; });
 
-  // Footer coordinate display
-  const coordsEl = document.getElementById("footer-coords");
-  if (coordsEl) {
-    map.on("mousemove", (e) => {
-      const { lng, lat } = e.lngLat;
-      coordsEl.textContent = `WGS 84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-    });
-    map.on("mouseout", () => { coordsEl.textContent = "\u2014"; });
+  // Map-level handlers only once (they survive style changes)
+  if (!mapHandlersRegistered) {
+    mapHandlersRegistered = true;
+    const coordsEl = document.getElementById("footer-coords");
+    if (coordsEl) {
+      map.on("mousemove", (e) => {
+        const { lng, lat } = e.lngLat;
+        coordsEl.textContent = `WGS 84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+      });
+      map.on("mouseout", () => { coordsEl.textContent = "\u2014"; });
+    }
   }
 }
 
@@ -569,6 +763,7 @@ export function initMap(container, clickCallback) {
     map.remove();
     map = null;
   }
+  mapHandlersRegistered = false;
 
   // Show loading spinner
   const containerEl = typeof container === "string" ? document.getElementById(container) : container;
@@ -596,8 +791,9 @@ export function initMap(container, clickCallback) {
     attributionControl: false
   });
 
-  mapPanelControl = new MapPanelControl();
-  map.addControl(mapPanelControl, "top-left");
+  // Map accordion panel (plain DOM, not a MapLibre control)
+  mapPanelControl = createMapPanel(containerEl.parentElement);
+
   map.addControl(new LocationSearchControl(), "top-right");
   map.addControl(new maplibregl.NavigationControl(), "top-right");
   map.addControl(new ResetViewControl(), "top-right");
