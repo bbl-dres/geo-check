@@ -1,5 +1,7 @@
 # Geo-Check
 
+![Preview](assets/Social1.jpg)
+
 Verify your building records against the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/) — identify mismatches, download enriched results, fix your source data, and re-upload to improve quality iteratively.
 
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen?logo=github)](https://bbl-dres.github.io/geo-check/)
