@@ -21,6 +21,8 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 
 **Prototype with Project Management:** https://bbl-dres.github.io/geo-check/prototype1
 
+![Preview](prototype1/assets/preview1.jpg)
+
 ---
 
 ## How It Works
