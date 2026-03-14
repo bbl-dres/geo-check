@@ -218,6 +218,181 @@ function placeSearchMarker(lat, lon, label) {
   map.flyTo({ center: [lon, lat], zoom: 15 });
 }
 
+/** WMTS overlay layer definitions */
+const WMTS_LAYERS = [
+  { id: "gwr-status",  key: "map.layerGwrStatus",  layer: "ch.bfs.gebaeude_wohnungs_register" },
+  { id: "oereb",       key: "map.layerOereb",       layer: "ch.swisstopo-vd.stand-oerebkataster" },
+  { id: "cadastre",    key: "map.layerCadastre",     layer: "ch.swisstopo-vd.amtliche-vermessung" },
+];
+
+function wmtsTileUrl(layerName) {
+  return `https://wmts.geo.admin.ch/1.0.0/${layerName}/default/current/3857/{z}/{x}/{y}.png`;
+}
+
+/** Custom control: map content panel (accordion with legend + external layers) */
+class MapPanelControl {
+  onAdd(mapInstance) {
+    this._map = mapInstance;
+    const container = document.createElement("div");
+    container.className = "maplibregl-ctrl map-panel-ctrl";
+
+    // ── Print button ──
+    const printBtn = document.createElement("button");
+    printBtn.type = "button";
+    printBtn.className = "map-panel-print";
+    printBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> <span>${t("map.print")}</span>`;
+    printBtn.addEventListener("click", () => window.print());
+    container.appendChild(printBtn);
+
+    // ── Accordion header ──
+    const accHeader = document.createElement("button");
+    accHeader.type = "button";
+    accHeader.className = "map-panel-acc-header";
+    accHeader.setAttribute("aria-expanded", "true");
+    accHeader.innerHTML = `<svg class="map-panel-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg> <span>${t("map.panelTitle")}</span>`;
+
+    const accBody = document.createElement("div");
+    accBody.className = "map-panel-acc-body";
+
+    accHeader.addEventListener("click", () => {
+      const open = accBody.classList.toggle("collapsed");
+      accHeader.setAttribute("aria-expanded", String(!open));
+      accHeader.querySelector(".map-panel-chevron").classList.toggle("rotated", open);
+    });
+
+    container.appendChild(accHeader);
+
+    // ── Buildings sub-section ──
+    const buildSec = document.createElement("div");
+    buildSec.className = "map-panel-section";
+
+    const buildLabel = document.createElement("label");
+    buildLabel.className = "map-panel-layer-label";
+    const buildCb = document.createElement("input");
+    buildCb.type = "checkbox";
+    buildCb.checked = true;
+    buildLabel.appendChild(buildCb);
+    buildLabel.appendChild(document.createTextNode(" " + t("map.layerBuildings")));
+    buildSec.appendChild(buildLabel);
+
+    // Color legend
+    const legend = document.createElement("div");
+    legend.className = "map-panel-legend";
+    const legendItems = [
+      { key: "map.legendGood",    color: "var(--color-good)" },
+      { key: "map.legendPartial", color: "var(--color-partial)" },
+      { key: "map.legendPoor",    color: "var(--color-poor)" },
+      { key: "map.legendNone",    color: "var(--color-none)" },
+    ];
+    for (const item of legendItems) {
+      const row = document.createElement("div");
+      row.className = "map-panel-legend-item";
+      row.innerHTML = `<span class="map-panel-dot" style="background:${item.color}"></span> ${t(item.key)}`;
+      legend.appendChild(row);
+    }
+    buildSec.appendChild(legend);
+
+    // Toggle buildings visibility
+    buildCb.addEventListener("change", () => {
+      const vis = buildCb.checked ? "visible" : "none";
+      if (this._map.getLayer("buildings-circle")) this._map.setLayoutProperty("buildings-circle", "visibility", vis);
+      if (this._map.getLayer("buildings-label")) this._map.setLayoutProperty("buildings-label", "visibility", vis);
+    });
+
+    accBody.appendChild(buildSec);
+
+    // ── External layers sub-section ──
+    const extTitle = document.createElement("div");
+    extTitle.className = "map-panel-ext-title";
+    extTitle.textContent = t("map.externalLayers");
+    accBody.appendChild(extTitle);
+
+    for (const wl of WMTS_LAYERS) {
+      const label = document.createElement("label");
+      label.className = "map-panel-layer-label";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.dataset.wmtsId = wl.id;
+      label.appendChild(cb);
+      label.appendChild(document.createTextNode(" " + t(wl.key)));
+      accBody.appendChild(label);
+
+      cb.addEventListener("change", () => {
+        const sourceId = `wmts-${wl.id}`;
+        const layerId = `wmts-layer-${wl.id}`;
+        if (cb.checked) {
+          if (!this._map.getSource(sourceId)) {
+            this._map.addSource(sourceId, {
+              type: "raster",
+              tiles: [wmtsTileUrl(wl.layer)],
+              tileSize: 256,
+              attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
+            });
+          }
+          if (!this._map.getLayer(layerId)) {
+            // Insert below building layers so markers stay on top
+            const beforeLayer = this._map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
+            this._map.addLayer({
+              id: layerId,
+              type: "raster",
+              source: sourceId,
+              paint: { "raster-opacity": 0.6 }
+            }, beforeLayer);
+          }
+        } else {
+          if (this._map.getLayer(layerId)) this._map.removeLayer(layerId);
+          if (this._map.getSource(sourceId)) this._map.removeSource(sourceId);
+        }
+      });
+    }
+
+    container.appendChild(accBody);
+    this._container = container;
+
+    // Store references for re-adding after style change
+    this._buildCb = buildCb;
+    this._wmtsCheckboxes = container.querySelectorAll("[data-wmts-id]");
+
+    return container;
+  }
+
+  onRemove() {
+    this._container.remove();
+    this._map = null;
+  }
+
+  /** Re-add WMTS layers after a basemap style change */
+  reapplyLayers() {
+    for (const cb of this._wmtsCheckboxes) {
+      if (cb.checked) {
+        const wl = WMTS_LAYERS.find((w) => w.id === cb.dataset.wmtsId);
+        if (!wl) continue;
+        const sourceId = `wmts-${wl.id}`;
+        const layerId = `wmts-layer-${wl.id}`;
+        if (!this._map.getSource(sourceId)) {
+          this._map.addSource(sourceId, {
+            type: "raster",
+            tiles: [wmtsTileUrl(wl.layer)],
+            tileSize: 256,
+            attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
+          });
+        }
+        if (!this._map.getLayer(layerId)) {
+          const beforeLayer = this._map.getLayer("buildings-circle") ? "buildings-circle" : undefined;
+          this._map.addLayer({
+            id: layerId,
+            type: "raster",
+            source: sourceId,
+            paint: { "raster-opacity": 0.6 }
+          }, beforeLayer);
+        }
+      }
+    }
+  }
+}
+
+let mapPanelControl = null;
+
 /** Custom control: reset view / zoom to extent */
 class ResetViewControl {
   onAdd(map) {
@@ -343,7 +518,10 @@ function createBasemapSwitcher(parentEl) {
       currentBasemap = bm.id;
       updateBtn();
       map.setStyle(bm.url);
-      map.once("style.load", addLayers);
+      map.once("style.load", () => {
+        addLayers();
+        if (mapPanelControl) mapPanelControl.reapplyLayers();
+      });
       closePanel();
     });
     panel.appendChild(opt);
@@ -418,6 +596,8 @@ export function initMap(container, clickCallback) {
     attributionControl: false
   });
 
+  mapPanelControl = new MapPanelControl();
+  map.addControl(mapPanelControl, "top-left");
   map.addControl(new LocationSearchControl(), "top-right");
   map.addControl(new maplibregl.NavigationControl(), "top-right");
   map.addControl(new ResetViewControl(), "top-right");
