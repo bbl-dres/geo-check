@@ -32,7 +32,8 @@ const MARGIN_L = 18;
 const MARGIN_R = 18;
 const CONTENT_W = PAGE_W - MARGIN_L - MARGIN_R;
 const FOOTER_Y = 290;
-const HEADER_Y = 20; // content starts after header
+const HEADER_Y = 22; // content starts after header
+const SECTION_GAP = 12; // vertical space between sections
 
 /* ── Swisstopo WMS ── */
 
@@ -63,17 +64,28 @@ export async function generateBuildingReport(row) {
   y = drawBuildingInfo(doc, row, y);
   y = drawScoreBox(doc, row, y);
   y = drawComparisonTable(doc, row, y);
-  y = drawRecommendations(doc, row, y);
-  drawLinks(doc, row, y);
+  drawRecommendations(doc, row, y);
 
-  // Page 2: maps (if coordinates available)
+  // Page 2: links + cadastral map
   const lat = parseFloat(row.gwr_latitude) || parseFloat(row.latitude) || null;
   const lng = parseFloat(row.gwr_longitude) || parseFloat(row.longitude) || null;
 
+  doc.addPage();
+  drawHeader(doc, row);
+  y = HEADER_Y;
+  y = drawLinks(doc, row, y);
+
   if (lat != null && lng != null) {
+    const { E, N } = wgs84ToLv95(lat, lng);
+    const bbox = `${E - MAP_EXTENT_E},${N - MAP_EXTENT_N},${E + MAP_EXTENT_E},${N + MAP_EXTENT_N}`;
+    const markerLabel = row.internal_id || row.egid || "";
+
+    await drawMapSection(doc, t("report.mapCadastral"), CADASTRAL_LAYERS, bbox, markerLabel, t("report.mapCadastralNA"), lat, lng, y);
+
+    // Page 3: aerial image
     doc.addPage();
     drawHeader(doc, row);
-    await drawMapsPage(doc, lat, lng);
+    await drawMapPage(doc, t("report.mapAerial"), AERIAL_LAYERS, bbox, markerLabel, t("report.mapAerialNA"), lat, lng);
   }
 
   // Footer on all pages
@@ -99,7 +111,7 @@ function drawHeader(doc, row) {
   doc.setFontSize(9);
   doc.text("\u00b7  " + t("report.title"), MARGIN_L + 27, 10);
 
-  // Right: ID + date
+  // Right: ID + date+time
   const now = new Date();
   const dateStr = now.toLocaleDateString(getLocale(), { dateStyle: "medium" }) + ", " + now.toLocaleTimeString(getLocale(), { hour: "2-digit", minute: "2-digit" });
   const idStr = row ? (row.internal_id || row.egid || "") : "";
@@ -119,7 +131,7 @@ function drawSectionTitle(doc, text, y, separator = false) {
   if (separator) {
     doc.setDrawColor(...BORDER_GRAY);
     doc.setLineWidth(0.2);
-    doc.line(MARGIN_L, y - 4, PAGE_W - MARGIN_R, y - 4);
+    doc.line(MARGIN_L, y - 5, PAGE_W - MARGIN_R, y - 5);
     y += 2;
   }
   doc.setTextColor(...DARK_GRAY);
@@ -132,7 +144,7 @@ function drawSectionTitle(doc, text, y, separator = false) {
 function drawBuildingInfo(doc, row, y) {
   y = drawSectionTitle(doc, t("report.buildingInfo"), y);
 
-  const statusKey = row.gwr_match === "matched" ? "report.statusMatched"
+  const matchStatusKey = row.gwr_match === "matched" ? "report.statusMatched"
     : row.gwr_match === "not_found" ? "report.statusNotFound" : "report.statusSkipped";
 
   const addr = [
@@ -144,31 +156,57 @@ function drawBuildingInfo(doc, row, y) {
     row.gwr_city || row.city || ""
   ].filter(Boolean).join(" ");
 
-  const lines = [
+  // Two-column key-value grid via autoTable
+  const left = [
     [t("report.internalId"), row.internal_id || "\u2014"],
     [t("report.egid"), row.egid || "\u2014"],
     [t("report.address"), [addr, place].filter(Boolean).join(", ") || "\u2014"],
-    [t("report.canton"), row.gwr_region || row.region || "\u2014"],
-    [t("report.gwrStatus"), t(statusKey)],
+    [t("report.gwrStatus"), t(matchStatusKey)],
   ];
 
-  doc.setFontSize(9);
-  for (const [label, value] of lines) {
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...GRAY_TEXT);
-    doc.text(label, MARGIN_L, y);
-    doc.setTextColor(...DARK_GRAY);
-    doc.text(String(value), MARGIN_L + 38, y);
-    y += 5;
+  const gwr_status_label = row.gwr_status ? codeLabel("GSTAT", row.gwr_status) : "";
+  const municipality = row.gwr_municipality || "";
+  const canton = row.gwr_region || row.region || "";
+  const municipalityStr = [municipality, canton].filter(Boolean).join(" / ") || "\u2014";
+
+  const right = [
+    ["EGRID", row.gwr_egrid || "\u2014"],
+    [t("col.gwr_municipality").replace(" (GWR)", ""), municipalityStr],
+    [t("col.gwr_floors").replace(" (GWR)", ""), row.gwr_floors || "\u2014"],
+    [t("col.gwr_status").replace(" (GWR)", ""), gwr_status_label || "\u2014"],
+  ];
+
+  // Build rows: [label1, value1, label2, value2]
+  const maxRows = Math.max(left.length, right.length);
+  const body = [];
+  for (let i = 0; i < maxRows; i++) {
+    const l = left[i] || ["", ""];
+    const r = right[i] || ["", ""];
+    body.push([l[0], l[1], r[0], r[1]]);
   }
-  return y + 4;
+
+  doc.autoTable({
+    startY: y,
+    margin: { left: MARGIN_L, right: MARGIN_R },
+    body,
+    theme: "plain",
+    styles: { fontSize: 9, cellPadding: { top: 1.5, bottom: 1.5, left: 0, right: 2 }, textColor: DARK_GRAY, overflow: "ellipsize" },
+    columnStyles: {
+      0: { cellWidth: 30, textColor: GRAY_TEXT },
+      1: { cellWidth: CONTENT_W / 2 - 30 },
+      2: { cellWidth: 30, textColor: GRAY_TEXT },
+      3: { cellWidth: CONTENT_W / 2 - 30 },
+    },
+  });
+
+  return doc.lastAutoTable.finalY + SECTION_GAP;
 }
 
 function drawScoreBox(doc, row, y) {
   const numScore = row.match_score !== "" && row.match_score != null ? Number(row.match_score) : null;
-  if (numScore == null) return y + 3;
+  if (numScore == null) return y + 4;
 
-  const boxH = 16;
+  const boxH = 18;
   const color = numScore >= 80 ? GREEN : numScore >= 50 ? YELLOW : RED;
 
   // Light background
@@ -179,23 +217,22 @@ function drawScoreBox(doc, row, y) {
   doc.rect(MARGIN_L, y, 3, boxH, "F");
 
   // Score
-  doc.setFontSize(20);
+  doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(...color);
-  doc.text(numScore + "%", MARGIN_L + 10, y + 11);
+  doc.text(numScore + "%", MARGIN_L + 12, y + 12.5);
 
   // Confidence label
   doc.setFontSize(10);
   doc.setTextColor(...DARK_GRAY);
   doc.setFont("helvetica", "normal");
-  doc.text(`${t("report.confidence")}: ${confidenceLabel(numScore)}`, MARGIN_L + 34, y + 11);
+  doc.text(`${t("report.confidence")}: ${confidenceLabel(numScore)}`, MARGIN_L + 36, y + 12.5);
 
-  return y + boxH + 8;
+  return y + boxH + SECTION_GAP;
 }
 
 function drawComparisonTable(doc, row, y) {
   y = drawSectionTitle(doc, t("report.fieldComparison"), y, true);
-  y -= 4; // tighter gap before table
 
   const rows = buildComparisonRows(row);
 
@@ -223,11 +260,11 @@ function drawComparisonTable(doc, row, y) {
     },
   });
 
-  return doc.lastAutoTable.finalY + 10;
+  return doc.lastAutoTable.finalY + SECTION_GAP;
 }
 
 function drawRecommendations(doc, row, y) {
-  if (y > 230) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
+  if (y > 225) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
   y = drawSectionTitle(doc, t("report.recommendations"), y, true);
 
   const recs = buildRecommendations(row);
@@ -237,11 +274,11 @@ function drawRecommendations(doc, row, y) {
   if (recs.length === 0) {
     doc.setTextColor(...GREEN);
     doc.text("\u2713 " + t("report.recAllGood"), MARGIN_L + 3, y);
-    return y + 8;
+    return y + SECTION_GAP;
   }
 
   for (const rec of recs) {
-    if (y > 270) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
+    if (y > 268) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
     const color = rec.severity === "error" ? RED : rec.severity === "warning" ? YELLOW : GRAY_TEXT;
     const icon = rec.severity === "error" ? "\u2717" : rec.severity === "warning" ? "!" : "\u2022";
     doc.setTextColor(...color);
@@ -249,21 +286,19 @@ function drawRecommendations(doc, row, y) {
     doc.setTextColor(...DARK_GRAY);
     const lines = doc.splitTextToSize(rec.text, CONTENT_W - 10);
     doc.text(lines, MARGIN_L + 8, y);
-    y += lines.length * 4.5 + 2;
+    y += lines.length * 4.5 + 3;
   }
-  return y + 5;
+  return y + SECTION_GAP - 3;
 }
 
 function drawLinks(doc, row, y) {
-  if (y > 250) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
-  y = drawSectionTitle(doc, t("report.links"), y, true);
+  y = drawSectionTitle(doc, t("report.links"), y);
 
   const links = buildLinksData(row);
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
 
   for (const link of links) {
-    if (y > 275) { doc.addPage(); drawHeader(doc, _currentRow); y = HEADER_Y; }
     doc.setTextColor(...GRAY_TEXT);
     doc.text(link.label + ": ", MARGIN_L, y);
     const labelW = doc.getTextWidth(link.label + ": ");
@@ -275,8 +310,9 @@ function drawLinks(doc, row, y) {
       displayUrl = displayUrl.slice(0, -4) + "\u2026";
     }
     doc.textWithLink(displayUrl, MARGIN_L + labelW, y, { url: link.url });
-    y += 5;
+    y += 5.5;
   }
+  return y + SECTION_GAP;
 }
 
 function drawFooters(doc) {
@@ -295,48 +331,60 @@ function drawFooters(doc) {
   }
 }
 
-/* ── Page 2: Maps ── */
+/* ── Map sections ── */
 
-async function drawMapsPage(doc, lat, lng) {
-  const { E, N } = wgs84ToLv95(lat, lng);
-  const bbox = `${E - MAP_EXTENT_E},${N - MAP_EXTENT_N},${E + MAP_EXTENT_E},${N + MAP_EXTENT_N}`;
+/** Draw a map section that fills remaining space on the current page */
+async function drawMapSection(doc, title, layers, bbox, markerLabel, fallbackMsg, lat, lng, y) {
+  y = drawSectionTitle(doc, title, y, true);
+  return drawMapEmbed(doc, layers, bbox, markerLabel, fallbackMsg, lat, lng, y);
+}
+
+/** Draw a map on a dedicated page (full height) */
+async function drawMapPage(doc, title, layers, bbox, markerLabel, fallbackMsg, lat, lng) {
   let y = HEADER_Y;
+  y = drawSectionTitle(doc, title, y);
+  return drawMapEmbed(doc, layers, bbox, markerLabel, fallbackMsg, lat, lng, y);
+}
 
-  // Calculate max map height so both maps + titles + gaps fit above footer
-  // Layout: title(3) + map + gap(8) + title(3) + map ≤ (FOOTER_Y - 5 - y)
-  const available = FOOTER_Y - 5 - y;
-  const overhead = 3 + 8 + 3; // two titles + gap
-  const maxMapH = (available - overhead) / 2;
+/** Shared map embed — sizes the map to fill remaining space above footer */
+async function drawMapEmbed(doc, layers, bbox, markerLabel, fallbackMsg, lat, lng, y) {
+  const mapW = CONTENT_W;
+  const mapH = mapW * (MAP_IMG_H / MAP_IMG_W); // 4:3 → ~130mm
+  const maxMapH = FOOTER_Y - 10 - y - 12; // leave room for footer + coord caption
+  const finalH = Math.min(mapH, maxMapH);
+  const finalW = finalH * (MAP_IMG_W / MAP_IMG_H);
+  const mapX = MARGIN_L + (CONTENT_W - finalW) / 2;
 
-  // Natural dimensions: full content width, 4:3 ratio
-  let mapW = CONTENT_W;
-  let mapH = mapW * (MAP_IMG_H / MAP_IMG_W);
-  // Constrain if too tall
-  if (mapH > maxMapH) {
-    mapH = maxMapH;
-    mapW = mapH * (MAP_IMG_W / MAP_IMG_H);
+  const imgData = await fetchMapImage(layers, bbox, markerLabel);
+
+  if (imgData) {
+    doc.addImage(imgData, "JPEG", mapX, y, finalW, finalH);
+    doc.setDrawColor(...BORDER_GRAY);
+    doc.setLineWidth(0.3);
+    doc.rect(mapX, y, finalW, finalH);
+  } else {
+    doc.setFillColor(...LIGHT_GRAY);
+    doc.roundedRect(mapX, y, finalW, finalH, 2, 2, "F");
+    doc.setTextColor(...GRAY_TEXT);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text(fallbackMsg, mapX + finalW / 2, y + finalH / 2, { align: "center" });
   }
-  const mapX = MARGIN_L + (CONTENT_W - mapW) / 2; // center if narrower
 
-  // Cadastral map
-  y = drawSectionTitle(doc, t("report.mapCadastral"), y);
-  y -= 4;
-  const cadastralImg = await fetchMapImage(CADASTRAL_LAYERS, bbox);
-  y = embedMapSized(doc, cadastralImg, mapX, y, mapW, mapH, t("report.mapCadastralNA"));
-  y += 8;
-
-  // Aerial image
-  y = drawSectionTitle(doc, t("report.mapAerial"), y);
-  y -= 4;
-  const aerialImg = await fetchMapImage(AERIAL_LAYERS, bbox);
-  embedMapSized(doc, aerialImg, mapX, y, mapW, mapH, t("report.mapAerialNA"));
+  // Coordinate caption below map
+  y += finalH + 4;
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MID_GRAY);
+  doc.setFont("helvetica", "normal");
+  doc.text(`WGS 84: ${lat.toFixed(6)}, ${lng.toFixed(6)}`, mapX + finalW / 2, y, { align: "center" });
+  return y + 6;
 }
 
 /**
- * Fetch a WMS map image, draw marker + scale bar on canvas, return as data URL.
+ * Fetch a WMS map image, draw marker (with label) + scale bar on canvas, return as data URL.
  * Returns null on failure.
  */
-async function fetchMapImage(layers, bbox) {
+async function fetchMapImage(layers, bbox, markerLabel) {
   try {
     const url = `${WMS_BASE}?${WMS_PARAMS}&LAYERS=${layers}&BBOX=${bbox}&WIDTH=${MAP_IMG_W}&HEIGHT=${MAP_IMG_H}`;
     const resp = await fetch(url, { mode: "cors" });
@@ -353,7 +401,7 @@ async function fetchMapImage(layers, bbox) {
     const ctx = canvas.getContext("2d");
     ctx.drawImage(img, 0, 0);
 
-    drawMarker(ctx, MAP_IMG_W / 2, MAP_IMG_H / 2);
+    drawMarker(ctx, MAP_IMG_W / 2, MAP_IMG_H / 2, markerLabel);
     drawScaleBar(ctx);
 
     return canvas.toDataURL("image/jpeg", 0.92);
@@ -363,27 +411,39 @@ async function fetchMapImage(layers, bbox) {
   }
 }
 
-/** Embed a map data-URL into the PDF, or show a placeholder message */
-function embedMapSized(doc, dataUrl, x, y, w, h, fallbackMsg) {
-  if (dataUrl) {
-    doc.addImage(dataUrl, "JPEG", x, y, w, h);
-    doc.setDrawColor(...BORDER_GRAY);
-    doc.setLineWidth(0.3);
-    doc.rect(x, y, w, h);
-  } else {
-    doc.setFillColor(...LIGHT_GRAY);
-    doc.roundedRect(x, y, w, h, 2, 2, "F");
-    doc.setTextColor(...GRAY_TEXT);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "italic");
-    doc.text(fallbackMsg, x + w / 2, y + h / 2, { align: "center" });
-  }
-  return y + h;
-}
-
-/** Draw a marker pin on canvas at (cx, cy) */
-function drawMarker(ctx, cx, cy) {
+/** Draw a marker pin on canvas at (cx, cy) with an optional label above */
+function drawMarker(ctx, cx, cy, label) {
   const r = 12;
+
+  // Label above marker
+  if (label) {
+    ctx.font = "bold 13px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    const tw = ctx.measureText(label).width;
+    const px = 6, py = 3;
+    // Background pill
+    ctx.fillStyle = "rgba(26, 54, 93, 0.9)";
+    const rx = cx - tw / 2 - px;
+    const ry = cy - r - 8 - 13 - py;
+    const rw = tw + px * 2;
+    const rh = 13 + py * 2;
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, rw, rh, 4);
+    ctx.fill();
+    // Label text
+    ctx.fillStyle = "#fff";
+    ctx.fillText(label, cx, cy - r - 8);
+    // Small triangle pointer
+    ctx.fillStyle = "rgba(26, 54, 93, 0.9)";
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, cy - r - 8);
+    ctx.lineTo(cx + 5, cy - r - 8);
+    ctx.lineTo(cx, cy - r - 3);
+    ctx.closePath();
+    ctx.fill();
+  }
+
   // Drop shadow
   ctx.beginPath();
   ctx.arc(cx, cy + 2, r + 2, 0, Math.PI * 2);
@@ -432,6 +492,7 @@ function drawScaleBar(ctx) {
   // Label
   ctx.font = "bold 11px sans-serif";
   ctx.fillStyle = "#1a365d";
+  ctx.textAlign = "left";
   ctx.textBaseline = "bottom";
   const label = scaleMeters >= 1000 ? `${scaleMeters / 1000} km` : `${scaleMeters} m`;
   ctx.fillText(label, x, y - 5);
@@ -482,6 +543,23 @@ function buildComparisonRows(row) {
     input: fmtCoord(inputLat, inputLng),
     gwr: fmtCoord(gwrLat, gwrLng),
     result: String(row.match_coordinates ?? "").trim() || "\u2014",
+  });
+
+  // Year built (GWR-only, no matching rule)
+  rows.push({
+    label: t("col.gwr_year_built").replace(" (GWR)", ""),
+    input: "\u2014",
+    gwr: row.gwr_year_built || "\u2014",
+    result: "\u2014",
+  });
+
+  // Building area (GWR-only)
+  const area = row.gwr_area ? `${row.gwr_area} m\u00b2` : "\u2014";
+  rows.push({
+    label: t("col.gwr_area").replace(" (GWR)", ""),
+    input: "\u2014",
+    gwr: area,
+    result: "\u2014",
   });
 
   return rows;
