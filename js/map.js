@@ -232,6 +232,30 @@ function overlayTileUrl(wl) {
   return `https://wmts.geo.admin.ch/1.0.0/${wl.layer}/default/current/3857/{z}/{x}/{y}.png`;
 }
 
+/** Paper sizes in mm (width × height in portrait) */
+const PAPER_SIZES = {
+  a4: { w: 210, h: 297 },
+  a3: { w: 297, h: 420 },
+  a2: { w: 420, h: 594 },
+  a1: { w: 594, h: 841 },
+  a0: { w: 841, h: 1189 },
+};
+
+/** PDF margin in mm */
+const PDF_MARGIN = 12;
+
+/** Header/footer reserved height in mm */
+const PDF_HEADER_H = 10;
+const PDF_FOOTER_H = 8;
+const PDF_LEGEND_H = 10;
+
+/** Get page dims from orientation string like "landscape-a3" */
+function pageDims(orientation) {
+  const [dir, size] = orientation.split("-");
+  const paper = PAPER_SIZES[size] || PAPER_SIZES.a4;
+  return dir === "landscape" ? { w: paper.h, h: paper.w } : { w: paper.w, h: paper.h };
+}
+
 /** Get approximate map scale */
 function getMapScale() {
   if (!map) return 25000;
@@ -242,8 +266,201 @@ function getMapScale() {
   return Math.round(metersPerPixel * pixelsPerMeter);
 }
 
-/** Print the current map view via browser print dialog */
-function printMap() {
+/* ── Print preview overlay ── */
+
+let printOverlay = null;
+
+/** Get current meters-per-pixel at map center */
+function metersPerPixel() {
+  if (!map) return 1;
+  const center = map.getCenter();
+  const zoom = map.getZoom();
+  return 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, zoom);
+}
+
+/**
+ * Compute the crop rectangle in screen pixels for the current settings.
+ *
+ * - "auto" scale: fit the page aspect ratio to fill the viewport
+ * - Fixed scale (e.g. 1:25000): the rect represents a fixed real-world area.
+ *   As the user zooms in the rect grows on screen; zooming out shrinks it.
+ *   Only the map center (position) matters, not the zoom level.
+ */
+function computeCropRect() {
+  if (!map) return null;
+  const canvas = map.getCanvas();
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+
+  const oriSel = document.getElementById("map-print-orientation");
+  const scaleSel = document.getElementById("map-print-scale");
+  if (!oriSel) return null;
+  const dims = pageDims(oriSel.value);
+  const scaleVal = scaleSel ? scaleSel.value : "auto";
+
+  // Printable map area on paper in mm (minus margins, header, footer, legend)
+  const mapW_mm = dims.w - PDF_MARGIN * 2;
+  const mapH_mm = dims.h - PDF_MARGIN * 2 - PDF_HEADER_H - PDF_FOOTER_H - PDF_LEGEND_H;
+  const aspect = mapW_mm / mapH_mm;
+
+  let rw, rh;
+
+  if (scaleVal === "auto") {
+    // Fill viewport, maintaining page aspect ratio
+    if (cw / ch > aspect) {
+      rh = ch;
+      rw = ch * aspect;
+    } else {
+      rw = cw;
+      rh = cw / aspect;
+    }
+  } else {
+    // Fixed scale: calculate real-world extent, convert to screen pixels
+    const scale = parseInt(scaleVal);
+    const mpp = metersPerPixel();
+
+    // Paper mm × scale → real-world meters → screen pixels
+    const realW_m = (mapW_mm / 1000) * scale; // mm → m × scale
+    const realH_m = (mapH_mm / 1000) * scale;
+    rw = realW_m / mpp;
+    rh = realH_m / mpp;
+  }
+
+  return {
+    x: (cw - rw) / 2,
+    y: (ch - rh) / 2,
+    w: rw,
+    h: rh,
+    overflows: rw > cw || rh > ch,
+  };
+}
+
+/** Show / update the semi-transparent preview overlay on the map */
+function showPrintPreview() {
+  if (!map) return;
+  const container = map.getContainer();
+  if (!printOverlay) {
+    printOverlay = document.createElement("canvas");
+    printOverlay.className = "print-preview-overlay";
+    printOverlay.style.cssText = "position:absolute;inset:0;z-index:4;pointer-events:none;";
+    container.appendChild(printOverlay);
+  }
+  drawPreviewOverlay();
+}
+
+/** Remove the preview overlay */
+function hidePrintPreview() {
+  if (printOverlay) {
+    printOverlay.remove();
+    printOverlay = null;
+  }
+}
+
+/** Draw the dark mask with clear crop window */
+function drawPreviewOverlay() {
+  if (!printOverlay || !map) return;
+  const canvas = map.getCanvas();
+  const dpr = window.devicePixelRatio || 1;
+  const cw = canvas.clientWidth;
+  const ch = canvas.clientHeight;
+  printOverlay.width = cw * dpr;
+  printOverlay.height = ch * dpr;
+  printOverlay.style.width = cw + "px";
+  printOverlay.style.height = ch + "px";
+
+  const ctx = printOverlay.getContext("2d");
+  ctx.scale(dpr, dpr);
+
+  const rect = computeCropRect();
+  if (!rect) return;
+
+  // Clamp the visible crop window to the viewport
+  const vx = Math.max(0, rect.x);
+  const vy = Math.max(0, rect.y);
+  const vx2 = Math.min(cw, rect.x + rect.w);
+  const vy2 = Math.min(ch, rect.y + rect.h);
+  const vw = Math.max(0, vx2 - vx);
+  const vh = Math.max(0, vy2 - vy);
+
+  // Dark mask
+  ctx.fillStyle = "rgba(0, 0, 0, 0.45)";
+  ctx.fillRect(0, 0, cw, ch);
+
+  // Clear the visible portion of the crop window
+  if (vw > 0 && vh > 0) {
+    ctx.clearRect(vx, vy, vw, vh);
+  }
+
+  // Crop border (draw even if partially off-screen for context)
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+
+  // Corner marks (only if visible within viewport)
+  const markLen = 12;
+  ctx.strokeStyle = "#fff";
+  ctx.lineWidth = 2.5;
+  const corners = [
+    [rect.x, rect.y], [rect.x + rect.w, rect.y],
+    [rect.x, rect.y + rect.h], [rect.x + rect.w, rect.y + rect.h],
+  ];
+  for (const [cx, cy] of corners) {
+    if (cx < -markLen || cx > cw + markLen || cy < -markLen || cy > ch + markLen) continue;
+    const sx = cx === rect.x ? 1 : -1;
+    const sy = cy === rect.y ? 1 : -1;
+    ctx.beginPath();
+    ctx.moveTo(cx + sx * markLen, cy);
+    ctx.lineTo(cx, cy);
+    ctx.lineTo(cx, cy + sy * markLen);
+    ctx.stroke();
+  }
+
+  // Info label below crop area
+  const oriSel = document.getElementById("map-print-orientation");
+  const scaleSel = document.getElementById("map-print-scale");
+  if (oriSel) {
+    const pageLabel = oriSel.options[oriSel.selectedIndex].text;
+    const scaleVal = scaleSel ? scaleSel.value : "auto";
+    const scaleLabel = scaleVal === "auto"
+      ? `1:${getMapScale().toLocaleString("de-CH")}`
+      : `1:${parseInt(scaleVal).toLocaleString("de-CH")}`;
+    const label = `${pageLabel}  \u00b7  ${scaleLabel}`;
+
+    const labelY = Math.min(rect.y + rect.h + 18, ch - 6);
+    ctx.font = "600 12px 'Source Sans 3', system-ui, sans-serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.85)";
+    ctx.textAlign = "center";
+    ctx.fillText(label, cw / 2, labelY);
+  }
+
+  // Warning if crop area overflows viewport
+  if (rect.overflows) {
+    ctx.font = "500 11px 'Source Sans 3', system-ui, sans-serif";
+    ctx.fillStyle = "rgba(239, 68, 68, 0.9)";
+    ctx.textAlign = "center";
+    const warnY = Math.min(rect.y + rect.h + 34, ch - 6);
+    ctx.fillText("\u26a0 " + t("map.printZoomOut"), cw / 2, warnY);
+  }
+}
+
+/* ── PDF generation via jsPDF ── */
+
+/** Lazy-load jsPDF (reuses same CDN as report.js) */
+async function ensureJsPDF() {
+  if (window.jspdf) return;
+  const load = (src) => new Promise((resolve, reject) => {
+    if (document.querySelector(`script[src="${src}"]`)) { resolve(); return; }
+    const s = document.createElement("script");
+    s.src = src;
+    s.onload = resolve;
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+  await load("https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js");
+}
+
+/** Generate and download the PDF */
+async function printMap() {
   const orientationEl = document.getElementById("map-print-orientation");
   const scaleEl = document.getElementById("map-print-scale");
   const legendEl = document.getElementById("map-print-legend");
@@ -252,85 +469,127 @@ function printMap() {
   const orientation = orientationEl.value;
   const scaleVal = scaleEl.value;
   const includeLegend = legendEl.checked;
+  const dims = pageDims(orientation);
 
   const origText = btn.textContent;
   btn.textContent = t("map.printGenerating");
   btn.disabled = true;
 
-  const dims = {
-    "landscape-a4": { width: 297, height: 210 },
-    "portrait-a4":  { width: 210, height: 297 },
-    "landscape-a3": { width: 420, height: 297 },
-    "portrait-a3":  { width: 297, height: 420 },
-  }[orientation] || { width: 297, height: 210 };
+  try {
+    await ensureJsPDF();
+    const { jsPDF } = window.jspdf;
+    const isLandscape = orientation.startsWith("landscape");
+    const [, size] = orientation.split("-");
+    const doc = new jsPDF({
+      orientation: isLandscape ? "landscape" : "portrait",
+      unit: "mm",
+      format: size,
+    });
 
-  const pc = document.createElement("div");
-  pc.id = "print-container";
-  pc.style.cssText = `position:fixed;top:0;left:0;width:${dims.width}mm;height:${dims.height}mm;background:white;z-index:10000;padding:10mm;box-sizing:border-box;display:flex;flex-direction:column;`;
+    const pw = dims.w;
+    const ph = dims.h;
+    const m = PDF_MARGIN;
+    const cw = pw - m * 2; // content width
 
-  // Header
-  const hdr = document.createElement("div");
-  hdr.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:5mm;padding-bottom:3mm;border-bottom:1px solid #ccc;flex-shrink:0;";
-  hdr.innerHTML = `<div style="font-size:14pt;font-weight:bold;">Geo-Check</div><div style="font-size:10pt;color:#666;">${new Date().toLocaleDateString("de-CH")}</div>`;
-  pc.appendChild(hdr);
+    // ── Header ──
+    doc.setFontSize(14);
+    doc.setFont(undefined, "bold");
+    doc.setTextColor(26, 54, 93);
+    doc.text("Geo-Check", m, m + 7);
 
-  // Map canvas
-  const mapBox = document.createElement("div");
-  mapBox.style.cssText = "flex:1;border:1px solid #ccc;position:relative;overflow:hidden;min-height:0;";
-  if (map) {
-    const srcCanvas = map.getCanvas();
-    const clone = document.createElement("canvas");
-    clone.width = srcCanvas.width;
-    clone.height = srcCanvas.height;
-    clone.getContext("2d").drawImage(srcCanvas, 0, 0);
-    clone.style.cssText = "width:100%;height:100%;object-fit:contain;";
-    mapBox.appendChild(clone);
+    doc.setFontSize(9);
+    doc.setFont(undefined, "normal");
+    doc.setTextColor(107, 114, 128);
+    doc.text(new Date().toLocaleDateString("de-CH"), pw - m, m + 7, { align: "right" });
 
-    // Scale bar
-    const sb = document.createElement("div");
-    sb.style.cssText = "position:absolute;bottom:5mm;left:5mm;background:rgba(255,255,255,0.9);padding:2mm 3mm;border-radius:2px;font-size:8pt;";
-    const currentScale = scaleVal === "auto" ? getMapScale() : parseInt(scaleVal);
-    sb.textContent = `Massstab 1:${currentScale.toLocaleString("de-CH")}`;
-    mapBox.appendChild(sb);
-  }
-  pc.appendChild(mapBox);
+    doc.setDrawColor(209, 213, 219);
+    doc.line(m, m + PDF_HEADER_H, pw - m, m + PDF_HEADER_H);
 
-  // Legend
-  if (includeLegend) {
-    const leg = document.createElement("div");
-    leg.style.cssText = "margin-top:5mm;padding:3mm;border:1px solid #ccc;font-size:9pt;flex-shrink:0;";
-    const colors = { good: "#22c55e", partial: "#eab308", poor: "#ef4444", none: "#9ca3af" };
-    const labels = { good: t("map.legendGood"), partial: t("map.legendPartial"), poor: t("map.legendPoor"), none: t("map.legendNone") };
-    let items = "";
-    for (const [k, c] of Object.entries(colors)) {
-      items += `<span style="display:inline-flex;align-items:center;gap:3px;"><span style="display:inline-block;width:12px;height:8px;background:${c};border-radius:2px;border:1px solid rgba(0,0,0,0.12);"></span>${labels[k]}</span>`;
+    // ── Map image ──
+    const mapTop = m + PDF_HEADER_H + 2;
+    const legendH = includeLegend ? PDF_LEGEND_H : 0;
+    const mapH = ph - mapTop - m - PDF_FOOTER_H - legendH - 2;
+
+    if (map) {
+      const srcCanvas = map.getCanvas();
+      const rect = computeCropRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      // Create cropped canvas at full resolution
+      const cropCanvas = document.createElement("canvas");
+      const cropW = Math.round(rect.w * dpr);
+      const cropH = Math.round(rect.h * dpr);
+      cropCanvas.width = cropW;
+      cropCanvas.height = cropH;
+      const ctx = cropCanvas.getContext("2d");
+      ctx.drawImage(
+        srcCanvas,
+        Math.round(rect.x * dpr), Math.round(rect.y * dpr), cropW, cropH,
+        0, 0, cropW, cropH
+      );
+
+      const imgData = cropCanvas.toDataURL("image/jpeg", 0.92);
+      doc.addImage(imgData, "JPEG", m, mapTop, cw, mapH);
+
+      // Border around map
+      doc.setDrawColor(209, 213, 219);
+      doc.rect(m, mapTop, cw, mapH);
+
+      // Scale bar
+      const currentScale = scaleVal === "auto" ? getMapScale() : parseInt(scaleVal);
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(m + 3, mapTop + mapH - 9, 44, 7, 1, 1, "F");
+      doc.setFontSize(7);
+      doc.setFont(undefined, "normal");
+      doc.setTextColor(31, 41, 55);
+      doc.text(`1:${currentScale.toLocaleString("de-CH")}`, m + 5, mapTop + mapH - 4);
     }
-    leg.innerHTML = `<div style="font-weight:bold;margin-bottom:2mm;">${t("map.printLegend")}</div><div style="display:flex;gap:10mm;flex-wrap:wrap;">${items}</div>`;
-    pc.appendChild(leg);
+
+    // ── Legend ──
+    if (includeLegend) {
+      const legY = mapTop + mapH + 3;
+      doc.setFontSize(8);
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text(t("map.printLegend"), m, legY + 3);
+
+      const colors = [
+        { rgb: [34, 197, 94], label: t("map.legendGood") },
+        { rgb: [234, 179, 8], label: t("map.legendPartial") },
+        { rgb: [239, 68, 68], label: t("map.legendPoor") },
+        { rgb: [156, 163, 175], label: t("map.legendNone") },
+      ];
+      let lx = m + 22;
+      doc.setFontSize(7);
+      doc.setFont(undefined, "normal");
+      for (const c of colors) {
+        doc.setFillColor(...c.rgb);
+        doc.roundedRect(lx, legY, 5, 3.5, 0.5, 0.5, "F");
+        doc.setTextColor(55, 65, 81);
+        doc.text(c.label, lx + 7, legY + 3);
+        lx += doc.getTextWidth(c.label) + 14;
+      }
+    }
+
+    // ── Footer ──
+    const footY = ph - m;
+    doc.setDrawColor(209, 213, 219);
+    doc.line(m, footY - PDF_FOOTER_H, pw - m, footY - PDF_FOOTER_H);
+    doc.setFontSize(7);
+    doc.setFont(undefined, "normal");
+    doc.setTextColor(107, 114, 128);
+    doc.text("Quelle: Geo-Check", m, footY - 2);
+    doc.text(`\u00a9 ${new Date().getFullYear()} Bundesamt f\u00fcr Bauten und Logistik`, pw - m, footY - 2, { align: "right" });
+
+    // ── Save ──
+    const ts = new Date().toISOString().slice(0, 10);
+    doc.save(`geo-check-${size}-${ts}.pdf`);
+  } catch (err) {
+    console.error("PDF generation failed:", err);
+  } finally {
+    btn.textContent = origText;
+    btn.disabled = false;
   }
-
-  // Footer
-  const ftr = document.createElement("div");
-  ftr.style.cssText = "margin-top:3mm;padding-top:3mm;border-top:1px solid #ccc;font-size:8pt;color:#666;display:flex;justify-content:space-between;flex-shrink:0;";
-  ftr.innerHTML = `<span>Quelle: Geo-Check</span><span>\u00a9 ${new Date().getFullYear()} Bundesamt f\u00fcr Bauten und Logistik</span>`;
-  pc.appendChild(ftr);
-
-  document.body.appendChild(pc);
-
-  const printStyles = document.createElement("style");
-  printStyles.id = "gc-print-styles";
-  printStyles.textContent = `@media print { body > *:not(#print-container) { display: none !important; } #print-container { position: static !important; } @page { size: ${orientation.includes("landscape") ? "landscape" : "portrait"}; margin: 0; } }`;
-  document.head.appendChild(printStyles);
-
-  setTimeout(() => {
-    window.print();
-    setTimeout(() => {
-      pc.remove();
-      printStyles.remove();
-      btn.textContent = origText;
-      btn.disabled = false;
-    }, 500);
-  }, 100);
 }
 
 /** Create the map accordion panel (property-inventory style) */
@@ -386,7 +645,18 @@ function createMapPanel(parentEl) {
   const oriSel = document.createElement("select");
   oriSel.id = "map-print-orientation";
   oriSel.className = "map-acc-select";
-  oriSel.innerHTML = `<option value="landscape-a4">A4 landscape</option><option value="portrait-a4">A4 portrait</option><option value="landscape-a3">A3 landscape</option><option value="portrait-a3">A3 portrait</option>`;
+  oriSel.innerHTML = [
+    `<option value="landscape-a4">A4 landscape</option>`,
+    `<option value="portrait-a4">A4 portrait</option>`,
+    `<option value="landscape-a3">A3 landscape</option>`,
+    `<option value="portrait-a3">A3 portrait</option>`,
+    `<option value="landscape-a2">A2 landscape</option>`,
+    `<option value="portrait-a2">A2 portrait</option>`,
+    `<option value="landscape-a1">A1 landscape</option>`,
+    `<option value="portrait-a1">A1 portrait</option>`,
+    `<option value="landscape-a0">A0 landscape</option>`,
+    `<option value="portrait-a0">A0 portrait</option>`,
+  ].join("");
   oriRow.appendChild(oriSel);
   printPanel.appendChild(oriRow);
 
@@ -397,7 +667,7 @@ function createMapPanel(parentEl) {
   const scaleSel = document.createElement("select");
   scaleSel.id = "map-print-scale";
   scaleSel.className = "map-acc-select";
-  scaleSel.innerHTML = `<option value="auto">${t("map.printScaleAuto")}</option><option value="500">1:500</option><option value="1000">1:1'000</option><option value="2500">1:2'500</option><option value="5000">1:5'000</option><option value="10000">1:10'000</option><option value="25000">1:25'000</option><option value="50000">1:50'000</option><option value="100000">1:100'000</option>`;
+  scaleSel.innerHTML = `<option value="auto">${t("map.printScaleAuto")}</option><option value="500">1:500</option><option value="1000">1:1'000</option><option value="2500">1:2'500</option><option value="5000">1:5'000</option><option value="10000">1:10'000</option><option value="25000">1:25'000</option><option value="50000">1:50'000</option><option value="100000">1:100'000</option><option value="250000">1:250'000</option><option value="500000">1:500'000</option>`;
   scaleRow.appendChild(scaleSel);
   printPanel.appendChild(scaleRow);
 
@@ -423,7 +693,28 @@ function createMapPanel(parentEl) {
 
   allHeaders.push(printHeader);
   allContents.push(printContent);
-  printHeader.addEventListener("click", () => toggleAcc(printHeader, printContent));
+
+  // Show/hide preview overlay when print accordion opens/closes
+  const handlePrintToggle = () => {
+    toggleAcc(printHeader, printContent);
+    if (printHeader.classList.contains("active")) {
+      showPrintPreview();
+    } else {
+      hidePrintPreview();
+    }
+  };
+  printHeader.addEventListener("click", handlePrintToggle);
+
+  // Update preview when settings change
+  oriSel.addEventListener("change", drawPreviewOverlay);
+  scaleSel.addEventListener("change", drawPreviewOverlay);
+  legRow.querySelector("input").addEventListener("change", drawPreviewOverlay);
+
+  // Update preview on map move/zoom
+  if (map) {
+    map.on("move", drawPreviewOverlay);
+    map.on("resize", drawPreviewOverlay);
+  }
 
   // ═══ Accordion 2: Karteninhalt ═══
   const mapItem = document.createElement("div");
@@ -524,7 +815,10 @@ function createMapPanel(parentEl) {
 
   allHeaders.push(mapHeader);
   allContents.push(mapContent);
-  mapHeader.addEventListener("click", () => toggleAcc(mapHeader, mapContent));
+  mapHeader.addEventListener("click", () => {
+    toggleAcc(mapHeader, mapContent);
+    hidePrintPreview(); // close preview when switching to layers tab
+  });
 
   wrapper.appendChild(panel);
 
@@ -547,6 +841,7 @@ function createMapPanel(parentEl) {
     toggleIcon.innerHTML = menuOpen
       ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 15 12 9 18 15"/></svg>`
       : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>`;
+    if (!menuOpen) hidePrintPreview();
   });
 
   wrapper.appendChild(toggle);
@@ -764,6 +1059,7 @@ export function initMap(container, clickCallback) {
     map = null;
   }
   mapHandlersRegistered = false;
+  hidePrintPreview();
 
   // Show loading spinner
   const containerEl = typeof container === "string" ? document.getElementById(container) : container;
@@ -788,7 +1084,8 @@ export function initMap(container, clickCallback) {
     style,
     center: [8.2, 46.8],
     zoom: 7,
-    attributionControl: false
+    attributionControl: false,
+    preserveDrawingBuffer: true
   });
 
   // Map accordion panel (plain DOM, not a MapLibre control)

@@ -65,7 +65,8 @@
       "WebFetch(domain:www.geo.admin.ch)",
       "WebFetch(domain:wms.geo.admin.ch)",
       "Bash(node -c js/map.js)",
-      "Bash(node --check js/map.js)"
+      "Bash(node --check js/map.js)",
+      "Bash(ls -la js/*.js)"
     ]
   }
 }
