@@ -31,11 +31,16 @@ const DEFAULT_VISIBLE = new Set([
   "match_score", "confidence", "gwr_match",
 ]);
 
-/** Column keys — labels resolved via t() at render time */
+/** Column keys — labels resolved via t() at render time.
+ *  Order: Input → Match → GWR (so score columns are visible without horizontal scroll) */
 const COLUMN_KEYS = [
   // Input columns
   "internal_id", "egid", "street", "street_number", "zip", "city",
   "region", "building_type", "latitude", "longitude", "country", "comment",
+  // Match results
+  "match_score", "confidence", "gwr_match",
+  "match_street", "match_street_number", "match_zip", "match_city",
+  "match_region", "match_building_type", "match_coordinates",
   // GWR output columns
   "gwr_egid", "gwr_egrid", "gwr_street", "gwr_street_number", "gwr_zip", "gwr_city",
   "gwr_municipality", "gwr_municipality_nr", "gwr_region",
@@ -44,10 +49,6 @@ const COLUMN_KEYS = [
   "gwr_latitude", "gwr_longitude", "gwr_coord_e", "gwr_coord_n", "gwr_coord_source",
   "gwr_demolition_year", "gwr_plot_nr", "gwr_building_name",
   "gwr_heating_type", "gwr_heating_energy", "gwr_hot_water_type", "gwr_hot_water_energy",
-  // Match results
-  "match_score", "confidence",
-  "match_street", "match_street_number", "match_zip", "match_city",
-  "match_region", "match_building_type", "match_coordinates", "gwr_match",
 ];
 
 let columns = COLUMN_KEYS.map((key) => ({ key, visible: DEFAULT_VISIBLE.has(key) }));

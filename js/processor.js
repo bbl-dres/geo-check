@@ -1,40 +1,106 @@
 /**
  * GWR API calls, batching, and match scoring.
- * Rows use canonical field names (internal_id, egid, street, etc.) directly.
+ * Uses the feature endpoint with batch lookups and EGID caching.
+ *
+ * Batch strategy:
+ *   1. Collect unique EGIDs per batch (up to BATCH_SIZE)
+ *   2. Try the multi-feature endpoint (single HTTP request for all)
+ *   3. If it 404s (one or more missing), fall back to individual requests
+ *   4. Cache all results so duplicate EGIDs skip the network entirely
  */
 import { stringSimilarity, haversineMeters } from "./utils.js";
 
-const GWR_API = "https://api3.geo.admin.ch/rest/services/ech/MapServer/find";
-const BATCH_DELAY = 100;
-const MAX_CONCURRENT = 5;
+const GWR_FEATURE_API = "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bfs.gebaeude_wohnungs_register";
+const BATCH_SIZE = 50;
+const BATCH_DELAY = 300;      // ms between batches — keeps us well within fair use
+const FALLBACK_CONCURRENT = 5; // concurrency limit for individual fallback requests
 
 let cancelled = false;
 
+/** EGID → feature data (or null for not found). Cleared each run. */
+const egidCache = new Map();
+
+/** Frozen template for empty GWR fields — spread instead of iterating */
+const GWR_EMPTY = Object.freeze({
+  gwr_egid: "", gwr_egrid: "", gwr_street: "", gwr_street_number: "",
+  gwr_zip: "", gwr_city: "", gwr_municipality: "", gwr_municipality_nr: "",
+  gwr_region: "", gwr_building_type: "", gwr_building_class: "", gwr_status: "",
+  gwr_year_built: "", gwr_construction_period: "", gwr_area: "", gwr_floors: "",
+  gwr_dwellings: "", gwr_latitude: "", gwr_longitude: "",
+  gwr_coord_e: "", gwr_coord_n: "", gwr_coord_source: "",
+  gwr_demolition_year: "", gwr_plot_nr: "", gwr_building_name: "",
+  gwr_heating_type: "", gwr_heating_energy: "",
+  gwr_hot_water_type: "", gwr_hot_water_energy: "",
+  match_street: "", match_street_number: "", match_zip: "", match_city: "",
+  match_region: "", match_building_type: "", match_coordinates: "",
+});
+
 /**
- * Process all rows: look up EGID in GWR, compute match scores.
+ * Process all rows: look up EGIDs in GWR (batched), compute match scores.
  */
 export async function processRows(rows, onProgress) {
   cancelled = false;
+  egidCache.clear();
+
   const results = [];
   let matched = 0, notFound = 0, skipped = 0;
   let processed = 0;
 
-  for (let i = 0; i < rows.length; i += MAX_CONCURRENT) {
+  for (let i = 0; i < rows.length; i += BATCH_SIZE) {
     if (cancelled) break;
-    const batch = rows.slice(i, i + MAX_CONCURRENT);
-    const batchResults = await Promise.all(batch.map(processOne));
+    const batch = rows.slice(i, i + BATCH_SIZE);
 
-    for (const result of batchResults) {
+    // Partition: rows with valid EGIDs vs rows to skip
+    const toSkip = [];
+    const toLookup = [];
+    for (const row of batch) {
+      const egidRaw = val(row, "egid");
+      if (!egidRaw || !/^\d+$/.test(egidRaw)) {
+        toSkip.push(row);
+      } else {
+        toLookup.push({ row, egid: egidRaw });
+      }
+    }
+
+    // Handle skipped rows (no valid EGID)
+    for (const row of toSkip) {
+      const result = { ...row, ...GWR_EMPTY, gwr_match: "skipped", match_score: "" };
       results.push(result);
       processed++;
-      if (result.gwr_match === "matched") matched++;
-      else if (result.gwr_match === "not_found") notFound++;
-      else skipped++;
+      skipped++;
+    }
+
+    // Batch-lookup unique uncached EGIDs
+    const uniqueEgids = [...new Set(toLookup.map((r) => r.egid))];
+    const uncached = uniqueEgids.filter((e) => !egidCache.has(e));
+    if (uncached.length > 0) {
+      await batchLookup(uncached);
+    }
+
+    // Build results from cache
+    for (const { row, egid } of toLookup) {
+      const gwrData = egidCache.get(egid);
+      const result = { ...row };
+
+      if (!gwrData) {
+        Object.assign(result, GWR_EMPTY);
+        result.gwr_match = "not_found";
+        result.match_score = 0;
+        notFound++;
+      } else {
+        mapGwrAttributes(result, gwrData);
+        result.gwr_match = "matched";
+        computeMatchScore(result, row);
+        matched++;
+      }
+
+      results.push(result);
+      processed++;
     }
 
     onProgress({ processed, total: rows.length, matched, notFound, skipped });
 
-    if (i + MAX_CONCURRENT < rows.length && !cancelled) {
+    if (i + BATCH_SIZE < rows.length && !cancelled) {
       await sleep(BATCH_DELAY);
     }
   }
@@ -46,113 +112,94 @@ export function cancelProcessing() {
   cancelled = true;
 }
 
-async function processOne(row) {
-  const result = { ...row };
-  const egidRaw = val(row, "egid");
+/* ── API lookup ── */
 
-  if (!egidRaw || !/^\d+$/.test(egidRaw)) {
-    setGwrEmpty(result);
-    result.gwr_match = "skipped";
-    result.match_score = "";
-    return result;
-  }
-
+/**
+ * Look up a list of EGIDs using the batch feature endpoint.
+ * Falls back to individual requests if the batch returns 404
+ * (which happens when any single EGID doesn't exist).
+ */
+async function batchLookup(egids) {
+  // Try batch endpoint: single HTTP request for all EGIDs
+  const featureIds = egids.map((e) => `${e}_0`).join(",");
   try {
-    const gwrData = await lookupEgid(egidRaw);
-    if (!gwrData) {
-      setGwrEmpty(result);
-      result.gwr_match = "not_found";
-      result.match_score = 0;
-      return result;
+    const resp = await fetch(`${GWR_FEATURE_API}/${featureIds}?returnGeometry=true&sr=4326`);
+    if (resp.ok) {
+      const data = await resp.json();
+      // Single: { feature: {...} }  Multi: { type: "FeatureCollection", features: [...] }
+      const features = data.features || (data.feature ? [data.feature] : []);
+      for (const f of features) {
+        egidCache.set(String(f.attributes.egid), f);
+      }
+      // Mark any EGIDs absent from the response as not found
+      for (const egid of egids) {
+        if (!egidCache.has(egid)) egidCache.set(egid, null);
+      }
+      return;
     }
-
-    const attr = gwrData.attributes;
-    result.gwr_egid = String(attr.egid ?? "");
-    result.gwr_egrid = attr.egrid || "";
-    result.gwr_street = Array.isArray(attr.strname) ? attr.strname[0] || "" : String(attr.strname ?? "");
-    result.gwr_street_number = String(attr.deinr ?? "");
-    result.gwr_zip = String(attr.dplz4 ?? "");
-    result.gwr_city = attr.dplzname || "";
-    result.gwr_municipality = attr.ggdename || "";
-    result.gwr_municipality_nr = String(attr.ggdenr ?? "");
-    result.gwr_region = attr.gdekt || "";
-    result.gwr_building_type = String(attr.gkat ?? "");
-    result.gwr_building_class = String(attr.gklas ?? "");
-    result.gwr_status = String(attr.gstat ?? "");
-    result.gwr_year_built = String(attr.gbauj ?? "");
-    result.gwr_construction_period = String(attr.gbaup ?? "");
-    result.gwr_area = String(attr.garea ?? "");
-    result.gwr_floors = String(attr.gastw ?? "");
-    result.gwr_dwellings = String(attr.ganzwhg ?? "");
-    result.gwr_latitude = gwrData.geometry ? String(gwrData.geometry.y) : "";
-    result.gwr_longitude = gwrData.geometry ? String(gwrData.geometry.x) : "";
-    result.gwr_coord_e = String(attr.gkode ?? "");
-    result.gwr_coord_n = String(attr.gkodn ?? "");
-    result.gwr_coord_source = String(attr.gksce ?? "");
-    result.gwr_demolition_year = String(attr.gabbj ?? "");
-    result.gwr_plot_nr = String(attr.lparz ?? "");
-    result.gwr_building_name = attr.gbez || "";
-    result.gwr_heating_type = String(attr.gwaerzh1 ?? "");
-    result.gwr_heating_energy = String(attr.genh1 ?? "");
-    result.gwr_hot_water_type = String(attr.gwaerzw1 ?? "");
-    result.gwr_hot_water_energy = String(attr.genw1 ?? "");
-    result.gwr_match = "matched";
-
-    computeMatchScore(result, row);
-    return result;
-  } catch (err) {
-    console.error(`GWR lookup failed for EGID ${egidRaw}:`, err);
-    setGwrEmpty(result);
-    result.gwr_match = "not_found";
-    result.match_score = 0;
-    return result;
-  }
-}
-
-async function lookupEgid(egid) {
-  const params = new URLSearchParams({
-    layer: "ch.bfs.gebaeude_wohnungs_register",
-    searchText: egid,
-    searchField: "egid",
-    returnGeometry: "true",
-    contains: "false",
-    sr: "4326"
-  });
-
-  const resp = await fetch(`${GWR_API}?${params}`);
-  if (!resp.ok) return null;
-
-  let data;
-  try {
-    data = await resp.json();
+    // 404 or other HTTP error — fall through to individual lookups
   } catch {
-    return null;
+    // Network error — fall through
   }
-  if (!data.results || data.results.length === 0) return null;
-  return data.results[0];
+
+  // Fallback: individual feature requests with concurrency limit
+  for (let j = 0; j < egids.length; j += FALLBACK_CONCURRENT) {
+    if (cancelled) break;
+    const chunk = egids.slice(j, j + FALLBACK_CONCURRENT);
+    await Promise.all(chunk.map(async (egid) => {
+      if (egidCache.has(egid)) return;
+      try {
+        const resp = await fetch(`${GWR_FEATURE_API}/${egid}_0?returnGeometry=true&sr=4326`);
+        if (resp.ok) {
+          const data = await resp.json();
+          egidCache.set(egid, data.feature || null);
+        } else {
+          egidCache.set(egid, null);
+        }
+      } catch {
+        egidCache.set(egid, null);
+      }
+    }));
+  }
 }
 
-function setGwrEmpty(result) {
-  const fields = [
-    "gwr_egid", "gwr_egrid", "gwr_street", "gwr_street_number",
-    "gwr_zip", "gwr_city", "gwr_municipality", "gwr_municipality_nr",
-    "gwr_region", "gwr_building_type", "gwr_building_class", "gwr_status",
-    "gwr_year_built", "gwr_construction_period", "gwr_area", "gwr_floors",
-    "gwr_dwellings", "gwr_latitude", "gwr_longitude",
-    "gwr_coord_e", "gwr_coord_n", "gwr_coord_source",
-    "gwr_demolition_year", "gwr_plot_nr", "gwr_building_name",
-    "gwr_heating_type", "gwr_heating_energy",
-    "gwr_hot_water_type", "gwr_hot_water_energy"
-  ];
-  for (const f of fields) result[f] = "";
-  result.match_street = "";
-  result.match_street_number = "";
-  result.match_zip = "";
-  result.match_city = "";
-  result.match_region = "";
-  result.match_building_type = "";
-  result.match_coordinates = "";
+/* ── Attribute mapping ── */
+
+/** Map GWR API feature attributes onto the result row */
+function mapGwrAttributes(result, gwrData) {
+  const attr = gwrData.attributes;
+  result.gwr_egid = String(attr.egid ?? "");
+  result.gwr_egrid = attr.egrid || "";
+  result.gwr_street = Array.isArray(attr.strname) ? attr.strname[0] || "" : String(attr.strname ?? "");
+  result.gwr_street_number = String(attr.deinr ?? "");
+  result.gwr_zip = String(attr.dplz4 ?? "");
+  result.gwr_city = attr.dplzname || "";
+  result.gwr_municipality = attr.ggdename || "";
+  result.gwr_municipality_nr = String(attr.ggdenr ?? "");
+  result.gwr_region = attr.gdekt || "";
+  result.gwr_building_type = String(attr.gkat ?? "");
+  result.gwr_building_class = String(attr.gklas ?? "");
+  result.gwr_status = String(attr.gstat ?? "");
+  result.gwr_year_built = String(attr.gbauj ?? "");
+  result.gwr_construction_period = String(attr.gbaup ?? "");
+  result.gwr_area = String(attr.garea ?? "");
+  result.gwr_floors = String(attr.gastw ?? "");
+  result.gwr_dwellings = String(attr.ganzwhg ?? "");
+  result.gwr_latitude = gwrData.geometry ? String(gwrData.geometry.y) : "";
+  result.gwr_longitude = gwrData.geometry ? String(gwrData.geometry.x) : "";
+  result.gwr_coord_e = String(attr.gkode ?? "");
+  result.gwr_coord_n = String(attr.gkodn ?? "");
+  result.gwr_coord_source = String(attr.gksce ?? "");
+  result.gwr_demolition_year = String(attr.gabbj ?? "");
+  result.gwr_plot_nr = String(attr.lparz ?? "");
+  result.gwr_building_name = attr.gbez || "";
+  result.gwr_heating_type = String(attr.gwaerzh1 ?? "");
+  result.gwr_heating_energy = String(attr.genh1 ?? "");
+  result.gwr_hot_water_type = String(attr.gwaerzw1 ?? "");
+  result.gwr_hot_water_energy = String(attr.genw1 ?? "");
 }
+
+/* ── Match scoring ── */
 
 function computeMatchScore(result, inputRow) {
   const comparisons = [

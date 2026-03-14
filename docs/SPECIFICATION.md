@@ -179,7 +179,7 @@ If the EGID is not found: score = 0, confidence = `low`.
 
 ## 5. Output Columns
 
-The processed file contains all original input columns plus appended GWR and match result columns in the order below — consistent with the table UI.
+The processed file contains all original input columns, followed by match result columns, then GWR data columns — consistent with the table UI column order. Match columns appear immediately after input columns so that scores are visible without horizontal scrolling on smaller screens.
 
 > **Register name by language:** GWR (DE) = RegBL (FR) = REA (IT)
 > (Gebäude- und Wohnungsregister / Registre fédéral des bâtiments et des logements / Registro federale degli edifici e delle abitazioni)
@@ -202,45 +202,45 @@ The processed file contains all original input columns plus appended GWR and mat
 | 10 | `longitude` | Input | Longitude | Länge | Longitude | Longitudine | float | No | Yes | WGS84 |
 | 11 | `country` | Input | Country | Land | Pays | Paese | string | Yes | Yes | ISO 3166-1 alpha-2 |
 | 12 | `comment` | Input | Comment | Kommentar | Commentaire | Commento | string | No | Yes | Passed through, not processed |
-| 13 | `gwr_egid` | GWR | EGID (GWR) | EGID (GWR) | EGID (RegBL) | EGID (REA) | integer | No | No | EGID confirmed by GWR |
-| 14 | `gwr_egrid` | GWR | EGRID (GWR) | EGRID (GWR) | EGRID (RegBL) | EGRID (REA) | string | No | No | Real estate identifier (`egrid`) |
-| 15 | `gwr_street` | GWR | Street (GWR) | Strasse (GWR) | Rue (RegBL) | Via (REA) | string | No | Yes | `strname[0]` |
-| 16 | `gwr_street_number` | GWR | Number (GWR) | Nr (GWR) | N° (RegBL) | N. (REA) | string | No | Yes | `deinr` |
-| 17 | `gwr_zip` | GWR | ZIP (GWR) | PLZ (GWR) | NPA (RegBL) | NPA (REA) | integer | No | Yes | `dplz4` |
-| 18 | `gwr_city` | GWR | City (GWR) | Ort (GWR) | Localité (RegBL) | Località (REA) | string | No | Yes | `dplzname` |
-| 19 | `gwr_municipality` | GWR | Municipality (GWR) | Gemeinde (GWR) | Commune (RegBL) | Comune (REA) | string | No | No | `ggdename` |
-| 20 | `gwr_municipality_nr` | GWR | Municipality nr. (GWR) | BFS-Nr (GWR) | N° OFS (RegBL) | N. UST (REA) | integer | No | No | `ggdenr` |
-| 21 | `gwr_region` | GWR | Canton (GWR) | Kt (GWR) | Canton (RegBL) | Cantone (REA) | string | Yes | No | `gdekt` |
-| 22 | `gwr_building_type` | GWR | Building category (GWR) | Kategorie (GWR) | Catégorie (RegBL) | Categoria (REA) | integer | Yes | Yes | `gkat` — code resolved (§4.2) |
-| 23 | `gwr_building_class` | GWR | Building class (GWR) | Gebäudeklasse (GWR) | Classe de bâtiment (RegBL) | Classe di edificio (REA) | integer | Yes | Yes | `gklas` — code resolved |
-| 24 | `gwr_status` | GWR | Building status (GWR) | Gebäudestatus (GWR) | Statut du bâtiment (RegBL) | Stato dell'edificio (REA) | integer | Yes | No | `gstat` — code resolved |
-| 25 | `gwr_year_built` | GWR | Year built (GWR) | Baujahr (GWR) | Année de construction (RegBL) | Anno di costruzione (REA) | integer | No | Yes | `gbauj` — often null |
-| 26 | `gwr_construction_period` | GWR | Constr. period (GWR) | Bauperiode (GWR) | Période de constr. (RegBL) | Periodo di costr. (REA) | integer | Yes | No | `gbaup` — code resolved |
-| 27 | `gwr_area` | GWR | Footprint m² (GWR) | Grundfläche m² (GWR) | Emprise au sol m² (RegBL) | Superficie a terra m² (REA) | integer | No | Yes | `garea` — building footprint (Gebäudegrundfläche) |
-| 28 | `gwr_floors` | GWR | Nr. of floors (GWR) | Anz. Geschosse (GWR) | Nb. d'étages (RegBL) | Nr. di piani (REA) | integer | No | No | `gastw` |
-| 29 | `gwr_dwellings` | GWR | Dwellings (GWR) | Wohnungen (GWR) | Logements (RegBL) | Abitazioni (REA) | integer | No | No | `ganzwhg` |
-| 30 | `gwr_latitude` | GWR | Latitude (GWR) | Breite (GWR) | Latitude (RegBL) | Latitudine (REA) | float | No | No | WGS84 from `geometry.y` |
-| 31 | `gwr_longitude` | GWR | Longitude (GWR) | Länge (GWR) | Longitude (RegBL) | Longitudine (REA) | float | No | No | WGS84 from `geometry.x` |
-| 32 | `gwr_coord_e` | GWR | E-coord (LV95) | E-Koord. (LV95) | E-coord (MN95) | E-coord (MN95) | float | No | No | `gkode` |
-| 33 | `gwr_coord_n` | GWR | N-coord (LV95) | N-Koord. (LV95) | N-coord (MN95) | N-coord (MN95) | float | No | No | `gkodn` |
-| 34 | `gwr_coord_source` | GWR | Coord. source (GWR) | Koord.-Herkunft (GWR) | Source coord. (RegBL) | Origine coord. (REA) | integer | Yes | No | `gksce` — code resolved |
-| 35 | `gwr_demolition_year` | GWR | Demolition year (GWR) | Abbruchjahr (GWR) | Année de démolition (RegBL) | Anno di demolizione (REA) | integer | No | No | `gabbj` — often null |
-| 36 | `gwr_plot_nr` | GWR | Plot nr. (GWR) | Parzelle (GWR) | N° parcelle (RegBL) | N. particella (REA) | string | No | No | `lparz` |
-| 37 | `gwr_building_name` | GWR | Building name (GWR) | Gebäudename (GWR) | Nom du bâtiment (RegBL) | Nome dell'edificio (REA) | string | No | No | `gbez` — often empty |
-| 38 | `gwr_heating_type` | GWR | Heating type (GWR) | Heizung (GWR) | Type de chauffage (RegBL) | Tipo di riscald. (REA) | integer | Yes | No | `gwaerzh1` — code resolved |
-| 39 | `gwr_heating_energy` | GWR | Heating energy (GWR) | Energietr. Heiz. (GWR) | Source énergie chauff. (RegBL) | Fonte en. risc. (REA) | integer | Yes | No | `genh1` — code resolved |
-| 40 | `gwr_hot_water_type` | GWR | Hot water type (GWR) | Warmwasser (GWR) | Type eau chaude (RegBL) | Tipo acqua calda (REA) | integer | Yes | No | `gwaerzw1` — code resolved |
-| 41 | `gwr_hot_water_energy` | GWR | Hot water energy (GWR) | Energietr. WW (GWR) | Source énergie EC (RegBL) | Fonte en. AC (REA) | integer | Yes | No | `genw1` — code resolved |
-| 42 | `match_score` | Match | Score | Score | Score | Score | integer | No | Yes | 0–100 |
-| 43 | `confidence` | Match | Confidence | Konfidenz | Confiance | Confidenza | string | Yes | Yes | `high` / `medium` / `low` — see §4.4 |
-| 44 | `match_street` | Match | Street match | Match Strasse | Corresp. rue | Corrisp. via | string | Yes | No | `exact` / `similar` / `mismatch` / `empty` |
-| 45 | `match_street_number` | Match | Number match | Match Nr | Corresp. n° | Corrisp. n. | string | Yes | No | |
-| 46 | `match_zip` | Match | ZIP match | Match PLZ | Corresp. NPA | Corrisp. NPA | string | Yes | No | |
-| 47 | `match_city` | Match | City match | Match Ort | Corresp. localité | Corrisp. località | string | Yes | No | |
-| 48 | `match_region` | Match | Region match | Match Kt | Corresp. canton | Corrisp. cantone | string | Yes | No | |
-| 49 | `match_building_type` | Match | Category match | Match Kategorie | Corresp. catégorie | Corrisp. categoria | string | Yes | No | |
-| 50 | `match_coordinates` | Match | Coord. match | Match Koord. | Corresp. coord. | Corrisp. coord. | string | Yes | No | |
-| 51 | `gwr_match` | Match | GWR Match | GWR Abgleich | Comparaison RFB | Confronto REA | string | Yes | Yes | `matched` / `not_found` / `skipped` |
+| 13 | `match_score` | Match | Score | Score | Score | Score | integer | No | Yes | 0–100 |
+| 14 | `confidence` | Match | Confidence | Konfidenz | Confiance | Confidenza | string | Yes | Yes | `high` / `medium` / `low` — see §4.4 |
+| 15 | `gwr_match` | Match | GWR Match | GWR Abgleich | Comparaison RFB | Confronto REA | string | Yes | Yes | `matched` / `not_found` / `skipped` |
+| 16 | `match_street` | Match | Street match | Match Strasse | Corresp. rue | Corrisp. via | string | Yes | No | `exact` / `similar` / `mismatch` / `empty` |
+| 17 | `match_street_number` | Match | Number match | Match Nr | Corresp. n° | Corrisp. n. | string | Yes | No | |
+| 18 | `match_zip` | Match | ZIP match | Match PLZ | Corresp. NPA | Corrisp. NPA | string | Yes | No | |
+| 19 | `match_city` | Match | City match | Match Ort | Corresp. localité | Corrisp. località | string | Yes | No | |
+| 20 | `match_region` | Match | Region match | Match Kt | Corresp. canton | Corrisp. cantone | string | Yes | No | |
+| 21 | `match_building_type` | Match | Category match | Match Kategorie | Corresp. catégorie | Corrisp. categoria | string | Yes | No | |
+| 22 | `match_coordinates` | Match | Coord. match | Match Koord. | Corresp. coord. | Corrisp. coord. | string | Yes | No | |
+| 23 | `gwr_egid` | GWR | EGID (GWR) | EGID (GWR) | EGID (RegBL) | EGID (REA) | integer | No | No | EGID confirmed by GWR |
+| 24 | `gwr_egrid` | GWR | EGRID (GWR) | EGRID (GWR) | EGRID (RegBL) | EGRID (REA) | string | No | No | Real estate identifier (`egrid`) |
+| 25 | `gwr_street` | GWR | Street (GWR) | Strasse (GWR) | Rue (RegBL) | Via (REA) | string | No | Yes | `strname[0]` |
+| 26 | `gwr_street_number` | GWR | Number (GWR) | Nr (GWR) | N° (RegBL) | N. (REA) | string | No | Yes | `deinr` |
+| 27 | `gwr_zip` | GWR | ZIP (GWR) | PLZ (GWR) | NPA (RegBL) | NPA (REA) | integer | No | Yes | `dplz4` |
+| 28 | `gwr_city` | GWR | City (GWR) | Ort (GWR) | Localité (RegBL) | Località (REA) | string | No | Yes | `dplzname` |
+| 29 | `gwr_municipality` | GWR | Municipality (GWR) | Gemeinde (GWR) | Commune (RegBL) | Comune (REA) | string | No | No | `ggdename` |
+| 30 | `gwr_municipality_nr` | GWR | Municipality nr. (GWR) | BFS-Nr (GWR) | N° OFS (RegBL) | N. UST (REA) | integer | No | No | `ggdenr` |
+| 31 | `gwr_region` | GWR | Canton (GWR) | Kt (GWR) | Canton (RegBL) | Cantone (REA) | string | Yes | No | `gdekt` |
+| 32 | `gwr_building_type` | GWR | Building category (GWR) | Kategorie (GWR) | Catégorie (RegBL) | Categoria (REA) | integer | Yes | Yes | `gkat` — code resolved (§4.2) |
+| 33 | `gwr_building_class` | GWR | Building class (GWR) | Gebäudeklasse (GWR) | Classe de bâtiment (RegBL) | Classe di edificio (REA) | integer | Yes | Yes | `gklas` — code resolved |
+| 34 | `gwr_status` | GWR | Building status (GWR) | Gebäudestatus (GWR) | Statut du bâtiment (RegBL) | Stato dell'edificio (REA) | integer | Yes | No | `gstat` — code resolved |
+| 35 | `gwr_year_built` | GWR | Year built (GWR) | Baujahr (GWR) | Année de construction (RegBL) | Anno di costruzione (REA) | integer | No | Yes | `gbauj` — often null |
+| 36 | `gwr_construction_period` | GWR | Constr. period (GWR) | Bauperiode (GWR) | Période de constr. (RegBL) | Periodo di costr. (REA) | integer | Yes | No | `gbaup` — code resolved |
+| 37 | `gwr_area` | GWR | Footprint m² (GWR) | Grundfläche m² (GWR) | Emprise au sol m² (RegBL) | Superficie a terra m² (REA) | integer | No | Yes | `garea` — building footprint (Gebäudegrundfläche) |
+| 38 | `gwr_floors` | GWR | Nr. of floors (GWR) | Anz. Geschosse (GWR) | Nb. d'étages (RegBL) | Nr. di piani (REA) | integer | No | No | `gastw` |
+| 39 | `gwr_dwellings` | GWR | Dwellings (GWR) | Wohnungen (GWR) | Logements (RegBL) | Abitazioni (REA) | integer | No | No | `ganzwhg` |
+| 40 | `gwr_latitude` | GWR | Latitude (GWR) | Breite (GWR) | Latitude (RegBL) | Latitudine (REA) | float | No | No | WGS84 from `geometry.y` |
+| 41 | `gwr_longitude` | GWR | Longitude (GWR) | Länge (GWR) | Longitude (RegBL) | Longitudine (REA) | float | No | No | WGS84 from `geometry.x` |
+| 42 | `gwr_coord_e` | GWR | E-coord (LV95) | E-Koord. (LV95) | E-coord (MN95) | E-coord (MN95) | float | No | No | `gkode` |
+| 43 | `gwr_coord_n` | GWR | N-coord (LV95) | N-Koord. (LV95) | N-coord (MN95) | N-coord (MN95) | float | No | No | `gkodn` |
+| 44 | `gwr_coord_source` | GWR | Coord. source (GWR) | Koord.-Herkunft (GWR) | Source coord. (RegBL) | Origine coord. (REA) | integer | Yes | No | `gksce` — code resolved |
+| 45 | `gwr_demolition_year` | GWR | Demolition year (GWR) | Abbruchjahr (GWR) | Année de démolition (RegBL) | Anno di demolizione (REA) | integer | No | No | `gabbj` — often null |
+| 46 | `gwr_plot_nr` | GWR | Plot nr. (GWR) | Parzelle (GWR) | N° parcelle (RegBL) | N. particella (REA) | string | No | No | `lparz` |
+| 47 | `gwr_building_name` | GWR | Building name (GWR) | Gebäudename (GWR) | Nom du bâtiment (RegBL) | Nome dell'edificio (REA) | string | No | No | `gbez` — often empty |
+| 48 | `gwr_heating_type` | GWR | Heating type (GWR) | Heizung (GWR) | Type de chauffage (RegBL) | Tipo di riscald. (REA) | integer | Yes | No | `gwaerzh1` — code resolved |
+| 49 | `gwr_heating_energy` | GWR | Heating energy (GWR) | Energietr. Heiz. (GWR) | Source énergie chauff. (RegBL) | Fonte en. risc. (REA) | integer | Yes | No | `genh1` — code resolved |
+| 50 | `gwr_hot_water_type` | GWR | Hot water type (GWR) | Warmwasser (GWR) | Type eau chaude (RegBL) | Tipo acqua calda (REA) | integer | Yes | No | `gwaerzw1` — code resolved |
+| 51 | `gwr_hot_water_energy` | GWR | Hot water energy (GWR) | Energietr. WW (GWR) | Source énergie EC (RegBL) | Fonte en. AC (REA) | integer | Yes | No | `genw1` — code resolved |
 
 ---
 
@@ -356,8 +356,8 @@ Response fields used: `results[].attrs.label` (HTML with `<b>` highlights), `res
 - Code columns (e.g. `gwr_building_type`) display the resolved label with the integer code as a tooltip (see §4.2)
 - **All categorical badges are clickable** — clicking activates the corresponding filter
 
-**Default visible columns:** all Input (1–12), selected GWR (13, 15–18, 22, 25, 27), summary Match (42–43, 51) — see §5 for keys and labels.
-Hidden by default: `gwr_egrid` and all detailed GWR attributes (14, 19–21, 23–24, 26, 28–41), per-field match details (44–50). These can be toggled via the Columns dropdown.
+**Default visible columns:** all Input (1–12), summary Match (13–15), selected GWR (25–28, 32–33, 35, 37) — see §5 for keys and labels.
+Hidden by default: per-field match details (16–22), `gwr_egid`, `gwr_egrid`, and remaining GWR attributes (23–24, 29–31, 34, 36, 38–51). These can be toggled via the Columns dropdown.
 
 #### Table Toolbar
 

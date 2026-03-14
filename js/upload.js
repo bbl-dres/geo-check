@@ -102,6 +102,7 @@ async function handleFile(file) {
     parsedData.headers = parsedData.headers.map((h) => h.toLowerCase().trim());
 
     // Go straight to processing
+    parsedData.filename = file.name;
     if (onReady) onReady(parsedData);
   } catch (err) {
     console.error("File parse error:", err);

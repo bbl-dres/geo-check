@@ -103,6 +103,23 @@ html, body {
   line-height: var(--leading-none);
 }
 
+.header-center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--gray-500);
+  line-height: var(--leading-normal);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#header-filename {
+  color: var(--gray-700);
+}
+
 .header-right {
   display: flex;
   align-items: center;

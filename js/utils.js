@@ -3,27 +3,28 @@
  */
 import { t, getLocale } from "./i18n.js";
 
-/** Levenshtein distance between two strings */
+/** Levenshtein distance between two strings (two-row O(min(m,n)) memory) */
 export function levenshtein(a, b) {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
-  const matrix = [];
-  for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-  for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+  // Keep the shorter string as the "column" to minimize array size
+  if (a.length > b.length) { const tmp = a; a = b; b = tmp; }
+  const m = a.length;
+  let prev = new Array(m + 1);
+  let curr = new Array(m + 1);
+  for (let j = 0; j <= m; j++) prev[j] = j;
   for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
+    curr[0] = i;
+    for (let j = 1; j <= m; j++) {
       if (b[i - 1] === a[j - 1]) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+        curr[j] = prev[j - 1];
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1
-        );
+        curr[j] = 1 + Math.min(prev[j - 1], prev[j], curr[j - 1]);
       }
     }
+    const swap = prev; prev = curr; curr = swap;
   }
-  return matrix[b.length][a.length];
+  return prev[m];
 }
 
 /** Normalized string similarity (0–1) using Levenshtein */

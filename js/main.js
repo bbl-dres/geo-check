@@ -7,10 +7,11 @@ import { initMap, plotResults, highlightMarker, resizeMap, onSummaryToggle, setS
 import { initTable, populateTable, highlightRow } from "./table.js";
 import { downloadCSV, downloadXLSX, downloadGeoJSON } from "./export.js";
 import { formatNumber, scoreColor, confidenceLabel } from "./utils.js";
-import { initLang, setLang, t } from "./i18n.js";
+import { initLang, setLang, t, getLocale } from "./i18n.js";
 
 let processedResults = [];
 let tableOpen = true;
+let currentFilename = "";
 
 document.addEventListener("DOMContentLoaded", () => {
   initLang();
@@ -24,7 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Re-render dynamic content on language change
   window.addEventListener("langchange", () => {
-    if (processedResults.length) updateSummaryPanel();
+    if (processedResults.length) {
+      updateSummaryPanel();
+      updateHeaderMeta();
+    }
     // Re-render mobile tabs if present
     const tabs = document.querySelector(".mobile-tabs");
     if (tabs) {
@@ -51,9 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetToUpload() {
     cancelProcessing();
     processedResults = [];
+    currentFilename = "";
+    processedTimestamp = null;
     showState("upload");
     document.getElementById("btn-new").hidden = true;
     document.getElementById("btn-download").hidden = true;
+    document.getElementById("header-meta").hidden = true;
     document.getElementById("file-input").value = "";
     const err = document.getElementById("upload-error");
     if (err) { err.hidden = true; err.textContent = ""; }
@@ -139,6 +146,7 @@ function showState(state) {
 
 async function onStartProcessing(parsedData) {
   showState("processing");
+  currentFilename = parsedData.filename || "";
 
   const startTime = Date.now();
 
@@ -268,7 +276,19 @@ function updateSummaryPanel() {
   `;
 }
 
+let processedTimestamp = null;
+
+function updateHeaderMeta() {
+  document.getElementById("header-filename").textContent = currentFilename;
+  if (processedTimestamp) {
+    const date = processedTimestamp.toLocaleDateString(getLocale(), { dateStyle: "medium" });
+    const time = processedTimestamp.toLocaleTimeString(getLocale(), { timeStyle: "short" });
+    document.getElementById("header-timestamp").textContent = `${date}, ${time}`;
+  }
+}
+
 function showResults() {
+  processedTimestamp = new Date();
   showState("results");
 
   updateSummaryPanel();
@@ -289,9 +309,11 @@ function showResults() {
 
   populateTable(processedResults);
 
-  // Show header buttons
+  // Show header buttons and file meta
   document.getElementById("btn-download").hidden = false;
   document.getElementById("btn-new").hidden = false;
+  updateHeaderMeta();
+  document.getElementById("header-meta").hidden = false;
 
   // Mobile tab toggle (map / table)
   initMobileTabs();
