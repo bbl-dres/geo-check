@@ -445,6 +445,12 @@ function drawPreviewOverlay() {
 
 /* ── PDF generation via jsPDF ── */
 
+/** Target print DPI — balanced between quality and GPU limits */
+const PRINT_DPI = 150;
+
+/** Max tile size for offscreen WebGL renders (safe for most GPUs) */
+const RENDER_TILE_SIZE = 1536;
+
 /** Lazy-load jsPDF (reuses same CDN as report.js) */
 async function ensureJsPDF() {
   if (window.jspdf) return;
@@ -457,6 +463,170 @@ async function ensureJsPDF() {
     document.head.appendChild(s);
   });
   await load("https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js");
+}
+
+/**
+ * Convert a pixel offset from the composite center to [lng, lat]
+ * at a given zoom level, using Web Mercator projection (pixelRatio = 1).
+ */
+function offsetToLngLat(centerLng, centerLat, zoom, dxPx, dyPx) {
+  const scale = 256 * Math.pow(2, zoom);
+  const cx = ((centerLng + 180) / 360) * scale;
+  const latRad = (centerLat * Math.PI) / 180;
+  const cy =
+    (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) /
+    2 *
+    scale;
+  const nx = cx + dxPx;
+  const ny = cy + dyPx;
+  const lng = (nx / scale) * 360 - 180;
+  const n = Math.PI - (2 * Math.PI * ny) / scale;
+  const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  return [lng, lat];
+}
+
+/**
+ * Render one tile of the map. Returns a 2D canvas copy
+ * (safe to use after the WebGL context is destroyed).
+ */
+function renderMapTile(center, zoom, widthPx, heightPx) {
+  return new Promise((resolve, reject) => {
+    const offDiv = document.createElement("div");
+    offDiv.style.cssText =
+      `position:fixed;left:-9999px;top:-9999px;` +
+      `width:${widthPx}px;height:${heightPx}px;visibility:hidden;`;
+    document.body.appendChild(offDiv);
+
+    const basemap = BASEMAPS.find((b) => b.id === currentBasemap);
+    const offMap = new maplibregl.Map({
+      container: offDiv,
+      style: basemap
+        ? basemap.url
+        : "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+      center,
+      zoom,
+      preserveDrawingBuffer: true,
+      interactive: false,
+      fadeDuration: 0,
+      attributionControl: false,
+      pixelRatio: 1,
+    });
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      reject(new Error("Tile render timed out"));
+    }, 30000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      offMap.remove();
+      offDiv.remove();
+    }
+
+    offMap.once("idle", () => {
+      const isDark = currentBasemap === "dark-matter";
+      offMap.addSource("buildings", { type: "geojson", data: lastGeoJSON });
+      offMap.addLayer({
+        id: "buildings-circle",
+        type: "circle",
+        source: "buildings",
+        paint: {
+          "circle-radius": 7,
+          "circle-color": ["get", "color"],
+          "circle-stroke-color": isDark ? "#2d2d2d" : "#fff",
+          "circle-stroke-width": 1.5,
+          "circle-opacity": 0.85,
+        },
+      });
+      offMap.addLayer({
+        id: "buildings-label",
+        type: "symbol",
+        source: "buildings",
+        layout: {
+          "text-field": ["get", "label"],
+          "text-font": ["Open Sans Semibold", "Arial Unicode MS Bold"],
+          "text-size": 11,
+          "text-anchor": "bottom",
+          "text-offset": [0, -0.8],
+          "text-allow-overlap": false,
+          "text-optional": true,
+        },
+        paint: {
+          "text-color": isDark ? "#e5e7eb" : "#1a1a2e",
+          "text-halo-color": isDark ? "#1a1a2e" : "#fff",
+          "text-halo-width": 1.5,
+        },
+      });
+
+      offMap.once("idle", () => {
+        try {
+          const srcCanvas = offMap.getCanvas();
+          // Copy pixels to a 2D canvas before destroying the WebGL context
+          const copy = document.createElement("canvas");
+          copy.width = srcCanvas.width;
+          copy.height = srcCanvas.height;
+          copy.getContext("2d").drawImage(srcCanvas, 0, 0);
+          cleanup();
+          resolve(copy);
+        } catch (err) {
+          cleanup();
+          reject(err);
+        }
+      });
+    });
+  });
+}
+
+/**
+ * Render a high-resolution map image by tiling multiple WebGL renders
+ * and compositing them onto a single 2D canvas.
+ * @param {LngLat} center   Map center
+ * @param {number}  zoom     Zoom level for the render
+ * @param {number}  totalW   Total output width in pixels
+ * @param {number}  totalH   Total output height in pixels
+ * @param {Function} [onProgress] Called with (done, total) after each tile
+ * @returns {Promise<string>} JPEG data URL
+ */
+async function renderOffscreenMap(center, zoom, totalW, totalH, onProgress) {
+  const tileSize = RENDER_TILE_SIZE;
+  const cols = Math.ceil(totalW / tileSize);
+  const rows = Math.ceil(totalH / tileSize);
+  const total = cols * rows;
+
+  const composite = document.createElement("canvas");
+  composite.width = totalW;
+  composite.height = totalH;
+  const ctx = composite.getContext("2d");
+
+  let done = 0;
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      const x0 = col * tileSize;
+      const y0 = row * tileSize;
+      const tw = Math.min(tileSize, totalW - x0);
+      const th = Math.min(tileSize, totalH - y0);
+
+      // Pixel offset of this tile's center relative to the composite center
+      const dx = x0 + tw / 2 - totalW / 2;
+      const dy = y0 + th / 2 - totalH / 2;
+
+      const tileCenter = offsetToLngLat(
+        center.lng,
+        center.lat,
+        zoom,
+        dx,
+        dy,
+      );
+
+      const tileCanvas = await renderMapTile(tileCenter, zoom, tw, th);
+      ctx.drawImage(tileCanvas, x0, y0);
+
+      done++;
+      if (onProgress) onProgress(done, total);
+    }
+  }
+
+  return composite.toDataURL("image/jpeg", 0.92);
 }
 
 /** Generate and download the PDF */
@@ -497,52 +667,110 @@ async function printMap() {
     doc.setTextColor(26, 54, 93);
     doc.text("Geo-Check", m, m + 7);
 
-    doc.setFontSize(9);
+    // Dataset context: filename · building count · date
+    const fileName = document.getElementById("header-filename")?.textContent || "";
+    const nBuildings = resultsData.length;
+    const metaParts = [];
+    if (fileName) metaParts.push(fileName);
+    if (nBuildings) metaParts.push(`${nBuildings} ${t("map.printBuildings")}`);
+    metaParts.push(new Date().toLocaleDateString("de-CH"));
+
+    doc.setFontSize(8);
     doc.setFont(undefined, "normal");
     doc.setTextColor(107, 114, 128);
-    doc.text(new Date().toLocaleDateString("de-CH"), pw - m, m + 7, { align: "right" });
+    doc.text(metaParts.join("  \u00b7  "), pw - m, m + 7, { align: "right" });
 
     doc.setDrawColor(209, 213, 219);
     doc.line(m, m + PDF_HEADER_H, pw - m, m + PDF_HEADER_H);
 
-    // ── Map image ──
+    // ── Map image (high-res offscreen render) ──
     const mapTop = m + PDF_HEADER_H + 2;
     const legendH = includeLegend ? PDF_LEGEND_H : 0;
     const mapH = ph - mapTop - m - PDF_FOOTER_H - legendH - 2;
+    const mapW_mm = cw;
+    const mapH_mm = mapH;
 
     if (map) {
-      const srcCanvas = map.getCanvas();
-      const rect = computeCropRect();
-      const dpr = window.devicePixelRatio || 1;
+      const center = map.getCenter();
 
-      // Create cropped canvas at full resolution
-      const cropCanvas = document.createElement("canvas");
-      const cropW = Math.round(rect.w * dpr);
-      const cropH = Math.round(rect.h * dpr);
-      cropCanvas.width = cropW;
-      cropCanvas.height = cropH;
-      const ctx = cropCanvas.getContext("2d");
-      ctx.drawImage(
-        srcCanvas,
-        Math.round(rect.x * dpr), Math.round(rect.y * dpr), cropW, cropH,
-        0, 0, cropW, cropH
+      // Target pixel dimensions at PRINT_DPI (no cap — tiling handles large sizes)
+      const targetW = Math.round((mapW_mm / 25.4) * PRINT_DPI);
+      const targetH = Math.round((mapH_mm / 25.4) * PRINT_DPI);
+
+      // Calculate zoom level for the offscreen render
+      let renderZoom;
+      if (scaleVal === "auto") {
+        renderZoom = map.getZoom();
+      } else {
+        // Fixed scale: paper width at scale S covers (mapW_mm / 1000 * S) meters
+        // → metersPerPixel = realWidth / targetW → zoom from that
+        const scale = parseInt(scaleVal);
+        const realW_m = (mapW_mm / 1000) * scale;
+        const targetMpp = realW_m / targetW;
+        const lat = center.lat;
+        renderZoom = Math.log2(
+          (156543.03392 * Math.cos((lat * Math.PI) / 180)) / targetMpp,
+        );
+      }
+
+      const imgData = await renderOffscreenMap(
+        center,
+        renderZoom,
+        targetW,
+        targetH,
+        (done, total) => {
+          if (total > 1) {
+            btn.textContent = `${t("map.printGenerating")} (${done}/${total})`;
+          }
+        },
       );
-
-      const imgData = cropCanvas.toDataURL("image/jpeg", 0.92);
       doc.addImage(imgData, "JPEG", m, mapTop, cw, mapH);
 
       // Border around map
       doc.setDrawColor(209, 213, 219);
       doc.rect(m, mapTop, cw, mapH);
 
-      // Scale bar
-      const currentScale = scaleVal === "auto" ? getMapScale() : parseInt(scaleVal);
+      // North arrow (top-right of map)
+      const nx = m + cw - 8;
+      const ny = mapTop + 6;
       doc.setFillColor(255, 255, 255);
-      doc.roundedRect(m + 3, mapTop + mapH - 9, 44, 7, 1, 1, "F");
+      doc.setGState(new doc.GState({ opacity: 0.8 }));
+      doc.circle(nx, ny + 4, 6, "F");
+      doc.setGState(new doc.GState({ opacity: 1 }));
+      // Arrow pointing up
+      doc.setFillColor(31, 41, 55);
+      doc.triangle(nx, ny, nx - 2.2, ny + 5, nx + 2.2, ny + 5, "F");
+      doc.setFillColor(180, 180, 180);
+      doc.triangle(nx, ny + 10, nx - 2.2, ny + 5, nx + 2.2, ny + 5, "F");
+      // "N" label
+      doc.setFontSize(7);
+      doc.setFont(undefined, "bold");
+      doc.setTextColor(31, 41, 55);
+      doc.text("N", nx, ny - 1.5, { align: "center" });
+
+      // Scale bar (bottom-left of map)
+      const currentScale = scaleVal === "auto" ? getMapScale() : parseInt(scaleVal);
+      const coordText = `${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`;
+      const scaleText = `1:${currentScale.toLocaleString("de-CH")}`;
+      const infoText = `${scaleText}  |  ${coordText}`;
       doc.setFontSize(7);
       doc.setFont(undefined, "normal");
+      const infoW = doc.getTextWidth(infoText) + 6;
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(m + 3, mapTop + mapH - 9, infoW, 7, 1, 1, "F");
       doc.setTextColor(31, 41, 55);
-      doc.text(`1:${currentScale.toLocaleString("de-CH")}`, m + 5, mapTop + mapH - 4);
+      doc.text(infoText, m + 6, mapTop + mapH - 4);
+
+      // Attribution (bottom-right of map)
+      const attrText = "\u00a9 OpenStreetMap \u00b7 CARTO \u00b7 swisstopo";
+      doc.setFontSize(6);
+      const attrW = doc.getTextWidth(attrText) + 4;
+      doc.setFillColor(255, 255, 255);
+      doc.setGState(new doc.GState({ opacity: 0.75 }));
+      doc.roundedRect(m + cw - attrW - 3, mapTop + mapH - 8, attrW + 2, 6, 1, 1, "F");
+      doc.setGState(new doc.GState({ opacity: 1 }));
+      doc.setTextColor(80, 80, 80);
+      doc.text(attrText, m + cw - 3, mapTop + mapH - 4, { align: "right" });
     }
 
     // ── Legend ──
@@ -553,21 +781,23 @@ async function printMap() {
       doc.setTextColor(31, 41, 55);
       doc.text(t("map.printLegend"), m, legY + 3);
 
+      // Use ASCII-safe labels — jsPDF's default font mishandles ≥, –, thin spaces
       const colors = [
-        { rgb: [34, 197, 94], label: t("map.legendGood") },
-        { rgb: [234, 179, 8], label: t("map.legendPartial") },
-        { rgb: [239, 68, 68], label: t("map.legendPoor") },
+        { rgb: [34, 197, 94], label: ">= 80%" },
+        { rgb: [234, 179, 8], label: "50-79%" },
+        { rgb: [239, 68, 68], label: "< 50%" },
         { rgb: [156, 163, 175], label: t("map.legendNone") },
       ];
       let lx = m + 22;
       doc.setFontSize(7);
       doc.setFont(undefined, "normal");
       for (const c of colors) {
+        // Circle marker (matches map dots)
         doc.setFillColor(...c.rgb);
-        doc.roundedRect(lx, legY, 5, 3.5, 0.5, 0.5, "F");
+        doc.circle(lx + 2, legY + 2, 2, "F");
         doc.setTextColor(55, 65, 81);
-        doc.text(c.label, lx + 7, legY + 3);
-        lx += doc.getTextWidth(c.label) + 14;
+        doc.text(c.label, lx + 6, legY + 3);
+        lx += doc.getTextWidth(c.label) + 12;
       }
     }
 
