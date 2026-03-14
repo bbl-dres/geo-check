@@ -2,8 +2,6 @@
 
 ![Preview](assets/Social1.jpg)
 
-Verify your building records against the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/) — identify mismatches, download enriched results, fix your source data, and re-upload to improve quality iteratively.
-
 [![GitHub Pages](https://img.shields.io/badge/demo-live-brightgreen?logo=github)](https://bbl-dres.github.io/geo-check/)
 [![JavaScript](https://img.shields.io/badge/javascript-ES_modules-F7DF1E?logo=javascript&logoColor=000)](js/)
 [![No Backend](https://img.shields.io/badge/backend-none-blue)](#privacy)
@@ -11,6 +9,8 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 [![Swiss Federal Admin](https://img.shields.io/badge/org-Swiss_Federal_Admin-d8232a)](https://www.bbl.admin.ch/)
 [![MapLibre](https://img.shields.io/badge/map-MapLibre_GL-396CB2?logo=maplibre&logoColor=fff)](https://maplibre.org/)
 [![GWR API](https://img.shields.io/badge/data-swisstopo_GWR_API-1a365d)](https://api3.geo.admin.ch)
+
+Verify your building records against the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/) — identify mismatches, download enriched results, fix your source data, and re-upload to improve quality iteratively.
 
 **Open Geo-Check (no backend version):** https://bbl-dres.github.io/geo-check/ 
 
