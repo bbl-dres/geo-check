@@ -10,7 +10,7 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
 [![MapLibre](https://img.shields.io/badge/map-MapLibre_GL-396CB2?logo=maplibre&logoColor=fff)](https://maplibre.org/)
 [![GWR API](https://img.shields.io/badge/data-swisstopo_GWR_API-1a365d)](https://api3.geo.admin.ch)
 
-**Open Geo-Check:** https://bbl-dres.github.io/geo-check/ 
+**Open Geo-Check (no backend version):** https://bbl-dres.github.io/geo-check/ 
 
 ![Geo-Check — Results view with map, summary panel, and data table](assets/Preview1.jpg)
 
