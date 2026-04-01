@@ -66,7 +66,10 @@
       "WebFetch(domain:wms.geo.admin.ch)",
       "Bash(node -c js/map.js)",
       "Bash(node --check js/map.js)",
-      "Bash(ls -la js/*.js)"
+      "Bash(ls -la js/*.js)",
+      "WebFetch(domain:madd.bfs.admin.ch)",
+      "WebFetch(domain:www.cadastre.ch)",
+      "WebFetch(domain:oereblex.ch)"
     ]
   }
 }

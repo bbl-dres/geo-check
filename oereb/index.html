@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ÖREB-Kataster — Parzellensuche</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <img src="../assets/swiss-logo-flag.svg" alt="" class="header-flag" width="20" height="22">
+    <div class="header-title">
+      <span class="header-agency" data-i18n="header.agency">swisstopo / Kataster</span>
+      <span class="header-app" data-i18n="header.app">ÖREB-Parzellensuche</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <select id="lang-select" class="lang-select" data-i18n-aria="header.langAria" aria-label="Sprache wählen">
+      <option value="de" selected>DE</option>
+      <option value="fr">FR</option>
+      <option value="it">IT</option>
+    </select>
+  </div>
+</header>
+
+<main class="main">
+  <!-- Search Form -->
+  <section class="search-panel">
+    <h2 class="search-heading" data-i18n="search.heading">Parzelle suchen</h2>
+
+    <form id="search-form" class="search-form" autocomplete="off">
+      <div class="form-group">
+        <label for="field-kanton" data-i18n="search.kanton">Kanton</label>
+        <select id="field-kanton">
+          <option value="" data-i18n="search.kanton.all">— Alle —</option>
+        </select>
+      </div>
+
+      <div class="form-group autocomplete-wrap">
+        <label for="field-gemeinde" data-i18n="search.gemeinde">Gemeinde</label>
+        <input type="text" id="field-gemeinde" data-i18n-placeholder="search.gemeinde.placeholder" placeholder="z.B. Bern" autocomplete="off">
+        <ul class="autocomplete-list" id="ac-gemeinde" role="listbox" hidden></ul>
+      </div>
+
+      <div class="form-group">
+        <label for="field-bfsnr" data-i18n="search.bfsnr">BFS-Nr</label>
+        <input type="text" id="field-bfsnr" inputmode="numeric" data-i18n-placeholder="search.bfsnr.placeholder" placeholder="z.B. 351">
+      </div>
+
+      <div class="form-group">
+        <label for="field-egrid" data-i18n="search.egrid">EGRID</label>
+        <input type="text" id="field-egrid" data-i18n-placeholder="search.egrid.placeholder" placeholder="z.B. CH938383288531">
+      </div>
+
+      <div class="form-group">
+        <label for="field-nummer" data-i18n="search.nummer">Grundstücksnummer</label>
+        <input type="text" id="field-nummer" inputmode="numeric" data-i18n-placeholder="search.nummer.placeholder" placeholder="z.B. 3577">
+      </div>
+
+      <div class="form-group autocomplete-wrap">
+        <label for="field-plz" data-i18n="search.plz">PLZ</label>
+        <input type="text" id="field-plz" inputmode="numeric" data-i18n-placeholder="search.plz.placeholder" placeholder="z.B. 3013" autocomplete="off">
+        <ul class="autocomplete-list" id="ac-plz" role="listbox" hidden></ul>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" data-i18n="search.submit">Suchen</button>
+        <button type="reset" class="btn btn-secondary" data-i18n="search.reset">Zurücksetzen</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Results -->
+  <section class="results-panel" id="results-panel" hidden>
+    <div class="results-header">
+      <h2 class="results-heading" data-i18n="results.heading">Ergebnisse</h2>
+      <span class="results-count" id="results-count"></span>
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="results-table" id="results-table">
+        <thead>
+          <tr>
+            <th data-i18n="results.col.egrid">EGRID</th>
+            <th data-i18n="results.col.gemeinde">Gemeinde</th>
+            <th data-i18n="results.col.nummer">Nr</th>
+            <th data-i18n="results.col.typ">Grundstücksart</th>
+            <th data-i18n="results.col.status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination" id="pagination" hidden>
+      <button class="btn btn-ghost btn-sm" id="page-prev" disabled data-i18n="results.prev">Zurück</button>
+      <span class="page-info" id="page-info"></span>
+      <button class="btn btn-ghost btn-sm" id="page-next" data-i18n="results.next">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Detail -->
+  <section class="detail-panel" id="detail-panel" hidden>
+    <div class="detail-header">
+      <h2 class="detail-heading" data-i18n="detail.heading">Parzelle</h2>
+      <button class="btn btn-ghost btn-sm" id="detail-close" data-i18n-aria="detail.close" aria-label="Schliessen">&times;</button>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-info">
+    <span data-i18n="footer.datasource">Datenquelle:</span>
+    <a href="https://api3.geo.admin.ch" target="_blank" rel="noopener">geo.admin.ch API</a>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" data-i18n="footer.source">Quellcode</a>
+    <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+    <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
