@@ -21,6 +21,10 @@ Verify your building records against the official [Gebäude- und Wohnungsregiste
   <img src="assets/Preview3.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
+**ÖREB Parcel Search:** https://bbl-dres.github.io/geo-check/oereb/
+
+Search the ÖREB cadastre by municipality, EGRID, parcel number, PLZ, or canton — with autocomplete, area calculation, and direct links to official ÖREB extracts. Uses the [swisstopo ÖREB layer](https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.swisstopo-vd.stand-oerebkataster) (DE / FR / IT).
+
 **Prototype with Project Management:** https://bbl-dres.github.io/geo-check/prototype1
 
 ![Preview](prototype1/assets/preview1.jpg)
@@ -89,7 +93,13 @@ All loaded via CDN — no build step, no `node_modules`.
 
 ```
 geo-check/
-├── index.html              # Single-page application
+├── index.html              # Single-page application (GWR check)
+├── oereb/                  # ÖREB parcel search tool
+│   ├── index.html
+│   ├── css/style.css
+│   └── js/
+│       ├── app.js          # Search, results, detail, area calculation
+│       └── i18n.js         # Translations (DE/FR/IT)
 ├── css/
 │   ├── tokens.css          # Design tokens (colors, spacing, typography)
 │   └── styles.css          # Component styles
