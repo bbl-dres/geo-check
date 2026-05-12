@@ -55,8 +55,13 @@ langSelect.addEventListener("change", (e) => setLang(e.target.value));
 // Re-render dynamic content on language change
 window.addEventListener("langchange", () => {
   if (allResults.length > 0) renderPage();
-  if (selectedId) showDetail(selectedId);
+  if (selectedId) showDetail(selectedId, { writeUrl: false });
 });
+
+// Restore state from URL (filters + selected EGRID) on initial load and on
+// browser back/forward.
+window.addEventListener("popstate", () => bootstrapFromUrl());
+bootstrapFromUrl();
 
 // ── Autocomplete ──
 const SEARCH_API = "https://api3.geo.admin.ch/rest/services/ech/SearchServer";
@@ -181,9 +186,9 @@ function populateKantone() {
 }
 
 // ── Search ──
-async function handleSearch(e) {
-  e.preventDefault();
-  closeDetail();
+async function handleSearch(e, { writeUrl = true } = {}) {
+  e?.preventDefault();
+  clearDetailUi();
 
   // Collect filled fields (priority order)
   const queries = [];
@@ -227,6 +232,7 @@ async function handleSearch(e) {
       resultsCount.textContent = t("results.count", { n: allResults.length });
       renderPage();
     }
+    if (writeUrl) syncUrl({ replace: false });
   } catch (err) {
     console.error(err);
     showError(t("search.error.api"));
@@ -303,7 +309,7 @@ function changePage(delta) {
 }
 
 // ── Detail ──
-async function showDetail(featureId) {
+async function showDetail(featureId, { writeUrl = true } = {}) {
   const result = allResults.find((r) => String(r.featureId) === String(featureId));
   if (!result) return;
 
@@ -317,12 +323,17 @@ async function showDetail(featureId) {
     tr.classList.toggle("selected", tr.dataset.id === String(featureId));
   });
 
+  // Reflect selection in the URL before the (slower) geometry fetch,
+  // so shareable links don't depend on geometry success.
+  if (writeUrl) syncUrl({ replace: true });
+
   const a = result.attributes;
   const lang = getLang();
   const statusField = STATUS_FIELD[lang] || STATUS_FIELD.de;
 
-  // Fetch geometry on demand for area calculation
+  // Fetch geometry on demand for area calculation and map centering
   let area = null;
+  let center = null; // [E, N] in LV95 (EPSG:2056)
   try {
     const res = await fetchWithTimeout(
       `${API_BASE}/${LAYER}/${featureId}?geometryFormat=geojson&sr=2056`,
@@ -330,7 +341,9 @@ async function showDetail(featureId) {
     );
     if (res.ok) {
       const data = await res.json();
-      area = computeArea(data.feature?.geometry);
+      const geom = data.feature?.geometry;
+      area = computeArea(geom);
+      center = computeCentroid(geom);
     }
   } catch (err) {
     if (err.name === "AbortError") return; // superseded by newer click
@@ -387,21 +400,31 @@ async function showDetail(featureId) {
       </div>
     </div>
     <div class="detail-links">
-      ${safeUrl(a.oereb_extract_pdf) ? `<a class="detail-link" href="${esc(a.oereb_extract_pdf)}" target="_blank" rel="noopener">${esc(t("detail.pdf"))}</a>` : ""}
-      ${safeUrl(a.url_oereb) ? `<a class="detail-link" href="${esc(a.url_oereb)}" target="_blank" rel="noopener">${esc(t("detail.portal"))}</a>` : ""}
+      ${safeUrl(a.oereb_extract_pdf) ? `<a class="detail-link" href="${esc(a.oereb_extract_pdf)}" target="_blank" rel="noopener">${esc(t("detail.extract_pdf"))}</a>` : ""}
+      ${safeUrl(a.oereb_extract_url) ? `<a class="detail-link" href="${esc(a.oereb_extract_url)}" target="_blank" rel="noopener">${esc(t("detail.extract_url"))}</a>` : ""}
+      ${safeUrl(a.url_oereb) ? `<a class="detail-link" href="${esc(a.url_oereb)}" target="_blank" rel="noopener">${esc(t("detail.geoportal"))}</a>` : ""}
       ${safeUrl(a.oereb_webservice) ? `<a class="detail-link" href="${esc(a.oereb_webservice)}" target="_blank" rel="noopener">${esc(t("detail.webservice"))}</a>` : ""}
     </div>
+    ${center ? renderMap(center, lang) : ""}
   `;
 
   detailPanel.hidden = false;
   detailPanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
-function closeDetail() {
+// Internal: clear detail-panel UI without touching the URL. Used when we're
+// about to write the URL ourselves (e.g. starting a new search), or when
+// we're reacting *to* a URL change (popstate / bootstrap).
+function clearDetailUi() {
   detailAbort?.abort();
   detailPanel.hidden = true;
   selectedId = null;
   resultsBody.querySelectorAll("tr.selected").forEach((tr) => tr.classList.remove("selected"));
+}
+
+function closeDetail() {
+  clearDetailUi();
+  syncUrl({ replace: true });
 }
 
 // ── Reset ──
@@ -412,6 +435,9 @@ function handleReset() {
   selectedId = null;
   resultsPanel.hidden = true;
   detailPanel.hidden = true;
+  // The browser clears the form fields after this handler returns, so defer
+  // the URL sync until the form is actually empty.
+  queueMicrotask(() => syncUrl({ replace: true }));
 }
 
 // ── UI helpers ──
@@ -458,6 +484,138 @@ function safeUrl(url) {
 
 function validEmail(email) {
   return email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// ── URL state (shareable links) ──
+//
+// We mirror the search form + selected parcel in `?` query params so any
+// page state can be reproduced by pasting the URL.
+//   - Filter params share names with the form field IDs (kanton, gemeinde,
+//     bfsnr, egrid, nummer, plz)
+//   - `selected` holds the EGRID of the open detail panel (federal-level
+//     stable ID — survives swisstopo data refreshes; featureId would not)
+//   - `lang` is owned by i18n.js and we leave it alone
+
+const FILTER_PARAMS = SEARCH_FIELDS.map((sf) => ({
+  key: sf.id.replace(/^field-/, ""),
+  fieldId: sf.id,
+}));
+
+function syncUrl({ replace = false } = {}) {
+  const params = new URLSearchParams(window.location.search);
+
+  for (const { key, fieldId } of FILTER_PARAMS) {
+    const val = document.getElementById(fieldId).value.trim();
+    if (val) params.set(key, val);
+    else params.delete(key);
+  }
+
+  const selectedEgrid = selectedId
+    ? allResults.find((r) => String(r.featureId) === String(selectedId))
+        ?.attributes?.egris_egrid
+    : null;
+  if (selectedEgrid) params.set("selected", selectedEgrid);
+  else params.delete("selected");
+
+  const qs = params.toString();
+  const url = window.location.pathname + (qs ? "?" + qs : "") + window.location.hash;
+  if (replace) window.history.replaceState(null, "", url);
+  else window.history.pushState(null, "", url);
+}
+
+async function bootstrapFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+
+  let hasFilters = false;
+  for (const { key, fieldId } of FILTER_PARAMS) {
+    const val = params.get(key) || "";
+    document.getElementById(fieldId).value = val;
+    if (val) hasFilters = true;
+  }
+
+  const selectedEgrid = params.get("selected");
+
+  // Deep-link: `?selected=<egrid>` alone is a useful share format, so seed the
+  // EGRID field with it and run the search to find the parcel.
+  if (!hasFilters && selectedEgrid) {
+    document.getElementById("field-egrid").value = selectedEgrid;
+    hasFilters = true;
+  }
+
+  if (!hasFilters) {
+    // URL has no filters → ensure the UI matches (e.g. after pressing back
+    // past the initial search).
+    clearDetailUi();
+    allResults = [];
+    currentPage = 0;
+    resultsPanel.hidden = true;
+    return;
+  }
+
+  await handleSearch(null, { writeUrl: false });
+
+  if (!selectedEgrid || allResults.length === 0) return;
+
+  const idx = allResults.findIndex(
+    (r) => r.attributes?.egris_egrid === selectedEgrid
+  );
+  if (idx < 0) return;
+
+  currentPage = Math.floor(idx / PAGE_SIZE);
+  renderPage();
+  showDetail(allResults[idx].featureId, { writeUrl: false });
+}
+
+// ── Map embed (map.geo.admin.ch iframe) ──
+
+/**
+ * Build the embedded swisstopo map iframe for a parcel.
+ * center: [E, N] in LV95 (EPSG:2056). lang: "de" | "fr" | "it".
+ */
+function renderMap(center, lang) {
+  const params = new URLSearchParams({
+    lang,
+    center: `${center[0].toFixed(1)},${center[1].toFixed(1)}`,
+    z: "10",
+    bgLayer: "ch.swisstopo.pixelkarte-grau",
+    layers: LAYER,
+    crosshair: "marker",
+  });
+  // map.geo.admin.ch uses hash-based routing (#/embed?...)
+  const src = `https://map.geo.admin.ch/#/embed?${params}`;
+  return `
+    <div class="detail-map">
+      <h3 class="detail-map-heading">${esc(t("detail.map"))}</h3>
+      <iframe class="detail-map-frame"
+              src="${src}"
+              loading="lazy"
+              title="${esc(t("detail.map"))}"
+              allow="geolocation"></iframe>
+    </div>
+  `;
+}
+
+/**
+ * Centroid of a GeoJSON Polygon/MultiPolygon as the bounding-box midpoint.
+ * Returns [E, N] in the geometry's CRS (here: LV95), or null if empty.
+ */
+function computeCentroid(geometry) {
+  if (!geometry) return null;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  const visit = (c) => {
+    if (typeof c[0] === "number") {
+      const [x, y] = c;
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    } else {
+      c.forEach(visit);
+    }
+  };
+  visit(geometry.coordinates);
+  if (!isFinite(minX)) return null;
+  return [(minX + maxX) / 2, (minY + maxY) / 2];
 }
 
 // ── Area calculation ──

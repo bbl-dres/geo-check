@@ -138,9 +138,11 @@ const translations = {
     "detail.status": "Status",
     "detail.kontakt": "Kontakt",
     "detail.telefon": "Telefon",
-    "detail.pdf": "ÖREB-Auszug (PDF)",
-    "detail.portal": "ÖREB-Portal",
+    "detail.extract_pdf": "ÖREB-Auszug (PDF)",
+    "detail.extract_url": "ÖREB-Auszug (URL)",
+    "detail.geoportal": "Kantonales Geoportal",
     "detail.webservice": "Webservice",
+    "detail.map": "Karte",
 
     // Footer
     "footer.datasource": "Datenquelle:",
@@ -210,9 +212,11 @@ const translations = {
     "detail.status": "Statut",
     "detail.kontakt": "Contact",
     "detail.telefon": "Téléphone",
-    "detail.pdf": "Extrait RDPPF (PDF)",
-    "detail.portal": "Portail RDPPF",
+    "detail.extract_pdf": "Extrait RDPPF (PDF)",
+    "detail.extract_url": "Extrait RDPPF (URL)",
+    "detail.geoportal": "Géoportail cantonal",
     "detail.webservice": "Service web",
+    "detail.map": "Carte",
 
     // Footer
     "footer.datasource": "Source des données :",
@@ -282,9 +286,11 @@ const translations = {
     "detail.status": "Stato",
     "detail.kontakt": "Contatto",
     "detail.telefon": "Telefono",
-    "detail.pdf": "Estratto RDPP (PDF)",
-    "detail.portal": "Portale RDPP",
+    "detail.extract_pdf": "Estratto RDPP (PDF)",
+    "detail.extract_url": "Estratto RDPP (URL)",
+    "detail.geoportal": "Geoportale cantonale",
     "detail.webservice": "Servizio web",
+    "detail.map": "Mappa",
 
     // Footer
     "footer.datasource": "Fonte dei dati:",
