@@ -1,6 +1,8 @@
 ### Request XML-Version of OEREB-Extracts ###
 
 import requests
+import xml.etree.ElementTree as ET
+import csv
 
 
 # Change Base URL according to desired canton.
@@ -30,10 +32,34 @@ def get_extract_xml(egrid):
 
     return None
 
-# Insert relevant EGRID Number of Area here
-xml_data = get_extract_xml("CH761346357379")
+# Insert relevant CSV-File with EGRID Numbers of Area here
+input_egrids = []
+with open("egrids.csv", "r", encoding="utf-8") as f:
+    reader = csv.DictReader(f)
+    print(reader.fieldnames)
+    for row in reader:
+        input_egrids.append(row["\ufeffEGRID"])
 
-# Save XML-File
-if xml_data:
-    with open("extract.xml", "w", encoding="utf-8") as f:
-        f.write(xml_data)
+ns_data = "http://schemas.geo.admin.ch/V_D/OeREB/2.0/ExtractData"
+ergebnisse = []
+
+for egrid in input_egrids:
+    print(f"Abfrage: {egrid}")
+    xml_data = get_extract_xml(egrid)
+
+    if xml_data:
+        root = ET.fromstring(xml_data)
+        area = root.find(f".//{{{ns_data}}}LandRegistryArea")
+        flaeche = area.text if area is not None else "nicht gefunden"
+    else:
+        flaeche = "Fehler bei Abfrage"
+
+    ergebnisse.append({"EGRID": egrid, "Flaeche_m2": flaeche})
+
+# Save in CSV-File
+with open("grundstuecke.csv", "w", newline="", encoding="utf-8") as f:
+    writer = csv.DictWriter(f, fieldnames=["EGRID", "Flaeche_m2"])
+    writer.writeheader()
+    writer.writerows(ergebnisse)
+
+print(f"\nGespeichert: grundstuecke.csv ({len(ergebnisse)} Einträge)")
