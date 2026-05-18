@@ -7,20 +7,51 @@ import csv
 
 # Change Base URL according to desired canton.
 # Find List of URL's here: www.cadastre.ch/de/oereb-webservice
-BASE_URL = "https://www.oereb2.apps.be.ch"
+KANTON_URLS = {
+    "AG": "https://api.geo.ag.ch/v2/oereb",
+    "BE": "https://www.oereb2.apps.be.ch",
+    "BL": "https://oereb.geo.bl.ch",
+    "GR": "https://oereb.geo.gr.ch/oereb",
+    "SO": "https://geo.so.ch/api/oereb",
+    "TG": "https://map.geo.tg.ch/services/oereb",
+    "ZH": "https://maps.zh.ch/oereb/v2",
+    "BS": "https://api.oereb.bs.ch",
+    "FR": "https://geo.fr.ch/RDPPF_ws/RdppfSVC.svc",
+    "GE": "https://ge.ch/terecadastrews/RdppfSVC.svc",
+    "JU": "https://geo.jura.ch/crdppf_server",
+    "LU": "https://svc.geo.lu.ch/oereb",
+    "NE": "ttps://sitn.ne.ch/crdppf",
+    "NW": "https://oereb.gis-daten.ch/oereb",
+    "OW": "https://oereb.gis-daten.ch/oereb",
+    "SG": "	https://oereb.geo.sg.ch/ktsg/wsgi/oereb",
+    "SH": "https://oereb.geo.sh.ch",
+    "SZ": "https://map.geo.sz.ch/oereb",
+    "TI": "https://crdpp.geo.ti.ch/oereb2",
+    "UR": "https://prozessor-oereb.ur.ch/oereb",
+    "VD": "https://www.rdppf.vd.ch/ws/RdppfSVC.svc",
+    "VS": "https://rdppf.apps.vs.ch ",
+    "ZG": "https://oereb.zg.ch/ors",
+    "AI": "https://oereb.ai.ch/ktai/wsgi/oereb",
+    "AR": "https://oereb.ar.ch/ktar/wsgi/oereb",
+    "GL": "https://map.geo.gl.ch/oereb",
+}
 
 # Initialise parameters for XML request
-def get_extract_xml(egrid):
-    url = f"{BASE_URL}/extract/xml/"
+def get_extract_xml(egrid, kanton):
+    base_url = KANTON_URLS.get(kanton.upper())
+    if not base_url:
+        print(f"Kein URL für Kanton '{kanton}' hinterlegt.")
+        return None
 
+    url = f"{base_url}/extract/xml/"
     params = {
         "EGRID": egrid,
         "LANG": "de",
-        "GEOMETRY": "true",
+        "GEOMETRY": "false",
         "WITHIMAGES": "false"
     }
 
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, timeout=120)
 
     if response.status_code == 200:
         print("Erfolg")
@@ -32,33 +63,39 @@ def get_extract_xml(egrid):
 
     return None
 
-# Insert relevant CSV-File with EGRID Numbers of Area here
-input_egrids = []
-with open("egrids.csv", "r", encoding="utf-8") as f:
+
+# Insert relevant CSV-File with EGRID Numbers and Kanton here
+input_rows = []
+with open("/Users/pascaltrosch/Downloads/egrids.csv", "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f)
     print(reader.fieldnames)
     for row in reader:
-        input_egrids.append(row["\ufeffEGRID"])
+        input_rows.append({"egrid": row["EGRID"], "kanton": row["Kanton"]})
 
 ns_data = "http://schemas.geo.admin.ch/V_D/OeREB/2.0/ExtractData"
 ergebnisse = []
 
-for egrid in input_egrids:
-    print(f"Abfrage: {egrid}")
-    xml_data = get_extract_xml(egrid)
+for row in input_rows:
+    egrid = row["egrid"]
+    kanton = row["kanton"]
+    print(f"Abfrage: {egrid} ({kanton})")
+    xml_data = get_extract_xml(egrid, kanton)
 
     if xml_data:
-        root = ET.fromstring(xml_data)
-        area = root.find(f".//{{{ns_data}}}LandRegistryArea")
-        flaeche = area.text if area is not None else "nicht gefunden"
+        try:
+            root = ET.fromstring(xml_data)
+            area = root.find(f".//{{{ns_data}}}LandRegistryArea")
+            flaeche = area.text if area is not None else "nicht gefunden"
+        except ET.ParseError:
+            flaeche = "XML-Fehler"
     else:
         flaeche = "Fehler bei Abfrage"
 
-    ergebnisse.append({"EGRID": egrid, "Flaeche_m2": flaeche})
+    ergebnisse.append({"EGRID": egrid, "Kanton": kanton, "Flaeche_m2": flaeche})
 
 # Save in CSV-File
 with open("grundstuecke.csv", "w", newline="", encoding="utf-8") as f:
-    writer = csv.DictWriter(f, fieldnames=["EGRID", "Flaeche_m2"])
+    writer = csv.DictWriter(f, fieldnames=["EGRID", "Kanton", "Flaeche_m2"])
     writer.writeheader()
     writer.writerows(ergebnisse)
 
