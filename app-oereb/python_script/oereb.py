@@ -3,6 +3,8 @@
 import requests
 import xml.etree.ElementTree as ET
 import csv
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 # Change Base URL according to desired canton.
@@ -20,21 +22,22 @@ KANTON_URLS = {
     "GE": "https://ge.ch/terecadastrews/RdppfSVC.svc",
     "JU": "https://geo.jura.ch/crdppf_server",
     "LU": "https://svc.geo.lu.ch/oereb",
-    "NE": "ttps://sitn.ne.ch/crdppf",
+    "NE": "https://sitn.ne.ch/crdppf",
     "NW": "https://oereb.gis-daten.ch/oereb",
     "OW": "https://oereb.gis-daten.ch/oereb",
-    "SG": "	https://oereb.geo.sg.ch/ktsg/wsgi/oereb",
+    "SG": "https://oereb.geo.sg.ch/ktsg/wsgi/oereb",
     "SH": "https://oereb.geo.sh.ch",
     "SZ": "https://map.geo.sz.ch/oereb",
     "TI": "https://crdpp.geo.ti.ch/oereb2",
     "UR": "https://prozessor-oereb.ur.ch/oereb",
     "VD": "https://www.rdppf.vd.ch/ws/RdppfSVC.svc",
-    "VS": "https://rdppf.apps.vs.ch ",
+    "VS": "https://rdppf.apps.vs.ch",
     "ZG": "https://oereb.zg.ch/ors",
     "AI": "https://oereb.ai.ch/ktai/wsgi/oereb",
     "AR": "https://oereb.ar.ch/ktar/wsgi/oereb",
     "GL": "https://map.geo.gl.ch/oereb",
 }
+
 
 # Initialise parameters for XML request
 def get_extract_xml(egrid, kanton):
@@ -46,7 +49,6 @@ def get_extract_xml(egrid, kanton):
     url = f"{base_url}/extract/xml/"
     params = {
         "EGRID": egrid,
-        "LANG": "de",
         "GEOMETRY": "false",
         "WITHIMAGES": "false"
     }
@@ -66,7 +68,7 @@ def get_extract_xml(egrid, kanton):
 
 # Insert relevant CSV-File with EGRID Numbers and Kanton here
 input_rows = []
-with open("/Users/pascaltrosch/Downloads/egrids.csv", "r", encoding="utf-8-sig") as f:
+with open("egrids.csv", "r", encoding="utf-8-sig") as f:
     reader = csv.DictReader(f)
     print(reader.fieldnames)
     for row in reader:
