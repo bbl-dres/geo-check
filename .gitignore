@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+
+# Node (in case anything ever needs it)
+node_modules/
+
+# Deno (prototype-quality/backend)
+prototype-quality/backend/.env

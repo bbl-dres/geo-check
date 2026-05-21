@@ -1,8 +1,8 @@
-# CLAUDE.md - Geo-Check Codebase Guide
+# CLAUDE.md — Data-Quality Prototype Guide
 
 ## Project Overview
 
-**Geo-Check** is a Swiss federal building data quality tool (BBL). It validates building records by comparing GEOREF, SAP RE-FX, and GWR data sources, computing confidence scores, and tracking corrections.
+The **Data-Quality Prototype** (folder: `prototype-quality/`, formerly `prototype-pm/`) is a Swiss federal building data quality mockup (BBL), part of the [`geo-check`](../README.md) multi-app repo. It validates building records by comparing GEOREF, SAP RE-FX, and GWR data sources, computing confidence scores, and tracking corrections.
 
 **Language:** German UI, Swiss locale (`de-CH`). **License:** MIT.
 
@@ -117,7 +117,7 @@ Responsive breakpoints at bottom of `styles.css`: 1440px, 1280px, 1024px, **900p
 
 ## Deployment
 
-- **Frontend:** GitHub Pages at `https://bbl-dres.github.io/geo-check/`
+- **Frontend:** GitHub Pages at `https://bbl-dres.github.io/geo-check/prototype-quality/`
 - **Edge functions:** Auto-deployed on push to `main` when `supabase/functions/**` changes (`.github/workflows/deploy-edge-functions.yml`)
 - **Backend API:** Manual deployment (Deno runtime)
 
