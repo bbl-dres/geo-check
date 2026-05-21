@@ -21,10 +21,6 @@ Verify your building records against the official GWR. Upload CSV/Excel, enrich 
 <p align="center">
   <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
 </p>
-<p align="center">
-  <img src="assets/preview-gwr-check-2.jpg" width="45%" style="vertical-align: top;"/>
-  <img src="assets/preview-gwr-check-3.jpg" width="45%" style="vertical-align: top;"/>
-</p>
 
 ---
 
