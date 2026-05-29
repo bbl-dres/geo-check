@@ -40,9 +40,9 @@ Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, PLZ, or c
 ### Data-Quality Prototype (depracated)
 
 > [!CAUTION]
-> Unofficial mockup. Fictional data, not for production.
+> This app is depracated, database is no longer online.
 
-Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across 5 dimensions, kanban with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine. - This app is depracated, database is no longer online.
+Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across 5 dimensions, kanban with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine.
 - Live app: https://bbl-dres.github.io/geo-check/prototype-quality/
 - Source code: [`prototype-quality/`](prototype-quality/)
 
