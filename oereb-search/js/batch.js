@@ -63,6 +63,7 @@ export function initBatch(hooks) {
     egridSelect: document.getElementById("batch-egrid-col"),
     processBtn: document.getElementById("batch-process"),
     mappingBack: document.getElementById("batch-mapping-back"),
+    progressBar: document.getElementById("batch-progressbar"),
     progressFill: document.getElementById("batch-progress-fill"),
     progressCount: document.getElementById("batch-progress-count"),
     cancelBtn: document.getElementById("batch-cancel"),
@@ -372,8 +373,13 @@ function summaryText() {
 }
 
 function renderProgress(done, total) {
-  el.progressFill.style.width = (total ? Math.round((done / total) * 100) : 0) + "%";
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  el.progressFill.style.width = pct + "%";
   el.progressCount.textContent = `${done} / ${total}`;
+  if (el.progressBar) {
+    el.progressBar.setAttribute("aria-valuenow", String(pct));
+    el.progressBar.setAttribute("aria-valuetext", `${done} / ${total}`);
+  }
 }
 
 // ── Helpers ──

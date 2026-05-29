@@ -18,7 +18,7 @@
     <img src="assets/swiss-logo-flag.svg" alt="" class="header-flag" width="20" height="22">
     <div class="header-title">
       <span class="header-agency" data-i18n="header.agency">swisstopo / Kataster</span>
-      <span class="header-app" data-i18n="header.app">ÖREB-Parzellensuche</span>
+      <h1 class="header-app" data-i18n="header.app">ÖREB-Parzellensuche</h1>
     </div>
   </div>
   <div class="header-right">
@@ -34,12 +34,12 @@
 
   <!-- Mode toggle -->
   <div class="mode-tabs" role="tablist" data-i18n-aria="mode.aria" aria-label="Suchmodus">
-    <button type="button" class="mode-tab active" id="tab-search" role="tab" aria-selected="true" data-mode="search" data-i18n="mode.search">Suche</button>
-    <button type="button" class="mode-tab" id="tab-batch" role="tab" aria-selected="false" data-mode="batch" data-i18n="mode.batch">Batch (CSV)</button>
+    <button type="button" class="mode-tab active" id="tab-search" role="tab" aria-selected="true" aria-controls="mode-search" tabindex="0" data-mode="search" data-i18n="mode.search">Suche</button>
+    <button type="button" class="mode-tab" id="tab-batch" role="tab" aria-selected="false" aria-controls="mode-batch" tabindex="-1" data-mode="batch" data-i18n="mode.batch">Batch (CSV)</button>
   </div>
 
   <!-- ════ Mode: Search mask ════ -->
-  <div id="mode-search">
+  <div id="mode-search" role="tabpanel" aria-labelledby="tab-search" tabindex="0">
   <!-- Search Form -->
   <section class="search-panel">
     <h2 class="search-heading" data-i18n="search.heading">Parzelle suchen</h2>
@@ -88,7 +88,7 @@
   </div><!-- /#mode-search -->
 
   <!-- ════ Mode: Batch CSV ════ -->
-  <div id="mode-batch" hidden>
+  <div id="mode-batch" role="tabpanel" aria-labelledby="tab-batch" tabindex="0" hidden>
     <section class="search-panel batch-panel">
       <div class="batch-panel-header">
         <h2 class="search-heading" data-i18n="batch.heading">Batch-Abfrage (CSV)</h2>
@@ -111,7 +111,7 @@
         <input type="file" id="batch-file-input" accept=".csv,.tsv,.txt" hidden aria-label="Datei auswählen">
         <p class="demo-link"><a href="examples/oereb-beispiel.csv" download="oereb-beispiel.csv" id="batch-demo-download" data-i18n="batch.demo.download">Beispiel-CSV herunterladen</a></p>
         <p class="demo-link"><a href="#" id="batch-demo-run" data-i18n="batch.demo.run">Beispiel laden und ausführen</a></p>
-        <p class="batch-error" id="batch-error" hidden></p>
+        <p class="batch-error" id="batch-error" role="alert" hidden></p>
       </div>
 
       <!-- State B: Mapping -->
@@ -132,7 +132,7 @@
       <!-- State C: Processing -->
       <div id="batch-processing" hidden>
         <p class="batch-info" data-i18n="batch.processing">Abfrage läuft …</p>
-        <div class="progress-bar"><div class="progress-fill" id="batch-progress-fill"></div></div>
+        <div class="progress-bar" id="batch-progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria="batch.processing" aria-label="Abfrage läuft …"><div class="progress-fill" id="batch-progress-fill"></div></div>
         <p class="progress-count" id="batch-progress-count"></p>
         <div class="batch-actions">
           <button type="button" class="btn btn-secondary" id="batch-cancel" data-i18n="batch.cancel">Abbrechen</button>
@@ -149,7 +149,7 @@
   <section class="results-panel" id="results-panel" hidden>
     <div class="results-header">
       <h2 class="results-heading" data-i18n="results.heading">Ergebnisse</h2>
-      <span class="results-count" id="results-count"></span>
+      <span class="results-count" id="results-count" aria-live="polite" aria-atomic="true"></span>
       <button type="button" class="btn btn-secondary btn-sm results-download" id="results-download" hidden data-i18n="batch.download.button">Herunterladen</button>
     </div>
 

@@ -61,25 +61,42 @@ langSelect.addEventListener("change", (e) => setLang(e.target.value));
 
 // ── Mode tabs (search mask ↔ batch CSV) ──
 function setupModeTabs(batch) {
-  const tabs = document.querySelectorAll(".mode-tab");
+  const tabs = [...document.querySelectorAll(".mode-tab")];
   const panels = {
     search: document.getElementById("mode-search"),
     batch: document.getElementById("mode-batch"),
   };
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const mode = tab.dataset.mode;
-      tabs.forEach((t) => {
-        const active = t === tab;
-        t.classList.toggle("active", active);
-        t.setAttribute("aria-selected", String(active));
-      });
-      for (const [key, panel] of Object.entries(panels)) {
-        if (panel) panel.hidden = key !== mode;
-      }
-      // Re-point the shared results/detail panels at the active mode's data.
-      if (mode === "search") showSearchResults();
-      else batch.rerender();
+
+  // Activate a tab: update ARIA selection + roving tabindex, toggle panels,
+  // re-point the shared results view, and (on keyboard nav) move focus.
+  function activateTab(tab, { focus = false } = {}) {
+    const mode = tab.dataset.mode;
+    tabs.forEach((t) => {
+      const active = t === tab;
+      t.classList.toggle("active", active);
+      t.setAttribute("aria-selected", String(active));
+      t.tabIndex = active ? 0 : -1; // roving tabindex (WAI-ARIA tabs pattern)
+    });
+    for (const [key, panel] of Object.entries(panels)) {
+      if (panel) panel.hidden = key !== mode;
+    }
+    if (focus) tab.focus();
+    if (mode === "search") showSearchResults();
+    else batch.rerender();
+  }
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener("click", () => activateTab(tab));
+    // Arrow / Home / End move between tabs with automatic activation.
+    tab.addEventListener("keydown", (e) => {
+      let next = null;
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") next = tabs[(i + 1) % tabs.length];
+      else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = tabs[(i - 1 + tabs.length) % tabs.length];
+      else if (e.key === "Home") next = tabs[0];
+      else if (e.key === "End") next = tabs[tabs.length - 1];
+      if (!next) return;
+      e.preventDefault();
+      activateTab(next, { focus: true });
     });
   });
 }
@@ -168,6 +185,12 @@ function setupAutocomplete(inputId, listId, origin, extractValue) {
   let activeIdx = -1;
   let items = [];
 
+  // ARIA 1.2 combobox wiring (the input owns the listbox popup).
+  input.setAttribute("role", "combobox");
+  input.setAttribute("aria-autocomplete", "list");
+  input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-controls", listId);
+
   input.addEventListener("input", () => {
     clearTimeout(debounceTimer);
     const query = input.value.trim();
@@ -227,9 +250,11 @@ function setupAutocomplete(inputId, listId, origin, extractValue) {
     if (items.length === 0) { hideList(); return; }
     activeIdx = -1;
     list.innerHTML = items
-      .map((item, i) => `<li data-idx="${i}" role="option">${item.html}</li>`)
+      .map((item, i) => `<li id="${listId}-opt-${i}" data-idx="${i}" role="option" aria-selected="false">${item.html}</li>`)
       .join("");
     list.hidden = false;
+    input.setAttribute("aria-expanded", "true");
+    input.removeAttribute("aria-activedescendant");
   }
 
   function selectItem(idx) {
@@ -240,15 +265,20 @@ function setupAutocomplete(inputId, listId, origin, extractValue) {
 
   function highlightItem() {
     list.querySelectorAll("li").forEach((li, i) => {
-      li.classList.toggle("active", i === activeIdx);
-      li.setAttribute("aria-selected", i === activeIdx);
+      const active = i === activeIdx;
+      li.classList.toggle("active", active);
+      li.setAttribute("aria-selected", String(active));
     });
+    if (activeIdx >= 0) input.setAttribute("aria-activedescendant", `${listId}-opt-${activeIdx}`);
+    else input.removeAttribute("aria-activedescendant");
   }
 
   function hideList() {
     list.hidden = true;
     items = [];
     activeIdx = -1;
+    input.setAttribute("aria-expanded", "false");
+    input.removeAttribute("aria-activedescendant");
   }
 }
 
@@ -534,6 +564,7 @@ function handleReset() {
 // ── UI helpers ──
 function setLoading(on) {
   submitBtn.classList.toggle("loading", on);
+  submitBtn.setAttribute("aria-busy", String(on));
   submitBtn.textContent = on ? t("search.loading") : t("search.submit");
 }
 
