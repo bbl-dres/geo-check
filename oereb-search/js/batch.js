@@ -318,10 +318,17 @@ async function processOne(inputRow, headers, lang, signal, cache) {
     return makeRow(inputRow, headers, { OUT_RESULT: "error", OUT_MESSAGE: "invalid EGRID format" });
   }
 
+  // Cache the in-flight promise (not the resolved value) so concurrent workers
+  // hitting the same EGRID share one request rather than racing past cache.has.
+  // Evict failed lookups so a later duplicate of the same EGRID can retry.
   const key = rawEgrid.toUpperCase();
-  let feature;
-  if (cache.has(key)) feature = cache.get(key);
-  else { feature = await findByEgrid(rawEgrid, { signal }); cache.set(key, feature); }
+  if (!cache.has(key)) {
+    cache.set(key, findByEgrid(rawEgrid, { signal }).catch((err) => {
+      cache.delete(key);
+      throw err;
+    }));
+  }
+  const feature = await cache.get(key);
 
   if (!feature) {
     return makeRow(inputRow, headers, { OUT_RESULT: "not_found", OUT_MESSAGE: "EGRID not found in ÖREB cadastre" });

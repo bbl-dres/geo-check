@@ -24,7 +24,7 @@ Switch to the **Batch (CSV)** tab to look up many parcels at once:
 1. **Upload** a CSV (drag-and-drop or picker). Only an **EGRID** column is required — a column literally named `egrid` is auto-detected, otherwise you pick which column holds the EGRID.
 2. Each EGRID is looked up against the ÖREB layer (5 parallel requests, retries on transient errors, in-session dedup cache, cancellable).
 3. The **found parcels appear in the same results table as the search mask** (EGRID · Gemeinde · Nr · Grundstücksart · Status) — click a row for the full detail panel with map, area and official extract links. It's the same view, just a different input method.
-4. **Download** the complete results — every input row, including not-found/error — as **CSV** or **GeoJSON**.
+4. **Download** the complete results — every input row, including not-found/error — as **CSV** or **GeoJSON**. The CSV is **Excel-ready**: it opens straight into columns on a double-click (UTF-8 with a `sep=;` hint), so there's no import wizard and umlauts/accents stay intact.
 
 **Column contract — no joins needed afterwards.** Every column you upload is preserved with an **`IN_`** prefix; every looked-up field is added with an **`OUT_`** prefix (`OUT_RESULT`, `OUT_GEMEINDE`, `OUT_FLAECHE_M2`, `OUT_OEREB_STATUS`, the official extract links, …). `OUT_RESULT` is one of `found` / `not_found` / `error`, so failed rows still carry your original data. The GeoJSON is **WGS84 (EPSG:4326)** with the same `IN_`/`OUT_` property bag; rows without geometry are emitted as features with `geometry: null`.
 

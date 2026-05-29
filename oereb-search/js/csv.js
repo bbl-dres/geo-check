@@ -3,6 +3,11 @@
    The parser is a single-pass state machine, so quoted fields containing the
    delimiter, embedded quotes ("" → ") and newlines are handled correctly. */
 
+/* Delimiter for the CSV download. Semicolon is Excel's default list separator
+   in CH/DE/FR/IT locales; paired with the `sep=;` hint in toCSV() the file
+   opens straight into columns on a double-click in any Excel locale. */
+const CSV_DELIMITER = ";";
+
 /** Detect the most likely delimiter from the first physical line. */
 function detectDelimiter(text) {
   const firstLine = text.slice(0, text.indexOf("\n") === -1 ? text.length : text.indexOf("\n"));
@@ -27,7 +32,15 @@ function detectDelimiter(text) {
  */
 export function parseCSV(text) {
   if (text.charCodeAt(0) === 0xfeff) text = text.slice(1); // strip BOM
-  const delimiter = detectDelimiter(text);
+
+  // Honour (and drop) a leading Excel `sep=<char>` directive so it isn't read
+  // as the header row — this is what our own Excel-friendly downloads emit, and
+  // it lets them round-trip if re-uploaded. Falls back to auto-detection.
+  let forced = null;
+  const sep = /^sep=(.)\r?\n/i.exec(text);
+  if (sep) { forced = sep[1]; text = text.slice(sep[0].length); }
+
+  const delimiter = forced || detectDelimiter(text);
 
   const records = [];
   let field = "";
@@ -75,22 +88,37 @@ export function parseCSV(text) {
   return { headers, rows, delimiter };
 }
 
-/** Escape one CSV cell (semicolon-delimited output). */
+/**
+ * Escape one CSV cell:
+ *   - neutralize spreadsheet formula injection — a leading =, +, -, @ (or a
+ *     control char) makes Excel/Sheets evaluate the cell, so prefix it with an
+ *     apostrophe to force literal text (a legitimate leading-"-number" then
+ *     shows as text);
+ *   - double any embedded quotes, and wrap the cell in quotes when it contains
+ *     the delimiter, a quote or a newline.
+ */
 function csvCell(val) {
-  const v = String(val ?? "").replace(/"/g, '""');
-  return /[;\n"]/.test(v) ? `"${v}"` : v;
+  let v = String(val ?? "");
+  if (/^[=+\-@\t\r]/.test(v)) v = "'" + v;
+  v = v.replace(/"/g, '""');
+  return new RegExp(`[${CSV_DELIMITER}\\n"]`).test(v) ? `"${v}"` : v;
 }
 
 /**
- * Serialize rows to a CSV string (semicolon-delimited, UTF-8 BOM) — opens
- * cleanly in Swiss-locale Excel. `columns` fixes the column set and order.
+ * Serialize rows to a CSV string built to "just open" in Excel for users who
+ * don't think about CSVs at all:
+ *   - UTF-8 BOM       → umlauts/accents (Zürich, Müller, Fläche) aren't mangled
+ *   - `sep=;` hint    → Excel splits on ';' regardless of the locale list
+ *                       separator (our parseCSV strips this line back out)
+ *   - CRLF newlines   → Excel's expected line ending
+ * `columns` fixes the column set and order.
  */
 export function toCSV(columns, rows) {
-  const lines = [columns.map(csvCell).join(";")];
+  const lines = [columns.map(csvCell).join(CSV_DELIMITER)];
   for (const row of rows) {
-    lines.push(columns.map((c) => csvCell(row[c])).join(";"));
+    lines.push(columns.map((c) => csvCell(row[c])).join(CSV_DELIMITER));
   }
-  return "﻿" + lines.join("\r\n");
+  return "﻿" + `sep=${CSV_DELIMITER}\r\n` + lines.join("\r\n");
 }
 
 /**

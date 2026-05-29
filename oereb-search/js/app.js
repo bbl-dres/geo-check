@@ -178,6 +178,12 @@ setupAutocomplete("field-plz", "ac-plz", "zipcode", (label) => {
   return label.replace(/<\/?b>/g, "").replace(/\s*-.*$/, "").trim();
 });
 
+// Allow only the <b> match-highlight tags from the SearchServer label; escape
+// everything else so a compromised/unexpected API response can't inject markup.
+function safeLabel(label) {
+  return esc(label).replace(/&lt;b&gt;/g, "<b>").replace(/&lt;\/b&gt;/g, "</b>");
+}
+
 function setupAutocomplete(inputId, listId, origin, extractValue) {
   const input = document.getElementById(inputId);
   const list = document.getElementById(listId);
@@ -239,7 +245,7 @@ function setupAutocomplete(inputId, listId, origin, extractValue) {
       if (!res.ok) return;
       const data = await res.json();
       items = (data.results || []).map((r) => ({
-        html: r.attrs?.label || "",
+        html: safeLabel(r.attrs?.label || ""),
         value: extractValue(r.attrs?.label || ""),
       }));
       renderList();

@@ -96,7 +96,9 @@ export async function findByEgrid(egrid, { signal } = {}) {
   const want = egrid.trim().toUpperCase();
   const match = results.find((r) => (attrsOf(r).egris_egrid || "").toUpperCase() === want) || results[0];
 
-  return { attributes: attrsOf(match), geometry: match.geometry || null, featureId: match.featureId };
+  // featureId is present on the geojson-format find response (verified); fall
+  // back to `id` (same value) to stay robust if that response shape changes.
+  return { attributes: attrsOf(match), geometry: match.geometry || null, featureId: match.featureId ?? match.id };
 }
 
 // ── ÖREB status → active? (locale-aware) ──
