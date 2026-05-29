@@ -1,14 +1,13 @@
 /* ── ÖREB Parcel Search App ── */
 
 import { initLang, setLang, getLang, t, translatePage } from "./i18n.js";
+import {
+  API_BASE, LAYER, STATUS_FIELD,
+  fetchWithTimeout, isStatusActive, computeArea, polygonArea, esc,
+} from "./oereb-api.js";
+import { initBatch } from "./batch.js";
 
-const API_BASE = "https://api3.geo.admin.ch/rest/services/ech/MapServer";
-const LAYER = "ch.swisstopo-vd.stand-oerebkataster";
 const PAGE_SIZE = 20;
-const FETCH_TIMEOUT = 10_000; // 10s
-
-// i18n status field mapping
-const STATUS_FIELD = { de: "oereb_status_de", fr: "oereb_status_fr", it: "oereb_status_it" };
 
 // Search field priority (most specific first)
 const SEARCH_FIELDS = [
@@ -21,7 +20,9 @@ const SEARCH_FIELDS = [
 ];
 
 // ── State ──
-let allResults = [];
+let allResults = [];          // currently displayed result set (search OR batch)
+let searchResults = [];       // the search mask's own last result set
+let externalResults = false;  // true while `allResults` is driven by batch mode
 let currentPage = 0;
 let selectedId = null;
 let detailAbort = null; // AbortController for in-flight detail fetch
@@ -40,10 +41,16 @@ const detailBody = document.getElementById("detail-body");
 const detailClose = document.getElementById("detail-close");
 const submitBtn = form.querySelector('button[type="submit"]');
 const langSelect = document.getElementById("lang-select");
+const resultsDownload = document.getElementById("results-download"); // batch-only header button
 
 // ── Init ──
 initLang();
 populateKantone();
+
+// Batch mode renders its found parcels into the SAME results/detail panels as
+// the search mask (see showResults/clearResults below).
+const batchApi = initBatch({ showResults, clearResults });
+setupModeTabs(batchApi);
 
 form.addEventListener("submit", handleSearch);
 form.addEventListener("reset", handleReset);
@@ -51,6 +58,84 @@ pagePrev.addEventListener("click", () => changePage(-1));
 pageNext.addEventListener("click", () => changePage(1));
 detailClose.addEventListener("click", closeDetail);
 langSelect.addEventListener("change", (e) => setLang(e.target.value));
+
+// ── Mode tabs (search mask ↔ batch CSV) ──
+function setupModeTabs(batch) {
+  const tabs = document.querySelectorAll(".mode-tab");
+  const panels = {
+    search: document.getElementById("mode-search"),
+    batch: document.getElementById("mode-batch"),
+  };
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const mode = tab.dataset.mode;
+      tabs.forEach((t) => {
+        const active = t === tab;
+        t.classList.toggle("active", active);
+        t.setAttribute("aria-selected", String(active));
+      });
+      for (const [key, panel] of Object.entries(panels)) {
+        if (panel) panel.hidden = key !== mode;
+      }
+      // Re-point the shared results/detail panels at the active mode's data.
+      if (mode === "search") showSearchResults();
+      else batch.rerender();
+    });
+  });
+}
+
+// ── Shared results plumbing (used by both the search mask and batch mode) ──
+
+// Re-render the search mask's own result set into the shared panels.
+function showSearchResults() {
+  externalResults = false;
+  allResults = searchResults;
+  selectedId = null;
+  currentPage = 0;
+  clearDetailUi();
+  resultsDownload.hidden = true; // search results have no download
+  if (!searchResults.length) {
+    resultsPanel.hidden = true;
+    return;
+  }
+  resultsPanel.hidden = false;
+  resultsCount.textContent = t("results.count", { n: searchResults.length });
+  renderPage();
+}
+
+// Show an externally-produced result set (batch mode) in the shared panels.
+// `results` are { featureId, attributes } like the search results; `countText`
+// is the pre-formatted summary shown in the results header.
+function showResults(results, countText) {
+  detailAbort?.abort();
+  externalResults = true;
+  allResults = results;
+  selectedId = null;
+  currentPage = 0;
+  detailPanel.hidden = true;
+  resultsPanel.hidden = false;
+  resultsDownload.hidden = false; // batch results are downloadable (incl. failed rows)
+  resultsCount.textContent = countText;
+  if (results.length === 0) {
+    pagination.hidden = true;
+    resultsBody.innerHTML = `<tr><td colspan="5" class="message-box">${esc(t("results.none"))}</td></tr>`;
+  } else {
+    renderPage();
+  }
+  resultsPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// Hide + forget the shared result set (batch leaving the done state, mode switch).
+function clearResults() {
+  detailAbort?.abort();
+  externalResults = false;
+  allResults = [];
+  selectedId = null;
+  currentPage = 0;
+  resultsPanel.hidden = true;
+  detailPanel.hidden = true;
+  resultsDownload.hidden = true;
+}
 
 // Re-render dynamic content on language change
 window.addEventListener("langchange", () => {
@@ -222,8 +307,11 @@ async function handleSearch(e, { writeUrl = true } = {}) {
       merged = merged.filter((r) => ids.has(r.featureId));
     }
 
+    searchResults = merged;
     allResults = merged;
+    externalResults = false;
     currentPage = 0;
+    resultsDownload.hidden = true;
 
     if (allResults.length === 0) {
       resultsCount.textContent = t("results.count", { n: 0 });
@@ -323,9 +411,10 @@ async function showDetail(featureId, { writeUrl = true } = {}) {
     tr.classList.toggle("selected", tr.dataset.id === String(featureId));
   });
 
-  // Reflect selection in the URL before the (slower) geometry fetch,
-  // so shareable links don't depend on geometry success.
-  if (writeUrl) syncUrl({ replace: true });
+  // Reflect selection in the URL before the (slower) geometry fetch, so
+  // shareable links don't depend on geometry success. Batch results aren't
+  // URL-backed, so skip URL writes when showing an external result set.
+  if (writeUrl && !externalResults) syncUrl({ replace: true });
 
   const a = result.attributes;
   const lang = getLang();
@@ -424,13 +513,15 @@ function clearDetailUi() {
 
 function closeDetail() {
   clearDetailUi();
-  syncUrl({ replace: true });
+  if (!externalResults) syncUrl({ replace: true });
 }
 
 // ── Reset ──
 function handleReset() {
   detailAbort?.abort();
   allResults = [];
+  searchResults = [];
+  externalResults = false;
   currentPage = 0;
   selectedId = null;
   resultsPanel.hidden = true;
@@ -449,26 +540,6 @@ function setLoading(on) {
 function showError(msg) {
   resultsPanel.hidden = false;
   resultsBody.innerHTML = `<tr><td colspan="5" class="error-box">${esc(msg)}</td></tr>`;
-}
-
-function isStatusActive(status) {
-  if (!status) return false;
-  const s = status.toLowerCase();
-  return s.includes("eingeführt") || s.includes("introduit") || s.includes("introdotto");
-}
-
-// ── Fetch with timeout ──
-function fetchWithTimeout(url, signal) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
-
-  // If an external signal is provided, forward its abort
-  if (signal) {
-    if (signal.aborted) { controller.abort(); clearTimeout(timeout); }
-    else signal.addEventListener("abort", () => { controller.abort(); clearTimeout(timeout); });
-  }
-
-  return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timeout));
 }
 
 // ── Validation helpers ──
@@ -576,7 +647,7 @@ function renderMap(center, lang) {
   const params = new URLSearchParams({
     lang,
     center: `${center[0].toFixed(1)},${center[1].toFixed(1)}`,
-    z: "10",
+    z: "13",
     bgLayer: "ch.swisstopo.pixelkarte-grau",
     layers: LAYER,
     crosshair: "marker",
@@ -779,44 +850,7 @@ class TinyQueue {
   }
 }
 
-// ── Area calculation ──
-
-/**
- * Compute 2D area of a GeoJSON Polygon/MultiPolygon using the shoelace formula.
- * Expects coordinates in a projected CRS (LV95 / EPSG:2056) so units are meters.
- * Returns area in m², or null if geometry is missing.
- */
-function computeArea(geometry) {
-  if (!geometry) return null;
-  const { type, coordinates } = geometry;
-  if (type === "Polygon") {
-    return polygonArea(coordinates);
-  }
-  if (type === "MultiPolygon") {
-    return coordinates.reduce((sum, poly) => sum + polygonArea(poly), 0);
-  }
-  return null;
-}
-
-/** Shoelace area for a polygon (outer ring minus holes). */
-function polygonArea(rings) {
-  let area = ringArea(rings[0]); // outer ring
-  for (let i = 1; i < rings.length; i++) {
-    area -= ringArea(rings[i]);  // subtract holes
-  }
-  return Math.abs(area);
-}
-
-/** Shoelace formula for a single ring. */
-function ringArea(coords) {
-  let sum = 0;
-  for (let i = 0, n = coords.length; i < n; i++) {
-    const [x1, y1] = coords[i];
-    const [x2, y2] = coords[(i + 1) % n];
-    sum += x1 * y2 - x2 * y1;
-  }
-  return Math.abs(sum) / 2;
-}
+// ── Area formatting ──
 
 /** Format area as m² or ha depending on size. */
 function formatArea(m2) {
@@ -824,10 +858,4 @@ function formatArea(m2) {
     return (m2 / 10000).toLocaleString("de-CH", { maximumFractionDigits: 2 }) + " ha";
   }
   return Math.round(m2).toLocaleString("de-CH") + " m²";
-}
-
-function esc(str) {
-  const el = document.createElement("span");
-  el.textContent = str;
-  return el.innerHTML;
 }

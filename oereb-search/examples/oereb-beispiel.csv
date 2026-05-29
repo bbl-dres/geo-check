@@ -1,0 +1,7 @@
+objekt_id,bezeichnung,egrid,bemerkung
+OBJ-001,Wohnhaus,CH427760110057,Normalparzelle TG
+OBJ-002,Bürogebäude,CH916358659411,Normalparzelle GE
+OBJ-003,Lagerhalle,CH333077237248,Normalparzelle SG
+OBJ-004,Mehrfamilienhaus,CH690292570744,Normalparzelle TI
+OBJ-005,Testobjekt,CH999999999999,Nicht existierende EGRID (Testfall)
+OBJ-006,Ohne Grundstück,,Fehlende EGRID (Testfall)

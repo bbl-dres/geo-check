@@ -31,6 +31,15 @@
 </header>
 
 <main class="main">
+
+  <!-- Mode toggle -->
+  <div class="mode-tabs" role="tablist" data-i18n-aria="mode.aria" aria-label="Suchmodus">
+    <button type="button" class="mode-tab active" id="tab-search" role="tab" aria-selected="true" data-mode="search" data-i18n="mode.search">Suche</button>
+    <button type="button" class="mode-tab" id="tab-batch" role="tab" aria-selected="false" data-mode="batch" data-i18n="mode.batch">Batch (CSV)</button>
+  </div>
+
+  <!-- ════ Mode: Search mask ════ -->
+  <div id="mode-search">
   <!-- Search Form -->
   <section class="search-panel">
     <h2 class="search-heading" data-i18n="search.heading">Parzelle suchen</h2>
@@ -76,12 +85,74 @@
       </div>
     </form>
   </section>
+  </div><!-- /#mode-search -->
 
-  <!-- Results -->
+  <!-- ════ Mode: Batch CSV ════ -->
+  <div id="mode-batch" hidden>
+    <section class="search-panel batch-panel">
+      <div class="batch-panel-header">
+        <h2 class="search-heading" data-i18n="batch.heading">Batch-Abfrage (CSV)</h2>
+        <div class="batch-file-chip" id="batch-file-chip" hidden>
+          <span id="batch-file-name"></span>
+          <button type="button" class="batch-file-clear" id="batch-file-clear" data-i18n-aria="batch.clear" aria-label="Datei entfernen">&times;</button>
+        </div>
+      </div>
+
+      <!-- State A: Upload -->
+      <div id="batch-upload">
+        <div id="batch-dropzone" class="drop-zone" role="button" tabindex="0" data-i18n-aria="batch.dropzone.aria" aria-label="Datei hier ablegen oder klicken zum Durchsuchen">
+          <div class="drop-zone-icon" aria-hidden="true">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h2 data-i18n="batch.drop">CSV-Datei hierher ziehen</h2>
+          <p data-i18n="batch.browse">oder klicken zum Durchsuchen</p>
+          <p class="drop-zone-hint" data-i18n="batch.hint">Nur das EGRID-Feld wird verwendet. Alle Spalten bleiben erhalten (Eingabe → IN_, Ergebnis → OUT_).</p>
+        </div>
+        <input type="file" id="batch-file-input" accept=".csv,.tsv,.txt" hidden aria-label="Datei auswählen">
+        <p class="demo-link"><a href="examples/oereb-beispiel.csv" download="oereb-beispiel.csv" id="batch-demo-download" data-i18n="batch.demo.download">Beispiel-CSV herunterladen</a></p>
+        <p class="demo-link"><a href="#" id="batch-demo-run" data-i18n="batch.demo.run">Beispiel laden und ausführen</a></p>
+        <p class="batch-error" id="batch-error" hidden></p>
+      </div>
+
+      <!-- State B: Mapping -->
+      <div id="batch-mapping" hidden>
+        <p class="batch-info" id="batch-mapping-info"></p>
+        <p class="batch-columns-label" data-i18n="batch.columns">Erkannte Spalten:</p>
+        <p class="batch-columns" id="batch-mapping-columns"></p>
+        <div class="form-group batch-egrid-group">
+          <label for="batch-egrid-col" data-i18n="batch.egridcol">EGRID-Spalte</label>
+          <select id="batch-egrid-col"></select>
+        </div>
+        <div class="batch-actions">
+          <button type="button" class="btn btn-primary" id="batch-process">Parzellen abfragen</button>
+          <button type="button" class="btn btn-secondary" id="batch-mapping-back" data-i18n="batch.back">Zurück</button>
+        </div>
+      </div>
+
+      <!-- State C: Processing -->
+      <div id="batch-processing" hidden>
+        <p class="batch-info" data-i18n="batch.processing">Abfrage läuft …</p>
+        <div class="progress-bar"><div class="progress-fill" id="batch-progress-fill"></div></div>
+        <p class="progress-count" id="batch-progress-count"></p>
+        <div class="batch-actions">
+          <button type="button" class="btn btn-secondary" id="batch-cancel" data-i18n="batch.cancel">Abbrechen</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- State D: Done — the parcels + download button live in the shared results panel below -->
+      <div id="batch-done" hidden>
+        <p class="batch-info" data-i18n="batch.done.label">Abfrage abgeschlossen – Ergebnisse unten.</p>
+      </div>
+    </section>
+  </div><!-- /#mode-batch -->
+
+  <!-- ════ Shared results + detail (search results, or batch preview) ════ -->
   <section class="results-panel" id="results-panel" hidden>
     <div class="results-header">
       <h2 class="results-heading" data-i18n="results.heading">Ergebnisse</h2>
       <span class="results-count" id="results-count"></span>
+      <button type="button" class="btn btn-secondary btn-sm results-download" id="results-download" hidden data-i18n="batch.download.button">Herunterladen</button>
     </div>
 
     <div class="results-table-wrap">
@@ -116,10 +187,34 @@
   </section>
 </main>
 
+<!-- Download modal (batch results) — focus dialog with the export options -->
+<div class="modal-overlay" id="download-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="download-modal-title">
+    <div class="modal-header">
+      <h2 class="modal-title" id="download-modal-title" data-i18n="batch.download.title">Ergebnisse herunterladen</h2>
+      <button type="button" class="btn btn-ghost btn-sm" id="download-modal-close" data-i18n-aria="detail.close" aria-label="Schliessen">&times;</button>
+    </div>
+    <div class="modal-body">
+      <button type="button" class="download-option" id="batch-dl-csv">
+        <span class="download-option-title">CSV</span>
+        <span class="download-option-desc" data-i18n="batch.download.csv.desc">Tabelle mit IN_/OUT_-Spalten</span>
+      </button>
+      <button type="button" class="download-option" id="batch-dl-geojson">
+        <span class="download-option-title">GeoJSON</span>
+        <span class="download-option-desc" data-i18n="batch.download.geojson.desc">Geometrien (WGS84) + alle Eigenschaften</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="footer-info">
     <span data-i18n="footer.datasource">Datenquelle:</span>
     <a href="https://api3.geo.admin.ch" target="_blank" rel="noopener">geo.admin.ch API</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://www.cadastre.ch/de/oereb-kataster" target="_blank" rel="noopener" data-i18n="footer.cadastre">ÖREB-Kataster</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://map.geo.admin.ch/#/map?lang=de&amp;center=2650982.68,1231647.16&amp;z=2.116&amp;topic=ech&amp;layers=ch.swisstopo.zeitreihen@year=1864,f;ch.bfs.gebaeude_wohnungs_register,f;ch.bav.haltestellen-oev,f;ch.swisstopo.swisstlm3d-wanderwege,f;ch.vbs.schiessanzeigen,f;ch.astra.wanderland-sperrungen_umleitungen,f;ch.swisstopo-vd.stand-oerebkataster&amp;bgLayer=ch.swisstopo.pixelkarte-farbe" target="_blank" rel="noopener" data-i18n="footer.livemap">Live-Karte</a>
   </div>
   <div class="footer-links">
     <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" data-i18n="footer.source">Quellcode</a>

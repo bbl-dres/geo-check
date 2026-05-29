@@ -35,6 +35,10 @@
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* The `hidden` attribute must always win over any element's display rule
+   (e.g. .batch-file-chip { display: inline-flex }). */
+[hidden] { display: none !important; }
+
 body {
   font-family: var(--font-family);
   font-size: 15px;
@@ -543,4 +547,241 @@ body {
     grid-template-columns: 1fr;
   }
   .main { padding: 1rem; }
+}
+
+/* ── Mode tabs (search ↔ batch) ── */
+.mode-tabs {
+  display: inline-flex;
+  align-self: flex-start;
+  background: var(--color-white);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.mode-tab {
+  font-family: var(--font-family);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.5rem 1.25rem;
+  border: none;
+  background: var(--color-white);
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: background 150ms, color 150ms;
+}
+.mode-tab + .mode-tab { border-left: 1px solid var(--gray-300); }
+.mode-tab:hover { background: var(--federal-blue-hover); }
+.mode-tab.active { background: var(--federal-blue); color: var(--color-white); }
+
+/* Each mode stacks its panels with the same vertical rhythm as .main */
+#mode-search,
+#mode-batch {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Batch panel ── */
+.batch-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--swiss-red);
+}
+.batch-panel-header .search-heading {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.batch-file-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: 9999px;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  white-space: nowrap;
+}
+.batch-file-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  border-radius: 50%;
+  background: var(--gray-300);
+  color: var(--gray-700);
+  font-size: 0.875rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.batch-file-clear:hover { background: var(--gray-400); color: #fff; }
+
+/* Dropzone (styled after landcover-survey/web) */
+.drop-zone {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--radius-md);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--federal-blue);
+  background: var(--federal-blue-hover);
+}
+.drop-zone-icon {
+  margin-bottom: 1rem;
+  color: var(--gray-400);
+  transition: color 150ms;
+}
+.drop-zone:hover .drop-zone-icon,
+.drop-zone.drag-over .drop-zone-icon { color: var(--federal-blue); }
+.drop-zone h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 0.25rem;
+}
+.drop-zone p { color: var(--gray-500); font-size: 0.875rem; }
+.drop-zone-hint { margin-top: 0.5rem; font-size: 0.75rem; color: var(--gray-500); }
+
+.demo-link {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  text-align: center;
+}
+.demo-link + .demo-link { margin-top: 0.25rem; }
+.demo-link a { color: var(--federal-blue); text-decoration: underline; cursor: pointer; }
+
+.batch-error {
+  margin-top: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  background: #fef2f2;
+  color: #dc2626;
+  font-size: 0.875rem;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
+}
+
+/* Mapping */
+.batch-info { font-size: 0.875rem; color: var(--gray-600); margin-bottom: 1rem; }
+.batch-columns-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+.batch-columns {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--gray-700);
+  margin-bottom: 1.25rem;
+  word-break: break-word;
+}
+.batch-egrid-group { max-width: 280px; margin-bottom: 1.25rem; }
+.batch-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* Processing */
+.progress-bar {
+  height: 10px;
+  background: var(--gray-200);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+.progress-fill {
+  height: 100%;
+  width: 0;
+  background: var(--federal-blue);
+  border-radius: 9999px;
+  transition: width 150ms ease;
+}
+.progress-count {
+  font-size: 0.8125rem;
+  color: var(--gray-500);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1.25rem;
+}
+
+/* Amber badge for "not found"/inactive results */
+.status-badge.warn { background: #fffbeb; color: #b45309; }
+
+/* Download trigger in the results header (batch mode only) */
+.results-header { flex-wrap: wrap; }
+.results-download { margin-left: auto; align-self: center; }
+
+/* ── Download modal (focus dialog) ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(17, 24, 39, 0.5);
+}
+.modal {
+  width: 100%;
+  max-width: 380px;
+  background: var(--color-white);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+.modal-title { font-size: 1rem; font-weight: 600; color: var(--gray-800); }
+.modal-body {
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.download-option {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-family);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--color-white);
+  cursor: pointer;
+  transition: background 150ms, border-color 150ms;
+}
+.download-option:hover,
+.download-option:focus-visible {
+  background: var(--federal-blue-hover);
+  border-color: var(--federal-blue);
+  outline: none;
+}
+.download-option-title { font-size: 0.9375rem; font-weight: 600; color: var(--federal-blue); }
+.download-option-desc { font-size: 0.8125rem; color: var(--gray-500); }
+
+@media (max-width: 640px) {
+  .mode-tabs { width: 100%; }
+  .mode-tab { flex: 1; }
+  .drop-zone { padding: 2rem 1.25rem; }
+  .drop-zone-icon svg { width: 44px; height: 44px; }
 }
