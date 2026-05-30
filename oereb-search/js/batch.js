@@ -280,7 +280,7 @@ async function runBatch() {
         out[i] = await processOne(row, headers, lang, signal, cache);
       } catch (err) {
         if (cancelled || signal.aborted) return; // user cancelled
-        out[i] = makeRow(row, headers, { OUT_RESULT: "error", OUT_MESSAGE: err.message || "error" });
+        out[i] = makeRow(row, headers, { OUT_RESULT: "error", OUT_MESSAGE: err.message || t("batch.msg.error") });
       }
       completed++;
       renderProgress(completed, total);
@@ -295,7 +295,17 @@ async function runBatch() {
 
   results = out.filter(Boolean);
   columns = [...headers.map((h) => `IN_${h}`), ...OUT_COLUMNS];
-  viewResults = results.filter((r) => r.OUT_RESULT === "found").map((r) => r._feature);
+  // De-dupe the shared table view by featureId (a CSV may list the same EGRID
+  // more than once); the full `results` set keeps every row for the download.
+  const seenIds = new Set();
+  viewResults = results
+    .filter((r) => r.OUT_RESULT === "found" && r._feature)
+    .map((r) => r._feature)
+    .filter((f) => {
+      if (seenIds.has(f.featureId)) return false;
+      seenIds.add(f.featureId);
+      return true;
+    });
   lastSummary = summaryText();
 
   setState("done");
@@ -313,9 +323,9 @@ function makeRow(inputRow, headers, overrides = {}) {
 async function processOne(inputRow, headers, lang, signal, cache) {
   const rawEgrid = (inputRow[egridCol] || "").trim();
 
-  if (!rawEgrid) return makeRow(inputRow, headers, { OUT_RESULT: "error", OUT_MESSAGE: "empty EGRID" });
+  if (!rawEgrid) return makeRow(inputRow, headers, { OUT_RESULT: "error", OUT_MESSAGE: t("batch.msg.empty_egrid") });
   if (!EGRID_RE.test(rawEgrid)) {
-    return makeRow(inputRow, headers, { OUT_RESULT: "error", OUT_MESSAGE: "invalid EGRID format" });
+    return makeRow(inputRow, headers, { OUT_RESULT: "error", OUT_MESSAGE: t("batch.msg.invalid_egrid") });
   }
 
   // Cache the in-flight promise (not the resolved value) so concurrent workers
@@ -331,7 +341,7 @@ async function processOne(inputRow, headers, lang, signal, cache) {
   const feature = await cache.get(key);
 
   if (!feature) {
-    return makeRow(inputRow, headers, { OUT_RESULT: "not_found", OUT_MESSAGE: "EGRID not found in ÖREB cadastre" });
+    return makeRow(inputRow, headers, { OUT_RESULT: "not_found", OUT_MESSAGE: t("batch.msg.not_found") });
   }
 
   const geomLV95 = feature.geometry;

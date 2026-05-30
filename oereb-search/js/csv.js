@@ -28,7 +28,8 @@ function detectDelimiter(text) {
  * Parse CSV text → { headers, rows, delimiter }.
  *   - headers: string[] (original column names, in order)
  *   - rows:    Array<Record<string, string>> keyed by header
- * Strips a UTF-8 BOM and trims field whitespace.
+ * Strips a UTF-8 BOM and trims whitespace on unquoted fields (quoted fields
+ * are preserved verbatim).
  */
 export function parseCSV(text) {
   if (text.charCodeAt(0) === 0xfeff) text = text.slice(1); // strip BOM
@@ -46,9 +47,10 @@ export function parseCSV(text) {
   let field = "";
   let record = [];
   let inQuotes = false;
+  let quoted = false;  // did the current field contain a quoted section?
   let started = false; // any char seen on the current record?
 
-  const endField = () => { record.push(field.trim()); field = ""; };
+  const endField = () => { record.push(quoted ? field : field.trim()); field = ""; quoted = false; };
   const endRecord = () => {
     endField();
     // Skip fully empty records (e.g. trailing newline / blank lines)
@@ -64,7 +66,7 @@ export function parseCSV(text) {
       else if (ch === '"') { inQuotes = false; }
       else { field += ch; }
     } else if (ch === '"') {
-      inQuotes = true; started = true;
+      inQuotes = true; started = true; quoted = true;
     } else if (ch === delimiter) {
       endField(); started = true;
     } else if (ch === "\n") {

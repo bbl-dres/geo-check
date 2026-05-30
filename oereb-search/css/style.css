@@ -502,11 +502,6 @@ body {
 }
 .detail-link:hover { background: var(--federal-blue-hover); }
 
-.detail-value.area {
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
 /* ── Embedded swisstopo map (map.geo.admin.ch iframe) ── */
 .detail-map {
   margin-top: 1.25rem;
@@ -762,9 +757,6 @@ body {
   font-variant-numeric: tabular-nums;
   margin-bottom: 1.25rem;
 }
-
-/* Amber badge for "not found"/inactive results */
-.status-badge.warn { background: var(--color-warning-bg); color: var(--color-warning-fg); }
 
 /* Download trigger in the results header (batch mode only) */
 .results-download { margin-left: auto; align-self: center; }
