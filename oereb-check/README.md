@@ -181,13 +181,26 @@ full picture for deeper analysis or re-import.
 
 ## How distances are judged
 
-For each WE, a robust centre (component-wise **median** of the building
-coordinates) is the reference; each parcel's distance to it is recorded. A parcel
-is `far_flag = True` only when the centre is trustworthy (built from buildings, or
-from ≥ 3 parcels) and the distance exceeds `--threshold`. Exact distances are
-always written regardless of the flag, so you can re-sort and judge borderline
-cases yourself. Parcel position is the bbox centre of its polygon — precise enough
-to catch errors that are hundreds of metres to kilometres off.
+A parcel's distance is measured against its **polygon geometry**, not a single
+point. If any of the WE's resolved building coordinates lies **inside** the parcel
+polygon, the distance is **0 m** — the parcel clearly belongs to the WE and is not
+flagged, regardless of how large or oddly shaped it is. Otherwise the distance is
+the shortest distance from the **nearest WE building to the parcel's edge** (LV95
+metres). On top of the distance there's a **cross-municipality gate**: a parcel is
+only flagged when it also sits in a *different municipality* than the WE's buildings
+— a wrong E-GRID almost always lands in another municipality, whereas legitimately
+spread forest / building-right holdings stay in the same one. (If either municipality
+is unknown, the distance alone decides.) In the current portfolio this cut `PARCEL_FAR`
+from 146 to ~39 real suspects. For parcel-only WEs (no resolved buildings) the distance
+falls back to the parcel's **pole of inaccessibility** (visual centre) vs. the
+parcel-cluster median, trusted only from ≥ 3 parcels. Exact distances and a
+`far_diff_gemeinde` flag are always written so you can re-sort borderline cases.
+
+> Earlier versions used the **bounding-box centre** of the parcel as its position.
+> For large, concave forest / building-right parcels that centre often fell *outside*
+> the polygon and far from the buildings — the main cause of false `PARCEL_FAR` flags.
+> The polygon-based method (and the pole-of-inaccessibility centre for the map) fixes
+> that; it activates once parcels are re-fetched **with geometry** (one online run).
 
 ## Requirements
 

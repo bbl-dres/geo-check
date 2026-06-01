@@ -48,6 +48,7 @@ from __future__ import annotations
 import argparse
 import csv
 import glob
+import heapq
 import json
 import math
 import os
@@ -358,7 +359,16 @@ class GeoAdmin:
                 "geometryFormat": "geojson", "sr": "2056",
             })
             return _parcel_result(self._get_json(f"{FIND_URL}?{params}"), egrid)
-        return self._resolve(f"p:{egrid}", fetch)
+        # `pg:` = geometry-bearing entry (carries the polygon + pole). A legacy `p:`
+        # entry (bbox-centre only, no geometry) is still used offline so older caches
+        # keep working with the old distance method until a fresh online run upgrades them.
+        cached = self.cache.get(f"pg:{egrid}")
+        if cached is not None:
+            return cached
+        if self.offline:
+            legacy = self.cache.get(f"p:{egrid}")
+            return legacy if legacy is not None else {"status": "unchecked"}
+        return self._resolve(f"pg:{egrid}", fetch)
 
 
 def _building_result(feat: dict) -> dict:
@@ -391,16 +401,21 @@ def _parcel_result(data: dict, egrid: str) -> dict:
         (r for r in results if str(attrs(r).get("egris_egrid", "")).upper() == want),
         results[0],
     )
-    e, n = _centroid(match)
+    polys = _polys_from_geom(match.get("geometry"))
+    pole = pole_of_inaccessibility(polys) if polys else None
+    e, n = pole if pole is not None else _centroid(match)   # fallback: bbox centre
     if e is None:
         return {"status": "notfound"}
     a = attrs(match)
-    return {
+    res = {
         "status": "found", "e": e, "n": n,
         "gemeinde": a.get("gemeindename") or a.get("ort") or "",
         "kanton": a.get("kanton") or "",
         "oereb_status": a.get("oereb_status_de") or "", "label": a.get("label") or "",
     }
+    if polys:
+        res["poly"] = polys      # retained for the building-in-parcel test in analyse()
+    return res
 
 
 def _centroid(result: dict) -> tuple[float | None, float | None]:
@@ -425,6 +440,127 @@ def _centroid(result: dict) -> tuple[float | None, float | None]:
     return sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
 
 
+# ── polygon geometry: pole of inaccessibility + point↔polygon distance ──────
+# Used to judge how far a parcel really is from its WE's buildings: a building
+# standing ON the parcel is distance 0 (not "far"), and the parcel's reference
+# point is its visual centre, not the misleading centre of its bounding box.
+
+
+def _polys_from_geom(geom: dict) -> list:
+    """GeoJSON Polygon/MultiPolygon → [polygon, …]; polygon = [ring, …];
+    ring = [(x, y), …] in LV95 metres (rounded to the metre to keep the cache small)."""
+    t = (geom or {}).get("type")
+    coords = (geom or {}).get("coordinates")
+    if not coords:
+        return []
+    def ring(r):
+        return [(round(c[0]), round(c[1])) for c in r if len(c) >= 2]
+    if t == "Polygon":
+        return [[ring(r) for r in coords]]
+    if t == "MultiPolygon":
+        return [[ring(r) for r in poly] for poly in coords]
+    return []
+
+
+def _point_in_rings(x: float, y: float, rings: list) -> bool:
+    """Even-odd ray cast across a polygon's rings (outer + holes)."""
+    inside = False
+    for r in rings:
+        n = len(r)
+        j = n - 1
+        for i in range(n):
+            xi, yi = r[i]; xj, yj = r[j]
+            if (yi > y) != (yj > y) and x < (xj - xi) * (y - yi) / (yj - yi) + xi:
+                inside = not inside
+            j = i
+    return inside
+
+
+def _seg_dist(px, py, ax, ay, bx, by) -> float:
+    """Distance from point (px,py) to segment AB."""
+    dx, dy = bx - ax, by - ay
+    if dx == 0 and dy == 0:
+        return math.hypot(px - ax, py - ay)
+    t = ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)
+    t = 0.0 if t < 0 else 1.0 if t > 1 else t
+    return math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+
+
+def _dist_to_rings(x, y, rings) -> float:
+    best = float("inf")
+    for r in rings:
+        for i in range(len(r)):
+            ax, ay = r[i]; bx, by = r[(i + 1) % len(r)]
+            d = _seg_dist(x, y, ax, ay, bx, by)
+            if d < best:
+                best = d
+    return best
+
+
+def point_to_polys_dist(x, y, polys: list) -> float:
+    """0.0 if (x,y) lies inside any polygon, else the nearest-edge distance (m)."""
+    if any(_point_in_rings(x, y, rings) for rings in polys):
+        return 0.0
+    return min((_dist_to_rings(x, y, rings) for rings in polys), default=float("inf"))
+
+
+def _signed_dist_rings(x, y, rings) -> float:
+    d = _dist_to_rings(x, y, rings)
+    return d if _point_in_rings(x, y, rings) else -d
+
+
+def _polylabel_ring(rings: list, precision: float = 1.0) -> tuple:
+    """Pole of inaccessibility of one polygon (Mapbox 'polylabel'): the interior
+    point farthest from any edge — a robust visual centre for concave shapes.
+    Returns (x, y, clearance)."""
+    outer = rings[0]
+    xs = [p[0] for p in outer]; ys = [p[1] for p in outer]
+    minx, miny, maxx, maxy = min(xs), min(ys), max(xs), max(ys)
+    w, h = maxx - minx, maxy - miny
+    cell = min(w, h)
+    if cell == 0:
+        return (minx, miny, 0.0)
+    half = cell / 2
+    heap = []
+    seq = 0
+    SQRT2 = 1.4142135623730951
+    def push(cx, cy, hh):
+        nonlocal seq
+        d = _signed_dist_rings(cx, cy, rings)
+        heapq.heappush(heap, (-(d + hh * SQRT2), seq, cx, cy, hh, d))
+        seq += 1
+    x = minx
+    while x < maxx:
+        y = miny
+        while y < maxy:
+            push(x + half, y + half, half)
+            y += cell
+        x += cell
+    bestx, besty = minx + w / 2, miny + h / 2
+    bestd = _signed_dist_rings(bestx, besty, rings)
+    while heap:
+        negpot, _, cx, cy, hh, d = heapq.heappop(heap)
+        if d > bestd:
+            bestd, bestx, besty = d, cx, cy
+        if -negpot - bestd <= precision:
+            continue
+        hh /= 2
+        push(cx - hh, cy - hh, hh); push(cx + hh, cy - hh, hh)
+        push(cx - hh, cy + hh, hh); push(cx + hh, cy + hh, hh)
+    return (bestx, besty, bestd)
+
+
+def pole_of_inaccessibility(polys: list):
+    """Best pole across all polygons of a (multi)polygon — the most central piece."""
+    best = None
+    for rings in polys:
+        if rings and rings[0]:
+            x, y, d = _polylabel_ring(rings)
+            if best is None or d > best[2]:
+                best = (x, y, d)
+    return (round(best[0], 1), round(best[1], 1)) if best else None
+
+
 # ───────────────────────────── fetch driver ──────────────────────────────
 
 
@@ -433,7 +569,7 @@ def fetch_all(client: GeoAdmin, egids: set[str], egrids: set[str], workers: int)
     batches of GWR_BATCH_SIZE (one request per batch, binary-split on misses);
     parcels one request each. Cache is flushed periodically so runs are resumable."""
     egid_list = sorted(e for e in egids if f"b:{e}" not in client.cache)
-    egrid_list = sorted(g for g in egrids if f"p:{g}" not in client.cache)
+    egrid_list = sorted(g for g in egrids if f"pg:{g}" not in client.cache)
     batches = [egid_list[i:i + GWR_BATCH_SIZE]
                for i in range(0, len(egid_list), GWR_BATCH_SIZE)]
     tasks = [("b", b) for b in batches] + [("p", g) for g in egrid_list]
@@ -538,6 +674,8 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
             centre, src = None, "none"
         # a parcel-cluster centre is only trustworthy with >=3 parcels
         reliable = bool(centre) and (src == "buildings" or len(ppts) >= 3)
+        # municipalities of the WE's resolved buildings (for the cross-municipality gate)
+        we_gemeinden = {b["gwr"].get("gemeinde", "") for b in bs if b.get("gwr")} - {""}
 
         gwr_egrids = {e for e in (gwr_egrid(b) for b in bs) if e}
         sap_egrids = {p["egrid"].upper() for p in ps if p["egrid_valid"]}
@@ -578,14 +716,37 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
             p["far_flag"] = ""
 
             if p["oereb"] and centre:
-                d = dist_m((p["oereb"]["e"], p["oereb"]["n"]), centre)
+                poly = p["oereb"].get("poly")
+                if poly and bpts:
+                    # distance from the NEAREST WE building to the parcel polygon —
+                    # 0 if a building stands on the parcel. Robust for big/concave
+                    # parcels where the old bbox-centre over-flagged (pole/centre is
+                    # irrelevant once the building demonstrably sits on the parcel).
+                    d = min(point_to_polys_dist(bx, by, poly) for bx, by in bpts)
+                    to_what = "the nearest WE building"
+                else:
+                    # legacy cache entry (no geometry) or a parcel-only WE:
+                    # fall back to point/pole → WE centre.
+                    d = dist_m((p["oereb"]["e"], p["oereb"]["n"]), centre)
+                    to_what = "the WE building cluster"
                 p["dist_to_we_center_m"] = round(d)
-                far = reliable and d > threshold
+                # cross-municipality gate: a wrong E-GRID almost always lands in a
+                # DIFFERENT municipality, whereas legitimately spread holdings (forest,
+                # Baurecht, servitudes over a mountain) stay in the WE's municipality.
+                # Only flag when the parcel's Gemeinde differs; if either Gemeinde is
+                # unknown, fall back to distance alone (don't suppress a possible error).
+                pgem = p["oereb"].get("gemeinde", "")
+                muni_known = bool(pgem and we_gemeinden)
+                cross_muni = muni_known and pgem not in we_gemeinden
+                p["far_diff_gemeinde"] = cross_muni if muni_known else ""
+                far = reliable and d > threshold and (cross_muni if muni_known else True)
                 p["far_flag"] = far
                 if far:
+                    where = (f" — parcel in {pgem}, buildings in {'/'.join(sorted(we_gemeinden))}"
+                             if cross_muni else "")
                     add("HIGH", "PARCEL_FAR", we, "parcel", p,
-                        f"parcel is {round(d)} m from the WE building cluster "
-                        f"(> {threshold:g} m) — likely wrong E-GRID",
+                        f"parcel is {round(d)} m from {to_what} "
+                        f"(> {threshold:g} m){where} — likely wrong E-GRID",
                         distance=round(d))
 
             # missing / invalid E-GRID (handled specially for single pairs below)
@@ -682,7 +843,7 @@ def flatten_parcel(p: dict) -> dict:
            ("bukr", "we", "id", "name", "land", "kanton", "ort", "plz",
             "egrid", "egrid_status", "egrid_matches_building",
             "we_center_source", "we_center_e", "we_center_n",
-            "dist_to_we_center_m", "far_flag")}
+            "dist_to_we_center_m", "far_flag", "far_diff_gemeinde")}
     out.update({
         "oereb_gemeinde": o.get("gemeinde", ""),
         "oereb_kanton": o.get("kanton", ""),
@@ -1697,7 +1858,7 @@ def main() -> None:
                 "egrid", "egrid_status", "egrid_matches_building", "oereb_gemeinde",
                 "oereb_kanton", "oereb_status", "parcel_e", "parcel_n", "sap_koord",
                 "we_center_source", "we_center_e", "we_center_n",
-                "dist_to_we_center_m", "far_flag", "maps_url"]
+                "dist_to_we_center_m", "far_flag", "far_diff_gemeinde", "maps_url"]
     we_fields = ["we", "n_buildings", "n_buildings_ch", "n_buildings_with_egid",
                  "n_buildings_resolved", "n_parcels", "n_parcels_with_egrid",
                  "n_parcels_resolved", "n_parcels_far", "max_parcel_dist_m",

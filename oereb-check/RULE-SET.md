@@ -123,7 +123,7 @@ Kennungsschema: **GS** = Grundstück, **GB** = Gebäude, **QP** = Querprüfung
 | **Schweregrad** | 🔴 Fehler (`HIGH`) |
 | **Objekt** | Grundstück |
 | **Beschreibung** | Das Grundstück liegt deutlich weiter vom Schwerpunkt der Gebäude derselben WE entfernt, als plausibel ist → wahrscheinlich falscher E-GRID-Fremdschlüssel. |
-| **Bedingung** | Distanz (Parzellenzentrum → robustes WE-Zentrum) **> Schwellenwert** (Standard **500 m**) **und** das WE-Zentrum ist vertrauenswürdig (aus Gebäuden gebildet oder aus ≥ 3 Grundstücken). Siehe [§ 7 Distanzmethodik](#7-distanzmethodik). |
+| **Bedingung** | Distanz vom **nächsten WE-Gebäude zur Polygon­kante** des Grundstücks **> Schwellenwert** (Standard **500 m**) — ein Gebäude *auf* der Parzelle zählt als **0 m** — **und** das Grundstück liegt in einer **anderen Gemeinde** als die WE-Gebäude (Cross-Municipality-Gate; bei unbekannter Gemeinde greift nur die Distanz). Parzellen-only-WE: ersatzweise Pol-der-Unzugänglichkeit → Median (ab ≥ 3 Grundstücken). Siehe [§ 7 Distanzmethodik](#7-distanzmethodik). |
 | **Geprüftes Attribut** | E-GRID / Lage (Grundstück) |
 | **Datenquelle** | GWR (Gebäudekoordinaten) + ÖREB (Parzellenzentrum), LV95 |
 | **Befundtext** | `parcel is <d> m from the WE building cluster (> <Schwelle> m) — likely wrong E-GRID` |
@@ -235,28 +235,44 @@ Diagramme, Tabellen und Karte folgen dem aktiven Geltungsbereich.
 
 ## 7. Distanzmethodik
 
-Regel **GS-03** (`PARCEL_FAR`) beruht auf einer robusten Distanzberechnung je WE:
+Regel **GS-03** (`PARCEL_FAR`) misst, wie weit ein Grundstück tatsächlich von den
+Gebäuden seiner WE entfernt ist — gegen die **Polygon-Geometrie** des Grundstücks,
+nicht gegen einen einzelnen Mittelpunkt:
 
-1. **Robustes Zentrum** = komponentenweiser **Median** der aufgelösten
-   Gebäudekoordinaten (LV95). Sind keine Gebäude auflösbar, ersatzweise der
-   Median der Grundstücke — dieser gilt aber erst ab **≥ 3 Grundstücken** als
-   vertrauenswürdig.
-2. **Distanz** = exakte planare Distanz (LV95, Meter) zwischen Parzellenzentrum
-   und WE-Zentrum.
-3. **Markierung** (`far_flag`) nur, wenn das Zentrum vertrauenswürdig ist
-   **und** die Distanz den Schwellenwert (`--threshold`, Standard 500 m)
-   überschreitet.
-4. Die **exakte Distanz** wird unabhängig von der Markierung in
-   `parcels_enriched.csv` geschrieben (Spalte `dist_to_we_center_m`) — so lassen
-   sich Grenzfälle selbst nachsortieren.
+1. **Steht ein Gebäude auf der Parzelle?** Liegt eine aufgelöste Gebäude­koordinate
+   der WE **innerhalb** des Grundstückpolygons, ist die Distanz **0 m** → das
+   Grundstück ist **nicht** „weit entfernt" (der E-GRID ist offensichtlich korrekt),
+   unabhängig von der Form oder Grösse der Parzelle.
+2. **Sonst:** Distanz = kürzeste planare Distanz (LV95, Meter) vom **nächst­gelegenen
+   WE-Gebäude** zur Polygon­kante des Grundstücks.
+3. **Parzellen-only-WE** (keine aufgelösten Gebäude): ersatzweise Distanz vom
+   **Pol der Unzugänglichkeit** (siehe unten) zum Median der Grundstücke — nur ab
+   **≥ 3 Grundstücken** vertrauenswürdig.
+4. **Cross-Municipality-Gate:** zusätzlich wird nur markiert, wenn das Grundstück in
+   einer **anderen Gemeinde** liegt als die WE-Gebäude. Ein falscher E-GRID landet fast
+   immer in einer anderen Gemeinde, während legitim verstreute Wald-/Baurechts­parzellen
+   in derselben Gemeinde bleiben. Ist eine der beiden Gemeinden unbekannt, greift nur die
+   Distanz. (Spalte `far_diff_gemeinde` in `parcels_enriched.csv`.)
+5. **Markierung** (`far_flag`) nur, wenn die Referenz vertrauenswürdig ist **und**
+   die Distanz den Schwellenwert (`--threshold`, Standard 500 m) überschreitet **und**
+   das Cross-Municipality-Gate zutrifft.
+6. Die Distanz steht unabhängig von der Markierung in `parcels_enriched.csv`
+   (Spalte `dist_to_we_center_m`) — Grenzfälle lassen sich so selbst nachsortieren.
 
-Die Parzellenposition ist das **Bounding-Box-Zentrum** des ÖREB-Polygons —
-genau genug, um Fehler im Bereich von hunderten Metern bis Kilometern zu finden.
+Der **Referenzpunkt** eines Grundstücks (für Karte und Ersatzdistanz) ist der **Pol
+der Unzugänglichkeit** (Mapbox-„polylabel": der von allen Kanten am weitesten
+entfernte Innenpunkt — der visuelle Mittelpunkt), **nicht** das Bounding-Box-Zentrum.
+Bei verschachtelten / L-förmigen Wald- und Baurechts­parzellen lag das frühere
+Bounding-Box-Zentrum oft ausserhalb des Polygons und weit von den Gebäuden — die
+Hauptursache für Fehlalarme. (Aktiv, sobald die Parzellen mit Geometrie neu
+abgefragt wurden — ein Online-Lauf.)
 
-> **Bekannte Einschränkung:** Distanz allein über-markiert. In einem Prüflauf
-> lagen ~107 von 146 weit entfernten Grundstücken in derselben (grossen) Gemeinde
-> wie die Gebäude (legitime Wald-/Dienstbarkeits-/Baurechtsparzellen). Das
-> schärfere Fehlersignal ist Distanz **+ abweichende Gemeinde**.
+> **Hintergrund:** Distanz allein über-markiert — in einem Prüflauf lagen ~107 von
+> 146 weit entfernten Grundstücken in derselben (grossen) Gemeinde wie die Gebäude
+> (legitime Wald-/Dienstbarkeits-/Baurechtsparzellen). Deshalb das Cross-Municipality-
+> Gate (Schritt 4): es reduzierte die 146 Markierungen auf ~39 echte Verdachtsfälle
+> (Stand 2026-06-01), der grösste davon WE 3868 Parzelle 1 „Martina", deren E-GRID
+> 45 km entfernt nach S-chanf zeigt.
 
 ---
 
