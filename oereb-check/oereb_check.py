@@ -837,19 +837,33 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   .header__titles{display:flex;flex-direction:column}
   .header__org{font-weight:700;font-size:.875rem;line-height:1.35}
   header h1{margin:0;font-size:.8125rem;font-weight:400;line-height:1.35;color:var(--slate-500)}
-  .filterbtn-wrap{margin-left:auto;align-self:center;position:relative}
+  .filterbtn-wrap{margin-left:auto;align-self:center;display:flex;align-items:center;gap:10px}
+  .header__link{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-input);background:#fff;border-radius:3px;padding:8px 14px;font-size:.875rem;color:var(--ink);text-decoration:none;cursor:pointer}
+  .header__link:hover{border-color:var(--slate-500);color:var(--red)}
+  .header__link svg{display:block}
   .filterbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-input);background:#fff;border-radius:3px;padding:8px 14px;font:inherit;font-size:.875rem;color:var(--ink);cursor:pointer}
   .filterbtn:hover{border-color:var(--slate-500);color:var(--red)}
   .filterbtn svg{display:block}
   .filterbadge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--red);color:#fff;font-size:.6875rem;font-weight:700}
-  .filterpanel{position:absolute;right:0;top:calc(100% + 6px);z-index:50;width:282px;background:#fff;border:1px solid var(--line);border-radius:3px;box-shadow:0 10px 15px -3px rgba(0,0,0,.12),0 4px 6px -4px rgba(0,0,0,.1);padding:14px 16px}
-  .fp-sec{padding:10px 0;border-top:1px solid var(--line)}
-  .fp-sec:first-child{border-top:0;padding-top:0}
+  .fp-scrim{position:fixed;inset:0;background:rgba(47,67,86,.4);z-index:90;border:0}
+  .filterpanel{position:fixed;top:0;right:0;height:100vh;height:100dvh;width:340px;max-width:90vw;z-index:100;
+    background:#fff;border-left:1px solid var(--line);box-shadow:-10px 0 25px -5px rgba(0,0,0,.18);
+    display:flex;flex-direction:column}
+  /* display:flex above would defeat the [hidden] attribute (equal specificity, later rule) — keep this guard */
+  .filterpanel[hidden],.fp-scrim[hidden]{display:none}
+  .fp-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);flex:0 0 auto}
+  .fp-title{font-weight:700;font-size:1rem}
+  .fp-close{appearance:none;border:0;background:none;font-size:24px;line-height:1;color:var(--ink);cursor:pointer;padding:2px 8px;border-radius:3px}
+  .fp-close:hover{color:var(--red)}
+  .fp-body{flex:1 1 auto;overflow-y:auto;padding:4px 20px}
+  .fp-foot{flex:0 0 auto;padding:14px 20px;border-top:1px solid var(--line)}
+  .fp-sec{padding:12px 0;border-top:1px solid var(--line)}
+  .fp-sec:first-child{border-top:0}
   .fp-h{font-weight:700;font-size:.8125rem;margin-bottom:6px}
   .fp-hint{font-weight:400;color:var(--gray);font-size:.6875rem}
   .fp-row{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.875rem;cursor:pointer}
-  .filterpanel select{width:100%;padding:8px 10px;border:1px solid var(--border-input);border-radius:6px;font:inherit;background:#fff}
-  .filterpanel .reset{display:inline-block;margin-top:12px;text-decoration:underline;text-underline-offset:2px}
+  .fp-checks{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
+  .filterpanel .reset{display:inline-block;text-decoration:underline;text-underline-offset:2px}
   main{width:100%;max-width:1544px;margin:0 auto;padding:20px 24px 60px}
   @media(min-width:1920px){main,.header__bar{max-width:1676px}}
   .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:16px}
@@ -948,31 +962,56 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
       <h1>Liegenschaften-Inventar – Prüfbericht</h1>
     </div>
     <div class="filterbtn-wrap">
-      <button type="button" id="filterbtn" class="filterbtn" aria-expanded="false" aria-controls="filterpanel">
+      <a class="header__link" href="RULE-SET.md" target="_blank" rel="noopener" title="Regelwerk – alle Prüfregeln (RULE-SET.md)">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9.5 1.5v3h3M5.5 8h5M5.5 10.3h5M5.5 12.6h3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Regelwerk
+      </a>
+      <button type="button" id="filterbtn" class="filterbtn" aria-expanded="false" aria-controls="filterpanel" aria-haspopup="dialog">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M1.5 2.5h13l-5 6V13l-3 1.5V8.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
         Filter<span class="filterbadge" id="filterbadge" hidden></span>
       </button>
-      <div class="filterpanel" id="filterpanel" hidden role="group" aria-label="Filter">
-        <div class="fp-sec">
-          <div class="fp-h">Objektklassen <span class="fp-hint">(standardmässig ausgeblendet)</span></div>
-          <label class="fp-row"><input type="checkbox" id="fAbgang"> Abgang (ABGA…)</label>
-          <label class="fp-row"><input type="checkbox" id="fLoevm"> Löschvermerk (LÖVM…)</label>
-          <label class="fp-row"><input type="checkbox" id="fParking"> Parkplätze (…PP…)</label>
-          <label class="fp-row"><input type="checkbox" id="fInfra"> Infrastrukturgefässe (GR)</label>
-        </div>
-        <div class="fp-sec">
-          <div class="fp-h">Land</div>
-          <select id="fLand" aria-label="Land"><option value="ALL">Alle</option><option value="CH">Nur Schweiz</option><option value="FOREIGN">Nur Ausland</option></select>
-        </div>
-        <div class="fp-sec">
-          <div class="fp-h">Kanton</div>
-          <select id="fKanton" aria-label="Kanton"><option value="ALL">Alle Kantone</option></select>
-        </div>
-        <button type="button" class="reset" id="fReset">Auf Standard zurücksetzen</button>
-      </div>
     </div>
   </div>
 </header>
+<div class="fp-scrim" id="fpscrim" hidden></div>
+<aside class="filterpanel" id="filterpanel" hidden role="dialog" aria-modal="true" aria-label="Filter">
+  <div class="fp-head">
+    <span class="fp-title">Filter</span>
+    <button type="button" class="fp-close" id="fpclose" aria-label="Filter schliessen">×</button>
+  </div>
+  <div class="fp-body">
+    <div class="fp-sec">
+      <div class="fp-h">Schweregrad</div>
+      <label class="fp-row"><input type="checkbox" id="fSev_HIGH"> Hoch <span class="fp-hint">· Fehler</span></label>
+      <label class="fp-row"><input type="checkbox" id="fSev_MED"> Mittel <span class="fp-hint">· Warnung</span></label>
+      <label class="fp-row"><input type="checkbox" id="fSev_LOW"> Niedrig <span class="fp-hint">· Hinweis</span></label>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-h">Typ</div>
+      <label class="fp-row"><input type="checkbox" id="fTyp_building"> Gebäude</label>
+      <label class="fp-row"><input type="checkbox" id="fTyp_parcel"> Grundstücke</label>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-h">Objektklassen <span class="fp-hint">(angekreuzt = ausgeblendet)</span></div>
+      <label class="fp-row"><input type="checkbox" id="fAbgang"> Abgang (ABGA…)</label>
+      <label class="fp-row"><input type="checkbox" id="fLoevm"> Löschvermerk (LÖVM…)</label>
+      <label class="fp-row"><input type="checkbox" id="fParking"> Parkplätze (…PP…)</label>
+      <label class="fp-row"><input type="checkbox" id="fInfra"> Infrastrukturgefässe (GR)</label>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-h">Land</div>
+      <label class="fp-row"><input type="checkbox" id="fLand_CH"> Schweiz</label>
+      <label class="fp-row"><input type="checkbox" id="fLand_FOREIGN"> Ausland</label>
+    </div>
+    <div class="fp-sec">
+      <div class="fp-h">Kanton</div>
+      <div class="fp-checks" id="fKantonList"></div>
+    </div>
+  </div>
+  <div class="fp-foot">
+    <button type="button" class="reset" id="fReset">Auf Standard zurücksetzen</button>
+  </div>
+</aside>
 <main id="main">
   <div class="filters" id="filters"></div>
   <div class="cards" id="cards"></div>
@@ -1085,28 +1124,37 @@ const VIEWS = {
     ]},
 };
 
-const ST = {view:"findings", q:"", sev:"ALL", cat:"ALL", type:"", status:"ALL", far:false, sort:"severity", dir:1, page:1, pageSize:100,
-            inclAbgang:false, inclLoevm:false, inclParking:false, inclInfra:false, land:"ALL", kanton:"ALL"};
+const ST = {view:"findings", q:"", sev:[], cat:"ALL", type:[], status:"ALL", far:false, sort:"severity", dir:1, page:1, pageSize:100,
+            exAbgang:true, exLoevm:true, exParking:true, exInfra:true, land:[], kanton:[]};
 const PAGE_SIZES = [100,200,500];
-// object classes excluded by default; the filter panel toggles them on
-const SCOPE_DEFAULT = {inclAbgang:false, inclLoevm:false, inclParking:false, inclInfra:false, land:"ALL", kanton:"ALL"};
+const SEV_ALL=["HIGH","MED","LOW"], TYPE_ALL=["building","parcel"], LAND_ALL=["CH","FOREIGN"];
+// scope defaults: the four object classes are HIDDEN by default (the user toggles
+// them off to reveal); severity/type/land/kanton unfiltered ([] = all).
+function scopeDefaults(){ return {exAbgang:true, exLoevm:true, exParking:true, exInfra:true, sev:[], type:[], land:[], kanton:[]}; }
+// multi-select toggle. [] means "all"; selecting the full set normalises back to [].
+function toggleInc(arr, val, full){
+  let cur = arr.length ? arr.slice() : full.slice();
+  const i = cur.indexOf(val);
+  if(i>=0) cur.splice(i,1); else cur.push(val);
+  return cur.length===full.length ? [] : cur;
+}
 
 // ---- URL state (hash — works from a local file:// too) ----
 function syncURL(){
   const p = new URLSearchParams();
   if(ST.view!=="findings") p.set("view",ST.view);
   if(ST.q) p.set("q",ST.q);
-  if(ST.sev!=="ALL")p.set("sev",ST.sev);
+  if(ST.sev.length)p.set("sev",ST.sev.join(","));
   if(ST.cat!=="ALL")p.set("cat",ST.cat);
-  if(ST.type)p.set("type",ST.type);
+  if(ST.type.length)p.set("type",ST.type.join(","));
   if(ST.view!=="findings"){ if(ST.status!=="ALL")p.set("status",ST.status); if(ST.view==="parcels"&&ST.far)p.set("far","1"); }
   if(ST.sort!==VIEWS[ST.view].sort) p.set("sort",ST.sort);
   if(ST.dir===-1) p.set("dir","d");
   if(ST.page>1) p.set("pg",ST.page);
   if(ST.pageSize!==100) p.set("ps",ST.pageSize);
-  if(ST.inclAbgang)p.set("ia","1"); if(ST.inclLoevm)p.set("il","1");
-  if(ST.inclParking)p.set("ip","1"); if(ST.inclInfra)p.set("ig","1");
-  if(ST.land!=="ALL")p.set("land",ST.land); if(ST.kanton!=="ALL")p.set("kt",ST.kanton);
+  if(!ST.exAbgang)p.set("xa","0"); if(!ST.exLoevm)p.set("xl","0");
+  if(!ST.exParking)p.set("xp","0"); if(!ST.exInfra)p.set("xg","0");
+  if(ST.land.length)p.set("land",ST.land.join(",")); if(ST.kanton.length)p.set("kt",ST.kanton.join(","));
   const qs = p.toString();
   try{ history.replaceState(null,"", qs?"#"+qs:location.pathname+location.search); }
   catch(e){ if(location.hash.slice(1)!==qs) location.hash=qs; }
@@ -1115,9 +1163,9 @@ function loadURL(){
   const p = new URLSearchParams((location.hash||"").replace(/^#/,""));
   if(VIEWS[p.get("view")]) ST.view=p.get("view");
   ST.q = p.get("q")||"";
-  if(p.get("sev")) ST.sev=p.get("sev");
+  ST.sev = (p.get("sev")||"").split(",").filter(v=>SEV_ALL.includes(v));
   if(p.get("cat")) ST.cat=p.get("cat");
-  ST.type = (p.get("type")==="building"||p.get("type")==="parcel") ? p.get("type") : "";
+  ST.type = (p.get("type")||"").split(",").filter(v=>TYPE_ALL.includes(v));
   if(p.get("status")) ST.status=p.get("status");
   ST.far = p.get("far")==="1";
   ST.sort = p.get("sort")||VIEWS[ST.view].sort;
@@ -1125,10 +1173,10 @@ function loadURL(){
   ST.page = Math.max(1, parseInt(p.get("pg")||"1",10)||1);
   const ps = parseInt(p.get("ps")||"100",10);
   ST.pageSize = PAGE_SIZES.includes(ps)?ps:100;
-  ST.inclAbgang=p.get("ia")==="1"; ST.inclLoevm=p.get("il")==="1";
-  ST.inclParking=p.get("ip")==="1"; ST.inclInfra=p.get("ig")==="1";
-  ST.land=(p.get("land")==="CH"||p.get("land")==="FOREIGN")?p.get("land"):"ALL";
-  ST.kanton=p.get("kt")||"ALL";
+  ST.exAbgang=p.get("xa")!=="0"; ST.exLoevm=p.get("xl")!=="0";
+  ST.exParking=p.get("xp")!=="0"; ST.exInfra=p.get("xg")!=="0";
+  ST.land=(p.get("land")||"").split(",").filter(v=>LAND_ALL.includes(v));
+  ST.kanton=(p.get("kt")||"").split(",").filter(Boolean);
 }
 
 // ---- meta + cards ----
@@ -1153,37 +1201,38 @@ function inScope(r){
   const name=r.name||"";
   const isParcel = (r.kind!==undefined) ? r.kind==="parcel" : (r.egrid!==undefined);
   const id=(r.sap_id!=null?r.sap_id:r.id)||"";
-  if(!ST.inclAbgang && RE_ABGA.test(name)) return false;
-  if(!ST.inclLoevm && RE_LOEVM.test(name)) return false;
-  if(!ST.inclParking && isParcel && /\bPP\b/.test(name)) return false;
-  if(!ST.inclInfra && !isParcel && id==="GR") return false;
+  if(ST.exAbgang && RE_ABGA.test(name)) return false;
+  if(ST.exLoevm && RE_LOEVM.test(name)) return false;
+  if(ST.exParking && isParcel && /\bPP\b/.test(name)) return false;
+  if(ST.exInfra && !isParcel && id==="GR") return false;
   const land=r.land||"";
-  if(ST.land==="CH" && land!=="CH") return false;
-  if(ST.land==="FOREIGN" && (land===""||land==="CH")) return false;
-  if(ST.kanton!=="ALL" && (r.kanton||"")!==ST.kanton) return false;
+  if(ST.land.length){ const cat = land==="CH"?"CH":(land?"FOREIGN":""); if(!ST.land.includes(cat)) return false; }
+  if(ST.kanton.length && !ST.kanton.includes(r.kanton||"")) return false;
   return true;
 }
+const sevOK = s => ST.sev.length===0 || ST.sev.includes(s);
+const typeOK = k => ST.type.length===0 || ST.type.includes(k);
 function findingsMatching(exclude){
   return DATA.findings.filter(f=> inScope(f) &&
-    (exclude==="sev"||ST.sev==="ALL"||f.severity===ST.sev) &&
+    (exclude==="sev"||sevOK(f.severity)) &&
     (exclude==="cat"||ST.cat==="ALL"||f.category===ST.cat) &&
-    (exclude==="type"||ST.type===""||f.kind===ST.type));
+    (exclude==="type"||typeOK(f.kind)));
 }
 function pickFindingsView(){ if(ST.view!=="findings"){ ST.view="findings"; ST.sort="severity"; ST.dir=1; } }
 function renderCharts(){
   // severity (cross-filter excl. severity)
   const sc={HIGH:0,MED:0,LOW:0}; findingsMatching("sev").forEach(f=>sc[f.severity]++);
   const mSv=Math.max(1,sc.HIGH,sc.MED,sc.LOW);
-  document.getElementById("sevbars").innerHTML=["HIGH","MED","LOW"].map(s=>
-    `<button type="button" class="bar ${ST.sev===s?"sel":""}" data-sev="${s}" aria-pressed="${ST.sev===s}" aria-label="Filter by severity ${SEVNAME[s]}, ${sc[s]} findings"><span class="bar-label">${SEVNAME[s]}</span><span class="bar-track"><span class="bar-fill ${s}" style="width:${Math.round(sc[s]/mSv*100)}%"></span></span><span class="bar-n">${sc[s].toLocaleString()}</span></button>`).join("");
-  document.querySelectorAll("#sevbars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.sev;pickFindingsView();ST.sev=(ST.sev===v?"ALL":v);ST.page=1;renderAll();});
+  document.getElementById("sevbars").innerHTML=["HIGH","MED","LOW"].map(s=>{const on=ST.sev.includes(s);
+    return `<button type="button" class="bar ${on?"sel":""}" data-sev="${s}" aria-pressed="${on}" aria-label="Filter by severity ${SEVNAME[s]}, ${sc[s]} findings"><span class="bar-label">${SEVNAME[s]}</span><span class="bar-track"><span class="bar-fill ${s}" style="width:${Math.round(sc[s]/mSv*100)}%"></span></span><span class="bar-n">${sc[s].toLocaleString()}</span></button>`;}).join("");
+  document.querySelectorAll("#sevbars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.sev;pickFindingsView();ST.sev=(ST.sev.length===1&&ST.sev[0]===v)?[]:[v];ST.page=1;renderAll();});
   // type (cross-filter excl. type): buildings vs parcels — horizontal bars (blue/teal)
   const tc={building:0,parcel:0}; findingsMatching("type").forEach(f=>{if(tc[f.kind]!=null)tc[f.kind]++;});
   const mT=Math.max(1,tc.building,tc.parcel);
   const TYPENAME={building:"Buildings",parcel:"Parcels"};
-  document.getElementById("typebars").innerHTML=["building","parcel"].map(k=>
-    `<button type="button" class="bar ${ST.type===k?"sel":""}" data-type="${k}" aria-pressed="${ST.type===k}" aria-label="Filter by type ${TYPENAME[k]}, ${tc[k]} findings"><span class="bar-label">${TYPENAME[k]}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round(tc[k]/mT*100)}%;background:${TYPECOL[k]}"></span></span><span class="bar-n">${tc[k].toLocaleString()}</span></button>`).join("");
-  document.querySelectorAll("#typebars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.type;pickFindingsView();ST.type=(ST.type===v?"":v);ST.page=1;renderAll();});
+  document.getElementById("typebars").innerHTML=["building","parcel"].map(k=>{const on=ST.type.includes(k);
+    return `<button type="button" class="bar ${on?"sel":""}" data-type="${k}" aria-pressed="${on}" aria-label="Filter by type ${TYPENAME[k]}, ${tc[k]} findings"><span class="bar-label">${TYPENAME[k]}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round(tc[k]/mT*100)}%;background:${TYPECOL[k]}"></span></span><span class="bar-n">${tc[k].toLocaleString()}</span></button>`;}).join("");
+  document.querySelectorAll("#typebars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.type;pickFindingsView();ST.type=(ST.type.length===1&&ST.type[0]===v)?[]:[v];ST.page=1;renderAll();});
   // category (cross-filter excl. category)
   const cc={}; findingsMatching("cat").forEach(f=>cc[f.category]=(cc[f.category]||0)+1);
   const mC=Math.max(1,...DATA.categories.map(c=>cc[c.key]||0));
@@ -1204,38 +1253,51 @@ elStatus.onchange=()=>{ST.status=elStatus.value;ST.page=1;renderAll();};
 elFarChk.onchange=()=>{ST.far=elFarChk.checked;ST.page=1;renderAll();};
 let qt; elQ.oninput=e=>{clearTimeout(qt);qt=setTimeout(()=>{ST.q=e.target.value.toLowerCase();ST.page=1;renderFilters();renderTable();syncURL();},150);};
 
-// ---- filter panel (scope filters: object classes + land + kanton) ----
+// ---- filter drawer (severity · type · object-class exclusions · land · kanton) ----
 const elFbtn=document.getElementById("filterbtn"), elFpanel=document.getElementById("filterpanel"),
-      elFbadge=document.getElementById("filterbadge"),
+      elFscrim=document.getElementById("fpscrim"), elFbadge=document.getElementById("filterbadge"),
       elFAbgang=document.getElementById("fAbgang"), elFLoevm=document.getElementById("fLoevm"),
       elFParking=document.getElementById("fParking"), elFInfra=document.getElementById("fInfra"),
-      elFLand=document.getElementById("fLand"), elFKanton=document.getElementById("fKanton");
-(function(){ const set=new Set();
+      elFKList=document.getElementById("fKantonList");
+const KT_ALL=(function(){ const set=new Set();
   DATA.buildings.forEach(b=>{if(b.kanton)set.add(b.kanton);});
   DATA.parcels.forEach(p=>{if(p.kanton)set.add(p.kanton);});
-  [...set].sort().forEach(k=>elFKanton.add(new Option(k,k))); })();
+  const ks=[...set].sort();
+  elFKList.innerHTML=ks.map(k=>`<label class="fp-row"><input type="checkbox" data-kt value="${k}"> ${k}</label>`).join("");
+  return ks; })();
 function scopeCount(){
-  return (ST.inclAbgang?0:1)+(ST.inclLoevm?0:1)+(ST.inclParking?0:1)+(ST.inclInfra?0:1)
-    +(ST.land!=="ALL"?1:0)+(ST.kanton!=="ALL"?1:0);
+  return (ST.exAbgang?1:0)+(ST.exLoevm?1:0)+(ST.exParking?1:0)+(ST.exInfra?1:0)
+    +(ST.sev.length?1:0)+(ST.type.length?1:0)+(ST.land.length?1:0)+(ST.kanton.length?1:0);
 }
+function setChecked(id,on){ const el=document.getElementById(id); if(el) el.checked=on; }
 function renderPanel(){
-  elFAbgang.checked=ST.inclAbgang; elFLoevm.checked=ST.inclLoevm;
-  elFParking.checked=ST.inclParking; elFInfra.checked=ST.inclInfra;
-  elFLand.value=ST.land; elFKanton.value=ST.kanton;
+  setChecked("fAbgang",ST.exAbgang); setChecked("fLoevm",ST.exLoevm);
+  setChecked("fParking",ST.exParking); setChecked("fInfra",ST.exInfra);
+  SEV_ALL.forEach(s=>setChecked("fSev_"+s, ST.sev.length===0||ST.sev.includes(s)));
+  TYPE_ALL.forEach(k=>setChecked("fTyp_"+k, ST.type.length===0||ST.type.includes(k)));
+  LAND_ALL.forEach(v=>setChecked("fLand_"+v, ST.land.length===0||ST.land.includes(v)));
+  elFKList.querySelectorAll("input[data-kt]").forEach(el=>{ el.checked = ST.kanton.length===0||ST.kanton.includes(el.value); });
   const n=scopeCount(); elFbadge.textContent=n; elFbadge.hidden=(n===0);
 }
-function openPanel(o){ elFpanel.hidden=!o; elFbtn.setAttribute("aria-expanded", o?"true":"false"); }
+function openPanel(o){
+  elFpanel.hidden=!o; elFscrim.hidden=!o;
+  elFbtn.setAttribute("aria-expanded", o?"true":"false");
+  if(o) document.getElementById("fpclose").focus();
+}
 elFbtn.onclick=()=>openPanel(elFpanel.hidden);
-document.addEventListener("click",e=>{ if(!elFpanel.hidden && !e.target.closest(".filterbtn-wrap")) openPanel(false); });
+document.getElementById("fpclose").onclick=()=>{ openPanel(false); elFbtn.focus(); };
+elFscrim.onclick=()=>{ openPanel(false); elFbtn.focus(); };
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !elFpanel.hidden){ openPanel(false); elFbtn.focus(); } });
 const onScope=()=>{ ST.page=1; renderAll(); };
-elFAbgang.onchange=()=>{ST.inclAbgang=elFAbgang.checked;onScope();};
-elFLoevm.onchange=()=>{ST.inclLoevm=elFLoevm.checked;onScope();};
-elFParking.onchange=()=>{ST.inclParking=elFParking.checked;onScope();};
-elFInfra.onchange=()=>{ST.inclInfra=elFInfra.checked;onScope();};
-elFLand.onchange=()=>{ST.land=elFLand.value;onScope();};
-elFKanton.onchange=()=>{ST.kanton=elFKanton.value;onScope();};
-document.getElementById("fReset").onclick=()=>{ Object.assign(ST,SCOPE_DEFAULT); ST.page=1; renderAll(); };
+elFAbgang.onchange=()=>{ST.exAbgang=elFAbgang.checked;onScope();};
+elFLoevm.onchange=()=>{ST.exLoevm=elFLoevm.checked;onScope();};
+elFParking.onchange=()=>{ST.exParking=elFParking.checked;onScope();};
+elFInfra.onchange=()=>{ST.exInfra=elFInfra.checked;onScope();};
+SEV_ALL.forEach(s=>{ const el=document.getElementById("fSev_"+s); if(el) el.onchange=()=>{ST.sev=toggleInc(ST.sev,s,SEV_ALL);onScope();}; });
+TYPE_ALL.forEach(k=>{ const el=document.getElementById("fTyp_"+k); if(el) el.onchange=()=>{ST.type=toggleInc(ST.type,k,TYPE_ALL);onScope();}; });
+LAND_ALL.forEach(v=>{ const el=document.getElementById("fLand_"+v); if(el) el.onchange=()=>{ST.land=toggleInc(ST.land,v,LAND_ALL);onScope();}; });
+elFKList.addEventListener("change",e=>{ const t=e.target; if(t&&t.matches("input[data-kt]")){ ST.kanton=toggleInc(ST.kanton,t.value,KT_ALL); onScope(); } });
+document.getElementById("fReset").onclick=()=>{ Object.assign(ST,scopeDefaults()); ST.page=1; renderAll(); };
 
 function statusOptions(view){
   const order=["found","notfound","missing","foreign","error","unchecked"];
@@ -1257,24 +1319,36 @@ function renderControls(){
   elQ.placeholder = fnd?"Search WE, id, name, key, detail…":"Search WE, id, name, E-GRID, municipality…";
 }
 
-function clearFilters(){ ST.sev="ALL"; ST.cat="ALL"; ST.type=""; ST.status="ALL"; ST.far=false; ST.q=""; ST.page=1; renderAll(); }
-// active-filter pills (bar charts / status / search set the filters; pills remove them)
+// "Alle Filter zurücksetzen" clears EVERY active filter (incl. the default object-class
+// exclusions) → shows the full dataset. The drawer's "Auf Standard zurücksetzen" instead
+// restores the curated defaults (exclusions back on).
+function clearFilters(){ ST.sev=[]; ST.cat="ALL"; ST.type=[]; ST.status="ALL"; ST.far=false; ST.q="";
+  ST.exAbgang=false; ST.exLoevm=false; ST.exParking=false; ST.exInfra=false; ST.land=[]; ST.kanton=[];
+  ST.page=1; renderAll(); }
+// active-filter pills — EVERY active filter (findings + drawer scope) shows here; pills remove them
 function renderFilters(){
   const el=document.getElementById("filters");
   const pills=[];
   // findings filters are global (drive charts + Findings table + tab drill-down)
-  if(ST.sev!=="ALL") pills.push({k:"Severity", v:SEVNAME[ST.sev]||ST.sev, clr:()=>ST.sev="ALL"});
+  if(ST.sev.length) pills.push({k:"Severity", v:ST.sev.map(s=>SEVNAME[s]||s).join(", "), clr:()=>ST.sev=[]});
   if(ST.cat!=="ALL") pills.push({k:"Category", v:DATA.labels[ST.cat]||ST.cat, clr:()=>ST.cat="ALL"});
-  if(ST.type) pills.push({k:"Type", v:ST.type==="building"?"Buildings":"Parcels", clr:()=>ST.type=""});
+  if(ST.type.length) pills.push({k:"Type", v:ST.type.map(t=>t==="building"?"Buildings":"Parcels").join(", "), clr:()=>ST.type=[]});
   // record-tab filters are view-specific
   if(ST.view!=="findings" && ST.status!=="ALL") pills.push({k:"Status", v:ST.status, clr:()=>ST.status="ALL"});
   if(ST.view==="parcels" && ST.far) pills.push({k:"", v:"Only far", clr:()=>ST.far=false});
   if(ST.q) pills.push({k:"Search", v:`“${ST.q}”`, clr:()=>ST.q=""});
+  // scope filters (drawer) appear as pills too — every active filter is shown, for consistency
+  ST.land.forEach(v=>pills.push({k:"Land", v:v==="CH"?"Schweiz":"Ausland", clr:()=>ST.land=ST.land.filter(x=>x!==v)}));
+  ST.kanton.forEach(v=>pills.push({k:"Kanton", v:v, clr:()=>ST.kanton=ST.kanton.filter(x=>x!==v)}));
+  if(ST.exAbgang) pills.push({k:"ohne", v:"Abgang", clr:()=>ST.exAbgang=false});
+  if(ST.exLoevm) pills.push({k:"ohne", v:"Löschvermerk", clr:()=>ST.exLoevm=false});
+  if(ST.exParking) pills.push({k:"ohne", v:"Parkplätze", clr:()=>ST.exParking=false});
+  if(ST.exInfra) pills.push({k:"ohne", v:"Infrastrukturgefässe", clr:()=>ST.exInfra=false});
   if(!pills.length){ el.style.display="none"; el.innerHTML=""; return; }
   el.style.display="";
   el.innerHTML = pills.map((p,i)=>
     `<span class="pill">${p.k?`<span class="k">${esc(p.k)}</span> `:""}<b>${esc(p.v)}</b>`+
-    `<button type="button" class="pill-x" data-i="${i}" aria-label="Remove filter ${esc(p.v)}">×</button></span>`).join("")+
+    `<button type="button" class="pill-x" data-i="${i}" aria-label="Remove filter ${esc((p.k?p.k+" ":"")+p.v)}">×</button></span>`).join("")+
     `<button type="button" class="reset" id="resetf">Alle Filter zurücksetzen</button>`;
   el.querySelectorAll(".pill-x").forEach(b=>b.onclick=()=>{ pills[+b.dataset.i].clr(); ST.page=1; renderAll(); });
   document.getElementById("resetf").onclick=clearFilters;
@@ -1290,12 +1364,12 @@ function renderTable(){
   // linked drill-down: when a findings filter (severity/category) is active, the
   // Buildings/Parcels tabs narrow to records that have a matching finding.
   let keyset=null;
-  if(ST.view!=="findings" && (ST.sev!=="ALL"||ST.cat!=="ALL")){
+  if(ST.view!=="findings" && (ST.sev.length||ST.cat!=="ALL")){
     const kind = ST.view==="buildings"?"building":"parcel";
     keyset=new Set();
     DATA.findings.forEach(f=>{
       if(f.kind!==kind || !inScope(f)) return;
-      if(ST.sev!=="ALL"&&f.severity!==ST.sev) return;
+      if(ST.sev.length&&!ST.sev.includes(f.severity)) return;
       if(ST.cat!=="ALL"&&f.category!==ST.cat) return;
       keyset.add(f.we+"|"+f.sap_id);
     });
@@ -1303,9 +1377,9 @@ function renderTable(){
   let rows=V.data.filter(r=>{
     if(!inScope(r)) return false;                       // filter-panel scope (global)
     if(ST.view==="findings"){
-      if(ST.sev!=="ALL"&&r.severity!==ST.sev)return false;
+      if(ST.sev.length&&!ST.sev.includes(r.severity))return false;
       if(ST.cat!=="ALL"&&r.category!==ST.cat)return false;
-      if(ST.type&&r.kind!==ST.type)return false;
+      if(ST.type.length&&!ST.type.includes(r.kind))return false;
     } else {
       if(keyset && !keyset.has(r.we+"|"+r.id))return false;
       if(ST.status!=="ALL"&&r.status!==ST.status)return false;
