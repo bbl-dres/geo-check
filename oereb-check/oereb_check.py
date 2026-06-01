@@ -784,9 +784,16 @@ def write_html_report(path: str, buildings, parcels, we_rows, findings,
                  "gebaeude": os.path.basename(sources.get("gebaeude", "")),
                  "grundstuecke": os.path.basename(sources.get("grundstuecke", ""))},
     }
+    # Embedded as a JS object literal. json.dumps does NOT escape <, >, & — so a
+    # SAP value containing "</script>" would terminate the <script> early. Escape
+    # those (and the JS line separators U+2028/U+2029) to \uXXXX: identical inside
+    # a JS/JSON string, but inert to the HTML parser.
+    data_js = (json.dumps(data, ensure_ascii=False)
+               .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+               .replace(chr(0x2028), "\\u2028").replace(chr(0x2029), "\\u2029"))
     html = (_HTML_TEMPLATE
             .replace("<!--NAMESVG-->", _SWISS_NAME_SVG)
-            .replace("/*__DATA__*/", json.dumps(data, ensure_ascii=False)))
+            .replace("/*__DATA__*/", data_js))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -962,7 +969,7 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
       <h1>Liegenschaften-Inventar – Prüfbericht</h1>
     </div>
     <div class="filterbtn-wrap">
-      <a class="header__link" href="RULE-SET.md" target="_blank" rel="noopener" title="Regelwerk – alle Prüfregeln (RULE-SET.md)">
+      <a class="header__link" href="https://github.com/bbl-dres/geo-check/blob/main/oereb-check/RULE-SET.md" target="_blank" rel="noopener" title="Regelwerk – alle Prüfregeln (öffnet RULE-SET.md auf GitHub)">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9.5 1.5v3h3M5.5 8h5M5.5 10.3h5M5.5 12.6h3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Regelwerk
       </a>
@@ -1009,7 +1016,7 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
     </div>
   </div>
   <div class="fp-foot">
-    <button type="button" class="reset" id="fReset">Auf Standard zurücksetzen</button>
+    <button type="button" class="reset" id="fReset">Alle Filter zurücksetzen</button>
   </div>
 </aside>
 <main id="main">
@@ -1183,13 +1190,29 @@ function loadURL(){
 const m = DATA.meta;
 document.getElementById("meta").textContent =
   `Generated ${m.generated} · ${m.gebaeude||"buildings"} + ${m.grundstuecke||"parcels"} · far-threshold ${m.threshold} m`;
-const S = DATA.stats;
-document.getElementById("cards").innerHTML = [
-  {n:S.buildings, l:"Buildings", s:`${S.buildings_ch} CH · ${S.buildings_egid} with EGID · ${S.buildings_resolved} in GWR`},
-  {n:S.parcels, l:"Parcels", s:`${S.parcels_egrid} with E-GRID · ${S.parcels_resolved} in ÖREB`},
-  {n:S.we, l:"Wirtschaftseinheiten", s:`${S.confirmed} single-pair confirmed`},
-  {n:S.findings, l:"Findings", s:`across ${DATA.categories.length} categories`},
-].map(c=>`<div class="card"><div class="n">${c.n.toLocaleString()}</div><div class="l">${c.l}</div><div class="s">${c.s}</div></div>`).join("");
+// summary cards follow the active filters (scope on all; the findings filters
+// sev/cat drill the building & parcel counts, matching the table tabs).
+function renderCards(){
+  const drill = ST.sev.length||ST.cat!=="ALL";
+  let bKeys=null,pKeys=null;
+  if(drill){ bKeys=new Set(); pKeys=new Set();
+    DATA.findings.forEach(f=>{ if(!inScope(f)) return;
+      if(ST.sev.length&&!ST.sev.includes(f.severity)) return;
+      if(ST.cat!=="ALL"&&f.category!==ST.cat) return;
+      (f.kind==="building"?bKeys:pKeys).add(f.we+"|"+f.sap_id); }); }
+  const inB=DATA.buildings.filter(b=>inScope(b)&&(!bKeys||bKeys.has(b.we+"|"+b.id)));
+  const inP=DATA.parcels.filter(p=>inScope(p)&&(!pKeys||pKeys.has(p.we+"|"+p.id)));
+  const ff=DATA.findings.filter(f=>inScope(f)&&sevOK(f.severity)&&(ST.cat==="ALL"||f.category===ST.cat)&&typeOK(f.kind));
+  const has=s=>s!=="missing"&&s!=="foreign";   // had a valid key we tried to resolve
+  const wes=new Set(); inB.forEach(b=>wes.add(b.we)); inP.forEach(p=>wes.add(p.we));
+  const ncat=new Set(ff.map(f=>f.category)).size;
+  document.getElementById("cards").innerHTML = [
+    {n:inB.length, l:"Buildings", s:`${inB.filter(b=>b.land==="CH").length} CH · ${inB.filter(b=>has(b.status)).length} with EGID · ${inB.filter(b=>b.status==="found").length} in GWR`},
+    {n:inP.length, l:"Parcels", s:`${inP.filter(p=>has(p.status)).length} with E-GRID · ${inP.filter(p=>p.status==="found").length} in ÖREB`},
+    {n:wes.size, l:"Wirtschaftseinheiten", s:`${new Set(ff.map(f=>f.we)).size.toLocaleString()} with findings`},
+    {n:ff.length, l:"Findings", s:`across ${ncat} categor${ncat===1?"y":"ies"}`},
+  ].map(c=>`<div class="card"><div class="n">${c.n.toLocaleString()}</div><div class="l">${esc(c.l)}</div><div class="s">${esc(c.s)}</div></div>`).join("");
+}
 
 // ---- charts (cross-filtered: each chart excludes its own dimension) ----
 const SEVNAME = {HIGH:"High", MED:"Medium", LOW:"Low"};
@@ -1263,7 +1286,7 @@ const KT_ALL=(function(){ const set=new Set();
   DATA.buildings.forEach(b=>{if(b.kanton)set.add(b.kanton);});
   DATA.parcels.forEach(p=>{if(p.kanton)set.add(p.kanton);});
   const ks=[...set].sort();
-  elFKList.innerHTML=ks.map(k=>`<label class="fp-row"><input type="checkbox" data-kt value="${k}"> ${k}</label>`).join("");
+  elFKList.innerHTML=ks.map(k=>`<label class="fp-row"><input type="checkbox" data-kt value="${esc(k)}"> ${esc(k)}</label>`).join("");
   return ks; })();
 function scopeCount(){
   return (ST.exAbgang?1:0)+(ST.exLoevm?1:0)+(ST.exParking?1:0)+(ST.exInfra?1:0)
@@ -1297,7 +1320,7 @@ SEV_ALL.forEach(s=>{ const el=document.getElementById("fSev_"+s); if(el) el.onch
 TYPE_ALL.forEach(k=>{ const el=document.getElementById("fTyp_"+k); if(el) el.onchange=()=>{ST.type=toggleInc(ST.type,k,TYPE_ALL);onScope();}; });
 LAND_ALL.forEach(v=>{ const el=document.getElementById("fLand_"+v); if(el) el.onchange=()=>{ST.land=toggleInc(ST.land,v,LAND_ALL);onScope();}; });
 elFKList.addEventListener("change",e=>{ const t=e.target; if(t&&t.matches("input[data-kt]")){ ST.kanton=toggleInc(ST.kanton,t.value,KT_ALL); onScope(); } });
-document.getElementById("fReset").onclick=()=>{ Object.assign(ST,scopeDefaults()); ST.page=1; renderAll(); };
+document.getElementById("fReset").onclick=clearFilters;
 
 function statusOptions(view){
   const order=["found","notfound","missing","foreign","error","unchecked"];
@@ -1319,12 +1342,10 @@ function renderControls(){
   elQ.placeholder = fnd?"Search WE, id, name, key, detail…":"Search WE, id, name, E-GRID, municipality…";
 }
 
-// "Alle Filter zurücksetzen" clears EVERY active filter (incl. the default object-class
-// exclusions) → shows the full dataset. The drawer's "Auf Standard zurücksetzen" instead
-// restores the curated defaults (exclusions back on).
-function clearFilters(){ ST.sev=[]; ST.cat="ALL"; ST.type=[]; ST.status="ALL"; ST.far=false; ST.q="";
-  ST.exAbgang=false; ST.exLoevm=false; ST.exParking=false; ST.exInfra=false; ST.land=[]; ST.kanton=[];
-  ST.page=1; renderAll(); }
+// "Alle Filter zurücksetzen" returns to the DEFAULT view (the 4 object-class exclusions
+// back ON). Because defaults aren't serialised, this also clears the filter parameters
+// from the URL hash. Both the pill-row link and the drawer button call this.
+function clearFilters(){ Object.assign(ST, scopeDefaults()); ST.cat="ALL"; ST.status="ALL"; ST.far=false; ST.q=""; ST.page=1; renderAll(); }
 // active-filter pills — EVERY active filter (findings + drawer scope) shows here; pills remove them
 function renderFilters(){
   const el=document.getElementById("filters");
@@ -1438,7 +1459,7 @@ function renderTable(){
   updateMap(rows);   // map follows the (full, unpaginated) filtered set
 }
 
-function renderAll(){ renderControls(); renderPanel(); renderCharts(); renderFilters(); renderTable(); syncURL(); }
+function renderAll(){ renderControls(); renderPanel(); renderCards(); renderCharts(); renderFilters(); renderTable(); syncURL(); }
 
 loadURL();
 renderAll();
@@ -1628,7 +1649,7 @@ def main() -> None:
     ap.add_argument("--data-dir", default=DATA_DIR, help="folder with the two SAP .txt exports")
     ap.add_argument("--gebaeude", default=None, help="explicit path to the Gebaeude export")
     ap.add_argument("--grundstuecke", default=None, help="explicit path to the Grundstuecke export")
-    ap.add_argument("--out", default=None, help="output folder (default: <data-dir>\\output)")
+    ap.add_argument("--out", default=None, help="output folder (default: the data-dir itself)")
     ap.add_argument("--threshold", type=float, default=DISTANCE_THRESHOLD,
                     help="metres; parcel farther than this from its WE cluster is flagged")
     ap.add_argument("--we", default="", help="comma-separated Wirtschaftseinheiten to limit to")
