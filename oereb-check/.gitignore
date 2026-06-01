@@ -1,0 +1,14 @@
+# This folder holds INTERNAL BBL master data — the SAP exports (*.txt) plus the
+# generated outputs (findings.csv, *_enriched.csv, we_summary.csv, report.html)
+# and the API cache (api_cache.json). The repo deploys to a PUBLIC GitHub Pages
+# site, so we DENY EVERYTHING here by default and allow only the source files.
+#
+# This way any new data file — in ANY format (.xlsx, .json, .geojson, .pdf, …) —
+# is ignored automatically and can never be committed by accident.
+# To track an additional file, add an explicit "!<name>" line below.
+
+*
+!.gitignore
+!oereb_check.py
+!README.md
+!RULE-SET.md

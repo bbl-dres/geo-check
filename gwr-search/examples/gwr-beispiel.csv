@@ -1,0 +1,8 @@
+objekt_id,bezeichnung,egid,bemerkung
+OBJ-001,Wohnhaus,1231641,Bern BE
+OBJ-002,Einfamilienhaus,9039,Feuerthalen ZH
+OBJ-003,Mehrfamilienhaus,150404,Zürich ZH
+OBJ-004,Wohnhaus,191554,Romoos LU
+OBJ-005,Testobjekt,999999999,Nicht existierende EGID (Testfall)
+OBJ-006,Ohne Gebäude,,Fehlende EGID (Testfall)
+OBJ-007,Falsches Format,CH12345,Ungültiges EGID-Format (Testfall)

@@ -1,0 +1,3773 @@
+{
+ "BARTAB": {
+  "6003": {
+   "de": "Neubau mit Abbruch",
+   "fr": "Nouvelle construction avec démolition",
+   "it": "Nuova costruzione con demolizione"
+  },
+  "6004": {
+   "de": "Neubau ohne Abbruch",
+   "fr": "Nouvelle construction sans démolition",
+   "it": "Nuova costruzione senza demolizione"
+  },
+  "6005": {
+   "de": "Umbau, Erweiterung, Renovation, Sanierung",
+   "fr": "Transformation, agrandissement, rénovation, assainissement",
+   "it": "Trasformazione, ampliamento, rinnovo,  risanamento"
+  },
+  "6007": {
+   "de": "Nur Abbruch (ohne Neubau oder Umbau)",
+   "fr": "Démolition ou destruction",
+   "it": "Solo demolizione (senza nuova costruzione o trasformazione)"
+  }
+ },
+ "BARTBZ": {
+  "5001": {
+   "de": "Ökonomiebauten für die bodenabhängige Landwirtschaft",
+   "fr": "Bâtiments d'exploitation pour agriculture tributaire du sol",
+   "it": "Edifici di economia rurale per coltivaz dipendente dal suolo"
+  },
+  "5002": {
+   "de": "Landwirtschaftliche Bauten: Aufbereitung, Lagerung, Verkauf",
+   "fr": "Constructions agricoles pour préparation, stockage et vente",
+   "it": "Edifici agricoli: preparazione, immagazzinamento, vendita"
+  },
+  "5003": {
+   "de": "Wohnbauten für landwirtschaftliche Gewerbe",
+   "fr": "Bâtiments d'habitation pour une entreprise agricole",
+   "it": "Edifici abitativi per l'attività agricola"
+  },
+  "5004": {
+   "de": "Gemeinschaftliche Stallbauten",
+   "fr": "Constructions pour garde en commun d'animaux de rente",
+   "it": "Stalle in comune"
+  },
+  "5005": {
+   "de": "Innere Aufstockung (Schweineställe, Geflügelhallen)",
+   "fr": "Développement interne (halles pour porcs ou volaille)",
+   "it": "Ampliamenti interni (porcili, pollai)"
+  },
+  "5006": {
+   "de": "Innere Aufstockung (Gewächshäuser)",
+   "fr": "Développement interne (serres)",
+   "it": "Ampliamenti interni (serre)"
+  },
+  "5007": {
+   "de": "Bauten und Anlagen in Speziallandwirtschaftszonen",
+   "fr": "Constructions conformes à une zone agricole spéciale",
+   "it": "Edifici e impianti in zone agricole speciali"
+  },
+  "5008": {
+   "de": "Gewinnung von Energie aus Biomasse",
+   "fr": "Production d'énergie à partir de biomasse",
+   "it": "Produzione di energia a partire da biomassa"
+  },
+  "5011": {
+   "de": "Bauten und Anlagen in Spezialzonen (Deponie, Sport u.ä.)",
+   "fr": "Constr. conformes à une zone spéciale (décharge, sport etc.)",
+   "it": "Edifici e impianti in zone spec. (discariche, sport, ecc.)"
+  },
+  "5012": {
+   "de": "Zonenkonforme Bauten in Weiler- oder Erhaltungszonen u. ä.",
+   "fr": "Contructions conformes à une zone de hameau etc.",
+   "it": "Ed. conformi in zone di casali o degne di conservazione ecc."
+  },
+  "5015": {
+   "de": "Solaranlagen",
+   "fr": "Installations solaires",
+   "it": "Impianti solari"
+  },
+  "5021": {
+   "de": "Standortgebundene Bauten und Anlagen",
+   "fr": "Constructions imposées par leur destination",
+   "it": "Edifici e impianti a ubicazione vincolata"
+  },
+  "5022": {
+   "de": "Vollst. Zweckänderung von Bauten in Streusiedlungsgebieten",
+   "fr": "Changement complet d'affectation, territ. à habitat dispersé",
+   "it": "Mod. tot. d. destinaz. d'uso in aree con insediam. sparsi"
+  },
+  "5023": {
+   "de": "Vollständige Zweckänderung landschaftsprägender Bauten",
+   "fr": "Changement complet d'affectation dans paysages protégés",
+   "it": "Mod. tot. d. destinaz. d'uso di edifici tipici del paesaggio"
+  },
+  "5031": {
+   "de": "Zweckänderungen ohne bauliche Massnahmen",
+   "fr": "Changement d'affectation sans travaux de transformation",
+   "it": "Mod. della destinaz. d'uso senza lavori di trasformazione"
+  },
+  "5041": {
+   "de": "Nichtlandwirtschaftliche Nebenbetriebe zur Existenzsicherung",
+   "fr": "Act. non agr. nécessaire à la survie de l'exploitation",
+   "it": "Aziende acc. non agric. che assicurano la sussistenza"
+  },
+  "5043": {
+   "de": "Nichtlandw. Nebenbetriebe mit engem Bezug zum landw. Gewerbe",
+   "fr": "Act. non agr. étroitement  liées à l'exploitation agricole",
+   "it": "Aziende acc. non agric. con stretto legame con l'az. agric."
+  },
+  "5044": {
+   "de": "Nichtlandw. Nebenbetriebe in temporären Betriebszentren",
+   "fr": "Act. non agr. dans centres d'exploitation temporaires",
+   "it": "Aziende acc. non agric. nei centri dell'azien. a uso tempor."
+  },
+  "5051": {
+   "de": "Änderung zonenwidrig gewordener Bauten und Anlagen",
+   "fr": "Modification de constructions devenues contraires à la zone",
+   "it": "Trasformaz. di edifici e impianti non più conformi alla zona"
+  },
+  "5061": {
+   "de": "Änderung an ehem. landw. genutzten Wohnbauten",
+   "fr": "Transformation d'anciens logements agricoles",
+   "it": "Trasformaz. di ex edifici abitativi a uso agricolo"
+  },
+  "5062": {
+   "de": "Vollständige Zweckänderung geschützter Bauten",
+   "fr": "Changement complet d'affectation de constructions protégées",
+   "it": "Modifica totale della destinazione d'uso di edifici protetti"
+  },
+  "5063": {
+   "de": "Hobbymässige Tierhaltung in  nahe gelegenen Gebäuden",
+   "fr": "Détention d'animaux de loisirs dans bâtiments proches",
+   "it": "Tenuta di animali a scopo di hobby in ed. nelle vicinanze"
+  },
+  "5064": {
+   "de": "Aussenanlagen zur hobbymässigen Tierhaltung",
+   "fr": "Installations extérieures pour détention d'animaux de loisir",
+   "it": "Impianti esterni per la tenuta di animali a scopo di hobby"
+  },
+  "5071": {
+   "de": "Änderung zonenwidrig gewordener gewerblicher Bauten",
+   "fr": "Modification de constructions à usage commercial",
+   "it": "Trasformaz. di edifici aziendali non più conformi alla zona"
+  },
+  "5090": {
+   "de": "Keine Angabe",
+   "fr": "Pas d'indication",
+   "it": "Nessuna indicazione"
+  }
+ },
+ "BSTAT": {
+  "6700": {
+   "de": "Projekt annulliert",
+   "fr": "Projet annulé",
+   "it": "Progetto annullato"
+  },
+  "6701": {
+   "de": "Gesuch eingereicht, aber noch nicht bewilligt",
+   "fr": "Permis de construire demandé mais pas encore délivré",
+   "it": "Progetto presentato: domanda di costruzione inoltrata"
+  },
+  "6702": {
+   "de": "Bewilligung erteilt, aber noch nicht baubegonnen",
+   "fr": "Permis de construire délivré, projet pas encore en chantier",
+   "it": "Progetto approvato: licenza di costructione rilasciata"
+  },
+  "6703": {
+   "de": "Projekt baubegonnen",
+   "fr": "Projet en chantier",
+   "it": "Progetto iniziato: lavori in corso"
+  },
+  "6704": {
+   "de": "Projekt fertiggestellt",
+   "fr": "Projet terminé",
+   "it": "Progetto terminato"
+  },
+  "6706": {
+   "de": "Projekt zurückgestellt",
+   "fr": "Projet reporté",
+   "it": "Progetto rinviato"
+  }
+ },
+ "DOFFADR": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "DSTAT": {
+  "2001": {
+   "de": "Gebäudeeingang projektiert",
+   "fr": "Entrée du bâtiment en projet",
+   "it": "Stato dell'entrata in progetto"
+  },
+  "2003": {
+   "de": "Gebäudeeingang im Bau",
+   "fr": "Entrée du bâtiment en construction",
+   "it": "Entrata in costruzione"
+  },
+  "2004": {
+   "de": "Gebäudeeingang bestehend",
+   "fr": "Entrée du bâtiment existante",
+   "it": "Entrata dell'edificio esistente"
+  },
+  "2007": {
+   "de": "Gebäudeeingang aufgehoben",
+   "fr": "Entrée du bâtiment éliminée",
+   "it": "Entrata dell'edificio eliminata"
+  }
+ },
+ "GBAUP": {
+  "8011": {
+   "de": "Periode vor 1919",
+   "fr": "Période avant 1919",
+   "it": "Periodo prima del 1919"
+  },
+  "8012": {
+   "de": "Periode von 1919 bis 1945",
+   "fr": "Période de 1919 à 1945",
+   "it": "Periodo dal 1919 al 1945"
+  },
+  "8013": {
+   "de": "Periode von 1946 bis 1960",
+   "fr": "Période de 1946 à 1960",
+   "it": "Periodo dal 1946 al 1960"
+  },
+  "8014": {
+   "de": "Periode von 1961 bis 1970",
+   "fr": "Période de 1961 à 1970",
+   "it": "Periodo dal 1961 al 1970"
+  },
+  "8015": {
+   "de": "Periode von 1971 bis 1980",
+   "fr": "Période de 1971 à 1980",
+   "it": "Periodo dal 1971 al 1980"
+  },
+  "8016": {
+   "de": "Periode von 1981 bis 1985",
+   "fr": "Période de 1981 à 1985",
+   "it": "Periodo dal 1981 al 1985"
+  },
+  "8017": {
+   "de": "Periode von 1986 bis 1990",
+   "fr": "Période de 1986 à 1990",
+   "it": "Periodo dal 1986 al 1990"
+  },
+  "8018": {
+   "de": "Periode von 1991 bis 1995",
+   "fr": "Période de 1991 à 1995",
+   "it": "Periodo dal 1991 al 1995"
+  },
+  "8019": {
+   "de": "Periode von 1996 bis 2000",
+   "fr": "Période de 1996 à 2000",
+   "it": "Periodo dal 1996 al 2000"
+  },
+  "8020": {
+   "de": "Periode von 2001 bis 2005",
+   "fr": "Période de 2001 à 2005",
+   "it": "Periodo dal 2001 al 2005"
+  },
+  "8021": {
+   "de": "Periode von 2006 bis 2010",
+   "fr": "Période de 2006 à 2010",
+   "it": "Periodo dal 2006 al 2010"
+  },
+  "8022": {
+   "de": "Periode von 2011 bis 2015",
+   "fr": "Période de 2011 à 2015",
+   "it": "Periodo dal 2011 al 2015"
+  },
+  "8023": {
+   "de": "Periode nach 2015",
+   "fr": "Période après 2015",
+   "it": "Periodo dopo il 2015"
+  }
+ },
+ "GENH1": {
+  "7500": {
+   "de": "Keine",
+   "fr": "Aucune",
+   "it": "Nessuna"
+  },
+  "7501": {
+   "de": "Luft",
+   "fr": "Air",
+   "it": "Aria"
+  },
+  "7510": {
+   "de": "Erdwärme (generisch)",
+   "fr": "Géothermie (générique)",
+   "it": "Geotermia (generica)"
+  },
+  "7511": {
+   "de": "Erdwärmesonde",
+   "fr": "Sonde géothermique",
+   "it": "Sonda geotermica"
+  },
+  "7512": {
+   "de": "Erdregister",
+   "fr": "Serpentin géothermique",
+   "it": "Serpentina geotermica"
+  },
+  "7513": {
+   "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+   "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+   "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+  },
+  "7520": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7530": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7540": {
+   "de": "Holz (generisch)",
+   "fr": "Bois (générique)",
+   "it": "Legna (generica)"
+  },
+  "7541": {
+   "de": "Holz (Stückholz)",
+   "fr": "Bois (bûches)",
+   "it": "Legna (ceppi)"
+  },
+  "7542": {
+   "de": "Holz (Pellets)",
+   "fr": "Bois (granulés - pellets)",
+   "it": "Legna (granulati pellet)"
+  },
+  "7543": {
+   "de": "Holz (Schnitzel)",
+   "fr": "Bois (bois déchiqueté, copeaux)",
+   "it": "Legna (cippato, trucioli)"
+  },
+  "7550": {
+   "de": "Abwärme (innerhalb des Gebäudes)",
+   "fr": "Rejets thermiques (dans le bâtiment)",
+   "it": "Scarichi termici (nell'edificio)"
+  },
+  "7560": {
+   "de": "Elektrizität",
+   "fr": "Electricité",
+   "it": "Elettricità"
+  },
+  "7570": {
+   "de": "Sonne (thermisch)",
+   "fr": "Soleil (thermique)",
+   "it": "Sole (termico)"
+  },
+  "7580": {
+   "de": "Fernwärme (generisch)",
+   "fr": "Chaleur produite à distance (générique)",
+   "it": "Calore prodotto a distanza (generico)"
+  },
+  "7581": {
+   "de": "Fernwärme (Hochtemperatur)",
+   "fr": "Chaleur produite à distance (haute température)",
+   "it": "Calore prodotto a distanza (alta temperatura)"
+  },
+  "7582": {
+   "de": "Fernwärme (Niedertemperatur)",
+   "fr": "Chaleur produite à distance (basse température)",
+   "it": "Calore prodotto a distanza (bassa temperatura)"
+  },
+  "7598": {
+   "de": "Unbestimmt",
+   "fr": "Indéterminé",
+   "it": "Indeterminata"
+  },
+  "7599": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GENH2": {
+  "7500": {
+   "de": "Keine",
+   "fr": "Aucune",
+   "it": "Nessuna"
+  },
+  "7501": {
+   "de": "Luft",
+   "fr": "Air",
+   "it": "Aria"
+  },
+  "7510": {
+   "de": "Erdwärme (generisch)",
+   "fr": "Géothermie (générique)",
+   "it": "Geotermia (generica)"
+  },
+  "7511": {
+   "de": "Erdwärmesonde",
+   "fr": "Sonde géothermique",
+   "it": "Sonda geotermica"
+  },
+  "7512": {
+   "de": "Erdregister",
+   "fr": "Serpentin géothermique",
+   "it": "Serpentina geotermica"
+  },
+  "7513": {
+   "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+   "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+   "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+  },
+  "7520": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7530": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7540": {
+   "de": "Holz (generisch)",
+   "fr": "Bois (générique)",
+   "it": "Legna (generica)"
+  },
+  "7541": {
+   "de": "Holz (Stückholz)",
+   "fr": "Bois (bûches)",
+   "it": "Legna (ceppi)"
+  },
+  "7542": {
+   "de": "Holz (Pellets)",
+   "fr": "Bois (granulés - pellets)",
+   "it": "Legna (granulati pellet)"
+  },
+  "7543": {
+   "de": "Holz (Schnitzel)",
+   "fr": "Bois (bois déchiqueté, copeaux)",
+   "it": "Legna (cippato, trucioli)"
+  },
+  "7550": {
+   "de": "Abwärme (innerhalb des Gebäudes)",
+   "fr": "Rejets thermiques (dans le bâtiment)",
+   "it": "Scarichi termici (nell'edificio)"
+  },
+  "7560": {
+   "de": "Elektrizität",
+   "fr": "Electricité",
+   "it": "Elettricità"
+  },
+  "7570": {
+   "de": "Sonne (thermisch)",
+   "fr": "Soleil (thermique)",
+   "it": "Sole (termico)"
+  },
+  "7580": {
+   "de": "Fernwärme (generisch)",
+   "fr": "Chaleur produite à distance (générique)",
+   "it": "Calore prodotto a distanza (generico)"
+  },
+  "7581": {
+   "de": "Fernwärme (Hochtemperatur)",
+   "fr": "Chaleur produite à distance (haute température)",
+   "it": "Calore prodotto a distanza (alta temperatura)"
+  },
+  "7582": {
+   "de": "Fernwärme (Niedertemperatur)",
+   "fr": "Chaleur produite à distance (basse température)",
+   "it": "Calore prodotto a distanza (bassa temperatura)"
+  },
+  "7598": {
+   "de": "Unbestimmt",
+   "fr": "Indéterminé",
+   "it": "Indeterminata"
+  },
+  "7599": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GENHZ": {
+  "7200": {
+   "de": "Kein Energieträger",
+   "fr": "Pas d'agent énergétique",
+   "it": "Nessuna fonte energetica"
+  },
+  "7201": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7202": {
+   "de": "Kohle",
+   "fr": "Charbon",
+   "it": "Carbone"
+  },
+  "7203": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7204": {
+   "de": "Elektrizität",
+   "fr": "Électricité",
+   "it": "Elettricità"
+  },
+  "7205": {
+   "de": "Holz",
+   "fr": "Bois",
+   "it": "Legna"
+  },
+  "7206": {
+   "de": "Wärmepumpe",
+   "fr": "Pompe à chaleur",
+   "it": "Pompa di calore"
+  },
+  "7207": {
+   "de": "Sonnenkollektor",
+   "fr": "Capteur solaire",
+   "it": "Collettore solare"
+  },
+  "7208": {
+   "de": "Fernwärme",
+   "fr": "Chaleur à distance",
+   "it": "Calore a distanza"
+  },
+  "7209": {
+   "de": "Anderer Energieträger",
+   "fr": "Autre agent énergétique",
+   "it": "Altra fontienergetiche"
+  }
+ },
+ "GENW1": {
+  "7500": {
+   "de": "Keine",
+   "fr": "Aucune",
+   "it": "Nessuna"
+  },
+  "7501": {
+   "de": "Luft",
+   "fr": "Air",
+   "it": "Aria"
+  },
+  "7510": {
+   "de": "Erdwärme (generisch)",
+   "fr": "Géothermie (générique)",
+   "it": "Geotermia (generica)"
+  },
+  "7511": {
+   "de": "Erdwärmesonde",
+   "fr": "Sonde géothermique",
+   "it": "Sonda geotermica"
+  },
+  "7512": {
+   "de": "Erdregister",
+   "fr": "Serpentin géothermique",
+   "it": "Serpentina geotermica"
+  },
+  "7513": {
+   "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+   "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+   "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+  },
+  "7520": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7530": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7540": {
+   "de": "Holz (generisch)",
+   "fr": "Bois (générique)",
+   "it": "Legna (generica)"
+  },
+  "7541": {
+   "de": "Holz (Stückholz)",
+   "fr": "Bois (bûches)",
+   "it": "Legna (ceppi)"
+  },
+  "7542": {
+   "de": "Holz (Pellets)",
+   "fr": "Bois (granulés - pellets)",
+   "it": "Legna (granulati pellet)"
+  },
+  "7543": {
+   "de": "Holz (Schnitzel)",
+   "fr": "Bois (bois déchiqueté, copeaux)",
+   "it": "Legna (cippato, trucioli)"
+  },
+  "7550": {
+   "de": "Abwärme (innerhalb des Gebäudes)",
+   "fr": "Rejets thermiques (dans le bâtiment)",
+   "it": "Scarichi termici (nell'edificio)"
+  },
+  "7560": {
+   "de": "Elektrizität",
+   "fr": "Electricité",
+   "it": "Elettricità"
+  },
+  "7570": {
+   "de": "Sonne (thermisch)",
+   "fr": "Soleil (thermique)",
+   "it": "Sole (termico)"
+  },
+  "7580": {
+   "de": "Fernwärme (generisch)",
+   "fr": "Chaleur produite à distance (générique)",
+   "it": "Calore prodotto a distanza (generico)"
+  },
+  "7581": {
+   "de": "Fernwärme (Hochtemperatur)",
+   "fr": "Chaleur produite à distance (haute température)",
+   "it": "Calore prodotto a distanza (alta temperatura)"
+  },
+  "7582": {
+   "de": "Fernwärme (Niedertemperatur)",
+   "fr": "Chaleur produite à distance (basse température)",
+   "it": "Calore prodotto a distanza (bassa temperatura)"
+  },
+  "7598": {
+   "de": "Unbestimmt",
+   "fr": "Indéterminé",
+   "it": "Indeterminata"
+  },
+  "7599": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GENW2": {
+  "7500": {
+   "de": "Keine",
+   "fr": "Aucune",
+   "it": "Nessuna"
+  },
+  "7501": {
+   "de": "Luft",
+   "fr": "Air",
+   "it": "Aria"
+  },
+  "7510": {
+   "de": "Erdwärme (generisch)",
+   "fr": "Géothermie (générique)",
+   "it": "Geotermia (generica)"
+  },
+  "7511": {
+   "de": "Erdwärmesonde",
+   "fr": "Sonde géothermique",
+   "it": "Sonda geotermica"
+  },
+  "7512": {
+   "de": "Erdregister",
+   "fr": "Serpentin géothermique",
+   "it": "Serpentina geotermica"
+  },
+  "7513": {
+   "de": "Wasser (Grundwasser, Oberflächenwasser, Abwasser)",
+   "fr": "Eau (nappe phréatique, eaux superficielles, eaux résiduelles)",
+   "it": "Acqua (falda freatica, acque di superficie, acque residue)"
+  },
+  "7520": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7530": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7540": {
+   "de": "Holz (generisch)",
+   "fr": "Bois (générique)",
+   "it": "Legna (generica)"
+  },
+  "7541": {
+   "de": "Holz (Stückholz)",
+   "fr": "Bois (bûches)",
+   "it": "Legna (ceppi)"
+  },
+  "7542": {
+   "de": "Holz (Pellets)",
+   "fr": "Bois (granulés - pellets)",
+   "it": "Legna (granulati pellet)"
+  },
+  "7543": {
+   "de": "Holz (Schnitzel)",
+   "fr": "Bois (bois déchiqueté, copeaux)",
+   "it": "Legna (cippato, trucioli)"
+  },
+  "7550": {
+   "de": "Abwärme (innerhalb des Gebäudes)",
+   "fr": "Rejets thermiques (dans le bâtiment)",
+   "it": "Scarichi termici (nell'edificio)"
+  },
+  "7560": {
+   "de": "Elektrizität",
+   "fr": "Electricité",
+   "it": "Elettricità"
+  },
+  "7570": {
+   "de": "Sonne (thermisch)",
+   "fr": "Soleil (thermique)",
+   "it": "Sole (termico)"
+  },
+  "7580": {
+   "de": "Fernwärme (generisch)",
+   "fr": "Chaleur produite à distance (générique)",
+   "it": "Calore prodotto a distanza (generico)"
+  },
+  "7581": {
+   "de": "Fernwärme (Hochtemperatur)",
+   "fr": "Chaleur produite à distance (haute température)",
+   "it": "Calore prodotto a distanza (alta temperatura)"
+  },
+  "7582": {
+   "de": "Fernwärme (Niedertemperatur)",
+   "fr": "Chaleur produite à distance (basse température)",
+   "it": "Calore prodotto a distanza (bassa temperatura)"
+  },
+  "7598": {
+   "de": "Unbestimmt",
+   "fr": "Indéterminé",
+   "it": "Indeterminata"
+  },
+  "7599": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GENWW": {
+  "7200": {
+   "de": "Kein Energieträger",
+   "fr": "Pas d'agent énergétique",
+   "it": "Nessuna fonte energetica"
+  },
+  "7201": {
+   "de": "Heizöl",
+   "fr": "Mazout",
+   "it": "Olio da riscaldamento"
+  },
+  "7202": {
+   "de": "Kohle",
+   "fr": "Charbon",
+   "it": "Carbone"
+  },
+  "7203": {
+   "de": "Gas",
+   "fr": "Gaz",
+   "it": "Gas"
+  },
+  "7204": {
+   "de": "Elektrizität",
+   "fr": "Électricité",
+   "it": "Elettricità"
+  },
+  "7205": {
+   "de": "Holz",
+   "fr": "Bois",
+   "it": "Legna"
+  },
+  "7206": {
+   "de": "Wärmepumpe",
+   "fr": "Pompe à chaleur",
+   "it": "Pompa di calore"
+  },
+  "7207": {
+   "de": "Sonnenkollektor",
+   "fr": "Capteur solaire",
+   "it": "Collettore solare"
+  },
+  "7208": {
+   "de": "Fernwärme",
+   "fr": "Chaleur à distance",
+   "it": "Calore a distanza"
+  },
+  "7209": {
+   "de": "Anderer Energieträger",
+   "fr": "Autre agent énergétique",
+   "it": "Altra fontienergetiche"
+  }
+ },
+ "GHEIZ": {
+  "7100": {
+   "de": "Keine Heizung",
+   "fr": "Pas de chauffage",
+   "it": "Nessun riscaldamento"
+  },
+  "7101": {
+   "de": "Einzelofenheizung",
+   "fr": "Poêle",
+   "it": "Riscaldamento a stufa"
+  },
+  "7102": {
+   "de": "Etagenheizung",
+   "fr": "Chauffage central pour un logement",
+   "it": "Riscaldamento autonomo per abitazione"
+  },
+  "7103": {
+   "de": "Zentralheizung für das Gebäude",
+   "fr": "Chauffage central pour le bâtiment",
+   "it": "Riscaldamento centrale per singolo edificio"
+  },
+  "7104": {
+   "de": "Zentralheizung für mehrere Gebäude",
+   "fr": "Chauffage central pour plusieurs bâtiments",
+   "it": "Riscaldamento centrale per più edifici"
+  },
+  "7105": {
+   "de": "Öffentliche Fernwärmeversorgung",
+   "fr": "Chauffage à distance",
+   "it": "Riscaldamento a distanza"
+  },
+  "7109": {
+   "de": "Andere Heizungsart",
+   "fr": "Autre type de chauffage",
+   "it": "Altro sistema di riscaldamento"
+  }
+ },
+ "GKAT": {
+  "1010": {
+   "de": "Provisorische Unterkunft",
+   "fr": "Habitation provisoire",
+   "it": "Abitazione provvisoria"
+  },
+  "1020": {
+   "de": "Gebäude mit ausschliesslicher Wohnnutzung",
+   "fr": "Bâtiment exclusivement à usage d'habitation",
+   "it": "Edificio ad uso esclusivamente abitativo"
+  },
+  "1021": {
+   "de": "Einfamilienhaus, ohne Nebennutzung",
+   "fr": "Maison individuelle",
+   "it": "Casa unifamiliare senza utilizzazione accessoria"
+  },
+  "1025": {
+   "de": "Mehrfamilienhaus, ohne Nebennutzung",
+   "fr": "Maison à plusieurs logements",
+   "it": "Casa plurifamiliare senza utilizzazione accessoria"
+  },
+  "1030": {
+   "de": "Andere Wohngebäude (Wohngebäude mit Nebennutzung)",
+   "fr": "Autre bâtiment d'habitation (Bâtiment d'habitation à usage annexe)",
+   "it": "Altro edificio abitativo (con utilizzazione accessoria)"
+  },
+  "1040": {
+   "de": "Gebäude mit teilweiser Wohnnutzung",
+   "fr": "Bâtiment partiellement à usage d'habitation",
+   "it": "Edificio ad uso parzialmente abitativo"
+  },
+  "1060": {
+   "de": "Gebäude ohne Wohnnutzung",
+   "fr": "Bâtiment sans usage d'habitation",
+   "it": "Edificio ad uso non abitativo"
+  },
+  "1080": {
+   "de": "Sonderbau",
+   "fr": "Construction particulière",
+   "it": "Costruzione speciale"
+  }
+ },
+ "GKLAS": {
+  "1110": {
+   "de": "Gebäude mit einer Wohnung",
+   "fr": "Maison à un logement",
+   "it": "Edifici ad una abitazione"
+  },
+  "1121": {
+   "de": "Gebäude mit zwei  Wohnungen",
+   "fr": "Maison à deux logements",
+   "it": "Edifici a due abitazioni"
+  },
+  "1122": {
+   "de": "Gebäude mit drei oder mehr Wohnungen",
+   "fr": "Immeuble à trois logements ou plus",
+   "it": "Edifici a tre e più abitazioni"
+  },
+  "1130": {
+   "de": "Wohngebäude für Gemeinschaften",
+   "fr": "Habitat communautaire",
+   "it": "Residenze per collettività"
+  },
+  "1211": {
+   "de": "Hotelgebäude",
+   "fr": "Hôtel",
+   "it": "Edifici alberghieri"
+  },
+  "1212": {
+   "de": "Andere Gebäude für kurzfristige Beherbergung",
+   "fr": "Autre bâtiment d'hébergement de tourisme",
+   "it": "Altri edifici per alloggio di breve durata"
+  },
+  "1220": {
+   "de": "Bürogebäude",
+   "fr": "Immeuble de bureaux",
+   "it": "Fabbricati per uffici"
+  },
+  "1230": {
+   "de": "Gross-und Einzelhandelsgebäude",
+   "fr": "Bâtiment commercial",
+   "it": "Fabbricati per il commercio all'ingrosso e al dettaglio"
+  },
+  "1231": {
+   "de": "Restaurants und Bars in Gebäuden ohne Wohnnutzung",
+   "fr": "Restaurants et bars dans des bâtiments sans usage résidentiel",
+   "it": "Ristoranti e bar in edifici non residenziali"
+  },
+  "1241": {
+   "de": "Gebäude des Verkehrs- und Nachrichtenwesens ohne Garagen",
+   "fr": "Bâtiment des transports et des communications sans garage",
+   "it": "Edificio dei trasporti e delle comunicazioni senza garage"
+  },
+  "1242": {
+   "de": "Garagengebäude",
+   "fr": "Garage",
+   "it": "Fabbricati per garage"
+  },
+  "1251": {
+   "de": "Industriegebäude",
+   "fr": "Bâtiment industriel",
+   "it": "Fabbricati industriali"
+  },
+  "1252": {
+   "de": "Behälter, Silos und Lagergebäude",
+   "fr": "Réservoir, silo et entrepôt",
+   "it": "Serbatoi, sili e depositi"
+  },
+  "1261": {
+   "de": "Gebäude für Kultur- und Freizeitzwecke",
+   "fr": "Bâtiment à usage culturel ou récréatif",
+   "it": "Edifici desinati ad attività ricreative"
+  },
+  "1262": {
+   "de": "Museen und Bibliotheken",
+   "fr": "Musée et bibliothèque",
+   "it": "Musei e biblioteche"
+  },
+  "1263": {
+   "de": "Schul- und Hochschulgebäude, Forschungseinrichtungen",
+   "fr": "Bâtiment pour l'enseignement et la recherche",
+   "it": "Edifici scolastici, universitari ed edifici di ricerca"
+  },
+  "1264": {
+   "de": "Krankenhäuser und Facheinrichtungen des Gesundheitswesens",
+   "fr": "Hôpital et établissement de santé",
+   "it": "Edifici per fini ospedalieri e di assistenza sociale"
+  },
+  "1265": {
+   "de": "Sporthallen",
+   "fr": "Salle de sport",
+   "it": "Sale sportive"
+  },
+  "1271": {
+   "de": "Landwirtschaftliche Betriebsgebäude",
+   "fr": "Bâtiment d'exploitation agricole",
+   "it": "Fabbricati rurali non residenziali"
+  },
+  "1272": {
+   "de": "Kirchen und sonstige Kultgebäude",
+   "fr": "Édifice cultuel et religieux",
+   "it": "Ed.  utilizzati come luoghi di culto e per attività relig."
+  },
+  "1273": {
+   "de": "Denkmäler oder unter Denkmalschutz stehende Bauwerke",
+   "fr": "Monument historique ou classé",
+   "it": "Monumenti storici o protetti"
+  },
+  "1274": {
+   "de": "Sonstige Hochbauten, anderweitig nicht genannt",
+   "fr": "Autre bâtiment non classé ailleurs",
+   "it": "Altri edifici, n.c.a."
+  },
+  "1275": {
+   "de": "Andere Gebäude für die kollektive Unterkunft",
+   "fr": "Autres bâtiments pour l'hébergement collectif",
+   "it": "Altri edifici che ospitano collettività"
+  },
+  "1276": {
+   "de": "Gebäude für die Tierhaltung",
+   "fr": "Bâtiments pour la garde d'animaux",
+   "it": "Edifici per la tenuta di animali"
+  },
+  "1277": {
+   "de": "Gebäude für den Pflanzenbau",
+   "fr": "Bâtiments pour les cultures végétales",
+   "it": "Edifici per le colture vegetali"
+  },
+  "1278": {
+   "de": "Andere landwirtschaftliche Gebäude",
+   "fr": "Autres bâtiments d'exploitation agricole",
+   "it": "Altri fabbricati rurali non residenziali"
+  }
+ },
+ "GKSCE": {
+  "901": {
+   "de": "Amtliche Vermessung, DM.01",
+   "fr": "Mensuration officielle, MD01",
+   "it": "Misurazione ufficiale, DM.01"
+  },
+  "902": {
+   "de": "Aus amtlicher Vermessung hergeleitet",
+   "fr": "Produites à partir de la mensuration officielle",
+   "it": "Derivazione dalla misurazione ufficiale"
+  },
+  "903": {
+   "de": "Angabe Nachführungsgeometer",
+   "fr": "Indication du géomètre conservateur",
+   "it": "Indicazione del geometra revisore"
+  },
+  "904": {
+   "de": "Angabe Baugesuch",
+   "fr": "Indication de la demande de permis de construire",
+   "it": "Indicazione domanda di costruzione"
+  },
+  "905": {
+   "de": "Bundesamt für Statistik",
+   "fr": "Office fédéral de la statistique",
+   "it": "Ufficio federale di statistica"
+  },
+  "906": {
+   "de": "Datensatz GeoPost",
+   "fr": "Données de GeoPost",
+   "it": "Dati GeoPost"
+  },
+  "909": {
+   "de": "Andere Datenquelle",
+   "fr": "Autre source",
+   "it": "Altra fonte di dati"
+  }
+ },
+ "GRENP": {
+  "8011": {
+   "de": "Periode vor 1919",
+   "fr": "Période avant 1919",
+   "it": "Periodo prima del 1919"
+  },
+  "8012": {
+   "de": "Periode von 1919 bis 1945",
+   "fr": "Période de 1919 à 1945",
+   "it": "Periodo dal 1919 al 1945"
+  },
+  "8013": {
+   "de": "Periode von 1946 bis 1960",
+   "fr": "Période de 1946 à 1960",
+   "it": "Periodo dal 1946 al 1960"
+  },
+  "8014": {
+   "de": "Periode von 1961 bis 1970",
+   "fr": "Période de 1961 à 1970",
+   "it": "Periodo dal 1961 al 1970"
+  },
+  "8015": {
+   "de": "Periode von 1971 bis 1980",
+   "fr": "Période de 1971 à 1980",
+   "it": "Periodo dal 1971 al 1980"
+  },
+  "8016": {
+   "de": "Periode von 1981 bis 1985",
+   "fr": "Période de 1981 à 1985",
+   "it": "Periodo dal 1981 al 1985"
+  },
+  "8017": {
+   "de": "Periode von 1986 bis 1990",
+   "fr": "Période de 1986 à 1990",
+   "it": "Periodo dal 1986 al 1990"
+  },
+  "8018": {
+   "de": "Periode von 1991 bis 1995",
+   "fr": "Période de 1991 à 1995",
+   "it": "Periodo dal 1991 al 1995"
+  },
+  "8019": {
+   "de": "Periode von 1996 bis 2000",
+   "fr": "Période de 1996 à 2000",
+   "it": "Periodo dal 1996 al 2000"
+  },
+  "8020": {
+   "de": "Periode von 2001 bis 2005",
+   "fr": "Période de 2001 à 2005",
+   "it": "Periodo dal 2001 al 2005"
+  },
+  "8021": {
+   "de": "Periode von 2006 bis 2010",
+   "fr": "Période de 2006 à 2010",
+   "it": "Periodo dal 2006 al 2010"
+  },
+  "8022": {
+   "de": "Periode von 2011 bis 2015",
+   "fr": "Période de 2011 à 2015",
+   "it": "Periodo dal 2011 al 2015"
+  },
+  "8023": {
+   "de": "Periode nach 2015",
+   "fr": "Période après 2015",
+   "it": "Periodo dopo il 2015"
+  }
+ },
+ "GSCHUTZR": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "GSTAT": {
+  "1001": {
+   "de": "Gebäude projektiert",
+   "fr": "Bâtiment en projet",
+   "it": "Edificio in progetto"
+  },
+  "1002": {
+   "de": "Gebäude bewilligt",
+   "fr": "Bâtiment autorisé",
+   "it": "Edificio autorizzato"
+  },
+  "1003": {
+   "de": "Gebäude im Bau",
+   "fr": "Bâtiment en construction",
+   "it": "Edificio in costruzione"
+  },
+  "1004": {
+   "de": "Gebäude bestehend",
+   "fr": "Bâtiment existant",
+   "it": "Edificio esistente"
+  },
+  "1005": {
+   "de": "Gebäude nicht nutzbar",
+   "fr": "Bâtiment non utilisable",
+   "it": "Edificio non utilizzabile"
+  },
+  "1007": {
+   "de": "Gebäude abgebrochen",
+   "fr": "Bâtiment démoli",
+   "it": "Edificio demolito"
+  },
+  "1008": {
+   "de": "Gebäude nicht realisiert",
+   "fr": "Bâtiment non réalisé",
+   "it": "Edificio non realizzato"
+  }
+ },
+ "GVOLNORM": {
+  "961": {
+   "de": "Gemäss SIA-Norm 116",
+   "fr": "Selon norme SIA 116",
+   "it": "Secondo la norma SIA 116"
+  },
+  "962": {
+   "de": "Gemäss SIA-Norm 416",
+   "fr": "Selon norme SIA 416",
+   "it": "Secondo la norma SIA 416"
+  },
+  "969": {
+   "de": "Unbekannt",
+   "fr": "Inconnu",
+   "it": "Non noto"
+  }
+ },
+ "GVOLSCE": {
+  "851": {
+   "de": "Gemäss amtlicher Vermessung",
+   "fr": "Selon mensuration officielle",
+   "it": "Secondo la misurazione ufficiale"
+  },
+  "852": {
+   "de": "Gemäss amtlicher Schätzung",
+   "fr": "Selon estimation officielle",
+   "it": "Secondo la stima ufficiale"
+  },
+  "853": {
+   "de": "Gemäss Gebäudeversicherung",
+   "fr": "Selon assurance immobilière",
+   "it": "Secondo l'assicurazione immobiliare"
+  },
+  "857": {
+   "de": "Gemäss Eigentümer/in / Verwaltung",
+   "fr": "Selon propriétaire / gérant d'immeuble",
+   "it": "Secondo il proprietario / gerente immobiliare"
+  },
+  "858": {
+   "de": "Gemäss Gebäudeenergieausweis der Kantone (GEAK)",
+   "fr": "Selon Certificat énergétique cantonal des bâtiments (CECB)",
+   "it": "Secondo il Certificato energetico cantonale degli edifici (CECE)"
+  },
+  "859": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  },
+  "869": {
+   "de": "Gemäss Baubewilligung",
+   "fr": "Selon permis de construire",
+   "it": "Secondo la licenza di construzione"
+  },
+  "870": {
+   "de": "Gemäss topografischem Landschaftsmodell (TLM)",
+   "fr": "Selon modèle topographique de paysage MTP",
+   "it": "Secondo il modello topografico del paesaggio MTP"
+  },
+  "878": {
+   "de": "Nicht bestimmbares Volumen (nicht geschlossenes Gebäude)",
+   "fr": "Volume non détérminable (bâtiment non fermé)",
+   "it": "Volume non determinabile (edificio non chiuso)"
+  }
+ },
+ "GWAERSCEH1": {
+  "852": {
+   "de": "Gemäss amtlicher Schätzung",
+   "fr": "Selon estimation officielle",
+   "it": "Secondo la stima ufficiale"
+  },
+  "853": {
+   "de": "Gemäss Gebäudeversicherung",
+   "fr": "Selon assurance immobilière",
+   "it": "Secondo l'assicurazione immobiliare"
+  },
+  "855": {
+   "de": "Gemäss Feuerungskontrolle",
+   "fr": "Selon contrôle des installations de chauffage",
+   "it": "Secondo il controllo degli impianti di riscaldamento"
+  },
+  "857": {
+   "de": "Gemäss Eigentümer/in / Verwaltung",
+   "fr": "Selon propriétaire / gérant d'immeuble",
+   "it": "Secondo il proprietario / gerente immobiliare"
+  },
+  "858": {
+   "de": "Gemäss Gebäudeenergieausweis der Kantone (GEAK)",
+   "fr": "Selon Certificat énergétique cantonal des bâtiments (CECB)",
+   "it": "Secondo il Certificato energetico cantonale degli edifici (CECE)"
+  },
+  "859": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  },
+  "860": {
+   "de": "Gemäss Volkszählung 2000",
+   "fr": "Selon recensement 2000",
+   "it": "Secondo censimento 2000"
+  },
+  "864": {
+   "de": "Gemäss kantonalen Daten / Das Gebäudeprogramm",
+   "fr": "Selon données cantonales / Le Programme Bâtiments",
+   "it": "Secondo dati cantonali / Il Programma Edifici"
+  },
+  "865": {
+   "de": "Gemäss Daten der Gemeinde",
+   "fr": "Selon données communales",
+   "it": "Secondo dati comunali"
+  },
+  "869": {
+   "de": "Gemäss Baubewilligung",
+   "fr": "Selon permis de construire",
+   "it": "Secondo la licenza di construzione"
+  },
+  "870": {
+   "de": "Gemäss Versorgungswerk (Gas, Fernwärme)",
+   "fr": "Selon entreprise de distribution (gaz, chaleur à distance)",
+   "it": "Secondo l'impresa di erogazione (gas, calore a distanza)"
+  },
+  "871": {
+   "de": "Gemäss Minergie",
+   "fr": "Selon Minergie",
+   "it": "Secondo Minergie"
+  }
+ },
+ "GWAERSCEH2": {
+  "852": {
+   "de": "Gemäss amtlicher Schätzung",
+   "fr": "Selon estimation officielle",
+   "it": "Secondo la stima ufficiale"
+  },
+  "853": {
+   "de": "Gemäss Gebäudeversicherung",
+   "fr": "Selon assurance immobilière",
+   "it": "Secondo l'assicurazione immobiliare"
+  },
+  "855": {
+   "de": "Gemäss Feuerungskontrolle",
+   "fr": "Selon contrôle des installations de chauffage",
+   "it": "Secondo il controllo degli impianti di riscaldamento"
+  },
+  "857": {
+   "de": "Gemäss Eigentümer/in / Verwaltung",
+   "fr": "Selon propriétaire / gérant d'immeuble",
+   "it": "Secondo il proprietario / gerente immobiliare"
+  },
+  "858": {
+   "de": "Gemäss Gebäudeenergieausweis der Kantone (GEAK)",
+   "fr": "Selon Certificat énergétique cantonal des bâtiments (CECB)",
+   "it": "Secondo il Certificato energetico cantonale degli edifici (CECE)"
+  },
+  "859": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  },
+  "860": {
+   "de": "Gemäss Volkszählung 2000",
+   "fr": "Selon recensement 2000",
+   "it": "Secondo censimento 2000"
+  },
+  "864": {
+   "de": "Gemäss kantonalen Daten / Das Gebäudeprogramm",
+   "fr": "Selon données cantonales / Le Programme Bâtiments",
+   "it": "Secondo dati cantonali / Il Programma Edifici"
+  },
+  "865": {
+   "de": "Gemäss Daten der Gemeinde",
+   "fr": "Selon données communales",
+   "it": "Secondo dati comunali"
+  },
+  "869": {
+   "de": "Gemäss Baubewilligung",
+   "fr": "Selon permis de construire",
+   "it": "Secondo la licenza di construzione"
+  },
+  "870": {
+   "de": "Gemäss Versorgungswerk (Gas, Fernwärme)",
+   "fr": "Selon entreprise de distribution (gaz, chaleur à distance)",
+   "it": "Secondo l'impresa di erogazione (gas, calore a distanza)"
+  },
+  "871": {
+   "de": "Gemäss Minergie",
+   "fr": "Selon Minergie",
+   "it": "Secondo Minergie"
+  }
+ },
+ "GWAERSCEW1": {
+  "852": {
+   "de": "Gemäss amtlicher Schätzung",
+   "fr": "Selon estimation officielle",
+   "it": "Secondo la stima ufficiale"
+  },
+  "853": {
+   "de": "Gemäss Gebäudeversicherung",
+   "fr": "Selon assurance immobilière",
+   "it": "Secondo l'assicurazione immobiliare"
+  },
+  "855": {
+   "de": "Gemäss Feuerungskontrolle",
+   "fr": "Selon contrôle des installations de chauffage",
+   "it": "Secondo il controllo degli impianti di riscaldamento"
+  },
+  "857": {
+   "de": "Gemäss Eigentümer/in / Verwaltung",
+   "fr": "Selon propriétaire / gérant d'immeuble",
+   "it": "Secondo il proprietario / gerente immobiliare"
+  },
+  "858": {
+   "de": "Gemäss Gebäudeenergieausweis der Kantone (GEAK)",
+   "fr": "Selon Certificat énergétique cantonal des bâtiments (CECB)",
+   "it": "Secondo il Certificato energetico cantonale degli edifici (CECE)"
+  },
+  "859": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  },
+  "860": {
+   "de": "Gemäss Volkszählung 2000",
+   "fr": "Selon recensement 2000",
+   "it": "Secondo censimento 2000"
+  },
+  "864": {
+   "de": "Gemäss kantonalen Daten / Das Gebäudeprogramm",
+   "fr": "Selon données cantonales / Le Programme Bâtiments",
+   "it": "Secondo dati cantonali / Il Programma Edifici"
+  },
+  "865": {
+   "de": "Gemäss Daten der Gemeinde",
+   "fr": "Selon données communales",
+   "it": "Secondo dati comunali"
+  },
+  "869": {
+   "de": "Gemäss Baubewilligung",
+   "fr": "Selon permis de construire",
+   "it": "Secondo la licenza di construzione"
+  },
+  "870": {
+   "de": "Gemäss Versorgungswerk (Gas, Fernwärme)",
+   "fr": "Selon entreprise de distribution (gaz, chaleur à distance)",
+   "it": "Secondo l'impresa di erogazione (gas, calore a distanza)"
+  },
+  "871": {
+   "de": "Gemäss Minergie",
+   "fr": "Selon Minergie",
+   "it": "Secondo Minergie"
+  }
+ },
+ "GWAERSCEW2": {
+  "852": {
+   "de": "Gemäss amtlicher Schätzung",
+   "fr": "Selon estimation officielle",
+   "it": "Secondo la stima ufficiale"
+  },
+  "853": {
+   "de": "Gemäss Gebäudeversicherung",
+   "fr": "Selon assurance immobilière",
+   "it": "Secondo l'assicurazione immobiliare"
+  },
+  "855": {
+   "de": "Gemäss Feuerungskontrolle",
+   "fr": "Selon contrôle des installations de chauffage",
+   "it": "Secondo il controllo degli impianti di riscaldamento"
+  },
+  "857": {
+   "de": "Gemäss Eigentümer/in / Verwaltung",
+   "fr": "Selon propriétaire / gérant d'immeuble",
+   "it": "Secondo il proprietario / gerente immobiliare"
+  },
+  "858": {
+   "de": "Gemäss Gebäudeenergieausweis der Kantone (GEAK)",
+   "fr": "Selon Certificat énergétique cantonal des bâtiments (CECB)",
+   "it": "Secondo il Certificato energetico cantonale degli edifici (CECE)"
+  },
+  "859": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  },
+  "860": {
+   "de": "Gemäss Volkszählung 2000",
+   "fr": "Selon recensement 2000",
+   "it": "Secondo censimento 2000"
+  },
+  "864": {
+   "de": "Gemäss kantonalen Daten / Das Gebäudeprogramm",
+   "fr": "Selon données cantonales / Le Programme Bâtiments",
+   "it": "Secondo dati cantonali / Il Programma Edifici"
+  },
+  "865": {
+   "de": "Gemäss Daten der Gemeinde",
+   "fr": "Selon données communales",
+   "it": "Secondo dati comunali"
+  },
+  "869": {
+   "de": "Gemäss Baubewilligung",
+   "fr": "Selon permis de construire",
+   "it": "Secondo la licenza di construzione"
+  },
+  "870": {
+   "de": "Gemäss Versorgungswerk (Gas, Fernwärme)",
+   "fr": "Selon entreprise de distribution (gaz, chaleur à distance)",
+   "it": "Secondo l'impresa di erogazione (gas, calore a distanza)"
+  },
+  "871": {
+   "de": "Gemäss Minergie",
+   "fr": "Selon Minergie",
+   "it": "Secondo Minergie"
+  }
+ },
+ "GWAERZH1": {
+  "7400": {
+   "de": "Kein Wärmeerzeuger",
+   "fr": "Pas de générateur de chaleur",
+   "it": "Senza generatore di calore"
+  },
+  "7410": {
+   "de": "Wärmepumpe für ein Gebäude",
+   "fr": "Pompe à chaleur PAC pour un seul bâtiment",
+   "it": "Pompa di calore PAC per un solo edificio"
+  },
+  "7411": {
+   "de": "Wärmepumpe für mehrere Gebäude",
+   "fr": "Pompe à chaleur PAC pour plusieurs bâtiments",
+   "it": "Pompa di calore PAC per più edifici"
+  },
+  "7420": {
+   "de": "Thermische Solaranlage für ein Gebäude",
+   "fr": "Installation solaire thermique pour un seul bâtiment",
+   "it": "Impianto solare termico per un solo edificio"
+  },
+  "7421": {
+   "de": "Thermische Solaranlage für mehrere Gebäude",
+   "fr": "Installation solaire thermique pour plusieurs bâtiments",
+   "it": "Impianto solare termico per più edifici"
+  },
+  "7430": {
+   "de": "Heizkessel (generisch) für ein Gebäude",
+   "fr": "Chaudière (générique) pour un seul bâtiment",
+   "it": "Caldaia (generica) per un solo edificio"
+  },
+  "7431": {
+   "de": "Heizkessel (generisch) für mehrere Gebäude",
+   "fr": "Chaudière (générique) pour plusieurs bâtiments",
+   "it": "Caldaia (generica) per più edifici"
+  },
+  "7432": {
+   "de": "Heizkessel nicht kondensierend für ein Gebäude",
+   "fr": "Chaudière standard pour un seul bâtiment",
+   "it": "Caldaia standard per un solo edificio"
+  },
+  "7433": {
+   "de": "Heizkessel nicht kondensierend für mehrere Gebäude",
+   "fr": "Chaudière standard pour plusieurs bâtiments",
+   "it": "Caldaia standard per più edifici"
+  },
+  "7434": {
+   "de": "Heizkessel kondensierend für ein Gebäude",
+   "fr": "Chaudière à condensation pour un seul bâtiment",
+   "it": "Caldaia a condensazione per un solo edificio"
+  },
+  "7435": {
+   "de": "Heizkessel kondensierend für mehrere Gebäude",
+   "fr": "Chaudière à condensation pour plusieurs bâtiments",
+   "it": "Caldaia a condensazione per più edifici"
+  },
+  "7436": {
+   "de": "Ofen",
+   "fr": "Poêle",
+   "it": "Stufa"
+  },
+  "7440": {
+   "de": "Wärmekraftkopplungsanlage für ein Gebäude",
+   "fr": "Installation couplage chaleur-force pour un seul bâtiment",
+   "it": "Impianto di cogenerazione di energia elettrica e termica per un solo edificio"
+  },
+  "7441": {
+   "de": "Wärmekraftkopplungsanlage für mehrere Gebäude",
+   "fr": "Installation couplage chaleur-force pour plusieurs bâtiments",
+   "it": "Impianto di cogenerazione di energia elettrica e termica per più edifici"
+  },
+  "7450": {
+   "de": "Elektrospeicher-Zentralheizung für ein Gebäude",
+   "fr": "Chauffage central électrique pour un seul bâtiment",
+   "it": "Riscaldamento centrale elettrico per un solo edificio"
+  },
+  "7451": {
+   "de": "Elektrospeicher-Zentralheizung für mehrere Gebäude",
+   "fr": "Chauffage central électrique pour plusieurs bâtiments",
+   "it": "Riscaldamento centrale elettrico per più edifici"
+  },
+  "7452": {
+   "de": "Elektro direkt",
+   "fr": "Chauffage électrique direct (y compris radiateur infra-rouge)",
+   "it": "Radiatori elettrici (compresi quelli a infrarossi)"
+  },
+  "7460": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme) für ein Gebäude",
+   "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour un seul bâtiment",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per un solo edificio"
+  },
+  "7461": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme) für mehrere Gebäude",
+   "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour plusieurs bâtiments",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per più edifici"
+  },
+  "7499": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GWAERZH2": {
+  "7400": {
+   "de": "Kein Wärmeerzeuger",
+   "fr": "Pas de générateur de chaleur",
+   "it": "Senza generatore di calore"
+  },
+  "7410": {
+   "de": "Wärmepumpe für ein Gebäude",
+   "fr": "Pompe à chaleur PAC pour un seul bâtiment",
+   "it": "Pompa di calore PAC per un solo edificio"
+  },
+  "7411": {
+   "de": "Wärmepumpe für mehrere Gebäude",
+   "fr": "Pompe à chaleur PAC pour plusieurs bâtiments",
+   "it": "Pompa di calore PAC per più edifici"
+  },
+  "7420": {
+   "de": "Thermische Solaranlage für ein Gebäude",
+   "fr": "Installation solaire thermique pour un seul bâtiment",
+   "it": "Impianto solare termico per un solo edificio"
+  },
+  "7421": {
+   "de": "Thermische Solaranlage für mehrere Gebäude",
+   "fr": "Installation solaire thermique pour plusieurs bâtiments",
+   "it": "Impianto solare termico per più edifici"
+  },
+  "7430": {
+   "de": "Heizkessel (generisch) für ein Gebäude",
+   "fr": "Chaudière (générique) pour un seul bâtiment",
+   "it": "Caldaia (generica) per un solo edificio"
+  },
+  "7431": {
+   "de": "Heizkessel (generisch) für mehrere Gebäude",
+   "fr": "Chaudière (générique) pour plusieurs bâtiments",
+   "it": "Caldaia (generica) per più edifici"
+  },
+  "7432": {
+   "de": "Heizkessel nicht kondensierend für ein Gebäude",
+   "fr": "Chaudière standard pour un seul bâtiment",
+   "it": "Caldaia standard per un solo edificio"
+  },
+  "7433": {
+   "de": "Heizkessel nicht kondensierend für mehrere Gebäude",
+   "fr": "Chaudière standard pour plusieurs bâtiments",
+   "it": "Caldaia standard per più edifici"
+  },
+  "7434": {
+   "de": "Heizkessel kondensierend für ein Gebäude",
+   "fr": "Chaudière à condensation pour un seul bâtiment",
+   "it": "Caldaia a condensazione per un solo edificio"
+  },
+  "7435": {
+   "de": "Heizkessel kondensierend für mehrere Gebäude",
+   "fr": "Chaudière à condensation pour plusieurs bâtiments",
+   "it": "Caldaia a condensazione per più edifici"
+  },
+  "7436": {
+   "de": "Ofen",
+   "fr": "Poêle",
+   "it": "Stufa"
+  },
+  "7440": {
+   "de": "Wärmekraftkopplungsanlage für ein Gebäude",
+   "fr": "Installation couplage chaleur-force pour un seul bâtiment",
+   "it": "Impianto di cogenerazione di energia elettrica e termica per un solo edificio"
+  },
+  "7441": {
+   "de": "Wärmekraftkopplungsanlage für mehrere Gebäude",
+   "fr": "Installation couplage chaleur-force pour plusieurs bâtiments",
+   "it": "Impianto di cogenerazione di energia elettrica e termica per più edifici"
+  },
+  "7450": {
+   "de": "Elektrospeicher-Zentralheizung für ein Gebäude",
+   "fr": "Chauffage central électrique pour un seul bâtiment",
+   "it": "Riscaldamento centrale elettrico per un solo edificio"
+  },
+  "7451": {
+   "de": "Elektrospeicher-Zentralheizung für mehrere Gebäude",
+   "fr": "Chauffage central électrique pour plusieurs bâtiments",
+   "it": "Riscaldamento centrale elettrico per più edifici"
+  },
+  "7452": {
+   "de": "Elektro direkt",
+   "fr": "Chauffage électrique direct (y compris radiateur infra-rouge)",
+   "it": "Radiatori elettrici (compresi quelli a infrarossi)"
+  },
+  "7460": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme) für ein Gebäude",
+   "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour un seul bâtiment",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per un solo edificio"
+  },
+  "7461": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme) für mehrere Gebäude",
+   "fr": "Echangeur de chaleur (y.c. chauffage à distance) pour plusieurs bâtiments",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento per più edifici"
+  },
+  "7499": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GWAERZW1": {
+  "7600": {
+   "de": "Kein Wärmeerzeuger",
+   "fr": "Pas de générateur de chaleur",
+   "it": "Senza generatore di calore"
+  },
+  "7610": {
+   "de": "Wärmepumpe",
+   "fr": "Pompe à chaleur PAC",
+   "it": "Pompa di calore PAC"
+  },
+  "7620": {
+   "de": "Thermische Solaranlage",
+   "fr": "Installation solaire thermique",
+   "it": "Impianto solare termico"
+  },
+  "7630": {
+   "de": "Heizkessel (generisch)",
+   "fr": "Chaudière (générique)",
+   "it": "Caldaia (generica)"
+  },
+  "7632": {
+   "de": "Heizkessel nicht kondensierend",
+   "fr": "Chaudière standard",
+   "it": "Caldaia standard"
+  },
+  "7634": {
+   "de": "Heizkessel kondensierend",
+   "fr": "Chaudière à condensation",
+   "it": "Caldaia a condensazione"
+  },
+  "7640": {
+   "de": "Wärmekraftkopplungsanlage",
+   "fr": "Installation couplage chaleur-force",
+   "it": "Impianto di cogenerazione di energia elettrica e termica"
+  },
+  "7650": {
+   "de": "Zentraler Elektroboiler",
+   "fr": "Boiler électrique central",
+   "it": "Boiler centrale elettrico"
+  },
+  "7651": {
+   "de": "Kleinboiler",
+   "fr": "Petit boiler",
+   "it": "Piccolo boiler"
+  },
+  "7660": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme)",
+   "fr": "Echangeur de chaleur (y compris pour la chaleur à distance)",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento"
+  },
+  "7699": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GWAERZW2": {
+  "7600": {
+   "de": "Kein Wärmeerzeuger",
+   "fr": "Pas de générateur de chaleur",
+   "it": "Senza generatore di calore"
+  },
+  "7610": {
+   "de": "Wärmepumpe",
+   "fr": "Pompe à chaleur PAC",
+   "it": "Pompa di calore PAC"
+  },
+  "7620": {
+   "de": "Thermische Solaranlage",
+   "fr": "Installation solaire thermique",
+   "it": "Impianto solare termico"
+  },
+  "7630": {
+   "de": "Heizkessel (generisch)",
+   "fr": "Chaudière (générique)",
+   "it": "Caldaia (generica)"
+  },
+  "7632": {
+   "de": "Heizkessel nicht kondensierend",
+   "fr": "Chaudière standard",
+   "it": "Caldaia standard"
+  },
+  "7634": {
+   "de": "Heizkessel kondensierend",
+   "fr": "Chaudière à condensation",
+   "it": "Caldaia a condensazione"
+  },
+  "7640": {
+   "de": "Wärmekraftkopplungsanlage",
+   "fr": "Installation couplage chaleur-force",
+   "it": "Impianto di cogenerazione di energia elettrica e termica"
+  },
+  "7650": {
+   "de": "Zentraler Elektroboiler",
+   "fr": "Boiler électrique central",
+   "it": "Boiler centrale elettrico"
+  },
+  "7651": {
+   "de": "Kleinboiler",
+   "fr": "Petit boiler",
+   "it": "Piccolo boiler"
+  },
+  "7660": {
+   "de": "Wärmetauscher (einschliesslich für Fernwärme)",
+   "fr": "Echangeur de chaleur (y compris pour la chaleur à distance)",
+   "it": "Scambiatore di calore e impianto ad hoc per teleriscaldamento"
+  },
+  "7699": {
+   "de": "Andere",
+   "fr": "Autre",
+   "it": "Altro"
+  }
+ },
+ "GWWV": {
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "2": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  }
+ },
+ "LTYP": {
+  "4011": {
+   "de": "Parzelle (Liegenschaft)",
+   "fr": "Parcelle (bien-fonds)",
+   "it": "Particella (immobile)"
+  },
+  "4012": {
+   "de": "Anteil Stockwerkeigentum",
+   "fr": "Part de propriété par étage",
+   "it": "Quota di proprietà per piani"
+  },
+  "4013": {
+   "de": "Gewöhnliches Miteigentum",
+   "fr": "Copropriété habituelle",
+   "it": "Comproprietà abituale"
+  },
+  "4014": {
+   "de": "Konzession",
+   "fr": "Concession",
+   "it": "Concessione"
+  },
+  "4015": {
+   "de": "SDR (Baurecht)",
+   "fr": "DDP habituel (droit de superficie)",
+   "it": "DDP abituale (diritto di superficie)"
+  },
+  "4016": {
+   "de": "Bergwerk",
+   "fr": "Mine",
+   "it": "Miniera"
+  }
+ },
+ "PANDUMB": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PARTAB": {
+  "6001": {
+   "de": "Neubau",
+   "fr": "Nouvelle construction",
+   "it": "Nuova costruzione"
+  },
+  "6002": {
+   "de": "Umbau",
+   "fr": "Transformation",
+   "it": "Rinnovo"
+  },
+  "6007": {
+   "de": "Abbruch",
+   "fr": "Démolition",
+   "it": "Demolizione"
+  }
+ },
+ "PARTBW": {
+  "6010": {
+   "de": "Tiefbau",
+   "fr": "Génie civil",
+   "it": "Genio civile"
+  },
+  "6011": {
+   "de": "Hochbau",
+   "fr": "Bâtiment (non génie civil)",
+   "it": "Edilizia"
+  },
+  "6012": {
+   "de": "Sonderbau",
+   "fr": "Construction particulière",
+   "it": "Costruzione speciale"
+  }
+ },
+ "PARTBZ": {
+  "5000": {
+   "de": "Bauzone",
+   "fr": "Zone à bâtir",
+   "it": "Zona edificabile"
+  },
+  "5001": {
+   "de": "Ökonomiebauten für die bodenabhängige Landwirtschaft",
+   "fr": "Bâtiments d'exploitation pour agriculture tributaire du sol",
+   "it": "Edifici di economia rurale per coltivaz dipendente dal suolo"
+  },
+  "5002": {
+   "de": "Landwirtschaftliche Bauten: Aufbereitung, Lagerung, Verkauf",
+   "fr": "Constructions agricoles pour préparation, stockage et vente",
+   "it": "Edifici agricoli: preparazione, immagazzinamento, vendita"
+  },
+  "5003": {
+   "de": "Wohnbauten für landwirtschaftliche Gewerbe",
+   "fr": "Bâtiments d'habitation pour une entreprise agricole",
+   "it": "Edifici abitativi per l'attività agricola"
+  },
+  "5004": {
+   "de": "Gemeinschaftliche Stallbauten",
+   "fr": "Constructions pour garde en commun d'animaux de rente",
+   "it": "Stalle in comune"
+  },
+  "5005": {
+   "de": "Innere Aufstockung (Schweineställe, Geflügelhallen)",
+   "fr": "Développement interne (halles pour porcs ou volaille)",
+   "it": "Ampliamenti interni (porcili, pollai)"
+  },
+  "5006": {
+   "de": "Innere Aufstockung (Gewächshäuser)",
+   "fr": "Développement interne (serres)",
+   "it": "Ampliamenti interni (serre)"
+  },
+  "5007": {
+   "de": "Bauten und Anlagen in Speziallandwirtschaftszonen",
+   "fr": "Constructions conformes à une zone agricole spéciale",
+   "it": "Edifici e impianti in zone agricole speciali"
+  },
+  "5008": {
+   "de": "Gewinnung von Energie aus Biomasse",
+   "fr": "Production d'énergie à partir de biomasse",
+   "it": "Produzione di energia a partire da biomassa"
+  },
+  "5009": {
+   "de": "Zonenkonforme Bauten und Anlagen in Schutzzonen",
+   "fr": "Constructions et installations conformes dans des zones de protection",
+   "it": "Edifici e impianti conformi in zone protette"
+  },
+  "5011": {
+   "de": "Bauten und Anlagen in Spezialzonen (Deponie, Sport u.ä.)",
+   "fr": "Constr. conformes à une zone spéciale (décharge, sport etc.)",
+   "it": "Edifici e impianti in zone spec. (discariche, sport, ecc.)"
+  },
+  "5012": {
+   "de": "Zonenkonforme Bauten in Weiler- oder Erhaltungszonen u. ä.",
+   "fr": "Contructions conformes à une zone de hameau etc.",
+   "it": "Ed. conformi in zone di casali o degne di conservazione ecc."
+  },
+  "5015": {
+   "de": "Solaranlagen",
+   "fr": "Installations solaires",
+   "it": "Impianti solari"
+  },
+  "5021": {
+   "de": "Standortgebundene Bauten und Anlagen",
+   "fr": "Constructions imposées par leur destination",
+   "it": "Edifici e impianti a ubicazione vincolata"
+  },
+  "5022": {
+   "de": "Vollst. Zweckänderung von Bauten in Streusiedlungsgebieten",
+   "fr": "Changement complet d'affectation, territ. à habitat dispersé",
+   "it": "Mod. tot. d. destinaz. d'uso in aree con insediam. sparsi"
+  },
+  "5023": {
+   "de": "Vollständige Zweckänderung landschaftsprägender Bauten",
+   "fr": "Changement complet d'affectation dans paysages protégés",
+   "it": "Mod. tot. d. destinaz. d'uso di edifici tipici del paesaggio"
+  },
+  "5031": {
+   "de": "Zweckänderungen ohne bauliche Massnahmen",
+   "fr": "Changement d'affectation sans travaux de transformation",
+   "it": "Mod. della destinaz. d'uso senza lavori di trasformazione"
+  },
+  "5041": {
+   "de": "Nichtlandwirtschaftliche Nebenbetriebe zur Existenzsicherung",
+   "fr": "Act. non agr. nécessaire à la survie de l'exploitation",
+   "it": "Aziende acc. non agric. che assicurano la sussistenza"
+  },
+  "5043": {
+   "de": "Nichtlandw. Nebenbetriebe mit engem Bezug zum landw. Gewerbe",
+   "fr": "Act. non agr. étroitement  liées à l'exploitation agricole",
+   "it": "Aziende acc. non agric. con stretto legame con l'az. agric."
+  },
+  "5044": {
+   "de": "Nichtlandw. Nebenbetriebe in temporären Betriebszentren",
+   "fr": "Act. non agr. dans centres d'exploitation temporaires",
+   "it": "Aziende acc. non agric. nei centri dell'azien. a uso tempor."
+  },
+  "5051": {
+   "de": "Änderung zonenwidrig gewordener Bauten und Anlagen",
+   "fr": "Modification de constructions devenues contraires à la zone",
+   "it": "Trasformaz. di edifici e impianti non più conformi alla zona"
+  },
+  "5061": {
+   "de": "Änderung an ehem. landw. genutzten Wohnbauten",
+   "fr": "Transformation d'anciens logements agricoles",
+   "it": "Trasformaz. di ex edifici abitativi a uso agricolo"
+  },
+  "5062": {
+   "de": "Vollständige Zweckänderung geschützter Bauten",
+   "fr": "Changement complet d'affectation de constructions protégées",
+   "it": "Modifica totale della destinazione d'uso di edifici protetti"
+  },
+  "5063": {
+   "de": "Hobbymässige Tierhaltung in  nahe gelegenen Gebäuden",
+   "fr": "Détention d'animaux de loisirs dans bâtiments proches",
+   "it": "Tenuta di animali a scopo di hobby in ed. nelle vicinanze"
+  },
+  "5064": {
+   "de": "Aussenanlagen zur hobbymässigen Tierhaltung",
+   "fr": "Installations extérieures pour détention d'animaux de loisir",
+   "it": "Impianti esterni per la tenuta di animali a scopo di hobby"
+  },
+  "5071": {
+   "de": "Änderung zonenwidrig gewordener gewerblicher Bauten",
+   "fr": "Modification de constructions à usage commercial",
+   "it": "Trasformaz. di edifici aziendali non più conformi alla zona"
+  }
+ },
+ "PENSAN": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PERWMHZ": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PERWOHZ": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PHEIZSAN": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PINNUMB": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PPHOTSOL": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PSTAT": {
+  "6701": {
+   "de": "Gesuch eingereicht, aber noch nicht bewilligt",
+   "fr": "Permis de construire demandé mais pas encore délivré",
+   "it": "Progetto presentato: domanda di costruzione inoltrata"
+  },
+  "6702": {
+   "de": "Bewilligung erteilt, aber noch nicht baubegonnen",
+   "fr": "Permis de construire délivré, projet pas encore en chantier",
+   "it": "Progetto approvato: licenza di costructione rilasciata"
+  },
+  "6703": {
+   "de": "Projekt baubegonnen",
+   "fr": "Projet en chantier",
+   "it": "Progetto iniziato: lavori in corso"
+  },
+  "6704": {
+   "de": "Projekt fertiggestellt",
+   "fr": "Projet terminé",
+   "it": "Progetto terminato"
+  },
+  "6706": {
+   "de": "Projekt sistiert",
+   "fr": "Projet reporté",
+   "it": "Progetto rinviato"
+  },
+  "6707": {
+   "de": "Baugesuch abgelehnt",
+   "fr": "Projet refusé",
+   "it": "Licenza rifiutata"
+  },
+  "6708": {
+   "de": "Projekt nicht realisiert",
+   "fr": "Projet non réalisé",
+   "it": "Progetto non realizzato"
+  },
+  "6709": {
+   "de": "Projekt zurückgezogen",
+   "fr": "Projet retiré",
+   "it": "Progetto ritirato"
+  }
+ },
+ "PTHERSOL": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "PTYPAG": {
+  "6101": {
+   "de": "SBB (Schweizerische Bundesbahnen)",
+   "fr": "CFF (Chemins de fer fédéraux)",
+   "it": "FFS (Ferrovie Federali Svizzere)"
+  },
+  "6103": {
+   "de": "VBS (Eidg. Dep. für Verteidigung, Bev.-schutz und Sport)",
+   "fr": "DDPS (Dép. féd. défense, protection de la pop. et sports)",
+   "it": "DDPS (Dip. fed. difesa, protezione d. pop. e sport)"
+  },
+  "6104": {
+   "de": "BBL (Bundesamt für Bauten und Logistik)",
+   "fr": "OFCL (Office fédéral des constructions et de la logistique)",
+   "it": "UFCL (Ufficio federale delle costruzioni e della logostica)"
+  },
+  "6105": {
+   "de": "Bundesamt für Strassen",
+   "fr": "Office fédéral des routes",
+   "it": "Ufficio federale delle strade"
+  },
+  "6107": {
+   "de": "SWISSCOM",
+   "fr": "SWISSCOM",
+   "it": "SWISSCOM"
+  },
+  "6108": {
+   "de": "Die Post",
+   "fr": "La Poste",
+   "it": "La Posta"
+  },
+  "6110": {
+   "de": "Kantone (ohne öffentliche Unternehmen)",
+   "fr": "Cantons (sans leurs entreprises de droit public)",
+   "it": "Cantoni (senza le imprese pubbliche)"
+  },
+  "6111": {
+   "de": "Öffentliche Unternehmen eines Kantons",
+   "fr": "Entreprises de droit public d'un canton",
+   "it": "Imprese pubbliche dei Cantoni"
+  },
+  "6115": {
+   "de": "Gemeinden ohne öffentliche Unternehmen",
+   "fr": "Communes sans leurs entreprises de droit public",
+   "it": "Comuni senza le imprese pubbliche"
+  },
+  "6116": {
+   "de": "Öffentliche Unternehmen einer Gemeinde",
+   "fr": "Entreprises de droit public de la commune",
+   "it": "Imprese pubbliche dei Comuni"
+  },
+  "6121": {
+   "de": "Versicherungsgesellschaften",
+   "fr": "Sociétés d'assurance",
+   "it": "Compagnie di assicurazione"
+  },
+  "6122": {
+   "de": "Personalfürsorgestiftungen (Pensionskassen)",
+   "fr": "Institutions de prévoyance (caisses de pension)",
+   "it": "Fondazioni di previdenza del personale (casse pensioni)"
+  },
+  "6123": {
+   "de": "Krankenkassen, SUVA",
+   "fr": "Caisses maladie, CNA",
+   "it": "Cassa malati, SUVA"
+  },
+  "6124": {
+   "de": "Banken, Immobilienfonds oder Finanzholdings",
+   "fr": "Banques, fonds immobiliers ou holding financières",
+   "it": "Banche, fondi immobiliari o holding finanziarie"
+  },
+  "6131": {
+   "de": "Private Elektrizitätswerke",
+   "fr": "Usines d'électricité privées",
+   "it": "Aziende elettriche private"
+  },
+  "6132": {
+   "de": "Private Gaswerke",
+   "fr": "Usine à gaz privée",
+   "it": "Aziende del gas private"
+  },
+  "6133": {
+   "de": "Privatbahnen",
+   "fr": "Chemins de fer privés",
+   "it": "Ferrovie private"
+  },
+  "6141": {
+   "de": "Einzelfirmen oder Personengesellsch. der Immobilienbranche",
+   "fr": "Sociétés individuelles ou de pers. de la branche immobilière",
+   "it": "Ditte indiv. o società di persone del settor immobiliare"
+  },
+  "6142": {
+   "de": "Wohnbaugenossenschaften",
+   "fr": "Coopératives de logement",
+   "it": "Cooperative immobiliari"
+  },
+  "6143": {
+   "de": "Kapitalgesellschaften der Immobilienbranche",
+   "fr": "Société de capitaux de la branche immobilière",
+   "it": "Società di capitali del settore immobiliare"
+  },
+  "6151": {
+   "de": "Einzelfirmen oder Personengesellsch. ohne Immobilienbranche",
+   "fr": "Sociétés individuelles ou de pers. sans la branche immobilière",
+   "it": "Ditte indiv. o società di pers. senza il settore immobiliare"
+  },
+  "6152": {
+   "de": "Kapitalgesellschaften ohne Immobilienbranche",
+   "fr": "Société de capitaux sans la branche immobilière",
+   "it": "Società di capitali senza il settore immobiliare"
+  },
+  "6161": {
+   "de": "Privatpersonen",
+   "fr": "Particuliers",
+   "it": "Persone private"
+  },
+  "6162": {
+   "de": "Andere private Auftraggeber",
+   "fr": "Autres investisseurs privés",
+   "it": "Altri committenti privati"
+  },
+  "6163": {
+   "de": "Internationale Organisationen, Botschaften",
+   "fr": "Organisations internationales, ambassades",
+   "it": "Organizzazioni internazionali, ambasciate"
+  }
+ },
+ "PTYPBW": {
+  "6211": {
+   "de": "Wasserversorgungsanlagen",
+   "fr": "Installations pour alimentation en eau",
+   "it": "Impianti di approvvigionamento idrico"
+  },
+  "6212": {
+   "de": "Elektrizitätswerke und -netze",
+   "fr": "Usines d'électricité et réseaux",
+   "it": "Centrali e reti elettriche"
+  },
+  "6213": {
+   "de": "Gaswerke und -netze, chemische Anlagen",
+   "fr": "Usines à gaz et réseaux et installations chimiques",
+   "it": "Officine e reti del gas, impianti chimici"
+  },
+  "6214": {
+   "de": "Fernheizungsanlagen",
+   "fr": "Installations de chauffage à distance",
+   "it": "Impianti di teleriscaldamento"
+  },
+  "6219": {
+   "de": "Übrige Versorgungsanlagen",
+   "fr": "Autres installations d'approvisionnement",
+   "it": "Altri impianti di approvvigionamento"
+  },
+  "6221": {
+   "de": "Wasserentsorgungsanlagen",
+   "fr": "Installations d'évacuation et de traitement des eaux usées",
+   "it": "Impianti di smaltimento delle acque"
+  },
+  "6222": {
+   "de": "Kehrichtentsorgungsanlagen",
+   "fr": "Installations de traitement des ordures ménagères",
+   "it": "Impianti di smaltimento dei rifiuti"
+  },
+  "6223": {
+   "de": "Übrige Entsorgungsanlagen",
+   "fr": "Installations de traitement des autres déchets",
+   "it": "Altri impianti di smaltimento"
+  },
+  "6231": {
+   "de": "Nationalstrassen",
+   "fr": "Routes nationales",
+   "it": "Strade nazionali"
+  },
+  "6232": {
+   "de": "Kantonsstrassen",
+   "fr": "Routes cantonales",
+   "it": "Strade cantonali"
+  },
+  "6233": {
+   "de": "Gemeindestrassen",
+   "fr": "Routes communales",
+   "it": "Strade comunali"
+  },
+  "6234": {
+   "de": "Übriger Strassenbau, Parkplätze",
+   "fr": "Autres constructions routières, places de stationnement",
+   "it": "Altre costruzioni stradali, parcheggi"
+  },
+  "6235": {
+   "de": "Parkhäuser",
+   "fr": "Parkings couverts",
+   "it": "Autosili"
+  },
+  "6241": {
+   "de": "Bahnanlagen",
+   "fr": "Constructions pour les chemins de fer",
+   "it": "Impianti ferroviari"
+  },
+  "6242": {
+   "de": "Bus- und Tramanlagen",
+   "fr": "Constructions pour les bus et les tramways",
+   "it": "Impianti per bus e tram"
+  },
+  "6243": {
+   "de": "Schiffsverkehrsanlagen",
+   "fr": "Constructions pour la navigation",
+   "it": "Impianti della navigazione"
+  },
+  "6244": {
+   "de": "Flugverkehrsanlagen",
+   "fr": "Constructions pour les transports aériens",
+   "it": "Impianti dei transporti aerei"
+  },
+  "6245": {
+   "de": "Kommunikationsanlagen",
+   "fr": "Constructions pour les communications",
+   "it": "Impianti di telecomunicazione"
+  },
+  "6249": {
+   "de": "Übrige Verkehrsanlagen",
+   "fr": "Autres constructions vouées aux transports",
+   "it": "Altri impianti dei trasporti"
+  },
+  "6251": {
+   "de": "Schulen, Bildungswesen (bis Maturastufe)",
+   "fr": "Écoles, systèmes d'éducation jusqu'au niveau de la maturité",
+   "it": "Scuole, formazione (fino al grado della maturità)"
+  },
+  "6252": {
+   "de": "Höheres Bildungswesen und Forschung",
+   "fr": "Établissements de formation supérieure et de recherche",
+   "it": "Formazione superiore e ricerca"
+  },
+  "6253": {
+   "de": "Akutspitäler, allgemeine Spitäler",
+   "fr": "Hôpitaux d'urgences, hôpitaux généraux",
+   "it": "Ospedali per casi acuti e di cure generali"
+  },
+  "6254": {
+   "de": "Heime mit Unterkunft, Pflegedienste und/oder Betreuung",
+   "fr": "Foyers avec soins médicaux et/ou services d'assist. sociale",
+   "it": "Istituti della sanità c. all., servici di cura e/o assist."
+  },
+  "6255": {
+   "de": "Übriges spezialisiertes Gesundheitswesen",
+   "fr": "Autres établissements de santé spécialisés",
+   "it": "Altri istituzioni sanitarie specializzate"
+  },
+  "6256": {
+   "de": "Freizeit- und Tourismusanlagen",
+   "fr": "Installations de loisirs et de tourisme",
+   "it": "Impianti per losvago e il turismo"
+  },
+  "6257": {
+   "de": "Kirchen und Sakralbauten",
+   "fr": "Églises et bâtiments à but religieux",
+   "it": "Chiese e altri luoghi di culto"
+  },
+  "6258": {
+   "de": "Kulturbauten inkl. Museen, Bibliotheken und Denkmäler",
+   "fr": "Bât. à but culturel incl. musées, bibliothèques et monuments",
+   "it": "Ed. a scopo cult. compresi musei, biblioteche e monumenti"
+  },
+  "6259": {
+   "de": "Sporthallen und Sportplätze",
+   "fr": "Salles omnisports et places de sport",
+   "it": "Impietanti e istallazioni per lo sport"
+  },
+  "6261": {
+   "de": "Uferverbauungen, Staudämme",
+   "fr": "Aménagements de berges et barrages",
+   "it": "Opere di protezione dei corsi d'acqua e delle rive die laghi"
+  },
+  "6262": {
+   "de": "Landesverteidigungsbauten",
+   "fr": "Constructions pour la défense nationale",
+   "it": "Opere per la difesa nazionale"
+  },
+  "6269": {
+   "de": "Übrige Infrastruktur",
+   "fr": "Autres infrastructures",
+   "it": "Altre infrastrutture"
+  },
+  "6271": {
+   "de": "Einfamilienhäuser freistehend",
+   "fr": "Maisons individuelles isolées",
+   "it": "Case unifamiliari isolate"
+  },
+  "6272": {
+   "de": "Einfamilienhäuser angebaut",
+   "fr": "Maisons individuelles mitoyennes",
+   "it": "Case unifamiliari contigue"
+  },
+  "6273": {
+   "de": "Mehrfamilienhäuser (reine Wohngebäude)",
+   "fr": "Maisons à plusieurs logements (à usage excl. d'habitation)",
+   "it": "Case plurifam. con diversi abitazioni a puro scopo abitativo"
+  },
+  "6274": {
+   "de": "Wohngebäude mit Nebennutzung (inkl. Bauernhäuser)",
+   "fr": "Bâtiments à usage annexe (y compris ruraux)",
+   "it": "Case con utilizzazione accessoria (comprese le fattorie)"
+  },
+  "6276": {
+   "de": "Wohnheime ohne Pflegedienste und/oder Betreuung",
+   "fr": "Foyers sans soins médicaux et/ou services d'assist. sociale",
+   "it": "Resid. per collettività senza servizi di cura e/o assistenza"
+  },
+  "6278": {
+   "de": "Garagen, Parkplätze, Einstellhallen im Zus. mit Wohngebäuden",
+   "fr": "Garages, places de parc en rapport avec l'habitation",
+   "it": "Garage, parcheggi, autorimesse annessi a edifici abitativi"
+  },
+  "6279": {
+   "de": "Übrige Bauten im Zusammenhang mit Wohngebäuden",
+   "fr": "Autres constructions en rapport avec l'habitation",
+   "it": "Altre costruzioni annesse a edifici abitativi"
+  },
+  "6281": {
+   "de": "Landwirtschaftsbauten",
+   "fr": "Constructions agricoles",
+   "it": "Costruzioni per l'agricoltura"
+  },
+  "6282": {
+   "de": "Forstwirtschaftsbauten",
+   "fr": "Constructions sylvicoles",
+   "it": "Costruzioni per la selvicoltura"
+  },
+  "6283": {
+   "de": "Meliorationen",
+   "fr": "Améliorations foncières",
+   "it": "Bonifiche fondiarie"
+  },
+  "6291": {
+   "de": "Werkstätten, Fabrikgebäude",
+   "fr": "Fabriques, usines, ateliers",
+   "it": "Fabbriche, officine"
+  },
+  "6292": {
+   "de": "Lagerhallen, Depots, Silos, Zisternen",
+   "fr": "Halles, dépôts, silos, citernes",
+   "it": "Capannoni, depositi, sili, cisterne"
+  },
+  "6293": {
+   "de": "Bürogebäude, Verwaltungsgebäude",
+   "fr": "Bâtiments administratifs, bureaux",
+   "it": "Edifici  amministrativi, uffici"
+  },
+  "6294": {
+   "de": "Kaufhäuser, Geschäftsgebäude",
+   "fr": "Bâtiments commerciaux, magasins",
+   "it": "Centri commerciali, edifici commerciali, negozi"
+  },
+  "6295": {
+   "de": "Hotels, Restaurants",
+   "fr": "Hôtels, restaurants",
+   "it": "Alberghi, ristoranti"
+  },
+  "6296": {
+   "de": "Andere Beherbergungen",
+   "fr": "Autres hébergements de courte durée",
+   "it": "Altre strutture di alloggio turistico"
+  },
+  "6299": {
+   "de": "Übrige Verwendung für wirtschaftliche Zwecke",
+   "fr": "Autres constructions destinées à des activités économiques",
+   "it": "Altre costruzioni destinate ad attività economiche"
+  }
+ },
+ "PUMNUTZ": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "SREAL": {
+  "9811": {
+   "de": "Projektiert",
+   "fr": "En projet",
+   "it": "In progetto"
+  },
+  "9812": {
+   "de": "Baubegonnen",
+   "fr": "En chantier",
+   "it": "Lavori in corso"
+  },
+  "9813": {
+   "de": "Bestehend",
+   "fr": "Existant",
+   "it": "Esistente"
+  },
+  "9814": {
+   "de": "Aufgehoben",
+   "fr": "Éliminé",
+   "it": "Eliminato"
+  }
+ },
+ "STRART": {
+  "9801": {
+   "de": "Linienobjekt (Strasse o.ä.)",
+   "fr": "Rue (objet linéaire)",
+   "it": "Via (oggetto lineare)"
+  },
+  "9802": {
+   "de": "Punktobjekt (Platz o.ä.)",
+   "fr": "Place (objet ponctuel)",
+   "it": "Piazza (oggetto puntuale)"
+  },
+  "9803": {
+   "de": "Flächenobjekt (Weiler o.ä.)",
+   "fr": "Lieu dénommé (surface)",
+   "it": "Zona provvista di denominazione (superficie)"
+  }
+ },
+ "STRFLAG": {
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "2": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  }
+ },
+ "STRGEO": {
+  "9801": {
+   "de": "Linienobjekt (Strasse o.ä.)",
+   "fr": "Rue (objet linéaire)",
+   "it": "Via (oggetto lineare)"
+  },
+  "9802": {
+   "de": "Punktobjekt (Platz o.ä.)",
+   "fr": "Place (objet ponctuel)",
+   "it": "Piazza (oggetto puntuale)"
+  },
+  "9803": {
+   "de": "Flächenobjekt (Weiler o.ä.)",
+   "fr": "Lieu dénommé (surface)",
+   "it": "Zona provvista di denominazione (superficie)"
+  }
+ },
+ "STRNUM": {
+  "9830": {
+   "de": "Keine Nummern",
+   "fr": "Pas de numérotation",
+   "it": "Nessuna numerazione"
+  },
+  "9832": {
+   "de": "Beliebig (zufällig, gemeindeweise)",
+   "fr": "Quelconque (aléatoire, par commune)",
+   "it": "Aleatoria (casuale, per comuni)"
+  },
+  "9835": {
+   "de": "Aufsteigend, ohne Angabe links/rechts",
+   "fr": "Croissante, sans indication gauche/droite",
+   "it": "In ordine crescente, senza indicazioni sinistra/destra"
+  },
+  "9836": {
+   "de": "Aufsteigend, ungerade Nummern links",
+   "fr": "Croissante, impairs à gauche",
+   "it": "In ordine crescente, numeri dispari a sinistra"
+  },
+  "9837": {
+   "de": "Aufsteigend, ungerade Nummern rechts",
+   "fr": "Croissante, impairs à droite",
+   "it": "In ordine crescente, numeri dispari a destra"
+  },
+  "9839": {
+   "de": "Keine Angabe zur Nummerierung",
+   "fr": "Pas d'indication",
+   "it": "Nessuna indicazione sulla numerazione"
+  }
+ },
+ "STROFFIZIEL": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "STRSP": {
+  "9901": {
+   "de": "Deutsch",
+   "fr": "Allemand",
+   "it": "Tedesco"
+  },
+  "9902": {
+   "de": "Rätoromanisch",
+   "fr": "Romanche",
+   "it": "Romancio"
+  },
+  "9903": {
+   "de": "Französisch",
+   "fr": "Français",
+   "it": "Francese"
+  },
+  "9904": {
+   "de": "Italienisch",
+   "fr": "Italien",
+   "it": "Italiano"
+  }
+ },
+ "STRVAL": {
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "2": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  }
+ },
+ "WGBANMERKUNG": {
+  "3401": {
+   "de": "Keine Beschränkung (Art. 8, 9 und 10 ZWG)",
+   "fr": "Sans restriction, LRS, art. 8, 9 et 10",
+   "it": "Senza limitazione (art. 8, 9 e 10 LASec)"
+  },
+  "3402": {
+   "de": "Erstwohnung (Art. 7 Abs.1 Bst. a ZWG)",
+   "fr": "Résidence principale, LRS, art.7, al.1, let.a",
+   "it": "Abitazione primaria (art. 7 cpv.1 lett.a LASec)"
+  },
+  "3403": {
+   "de": "Tour. bewirtschaftete Wohnung ( Art. 7 Abs. 2 Bst. a ZWG)",
+   "fr": "Affecté hébergement tour. qualifié, LRS, art.7, al.2, let.a",
+   "it": "Sfruttata a scopi turistici (art. 7 cpv. 2 lett.a, LASec)"
+  },
+  "3404": {
+   "de": "Tour. bewirtschaftete Wohnung (Art. 7 Abs. 2 Bst. b ZWG)",
+   "fr": "Affecté hébergement tour. qualifié, LRS, art.7, al.2, let.b",
+   "it": "Sfruttata a scopi turistici (art. 7 cpv. 2 lett.b, LASec)"
+  }
+ },
+ "WKCHE": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "7300": {
+   "de": "Weder Küche noch Kochnische",
+   "fr": "Ni cuisine, ni cuisinette",
+   "it": "Né cucina, né cucinio"
+  },
+  "7301": {
+   "de": "Küche (mind. 4 m2)",
+   "fr": "Cuisine (au moins 4m2)",
+   "it": "Cucina (minimo 4 m2)"
+  },
+  "7302": {
+   "de": "Kochnische (unter 4m2)",
+   "fr": "Cuisinette (moins de 4m2)",
+   "it": "Cucinino (meno di 4m2)"
+  }
+ },
+ "WMEHRG": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  }
+ },
+ "WNART": {
+  "3010": {
+   "de": "Erstwohnung, Art. 2 Abs. 2 ZWG",
+   "fr": "Résidence principale, LRS, art.2, al.2",
+   "it": "Abitazione primaria, art. 2 cpv. 2 LASec"
+  },
+  "3020": {
+   "de": "Zweitwohnung, Art. 2 Abs. 4 ZWG",
+   "fr": "Résidence secondaire, LRS, art.2, al.4",
+   "it": "Abitazione secondaria, art. 2 cpv. 4 LASec"
+  },
+  "3030": {
+   "de": "Anders als zum Wohnen genutzt Art. 2 Abs. 3 Bst. h ZWG",
+   "fr": "Utilisé à d'autres fins, LRS, art.2, al.3 let.h",
+   "it": "Uso diverso da quello abitativo, art. 2 cpv. 3 lett. h LASec"
+  },
+  "3031": {
+   "de": "Erwerbs- oder Ausbildungszwecken Art. 2 Abs. 3 Bst. a ZWG",
+   "fr": "Activité lucrative ou formation, LRS, art.2, al.3 let.a",
+   "it": "Scopo di lavoro o di formazione, art. 2 cpv. 3 lett. a LASec"
+  },
+  "3032": {
+   "de": "Privathaushalt mit mehr. Wohngungen Art. 2 Abs. 3 Bst. b ZWG",
+   "fr": "Ménage privé occupant plusieurs log., LRS, art.2, al.3 let.b",
+   "it": "Ec. dom. in più abit. nell'edif., art.2 cpv. 3 lett. b LASec"
+  },
+  "3033": {
+   "de": "Nicht meldepflichtige Personen Art. 2 Abs. 3 Bst. c ZWG",
+   "fr": "Personnes non inscrites au CdH, LRS, art.2, al.3 let.c",
+   "it": "Pers. senza obbligo annuncio UCA, art.2 cpv. 3 lett. c LASec"
+  },
+  "3034": {
+   "de": "Leerstehend, höchstens zwei Jahre Art. 2 Abs. 3 Bst. d ZWG",
+   "fr": "Vacant depuis deux ans au maximum, LRS, art.2, al.3 let.d",
+   "it": "Abitazioni vuote < 2 anni, art. 2 cpv. 3 lett. d LASec"
+  },
+  "3035": {
+   "de": "Alpwirtschaftliche Zwecke Art. 2 Abs. 3 Bst. e ZWG",
+   "fr": "Utilisé pour l'économie alpestre, LRS, art.2, al.3 let.e",
+   "it": "Alpeggi, art. 2 cpv. 3 lett. e LASec"
+  },
+  "3036": {
+   "de": "Unterbringung von Personal Art. 2 Abs. 3 Bst. f ZWG",
+   "fr": "Hébergement de personnel, LRS, art.2, al.3 let.f",
+   "it": "Alloggi per il personale, art. 2 cpv. 3 lett. f LASec"
+  },
+  "3037": {
+   "de": "Dienstwohnungen Art. 2 Abs. 3 Bst. g ZWG",
+   "fr": "Logement de service, LRS, art.2, al.3 let.g",
+   "it": "Abitazione di servizio, art. 2 cpv. 3 lett. g LASec"
+  },
+  "3038": {
+   "de": "Kollektivhaushalt, Art. 2 Bst. abis RHV",
+   "fr": "Ménage collectif, OHR art. 2, let. abis",
+   "it": "Collettività OArRa art. 2"
+  },
+  "3070": {
+   "de": "Wohnung unbewohnbar",
+   "fr": "Logement non habitable",
+   "it": "Abitazione inabitabile"
+  }
+ },
+ "WNARTSCE": {
+  "3090": {
+   "de": "Automatische Aktualisierung (Art. 2 Abs. 1 ZWV)",
+   "fr": "Mise à jour automatique (art.2, al. 1 ordonnance ORSec)",
+   "it": "Aggiornamento automatico, art. 2 cpv. 1 ordinanza OASec"
+  },
+  "3091": {
+   "de": "Einwohnerkontrolle",
+   "fr": "Contrôle de l'habitant",
+   "it": "Ufficio controllo abitanti"
+  },
+  "3092": {
+   "de": "Eigentümer/in oder Verwaltung",
+   "fr": "Indication du propriétaire ou de la gérance",
+   "it": "Proprietario o gerenza"
+  },
+  "3093": {
+   "de": "Andere Datenquelle",
+   "fr": "Autre source d'information",
+   "it": "Altra fonte d'informazione"
+  }
+ },
+ "WPERSHW": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "2": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  }
+ },
+ "WPERSNW": {
+  "0": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  },
+  "1": {
+   "de": "Ja",
+   "fr": "Oui",
+   "it": "Sì"
+  },
+  "2": {
+   "de": "Nein",
+   "fr": "Non",
+   "it": "No"
+  }
+ },
+ "WSTAT": {
+  "3001": {
+   "de": "Wohnung projektiert",
+   "fr": "Logement en projet",
+   "it": "Abitazione in progetto"
+  },
+  "3002": {
+   "de": "Wohnung bewilligt",
+   "fr": "Logement autorisé",
+   "it": "Abitazione autorizzata"
+  },
+  "3003": {
+   "de": "Wohnung im Bau",
+   "fr": "Logement en construction",
+   "it": "Abitazione in costruzione"
+  },
+  "3004": {
+   "de": "Wohnung bestehend",
+   "fr": "Logement existant",
+   "it": "Abitazione esistente"
+  },
+  "3005": {
+   "de": "Wohnung nicht nutzbar",
+   "fr": "Logement non utilisable",
+   "it": "Abitazione non utilizzabile"
+  },
+  "3007": {
+   "de": "Wohnung aufgehoben",
+   "fr": "Logement éliminé",
+   "it": "Abitazione eliminata"
+  },
+  "3008": {
+   "de": "Wohnung nicht realisiert",
+   "fr": "Logement non réalisé",
+   "it": "Abitazione non realizzata"
+  }
+ },
+ "WSTWK": {
+  "3100": {
+   "de": "Parterre inkl. Hochparterre",
+   "fr": "Rez-de-chaussée/Rez-de-chaussée surélevé",
+   "it": "Pianterreno compreso piano rialzato"
+  },
+  "3101": {
+   "de": "1. Stock",
+   "fr": "1er étage",
+   "it": "1° piano"
+  },
+  "3102": {
+   "de": "2. Stock",
+   "fr": "2e étage",
+   "it": "2° piano"
+  },
+  "3103": {
+   "de": "3. Stock",
+   "fr": "3e étage",
+   "it": "3° piano"
+  },
+  "3104": {
+   "de": "4. Stock",
+   "fr": "4e étage",
+   "it": "4° piano"
+  },
+  "3105": {
+   "de": "5. Stock",
+   "fr": "5e étage",
+   "it": "5° piano"
+  },
+  "3106": {
+   "de": "6. Stock",
+   "fr": "6e étage",
+   "it": "6° piano"
+  },
+  "3107": {
+   "de": "7. Stock",
+   "fr": "7e étage",
+   "it": "7° piano"
+  },
+  "3108": {
+   "de": "8. Stock",
+   "fr": "8e étage",
+   "it": "8° piano"
+  },
+  "3109": {
+   "de": "9. Stock",
+   "fr": "9e étage",
+   "it": "9° piano"
+  },
+  "3110": {
+   "de": "10. Stock",
+   "fr": "10e étage",
+   "it": "10° piano"
+  },
+  "3111": {
+   "de": "11. Stock",
+   "fr": "11e étage",
+   "it": "11° piano"
+  },
+  "3112": {
+   "de": "12. Stock",
+   "fr": "12e étage",
+   "it": "12° piano"
+  },
+  "3113": {
+   "de": "13. Stock",
+   "fr": "13e étage",
+   "it": "13° piano"
+  },
+  "3114": {
+   "de": "14. Stock",
+   "fr": "14e étage",
+   "it": "14° piano"
+  },
+  "3115": {
+   "de": "15. Stock",
+   "fr": "15e étage",
+   "it": "15° piano"
+  },
+  "3116": {
+   "de": "16. Stock",
+   "fr": "16e étage",
+   "it": "16° piano"
+  },
+  "3117": {
+   "de": "17. Stock",
+   "fr": "17e étage",
+   "it": "17° piano"
+  },
+  "3118": {
+   "de": "18. Stock",
+   "fr": "18e étage",
+   "it": "18° piano"
+  },
+  "3119": {
+   "de": "19. Stock",
+   "fr": "19e étage",
+   "it": "19° piano"
+  },
+  "3120": {
+   "de": "20. Stock",
+   "fr": "20e étage",
+   "it": "20° piano"
+  },
+  "3121": {
+   "de": "21. Stock",
+   "fr": "21e étage",
+   "it": "21° piano"
+  },
+  "3122": {
+   "de": "22. Stock",
+   "fr": "22e étage",
+   "it": "22° piano"
+  },
+  "3123": {
+   "de": "23. Stock",
+   "fr": "23e étage",
+   "it": "23° piano"
+  },
+  "3124": {
+   "de": "24. Stock",
+   "fr": "24e étage",
+   "it": "24° piano"
+  },
+  "3125": {
+   "de": "25. Stock",
+   "fr": "25e étage",
+   "it": "25° piano"
+  },
+  "3126": {
+   "de": "26. Stock",
+   "fr": "26e étage",
+   "it": "26° piano"
+  },
+  "3127": {
+   "de": "27. Stock",
+   "fr": "27e étage",
+   "it": "27° piano"
+  },
+  "3128": {
+   "de": "28. Stock",
+   "fr": "28e étage",
+   "it": "28° piano"
+  },
+  "3129": {
+   "de": "29. Stock",
+   "fr": "29e étage",
+   "it": "29° piano"
+  },
+  "3130": {
+   "de": "30. Stock",
+   "fr": "30e étage",
+   "it": "30° piano"
+  },
+  "3131": {
+   "de": "31. Stock",
+   "fr": "31e étage",
+   "it": "31° piano"
+  },
+  "3132": {
+   "de": "32. Stock",
+   "fr": "32e étage",
+   "it": "32° piano"
+  },
+  "3133": {
+   "de": "33. Stock",
+   "fr": "33e étage",
+   "it": "33° piano"
+  },
+  "3134": {
+   "de": "34. Stock",
+   "fr": "34e étage",
+   "it": "34° piano"
+  },
+  "3135": {
+   "de": "35. Stock",
+   "fr": "35e étage",
+   "it": "35° piano"
+  },
+  "3136": {
+   "de": "36. Stock",
+   "fr": "36e étage",
+   "it": "36° piano"
+  },
+  "3137": {
+   "de": "37. Stock",
+   "fr": "37e étage",
+   "it": "37° piano"
+  },
+  "3138": {
+   "de": "38. Stock",
+   "fr": "38e étage",
+   "it": "38° piano"
+  },
+  "3139": {
+   "de": "39. Stock",
+   "fr": "39e étage",
+   "it": "39° piano"
+  },
+  "3140": {
+   "de": "40. Stock",
+   "fr": "40e étage",
+   "it": "40° piano"
+  },
+  "3141": {
+   "de": "41. Stock",
+   "fr": "41e étage",
+   "it": "41° piano"
+  },
+  "3142": {
+   "de": "42. Stock",
+   "fr": "42e étage",
+   "it": "42° piano"
+  },
+  "3143": {
+   "de": "43. Stock",
+   "fr": "43e étage",
+   "it": "43° piano"
+  },
+  "3144": {
+   "de": "44. Stock",
+   "fr": "44e étage",
+   "it": "44° piano"
+  },
+  "3145": {
+   "de": "45. Stock",
+   "fr": "45e étage",
+   "it": "45° piano"
+  },
+  "3146": {
+   "de": "46. Stock",
+   "fr": "46e étage",
+   "it": "46° piano"
+  },
+  "3147": {
+   "de": "47. Stock",
+   "fr": "47e étage",
+   "it": "47° piano"
+  },
+  "3148": {
+   "de": "48. Stock",
+   "fr": "48e étage",
+   "it": "48° piano"
+  },
+  "3149": {
+   "de": "49. Stock",
+   "fr": "49e étage",
+   "it": "49° piano"
+  },
+  "3150": {
+   "de": "50. Stock",
+   "fr": "50e étage",
+   "it": "50° piano"
+  },
+  "3151": {
+   "de": "51. Stock",
+   "fr": "51e étage",
+   "it": "51° piano"
+  },
+  "3152": {
+   "de": "52. Stock",
+   "fr": "52e étage",
+   "it": "52° piano"
+  },
+  "3153": {
+   "de": "53. Stock",
+   "fr": "53e étage",
+   "it": "53° piano"
+  },
+  "3154": {
+   "de": "54. Stock",
+   "fr": "54e étage",
+   "it": "54° piano"
+  },
+  "3155": {
+   "de": "55. Stock",
+   "fr": "55e étage",
+   "it": "55° piano"
+  },
+  "3156": {
+   "de": "56. Stock",
+   "fr": "56e étage",
+   "it": "56° piano"
+  },
+  "3157": {
+   "de": "57. Stock",
+   "fr": "57e étage",
+   "it": "57° piano"
+  },
+  "3158": {
+   "de": "58. Stock",
+   "fr": "58e étage",
+   "it": "58° piano"
+  },
+  "3159": {
+   "de": "59. Stock",
+   "fr": "59e étage",
+   "it": "59° piano"
+  },
+  "3160": {
+   "de": "60. Stock",
+   "fr": "60e étage",
+   "it": "60° piano"
+  },
+  "3161": {
+   "de": "61. Stock",
+   "fr": "61e étage",
+   "it": "61° piano"
+  },
+  "3162": {
+   "de": "62. Stock",
+   "fr": "62e étage",
+   "it": "62° piano"
+  },
+  "3163": {
+   "de": "63. Stock",
+   "fr": "63e étage",
+   "it": "63° piano"
+  },
+  "3164": {
+   "de": "64. Stock",
+   "fr": "64e étage",
+   "it": "64° piano"
+  },
+  "3165": {
+   "de": "65. Stock",
+   "fr": "65e étage",
+   "it": "65° piano"
+  },
+  "3166": {
+   "de": "66. Stock",
+   "fr": "66e étage",
+   "it": "66° piano"
+  },
+  "3167": {
+   "de": "67. Stock",
+   "fr": "67e étage",
+   "it": "67° piano"
+  },
+  "3168": {
+   "de": "68. Stock",
+   "fr": "68e étage",
+   "it": "68° piano"
+  },
+  "3169": {
+   "de": "69. Stock",
+   "fr": "69e étage",
+   "it": "69° piano"
+  },
+  "3170": {
+   "de": "70. Stock",
+   "fr": "70e étage",
+   "it": "70° piano"
+  },
+  "3171": {
+   "de": "71. Stock",
+   "fr": "71e étage",
+   "it": "71° piano"
+  },
+  "3172": {
+   "de": "72. Stock",
+   "fr": "72e étage",
+   "it": "72° piano"
+  },
+  "3173": {
+   "de": "73. Stock",
+   "fr": "73e étage",
+   "it": "73° piano"
+  },
+  "3174": {
+   "de": "74. Stock",
+   "fr": "74e étage",
+   "it": "74° piano"
+  },
+  "3175": {
+   "de": "75. Stock",
+   "fr": "75e étage",
+   "it": "75° piano"
+  },
+  "3176": {
+   "de": "76. Stock",
+   "fr": "76e étage",
+   "it": "76° piano"
+  },
+  "3177": {
+   "de": "77. Stock",
+   "fr": "77e étage",
+   "it": "77° piano"
+  },
+  "3178": {
+   "de": "78. Stock",
+   "fr": "78e étage",
+   "it": "78° piano"
+  },
+  "3179": {
+   "de": "79. Stock",
+   "fr": "79e étage",
+   "it": "79° piano"
+  },
+  "3180": {
+   "de": "80. Stock",
+   "fr": "80e étage",
+   "it": "80° piano"
+  },
+  "3181": {
+   "de": "81. Stock",
+   "fr": "81e étage",
+   "it": "81° piano"
+  },
+  "3182": {
+   "de": "82. Stock",
+   "fr": "82e étage",
+   "it": "82° piano"
+  },
+  "3183": {
+   "de": "83. Stock",
+   "fr": "83e étage",
+   "it": "83° piano"
+  },
+  "3184": {
+   "de": "84. Stock",
+   "fr": "84e étage",
+   "it": "84° piano"
+  },
+  "3185": {
+   "de": "85. Stock",
+   "fr": "85e étage",
+   "it": "85° piano"
+  },
+  "3186": {
+   "de": "86. Stock",
+   "fr": "86e étage",
+   "it": "86° piano"
+  },
+  "3187": {
+   "de": "87. Stock",
+   "fr": "87e étage",
+   "it": "87° piano"
+  },
+  "3188": {
+   "de": "88. Stock",
+   "fr": "88e étage",
+   "it": "88° piano"
+  },
+  "3189": {
+   "de": "89. Stock",
+   "fr": "89e étage",
+   "it": "89° piano"
+  },
+  "3190": {
+   "de": "90. Stock",
+   "fr": "90e étage",
+   "it": "90° piano"
+  },
+  "3191": {
+   "de": "91. Stock",
+   "fr": "91e étage",
+   "it": "91° piano"
+  },
+  "3192": {
+   "de": "92. Stock",
+   "fr": "92e étage",
+   "it": "92° piano"
+  },
+  "3193": {
+   "de": "93. Stock",
+   "fr": "93e étage",
+   "it": "93° piano"
+  },
+  "3194": {
+   "de": "94. Stock",
+   "fr": "94e étage",
+   "it": "94° piano"
+  },
+  "3195": {
+   "de": "95. Stock",
+   "fr": "95e étage",
+   "it": "95° piano"
+  },
+  "3196": {
+   "de": "96. Stock",
+   "fr": "96e étage",
+   "it": "96° piano"
+  },
+  "3197": {
+   "de": "97. Stock",
+   "fr": "97e étage",
+   "it": "97° piano"
+  },
+  "3198": {
+   "de": "98. Stock",
+   "fr": "98e étage",
+   "it": "98° piano"
+  },
+  "3199": {
+   "de": "99. Stock",
+   "fr": "99e étage",
+   "it": "99° piano"
+  },
+  "3201": {
+   "de": "1. Untergeschoss",
+   "fr": "1er sous-sol",
+   "it": "1° piano interrato"
+  },
+  "3202": {
+   "de": "2. Untergeschoss",
+   "fr": "2e sous-sol",
+   "it": "2° piano interrato"
+  },
+  "3203": {
+   "de": "3. Untergeschoss",
+   "fr": "3e sous-sol",
+   "it": "3° piano interrato"
+  },
+  "3204": {
+   "de": "4. Untergeschoss",
+   "fr": "4e sous-sol",
+   "it": "4° piano interrato"
+  },
+  "3205": {
+   "de": "5. Untergeschoss",
+   "fr": "5e sous-sol",
+   "it": "5° piano interrato"
+  },
+  "3206": {
+   "de": "6. Untergeschoss",
+   "fr": "6e sous-sol",
+   "it": "6° piano interrato"
+  },
+  "3207": {
+   "de": "7. Untergeschoss",
+   "fr": "7e sous-sol",
+   "it": "7° piano interrato"
+  },
+  "3208": {
+   "de": "8. Untergeschoss",
+   "fr": "8e sous-sol",
+   "it": "8° piano interrato"
+  },
+  "3209": {
+   "de": "9. Untergeschoss",
+   "fr": "9e sous-sol",
+   "it": "9° piano interrato"
+  },
+  "3300": {
+   "de": "Parterre, mehrgeschossig",
+   "fr": "Rez-de-chaussée, sur plusieurs étages",
+   "it": "Pianterreno, di più piani"
+  },
+  "3301": {
+   "de": "1. Stock, mehrgeschossig",
+   "fr": "1er étage, sur plusieurs étages",
+   "it": "1° piano, di più piani"
+  },
+  "3302": {
+   "de": "2. Stock, mehrgeschossig",
+   "fr": "2e étage, sur plusieurs étages",
+   "it": "2° piano, di più piani"
+  },
+  "3303": {
+   "de": "3. Stock, mehrgeschossig",
+   "fr": "3e étage, sur plusieurs étages",
+   "it": "3° piano, di più piani"
+  },
+  "3304": {
+   "de": "4. Stock, mehrgeschossig",
+   "fr": "4e étage, sur plusieurs étages",
+   "it": "4° piano, di più piani"
+  },
+  "3305": {
+   "de": "5. Stock, mehrgeschossig",
+   "fr": "5e étage, sur plusieurs étages",
+   "it": "5° piano, di più piani"
+  },
+  "3306": {
+   "de": "6. Stock, mehrgeschossig",
+   "fr": "6e étage, sur plusieurs étages",
+   "it": "6° piano, di più piani"
+  },
+  "3307": {
+   "de": "7. Stock, mehrgeschossig",
+   "fr": "7e étage, sur plusieurs étages",
+   "it": "7° piano, di più piani"
+  },
+  "3308": {
+   "de": "8. Stock, mehrgeschossig",
+   "fr": "8e étage, sur plusieurs étages",
+   "it": "8° piano, di più piani"
+  },
+  "3309": {
+   "de": "9. Stock, mehrgeschossig",
+   "fr": "9e étage, sur plusieurs étages",
+   "it": "9° piano, di più piani"
+  },
+  "3310": {
+   "de": "10. Stock, mehrgeschossig",
+   "fr": "10e étage, sur plusieurs étages",
+   "it": "10° piano, di più piani"
+  },
+  "3311": {
+   "de": "11. Stock, mehrgeschossig",
+   "fr": "11e étage, sur plusieurs étages",
+   "it": "11° piano, di più piani"
+  },
+  "3312": {
+   "de": "12. Stock, mehrgeschossig",
+   "fr": "12e étage, sur plusieurs étages",
+   "it": "12° piano, di più piani"
+  },
+  "3313": {
+   "de": "13. Stock, mehrgeschossig",
+   "fr": "13e étage, sur plusieurs étages",
+   "it": "13° piano, di più piani"
+  },
+  "3314": {
+   "de": "14. Stock, mehrgeschossig",
+   "fr": "14e étage, sur plusieurs étages",
+   "it": "14° piano, di più piani"
+  },
+  "3315": {
+   "de": "15. Stock, mehrgeschossig",
+   "fr": "15e étage, sur plusieurs étages",
+   "it": "15° piano, di più piani"
+  },
+  "3316": {
+   "de": "16. Stock, mehrgeschossig",
+   "fr": "16e étage, sur plusieurs étages",
+   "it": "16° piano, di più piani"
+  },
+  "3317": {
+   "de": "17. Stock, mehrgeschossig",
+   "fr": "17e étage, sur plusieurs étages",
+   "it": "17° piano, di più piani"
+  },
+  "3318": {
+   "de": "18. Stock, mehrgeschossig",
+   "fr": "18e étage, sur plusieurs étages",
+   "it": "18° piano, di più piani"
+  },
+  "3319": {
+   "de": "19. Stock, mehrgeschossig",
+   "fr": "19e étage, sur plusieurs étages",
+   "it": "19° piano, di più piani"
+  },
+  "3320": {
+   "de": "20. Stock, mehrgeschossig",
+   "fr": "20e étage, sur plusieurs étages",
+   "it": "20° piano, di più piani"
+  },
+  "3321": {
+   "de": "21. Stock, mehrgeschossig",
+   "fr": "21e étage, sur plusieurs étages",
+   "it": "21° piano, di più piani"
+  },
+  "3322": {
+   "de": "22. Stock, mehrgeschossig",
+   "fr": "22e étage, sur plusieurs étages",
+   "it": "22° piano, di più piani"
+  },
+  "3323": {
+   "de": "23. Stock, mehrgeschossig",
+   "fr": "23e étage, sur plusieurs étages",
+   "it": "23° piano, di più piani"
+  },
+  "3324": {
+   "de": "24. Stock, mehrgeschossig",
+   "fr": "24e étage, sur plusieurs étages",
+   "it": "24° piano, di più piani"
+  },
+  "3325": {
+   "de": "25. Stock, mehrgeschossig",
+   "fr": "25e étage, sur plusieurs étages",
+   "it": "25° piano, di più piani"
+  },
+  "3326": {
+   "de": "26. Stock, mehrgeschossig",
+   "fr": "26e étage, sur plusieurs étages",
+   "it": "26° piano, di più piani"
+  },
+  "3327": {
+   "de": "27. Stock, mehrgeschossig",
+   "fr": "27e étage, sur plusieurs étages",
+   "it": "27° piano, di più piani"
+  },
+  "3328": {
+   "de": "28. Stock, mehrgeschossig",
+   "fr": "28e étage, sur plusieurs étages",
+   "it": "28° piano, di più piani"
+  },
+  "3329": {
+   "de": "29. Stock, mehrgeschossig",
+   "fr": "29e étage, sur plusieurs étages",
+   "it": "29° piano, di più piani"
+  },
+  "3330": {
+   "de": "30. Stock, mehrgeschossig",
+   "fr": "30e étage, sur plusieurs étages",
+   "it": "30° piano, di più piani"
+  },
+  "3331": {
+   "de": "31. Stock, mehrgeschossig",
+   "fr": "31e étage, sur plusieurs étages",
+   "it": "31° piano, di più piani"
+  },
+  "3332": {
+   "de": "32. Stock, mehrgeschossig",
+   "fr": "32e étage, sur plusieurs étages",
+   "it": "32° piano, di più piani"
+  },
+  "3333": {
+   "de": "33. Stock, mehrgeschossig",
+   "fr": "33e étage, sur plusieurs étages",
+   "it": "33° piano, di più piani"
+  },
+  "3334": {
+   "de": "34. Stock, mehrgeschossig",
+   "fr": "34e étage, sur plusieurs étages",
+   "it": "34° piano, di più piani"
+  },
+  "3335": {
+   "de": "35. Stock, mehrgeschossig",
+   "fr": "35e étage, sur plusieurs étages",
+   "it": "35° piano, di più piani"
+  },
+  "3336": {
+   "de": "36. Stock, mehrgeschossig",
+   "fr": "36e étage, sur plusieurs étages",
+   "it": "36° piano, di più piani"
+  },
+  "3337": {
+   "de": "37. Stock, mehrgeschossig",
+   "fr": "37e étage, sur plusieurs étages",
+   "it": "37° piano, di più piani"
+  },
+  "3338": {
+   "de": "38. Stock, mehrgeschossig",
+   "fr": "38e étage, sur plusieurs étages",
+   "it": "38° piano, di più piani"
+  },
+  "3339": {
+   "de": "39. Stock, mehrgeschossig",
+   "fr": "39e étage, sur plusieurs étages",
+   "it": "39° piano, di più piani"
+  },
+  "3340": {
+   "de": "40. Stock, mehrgeschossig",
+   "fr": "40e étage, sur plusieurs étages",
+   "it": "40° piano, di più piani"
+  },
+  "3341": {
+   "de": "41. Stock, mehrgeschossig",
+   "fr": "41e étage, sur plusieurs étages",
+   "it": "41° piano, di più piani"
+  },
+  "3342": {
+   "de": "42. Stock, mehrgeschossig",
+   "fr": "42e étage, sur plusieurs étages",
+   "it": "42° piano, di più piani"
+  },
+  "3343": {
+   "de": "43. Stock, mehrgeschossig",
+   "fr": "43e étage, sur plusieurs étages",
+   "it": "43° piano, di più piani"
+  },
+  "3344": {
+   "de": "44. Stock, mehrgeschossig",
+   "fr": "44e étage, sur plusieurs étages",
+   "it": "44° piano, di più piani"
+  },
+  "3345": {
+   "de": "45. Stock, mehrgeschossig",
+   "fr": "45e étage, sur plusieurs étages",
+   "it": "45° piano, di più piani"
+  },
+  "3346": {
+   "de": "46. Stock, mehrgeschossig",
+   "fr": "46e étage, sur plusieurs étages",
+   "it": "46° piano, di più piani"
+  },
+  "3347": {
+   "de": "47. Stock, mehrgeschossig",
+   "fr": "47e étage, sur plusieurs étages",
+   "it": "47° piano, di più piani"
+  },
+  "3348": {
+   "de": "48. Stock, mehrgeschossig",
+   "fr": "48e étage, sur plusieurs étages",
+   "it": "48° piano, di più piani"
+  },
+  "3349": {
+   "de": "49. Stock, mehrgeschossig",
+   "fr": "49e étage, sur plusieurs étages",
+   "it": "49° piano, di più piani"
+  },
+  "3401": {
+   "de": "1. Untergeschoss",
+   "fr": "1er sous-sol",
+   "it": "1° sotteraneo"
+  },
+  "3402": {
+   "de": "2. Untergeschoss",
+   "fr": "2e sous-sol",
+   "it": "2° sotteraneo"
+  },
+  "3403": {
+   "de": "3. Untergeschoss",
+   "fr": "3e sous-sol",
+   "it": "3° sotteraneo"
+  },
+  "3404": {
+   "de": "4. Untergeschoss",
+   "fr": "4e sous-sol",
+   "it": "4° sotteraneo"
+  },
+  "3405": {
+   "de": "5. Untergeschoss",
+   "fr": "5e sous-sol",
+   "it": "5° sotteraneo"
+  },
+  "3406": {
+   "de": "6. Untergeschoss",
+   "fr": "6e sous-sol",
+   "it": "6° sotteraneo"
+  },
+  "3407": {
+   "de": "7. Untergeschoss",
+   "fr": "7e sous-sol",
+   "it": "7° sotteraneo"
+  },
+  "3408": {
+   "de": "8. Untergeschoss",
+   "fr": "8e sous-sol",
+   "it": "8° sotteraneo"
+  },
+  "3409": {
+   "de": "9. Untergeschoss",
+   "fr": "9e sous-sol",
+   "it": "9° sotteraneo"
+  },
+  "3410": {
+   "de": "10. Untergeschoss",
+   "fr": "10e sous-sol",
+   "it": "10° sotteraneo"
+  },
+  "3411": {
+   "de": "11. Untergeschoss",
+   "fr": "11e sous-sol",
+   "it": "11° sotteraneo"
+  },
+  "3412": {
+   "de": "12. Untergeschoss",
+   "fr": "12e sous-sol",
+   "it": "12° sotteraneo"
+  },
+  "3413": {
+   "de": "13. Untergeschoss",
+   "fr": "13e sous-sol",
+   "it": "13° sotteraneo"
+  },
+  "3414": {
+   "de": "14. Untergeschoss",
+   "fr": "14e sous-sol",
+   "it": "14° sotteraneo"
+  },
+  "3415": {
+   "de": "15. Untergeschoss",
+   "fr": "15e sous-sol",
+   "it": "15° sotteraneo"
+  },
+  "3416": {
+   "de": "16. Untergeschoss",
+   "fr": "16e sous-sol",
+   "it": "16° sotteraneo"
+  },
+  "3417": {
+   "de": "17. Untergeschoss",
+   "fr": "17e sous-sol",
+   "it": "17° sotteraneo"
+  },
+  "3418": {
+   "de": "18. Untergeschoss",
+   "fr": "18e sous-sol",
+   "it": "18° sotteraneo"
+  },
+  "3419": {
+   "de": "19. Untergeschoss",
+   "fr": "19e sous-sol",
+   "it": "19° sotteraneo"
+  }
+ }
+}

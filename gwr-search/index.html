@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GWR — Gebäudesuche</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <img src="assets/swiss-logo-flag.svg" alt="" class="header-flag" width="20" height="22">
+    <div class="header-title">
+      <span class="header-agency" data-i18n="header.agency">BFS / GWR</span>
+      <h1 class="header-app" data-i18n="header.app">GWR-Gebäudesuche</h1>
+    </div>
+  </div>
+  <div class="header-right">
+    <select id="lang-select" class="lang-select" data-i18n-aria="header.langAria" aria-label="Sprache wählen">
+      <option value="de" selected>DE</option>
+      <option value="fr">FR</option>
+      <option value="it">IT</option>
+    </select>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Mode toggle -->
+  <div class="mode-tabs" role="tablist" data-i18n-aria="mode.aria" aria-label="Suchmodus">
+    <button type="button" class="mode-tab active" id="tab-search" role="tab" aria-selected="true" aria-controls="mode-search" tabindex="0" data-mode="search" data-i18n="mode.search">Suche</button>
+    <button type="button" class="mode-tab" id="tab-batch" role="tab" aria-selected="false" aria-controls="mode-batch" tabindex="-1" data-mode="batch" data-i18n="mode.batch">Batch (CSV)</button>
+  </div>
+
+  <!-- ════ Mode: Search mask ════ -->
+  <div id="mode-search" role="tabpanel" aria-labelledby="tab-search" tabindex="0">
+  <!-- Search Form -->
+  <section class="search-panel">
+    <h2 class="search-heading" data-i18n="search.heading">Gebäude suchen</h2>
+
+    <form id="search-form" class="search-form" autocomplete="off">
+      <div class="form-group">
+        <label for="field-kanton" data-i18n="search.kanton">Kanton</label>
+        <select id="field-kanton">
+          <option value="" data-i18n="search.kanton.all">— Alle —</option>
+        </select>
+      </div>
+
+      <div class="form-group autocomplete-wrap">
+        <label for="field-gemeinde" data-i18n="search.gemeinde">Gemeinde</label>
+        <input type="text" id="field-gemeinde" data-i18n-placeholder="search.gemeinde.placeholder" placeholder="z.B. Bern" autocomplete="off">
+        <ul class="autocomplete-list" id="ac-gemeinde" role="listbox" hidden></ul>
+      </div>
+
+      <div class="form-group">
+        <label for="field-bfsnr" data-i18n="search.bfsnr">BFS-Nr</label>
+        <input type="text" id="field-bfsnr" inputmode="numeric" data-i18n-placeholder="search.bfsnr.placeholder" placeholder="z.B. 351">
+      </div>
+
+      <div class="form-group">
+        <label for="field-egid" data-i18n="search.egid">EGID</label>
+        <input type="text" id="field-egid" inputmode="numeric" data-i18n-placeholder="search.egid.placeholder" placeholder="z.B. 1231641">
+      </div>
+
+      <div class="form-group">
+        <label for="field-strasse" data-i18n="search.strasse">Strasse</label>
+        <input type="text" id="field-strasse" data-i18n-placeholder="search.strasse.placeholder" placeholder="z.B. Beaulieustrasse">
+      </div>
+
+      <div class="form-group">
+        <label for="field-hausnr" data-i18n="search.hausnr">Nr.</label>
+        <input type="text" id="field-hausnr" data-i18n-placeholder="search.hausnr.placeholder" placeholder="z.B. 2">
+      </div>
+
+      <div class="form-group autocomplete-wrap">
+        <label for="field-plz" data-i18n="search.plz">PLZ</label>
+        <input type="text" id="field-plz" inputmode="numeric" data-i18n-placeholder="search.plz.placeholder" placeholder="z.B. 3012" autocomplete="off">
+        <ul class="autocomplete-list" id="ac-plz" role="listbox" hidden></ul>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" data-i18n="search.submit">Suchen</button>
+        <button type="reset" class="btn btn-secondary" data-i18n="search.reset">Zurücksetzen</button>
+      </div>
+    </form>
+  </section>
+  </div><!-- /#mode-search -->
+
+  <!-- ════ Mode: Batch CSV ════ -->
+  <div id="mode-batch" role="tabpanel" aria-labelledby="tab-batch" tabindex="0" hidden>
+    <section class="search-panel batch-panel">
+      <div class="batch-panel-header">
+        <h2 class="search-heading" data-i18n="batch.heading">Batch-Abfrage (CSV)</h2>
+        <div class="batch-file-chip" id="batch-file-chip" hidden>
+          <span id="batch-file-name"></span>
+          <button type="button" class="batch-file-clear" id="batch-file-clear" data-i18n-aria="batch.clear" aria-label="Datei entfernen">&times;</button>
+        </div>
+      </div>
+
+      <!-- State A: Upload -->
+      <div id="batch-upload">
+        <div id="batch-dropzone" class="drop-zone" role="button" tabindex="0" data-i18n-aria="batch.dropzone.aria" aria-label="Datei hier ablegen oder klicken zum Durchsuchen">
+          <div class="drop-zone-icon" aria-hidden="true">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h2 data-i18n="batch.drop">CSV-Datei hierher ziehen</h2>
+          <p data-i18n="batch.browse">oder klicken zum Durchsuchen</p>
+          <p class="drop-zone-hint" data-i18n="batch.hint">Nur das EGID-Feld wird verwendet. Alle Spalten bleiben erhalten (Eingabe → IN_, Ergebnis → OUT_).</p>
+        </div>
+        <input type="file" id="batch-file-input" accept=".csv,.tsv,.txt" hidden aria-label="Datei auswählen">
+        <p class="demo-link"><a href="examples/gwr-beispiel.csv" download="gwr-beispiel.csv" id="batch-demo-download" data-i18n="batch.demo.download">Beispiel-CSV herunterladen</a></p>
+        <p class="demo-link"><a href="#" id="batch-demo-run" data-i18n="batch.demo.run">Beispiel laden und ausführen</a></p>
+        <p class="batch-error" id="batch-error" role="alert" hidden></p>
+      </div>
+
+      <!-- State B: Mapping -->
+      <div id="batch-mapping" hidden>
+        <p class="batch-info" id="batch-mapping-info"></p>
+        <p class="batch-columns-label" data-i18n="batch.columns">Erkannte Spalten:</p>
+        <p class="batch-columns" id="batch-mapping-columns"></p>
+        <div class="form-group batch-egrid-group">
+          <label for="batch-egrid-col" data-i18n="batch.egidcol">EGID-Spalte</label>
+          <select id="batch-egrid-col"></select>
+        </div>
+        <div class="batch-actions">
+          <button type="button" class="btn btn-primary" id="batch-process">Gebäude abfragen</button>
+          <button type="button" class="btn btn-secondary" id="batch-mapping-back" data-i18n="batch.back">Zurück</button>
+        </div>
+      </div>
+
+      <!-- State C: Processing -->
+      <div id="batch-processing" hidden>
+        <p class="batch-info" data-i18n="batch.processing">Abfrage läuft …</p>
+        <div class="progress-bar" id="batch-progressbar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-i18n-aria="batch.processing" aria-label="Abfrage läuft …"><div class="progress-fill" id="batch-progress-fill"></div></div>
+        <p class="progress-count" id="batch-progress-count"></p>
+        <div class="batch-actions">
+          <button type="button" class="btn btn-secondary" id="batch-cancel" data-i18n="batch.cancel">Abbrechen</button>
+        </div>
+      </div>
+      </div>
+
+      <!-- State D: Done — the buildings + download button live in the shared results panel below -->
+      <div id="batch-done" hidden></div>
+    </section>
+  </div><!-- /#mode-batch -->
+
+  <!-- ════ Shared results + detail (search results, or batch preview) ════ -->
+  <section class="results-panel" id="results-panel" hidden>
+    <div class="results-header">
+      <h2 class="results-heading" data-i18n="results.heading">Ergebnisse</h2>
+      <span class="results-count" id="results-count" aria-live="polite" aria-atomic="true"></span>
+      <button type="button" class="btn btn-secondary btn-sm results-download" id="results-download" hidden data-i18n="batch.download.button">Herunterladen</button>
+    </div>
+
+    <div class="results-table-wrap">
+      <table class="results-table" id="results-table">
+        <thead>
+          <tr>
+            <th data-i18n="results.col.egid">EGID</th>
+            <th data-i18n="results.col.adresse">Adresse</th>
+            <th data-i18n="results.col.gemeinde">Gemeinde</th>
+            <th data-i18n="results.col.kategorie">Gebäudekategorie</th>
+            <th data-i18n="results.col.status">Status</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination" id="pagination" hidden>
+      <button class="btn btn-ghost btn-sm" id="page-prev" disabled data-i18n="results.prev">Zurück</button>
+      <span class="page-info" id="page-info"></span>
+      <button class="btn btn-ghost btn-sm" id="page-next" data-i18n="results.next">Weiter</button>
+    </div>
+  </section>
+
+  <!-- Detail -->
+  <section class="detail-panel" id="detail-panel" hidden>
+    <div class="detail-header">
+      <h2 class="detail-heading" data-i18n="detail.heading">Gebäude</h2>
+      <button class="btn btn-ghost btn-sm" id="detail-close" data-i18n-aria="detail.close" aria-label="Schliessen">&times;</button>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </section>
+</main>
+
+<!-- Download modal (batch results) — focus dialog with the export options -->
+<div class="modal-overlay" id="download-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="download-modal-title">
+    <div class="modal-header">
+      <h2 class="modal-title" id="download-modal-title" data-i18n="batch.download.title">Ergebnisse herunterladen</h2>
+      <button type="button" class="btn btn-ghost btn-sm" id="download-modal-close" data-i18n-aria="detail.close" aria-label="Schliessen">&times;</button>
+    </div>
+    <div class="modal-body">
+      <button type="button" class="download-option" id="batch-dl-csv">
+        <span class="download-option-title">CSV</span>
+        <span class="download-option-desc" data-i18n="batch.download.csv.desc">Tabelle mit IN_/OUT_-Spalten</span>
+      </button>
+      <button type="button" class="download-option" id="batch-dl-geojson">
+        <span class="download-option-title">GeoJSON</span>
+        <span class="download-option-desc" data-i18n="batch.download.geojson.desc">Punkte (WGS84) + alle Eigenschaften</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-info">
+    <span data-i18n="footer.datasource">Datenquelle:</span>
+    <a href="https://api3.geo.admin.ch" target="_blank" rel="noopener">geo.admin.ch API</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://www.housing-stat.ch/de/home.html" target="_blank" rel="noopener" data-i18n="footer.register">Gebäude- und Wohnungsregister</a>
+    <span aria-hidden="true">·</span>
+    <a href="https://map.geo.admin.ch/#/map?lang=de&amp;bgLayer=ch.swisstopo.pixelkarte-farbe&amp;layers=ch.bfs.gebaeude_wohnungs_register" target="_blank" rel="noopener" data-i18n="footer.livemap">Live-Karte</a>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" data-i18n="footer.source">Quellcode</a>
+    <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+    <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
