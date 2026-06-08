@@ -85,10 +85,6 @@ Project-management-style mockup for building-data quality workflows: multi-sourc
 - Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
 - Source code: [`prototype-quality/`](prototype-quality/)
 
-<p align="center">
-  <img src="prototype-quality/assets/preview1.jpg" width="90%"/>
-</p>
-
 ## License
 
 [MIT](LICENSE) — developed by the [Bundesamt für Bauten und Logistik (BBL)](https://www.bbl.admin.ch/) of the Swiss Federal Administration.
