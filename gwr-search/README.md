@@ -4,7 +4,14 @@ Browser tool to search the Swiss **GWR** (Federal Register of Buildings and Dwel
 
 ## Live app
 
-https://bbl-dres.github.io/geo-check/gwr-search/
+<https://bbl-dres.github.io/geo-check/gwr-search/>
+
+## How it works
+
+1. **Search** — enter any combination of EGID, street, municipality, PLZ, BFS number, or canton (search mask), or upload a CSV of EGIDs (batch mode).
+2. **Look up** — each query hits the public swisstopo GWR layer; GWR features are points, so the geometry comes back inline (no second per-feature request).
+3. **Review** — matches land in a results table; click a row for the full building profile, resolved codes, dwellings, and an embedded map.
+4. **Download** *(batch)* — export every input row, including not-found/error, as CSV or GeoJSON.
 
 ## Features
 
@@ -31,6 +38,19 @@ Switch to the **Batch (CSV)** tab to look up many buildings at once:
 **Column contract — no joins needed afterwards.** Every column you upload is preserved with an **`IN_`** prefix; every looked-up field is added with an **`OUT_`** prefix (`OUT_RESULT`, `OUT_ADRESSE`, `OUT_GEMEINDE`, `OUT_KATEGORIE`, `OUT_FLAECHE_M2`, …). Coded GWR fields are written twice — a readable label (`OUT_KATEGORIE`) and the raw integer (`OUT_KATEGORIE_CODE`). `OUT_RESULT` is one of `found` / `not_found` / `error`, so failed rows still carry your original data. The GeoJSON is **WGS84 (EPSG:4326)** Points with the same `IN_`/`OUT_` property bag; rows without geometry are emitted as features with `geometry: null`.
 
 A ready-made [`examples/gwr-beispiel.csv`](examples/gwr-beispiel.csv) (linked in the upload view) demonstrates the format, including a not-found and a missing-EGID row.
+
+## Differences from `oereb-search`
+
+This app shares its structure with [`oereb-search`](../oereb-search/) but targets a different register:
+
+| | oereb-search | gwr-search |
+|---|---|---|
+| Layer | `ch.swisstopo-vd.stand-oerebkataster` | `ch.bfs.gebaeude_wohnungs_register` |
+| Key | EGRID (`CH`+12 chars) | EGID (positive integer) |
+| Geometry | Polygon (area via shoelace) | Point (footprint is the `garea` attribute) |
+| Coded fields | — | Building category/class/status/period/heating resolved via `gwr-codes.json` |
+
+Because GWR features are points, `find` returns the geometry inline — there is no second per-feature request, and no polygon/area math (hence no `geometry.js`).
 
 ## Running locally
 
@@ -62,20 +82,11 @@ gwr-search/
     └── swiss-logo-flag.svg
 ```
 
-## Differences from `oereb-search`
+## Tech stack
 
-This app shares its structure with [`oereb-search`](../oereb-search/) but targets a different register:
+Vanilla JavaScript (ES6 modules), no build step and no external JS libraries — just the public swisstopo REST API. The map is the embedded swisstopo map viewer.
 
-| | oereb-search | gwr-search |
-|---|---|---|
-| Layer | `ch.swisstopo-vd.stand-oerebkataster` | `ch.bfs.gebaeude_wohnungs_register` |
-| Key | EGRID (`CH`+12 chars) | EGID (positive integer) |
-| Geometry | Polygon (area via shoelace) | Point (footprint is the `garea` attribute) |
-| Coded fields | — | Building category/class/status/period/heating resolved via `gwr-codes.json` |
-
-Because GWR features are points, `find` returns the geometry inline — there is no second per-feature request, and no polygon/area math (hence no `geometry.js`).
-
-## Data source
+## Data sources
 
 | Source | Use |
 |---|---|

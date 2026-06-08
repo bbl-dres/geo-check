@@ -151,6 +151,18 @@ A self-contained HTML file (data embedded — just double-click it, no server). 
   fetches and draws its **ÖREB polygon** live from the swisstopo API.
 - view + filters + page + page-size live in the **URL hash**, so a filtered view is
   shareable and survives reload (works from a local `file://` too).
+- a **language switcher (DE / FR / IT / EN)** in the header — the whole UI *and* the
+  per-finding detail sentences are translated live (no reload); DE is the default,
+  and the choice persists in the URL hash + `localStorage`. All four languages are
+  bundled into the single file from [`i18n.json`](i18n.json) (one entry per key, with
+  `de`/`fr`/`it`/`en`), so adding or fixing wording is a JSON edit + re-run — no code
+  change. *(FR/IT are first-draft translations; have a native speaker review official
+  terminology before publishing.)*
+- a header **Download** button → a modal with three client-side exports (no server,
+  works offline): **the report itself (HTML)**, **GeoJSON** (every located building +
+  parcel as a WGS84 point, raw field names for GIS), and **Excel (`.xlsx`)** — a real
+  multi-sheet workbook (*findings · buildings · parcels*) written with a tiny built-in
+  OOXML/ZIP writer (no library), localized to the current UI language.
 
 **Design:** the report follows the **Swiss Confederation Design System**
 ([swiss/designsystem](https://github.com/swiss/designsystem)) — Noto Sans, the
@@ -169,7 +181,7 @@ the table and charts work offline.
 > **Privacy:** the SAP `.txt` exports, the result CSVs, `report.html`, and the API
 > cache all embed internal BBL master data, and this repo deploys to a **public**
 > GitHub Pages site — so they are **git-ignored**. Only `oereb_check.py`,
-> `README.md`, `RULE-SET.md`, and `.gitignore` are tracked. The data is not sensitive, but it is
+> `README.md`, `RULE-SET.md`, `i18n.json`, and `.gitignore` are tracked. The data is not sensitive, but it is
 > kept out of the public repo by default; clear it for release before publishing.
 
 `--offline` reports only on keys already in the cache; anything not yet fetched is
@@ -201,6 +213,30 @@ parcel-cluster median, trusted only from ≥ 3 parcels. Exact distances and a
 > the polygon and far from the buildings — the main cause of false `PARCEL_FAR` flags.
 > The polygon-based method (and the pole-of-inaccessibility centre for the map) fixes
 > that; it activates once parcels are re-fetched **with geometry** (one online run).
+
+## Layout
+
+```
+oereb-check/
+├── oereb_check.py            # The tool — single file, standard library only
+├── i18n.json                 # UI + finding translations (DE / FR / IT / EN)
+├── RULE-SET.md               # Authoritative rule catalogue (German)
+├── README.md
+├── .gitignore                # Keeps SAP data + outputs out of the public repo
+│
+│   # generated locally, git-ignored (internal master data):
+├── *_Gebäude.txt             # SAP Gebäude export (input)
+├── *_Grundstücke.txt         # SAP Grundstücke export (input)
+├── api_cache.json            # Resumable HTTP response cache
+├── findings.csv              # Issues, sorted by severity
+├── buildings_enriched.csv
+├── parcels_enriched.csv
+├── we_summary.csv
+└── report.html               # Self-contained interactive report
+```
+
+Only the five files above the divider are tracked; everything generated is
+git-ignored (see **Privacy** under [Output](#output)).
 
 ## Requirements
 

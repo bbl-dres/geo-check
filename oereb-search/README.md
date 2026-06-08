@@ -1,12 +1,19 @@
 # ÖREB Parcel Search
 
-Browser tool to search the Swiss **ÖREB cadastre** by municipality, EGRID, parcel number, postcode, or canton. Built on the public [swisstopo ÖREB layer](https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.swisstopo-vd.stand-oerebkataster). Part of the [`geo-check`](../README.md) repo.
+Browser tool to search the Swiss **ÖREB cadastre** by municipality, EGRID, parcel number, postcode, or canton. Built on the public [swisstopo ÖREB layer](https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.swisstopo-vd.stand-oerebkataster). Part of the [`geo-check`](../README.md) repo, and a sibling of [`gwr-search`](../gwr-search/) — same UI, different register.
 
 ## Live app
 
-https://bbl-dres.github.io/geo-check/oereb-search/
+<https://bbl-dres.github.io/geo-check/oereb-search/>
 
 (Old bookmarks to `/app-oereb/` redirect here.)
+
+## How it works
+
+1. **Search** — enter any combination of municipality, EGRID, parcel number, PLZ, or canton (search mask), or upload a CSV of EGRIDs (batch mode).
+2. **Look up** — each query hits the public swisstopo ÖREB layer; parcel polygons are fetched and the area computed (shoelace).
+3. **Review** — matches land in a results table; click a row for the detail panel with map, area, and official extract links.
+4. **Download** *(batch)* — export every input row, including not-found/error, as CSV or GeoJSON.
 
 ## Features
 
@@ -29,6 +36,15 @@ Switch to the **Batch (CSV)** tab to look up many parcels at once:
 **Column contract — no joins needed afterwards.** Every column you upload is preserved with an **`IN_`** prefix; every looked-up field is added with an **`OUT_`** prefix (`OUT_RESULT`, `OUT_GEMEINDE`, `OUT_FLAECHE_M2`, `OUT_OEREB_STATUS`, the official extract links, …). `OUT_RESULT` is one of `found` / `not_found` / `error`, so failed rows still carry your original data. The GeoJSON is **WGS84 (EPSG:4326)** with the same `IN_`/`OUT_` property bag; rows without geometry are emitted as features with `geometry: null`.
 
 A ready-made [`examples/oereb-beispiel.csv`](examples/oereb-beispiel.csv) (linked in the upload view) demonstrates the format, including a not-found and a missing-EGRID row.
+
+## Companion script — `scripts/oereb.py`
+
+A standalone Python utility for downloading raw XML ÖREB extracts directly from each canton's web service (independent of the browser app). Maps each canton to its official endpoint — see [www.cadastre.ch/de/oereb-webservice](https://www.cadastre.ch/de/oereb-webservice) for the source list. Full details in [`scripts/README.md`](scripts/README.md).
+
+```bash
+pip install requests
+python scripts/oereb.py
+```
 
 ## Running locally
 
@@ -54,21 +70,17 @@ oereb-search/
 ├── examples/
 │   └── oereb-beispiel.csv   # Sample batch input (used by the demo links)
 ├── scripts/
-│   └── oereb.py             # Companion CLI: download XML ÖREB extracts per canton
+│   ├── oereb.py             # Companion CLI: download XML ÖREB extracts per canton
+│   └── README.md            # Companion-script docs
 └── assets/
     └── swiss-logo-flag.svg
 ```
 
-## Companion script — `scripts/oereb.py`
+## Tech stack
 
-A standalone Python utility for downloading raw XML ÖREB extracts directly from each canton's web service (independent of the browser app). Maps each canton to its official endpoint — see [www.cadastre.ch/de/oereb-webservice](https://www.cadastre.ch/de/oereb-webservice) for the source list.
+Vanilla JavaScript (ES6 modules), no build step and no external JS libraries — just the public swisstopo REST API. The map is the embedded swisstopo map viewer. The optional companion script needs Python 3 + `requests`.
 
-```bash
-pip install requests
-python scripts/oereb.py
-```
-
-## Data source
+## Data sources
 
 | Source | Use |
 |---|---|

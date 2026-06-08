@@ -86,6 +86,35 @@ GWR_FEATURE = "https://api3.geo.admin.ch/rest/services/api/MapServer/ch.bfs.geba
 FIND_URL    = "https://api3.geo.admin.ch/rest/services/ech/MapServer/find"
 OEREB_LAYER = "ch.swisstopo-vd.stand-oerebkataster"
 
+# ───────────────────────────── i18n ──────────────────────────────────────
+
+
+def load_i18n() -> dict:
+    """Load the DE/FR/IT/EN translation table (i18n.json, next to this script)."""
+    path = os.path.join(DATA_DIR, "i18n.json")
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        raise SystemExit(f"Cannot read i18n.json ({path}): {e}")
+
+
+def _interp(tmpl: str, args: dict | None) -> str:
+    """Fill {name} placeholders from args (missing keys are left as-is). Mirrors the
+    report's JS interpolation so the English CSV/console text matches the report."""
+    if not args:
+        return tmpl
+    return re.sub(r"\{(\w+)\}", lambda m: str(args.get(m.group(1), m.group(0))), tmpl)
+
+
+def _js_embed(obj) -> str:
+    """JSON for embedding inside a <script> as a JS literal — escapes the HTML-
+    significant chars and JS line separators so no value can break out of the tag."""
+    return (json.dumps(obj, ensure_ascii=False)
+            .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
+            .replace(chr(0x2028), "\\u2028").replace(chr(0x2029), "\\u2029"))
+
+
 # ───────────────────────────── SAP report parsing ────────────────────────
 
 
@@ -608,8 +637,10 @@ SEV_RANK = {"HIGH": 0, "MED": 1, "LOW": 2}
 
 
 def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
-            threshold: float) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
-    """Enrich records, run all checks, return (buildings, parcels, we_rows, findings)."""
+            threshold: float, i18n_en: dict) -> tuple[list[dict], list[dict], list[dict], list[dict]]:
+    """Enrich records, run all checks, return (buildings, parcels, we_rows, findings).
+    Findings carry a translatable message key (`msg`) + `args`; the English `detail`
+    string (for CSV/console) is built from the EN templates in i18n_en."""
 
     # 1) attach API enrichment + per-record key status.
     #    status: found / notfound / error (from API) · missing (no key, CH) ·
@@ -646,14 +677,15 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
     findings: list[dict] = []
     we_rows: list[dict] = []
 
-    def add(sev, cat, we, kind, rec, detail, suggested="", distance=""):
+    def add(sev, cat, we, kind, rec, msg, args=None, suggested="", distance=""):
         enr = rec.get("gwr") or rec.get("oereb") or {}
         findings.append({
             "severity": sev, "category": cat, "we": we, "kind": kind,
             "sap_id": rec.get("id", ""), "name": rec.get("name", ""),
             "key": rec.get("egid") or rec.get("egrid", ""),
-            "detail": detail, "suggested_egrid": suggested,
-            "distance_m": distance,
+            "msg": msg, "args": args or {},                       # translated in the report
+            "detail": _interp(i18n_en.get("detail_" + msg, msg), args),  # English, for CSV/console
+            "suggested_egrid": suggested, "distance_m": distance,
             "gemeinde": enr.get("gemeinde", ""),
             "ort": rec.get("ort", ""),
             "land": rec.get("land", ""), "kanton": rec.get("kanton", ""),
@@ -689,20 +721,17 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
             bg = gwr_egrid(b)
             b["gwr_egrid_in_sap_we"] = (bg in sap_egrids) if bg else ""
             if b["egid_status"] == "missing":
-                add("MED", "MISSING_EGID", we, "building", b,
-                    "CH building has no EGID in SAP")
+                add("MED", "MISSING_EGID", we, "building", b, "MISSING_EGID")
             elif b["egid_status"] == "notfound":
-                add("HIGH", "INVALID_EGID", we, "building", b,
-                    "EGID not found in GWR (stale or wrong)")
+                add("HIGH", "INVALID_EGID", we, "building", b, "INVALID_EGID")
             # non-CH building carrying a (valid) EGID — independent of the above
             if b["egid_valid"] and b["land"] != "CH":
                 add("LOW", "NONCH_WITH_EGID", we, "building", b,
-                    f"non-CH building ({b['land']}) unexpectedly carries an EGID")
+                    "NONCH_WITH_EGID", {"land": b["land"]})
             # building sits on a parcel that is not in this WE's SAP parcels
             if bg and sap_egrids and bg not in sap_egrids and not is_single_pair:
                 add("MED", "GWR_EGRID_NOT_IN_SAP", we, "building", b,
-                    "building's GWR parcel is not among this WE's SAP parcels "
-                    "(possible missing parcel or wrong key)", suggested=bg)
+                    "GWR_EGRID_NOT_IN_SAP", suggested=bg)
 
         # ---- per parcel checks ----
         for p in ps:
@@ -723,12 +752,10 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
                     # parcels where the old bbox-centre over-flagged (pole/centre is
                     # irrelevant once the building demonstrably sits on the parcel).
                     d = min(point_to_polys_dist(bx, by, poly) for bx, by in bpts)
-                    to_what = "the nearest WE building"
                 else:
                     # legacy cache entry (no geometry) or a parcel-only WE:
                     # fall back to point/pole → WE centre.
                     d = dist_m((p["oereb"]["e"], p["oereb"]["n"]), centre)
-                    to_what = "the WE building cluster"
                 p["dist_to_we_center_m"] = round(d)
                 # cross-municipality gate: a wrong E-GRID almost always lands in a
                 # DIFFERENT municipality, whereas legitimately spread holdings (forest,
@@ -742,20 +769,19 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
                 far = reliable and d > threshold and (cross_muni if muni_known else True)
                 p["far_flag"] = far
                 if far:
-                    where = (f" — parcel in {pgem}, buildings in {'/'.join(sorted(we_gemeinden))}"
-                             if cross_muni else "")
-                    add("HIGH", "PARCEL_FAR", we, "parcel", p,
-                        f"parcel is {round(d)} m from {to_what} "
-                        f"(> {threshold:g} m){where} — likely wrong E-GRID",
-                        distance=round(d))
+                    args = {"d": round(d), "thr": f"{threshold:g}"}
+                    msg = "PARCEL_FAR"
+                    if cross_muni:
+                        msg = "PARCEL_FAR_xm"
+                        args["pgem"] = pgem
+                        args["bgem"] = "/".join(sorted(we_gemeinden))
+                    add("HIGH", "PARCEL_FAR", we, "parcel", p, msg, args, distance=round(d))
 
             # missing / invalid E-GRID (handled specially for single pairs below)
             if p["egrid_status"] == "missing" and not is_single_pair:
-                add("MED", "MISSING_EGRID", we, "parcel", p,
-                    "parcel has no / zero E-GRID in SAP")
+                add("MED", "MISSING_EGRID", we, "parcel", p, "MISSING_EGRID")
             elif p["egrid_status"] == "notfound":
-                add("HIGH", "INVALID_EGRID", we, "parcel", p,
-                    "E-GRID not found in OEREB cadastre (stale or wrong)")
+                add("HIGH", "INVALID_EGRID", we, "parcel", p, "INVALID_EGRID")
 
         # ---- single building + single parcel special case ----
         if is_single_pair:
@@ -768,18 +794,15 @@ def analyse(buildings: list[dict], parcels: list[dict], client: GeoAdmin,
                     single_status = "mismatch"
                     single_suggest = bg
                     add("HIGH", "SINGLE_PAIR_MISMATCH", we, "parcel", p,
-                        f"single building + single parcel: SAP E-GRID '{p['egrid']}' "
-                        f"!= building's GWR parcel '{bg}'", suggested=bg)
+                        "SINGLE_PAIR_MISMATCH", {"egrid": p["egrid"], "bg": bg}, suggested=bg)
             elif p["egrid_status"] == "missing":          # CH parcel with no E-GRID
                 if bg:
                     single_status = "fill"
                     single_suggest = bg
                     add("HIGH", "SINGLE_PAIR_FILL", we, "parcel", p,
-                        "single building + single parcel: parcel E-GRID is missing — "
-                        "assign the building's GWR parcel", suggested=bg)
+                        "SINGLE_PAIR_FILL", suggested=bg)
                 else:                                      # no GWR E-GRID to fill from
-                    add("MED", "MISSING_EGRID", we, "parcel", p,
-                        "parcel has no / zero E-GRID in SAP")
+                    add("MED", "MISSING_EGRID", we, "parcel", p, "MISSING_EGRID")
 
         # ---- WE summary row ----
         missing_parcels = sorted(gwr_egrids - sap_egrids)
@@ -872,8 +895,8 @@ CATEGORY_LABELS = {
 
 
 def write_html_report(path: str, buildings, parcels, we_rows, findings,
-                      threshold: float, sources: dict) -> None:
-    """Write a self-contained, interactive single-file HTML report."""
+                      threshold: float, sources: dict, i18n: dict) -> None:
+    """Write a self-contained, interactive single-file HTML report (DE/FR/IT/EN)."""
     stats = {
         "buildings": len(buildings),
         "buildings_ch": sum(1 for b in buildings if b["land"] == "CH"),
@@ -887,7 +910,9 @@ def write_html_report(path: str, buildings, parcels, we_rows, findings,
         "confirmed": sum(1 for w in we_rows if w["single_pair_status"] == "confirmed"),
     }
     cc = Counter(f["category"] for f in findings)
-    categories = [{"key": k, "label": CATEGORY_LABELS[k], "count": cc[k],
+    # CATEGORY_LABELS only fixes the display ORDER here; the labels themselves are
+    # translated in the report via t("cat_"+key). count + severity drive the chart.
+    categories = [{"key": k, "count": cc[k],
                    "severity": next(f["severity"] for f in findings if f["category"] == k)}
                   for k in CATEGORY_LABELS if cc.get(k)]
 
@@ -939,22 +964,16 @@ def write_html_report(path: str, buildings, parcels, we_rows, findings,
 
     data = {
         "stats": stats, "categories": categories, "findings": findings, "geo": geo,
-        "buildings": b_rows, "parcels": p_rows, "labels": CATEGORY_LABELS,
+        "buildings": b_rows, "parcels": p_rows,
         "meta": {"generated": datetime.now().strftime("%Y-%m-%d %H:%M"),
                  "threshold": threshold,
                  "gebaeude": os.path.basename(sources.get("gebaeude", "")),
                  "grundstuecke": os.path.basename(sources.get("grundstuecke", ""))},
     }
-    # Embedded as a JS object literal. json.dumps does NOT escape <, >, & — so a
-    # SAP value containing "</script>" would terminate the <script> early. Escape
-    # those (and the JS line separators U+2028/U+2029) to \uXXXX: identical inside
-    # a JS/JSON string, but inert to the HTML parser.
-    data_js = (json.dumps(data, ensure_ascii=False)
-               .replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
-               .replace(chr(0x2028), "\\u2028").replace(chr(0x2029), "\\u2029"))
     html = (_HTML_TEMPLATE
             .replace("<!--NAMESVG-->", _SWISS_NAME_SVG)
-            .replace("/*__DATA__*/", data_js))
+            .replace("/*__I18N__*/", _js_embed(i18n))
+            .replace("/*__DATA__*/", _js_embed(data)))
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(html)
@@ -1006,6 +1025,8 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   .header__org{font-weight:700;font-size:.875rem;line-height:1.35}
   header h1{margin:0;font-size:.8125rem;font-weight:400;line-height:1.35;color:var(--slate-500)}
   .filterbtn-wrap{margin-left:auto;align-self:center;display:flex;align-items:center;gap:10px}
+  .header__lang{border:1px solid var(--border-input);background:#fff;border-radius:3px;padding:8px 10px;font:inherit;font-size:.875rem;color:var(--ink);cursor:pointer}
+  .header__lang:hover{border-color:var(--slate-500)}
   .header__link{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-input);background:#fff;border-radius:3px;padding:8px 14px;font-size:.875rem;color:var(--ink);text-decoration:none;cursor:pointer}
   .header__link:hover{border-color:var(--slate-500);color:var(--red)}
   .header__link svg{display:block}
@@ -1019,6 +1040,19 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
     display:flex;flex-direction:column}
   /* display:flex above would defeat the [hidden] attribute (equal specificity, later rule) — keep this guard */
   .filterpanel[hidden],.fp-scrim[hidden]{display:none}
+  /* download modal (centered overlay) */
+  .modal-scrim{position:fixed;inset:0;background:rgba(47,67,86,.4);z-index:110;display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal-scrim[hidden]{display:none}
+  .modal{background:#fff;border:1px solid var(--line);box-shadow:0 10px 25px -5px rgba(0,0,0,.25);max-width:460px;width:100%;max-height:90vh;overflow:auto;display:flex;flex-direction:column}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);flex:0 0 auto}
+  .modal-title{font-weight:700;font-size:1rem}
+  .modal-body{padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+  .dl-opt{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;border:1px solid var(--line);border-radius:3px;padding:12px 14px;background:#fff;font:inherit;color:var(--ink);cursor:pointer}
+  .dl-opt:hover{border-color:var(--slate-500)}
+  .dl-opt svg{flex:0 0 auto;color:var(--slate-500);margin-top:2px}
+  .dl-txt{display:flex;flex-direction:column;gap:2px}
+  .dl-txt b{font-weight:700}
+  .dl-txt>span{color:var(--gray);font-size:.8125rem}
   .fp-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);flex:0 0 auto}
   .fp-title{font-weight:700;font-size:1rem}
   .fp-close{appearance:none;border:0;background:none;font-size:24px;line-height:1;color:var(--ink);cursor:pointer;padding:2px 8px;border-radius:3px}
@@ -1118,7 +1152,7 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
 </style>
 </head>
 <body>
-<a class="skip-link" href="#main">Skip to report</a>
+<a class="skip-link" href="#main" data-i18n="skip_link">Skip to report</a>
 <header>
   <div class="header__bar">
     <svg class="logo__flag" viewBox="0 0 40 44" aria-hidden="true"><path d="m38.5778 3.2s-7.2-3.2-19.3-3.2c-12.00002 0-19.2000222 3.2-19.2000222 3.2s-.6999998 14.1 2.1000022 22.1c4.8 14 17.20002 18 17.20002 18s12.3-3.9 17.2-18c2.6-8 2-22.1 2-22.1z" fill="#ff0000"/><path d="m32.0779 15.4v7.8h-9v9.1h-7.7v-9.1h-8.99997v-7.8h8.99997v-9.09995h7.7v9.09995z" fill="#ffffff"/></svg>
@@ -1126,87 +1160,116 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
     <!--NAMESVG-->
     <span class="logo__separator"></span>
     <div class="header__titles">
-      <span class="header__org">Bundesamt für Bauten und Logistik BBL</span>
-      <h1>Liegenschaften-Inventar – Prüfbericht</h1>
+      <span class="header__org" data-i18n="office">Bundesamt für Bauten und Logistik BBL</span>
+      <h1 data-i18n="report_title">Liegenschaften-Inventar – Prüfbericht</h1>
     </div>
     <div class="filterbtn-wrap">
-      <a class="header__link" href="https://github.com/bbl-dres/geo-check/blob/main/oereb-check/RULE-SET.md" target="_blank" rel="noopener" title="Regelwerk – alle Prüfregeln (öffnet RULE-SET.md auf GitHub)">
+      <select id="lang" class="header__lang" data-i18n-aria="lang_label" aria-label="Sprache">
+        <option value="de">DE</option><option value="fr">FR</option><option value="it">IT</option><option value="en">EN</option>
+      </select>
+      <a class="header__link" href="https://github.com/bbl-dres/geo-check/blob/main/oereb-check/RULE-SET.md" target="_blank" rel="noopener" data-i18n-title="nav_ruleset_title" title="Regelwerk – alle Prüfregeln (öffnet RULE-SET.md auf GitHub)">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M3.5 1.5h6l3 3v10h-9z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9.5 1.5v3h3M5.5 8h5M5.5 10.3h5M5.5 12.6h3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Regelwerk
+        <span data-i18n="nav_ruleset">Regelwerk</span>
       </a>
+      <button type="button" id="dlbtn" class="filterbtn" aria-expanded="false" aria-controls="dlmodal" aria-haspopup="dialog">
+        <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M8 1.5v8M4.5 6.5 8 10l3.5-3.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span data-i18n="nav_download">Download</span>
+      </button>
       <button type="button" id="filterbtn" class="filterbtn" aria-expanded="false" aria-controls="filterpanel" aria-haspopup="dialog">
         <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M1.5 2.5h13l-5 6V13l-3 1.5V8.5z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
-        Filter<span class="filterbadge" id="filterbadge" hidden></span>
+        <span data-i18n="nav_filter">Filter</span><span class="filterbadge" id="filterbadge" hidden></span>
       </button>
     </div>
   </div>
 </header>
 <div class="fp-scrim" id="fpscrim" hidden></div>
-<aside class="filterpanel" id="filterpanel" hidden role="dialog" aria-modal="true" aria-label="Filter">
+<aside class="filterpanel" id="filterpanel" hidden role="dialog" aria-modal="true" data-i18n-aria="filter_title" aria-label="Filter">
   <div class="fp-head">
-    <span class="fp-title">Filter</span>
-    <button type="button" class="fp-close" id="fpclose" aria-label="Filter schliessen">×</button>
+    <span class="fp-title" data-i18n="filter_title">Filter</span>
+    <button type="button" class="fp-close" id="fpclose" data-i18n-aria="filter_close" aria-label="Filter schliessen">×</button>
   </div>
   <div class="fp-body">
     <div class="fp-sec">
-      <div class="fp-h">Schweregrad</div>
-      <label class="fp-row"><input type="checkbox" id="fSev_HIGH"> Hoch <span class="fp-hint">· Fehler</span></label>
-      <label class="fp-row"><input type="checkbox" id="fSev_MED"> Mittel <span class="fp-hint">· Warnung</span></label>
-      <label class="fp-row"><input type="checkbox" id="fSev_LOW"> Niedrig <span class="fp-hint">· Hinweis</span></label>
+      <div class="fp-h" data-i18n="fp_severity">Schweregrad</div>
+      <label class="fp-row"><input type="checkbox" id="fSev_HIGH"> <span data-i18n="sev_high">Hoch</span> <span class="fp-hint" data-i18n="sev_high_tag">· Fehler</span></label>
+      <label class="fp-row"><input type="checkbox" id="fSev_MED"> <span data-i18n="sev_med">Mittel</span> <span class="fp-hint" data-i18n="sev_med_tag">· Warnung</span></label>
+      <label class="fp-row"><input type="checkbox" id="fSev_LOW"> <span data-i18n="sev_low">Niedrig</span> <span class="fp-hint" data-i18n="sev_low_tag">· Hinweis</span></label>
     </div>
     <div class="fp-sec">
-      <div class="fp-h">Typ</div>
-      <label class="fp-row"><input type="checkbox" id="fTyp_building"> Gebäude</label>
-      <label class="fp-row"><input type="checkbox" id="fTyp_parcel"> Grundstücke</label>
+      <div class="fp-h" data-i18n="fp_type">Typ</div>
+      <label class="fp-row"><input type="checkbox" id="fTyp_building"> <span data-i18n="type_building">Gebäude</span></label>
+      <label class="fp-row"><input type="checkbox" id="fTyp_parcel"> <span data-i18n="type_parcel">Grundstücke</span></label>
     </div>
     <div class="fp-sec">
-      <div class="fp-h">Objektklassen <span class="fp-hint">(angekreuzt = ausgeblendet)</span></div>
-      <label class="fp-row"><input type="checkbox" id="fAbgang"> Abgang (ABGA…)</label>
-      <label class="fp-row"><input type="checkbox" id="fLoevm"> Löschvermerk (LÖVM…)</label>
-      <label class="fp-row"><input type="checkbox" id="fParking"> Parkplätze (…PP…)</label>
-      <label class="fp-row"><input type="checkbox" id="fInfra"> Infrastrukturgefässe (GR)</label>
+      <div class="fp-h"><span data-i18n="fp_classes">Objektklassen</span> <span class="fp-hint" data-i18n="fp_classes_hint">(angekreuzt = ausgeblendet)</span></div>
+      <label class="fp-row"><input type="checkbox" id="fAbgang"> <span data-i18n="class_abgang">Abgang (ABGA…)</span></label>
+      <label class="fp-row"><input type="checkbox" id="fLoevm"> <span data-i18n="class_loevm">Löschvermerk (LÖVM…)</span></label>
+      <label class="fp-row"><input type="checkbox" id="fParking"> <span data-i18n="class_parking">Parkplätze (…PP…)</span></label>
+      <label class="fp-row"><input type="checkbox" id="fInfra"> <span data-i18n="class_infra">Infrastrukturgefässe (GR)</span></label>
     </div>
     <div class="fp-sec">
-      <div class="fp-h">Land</div>
-      <label class="fp-row"><input type="checkbox" id="fLand_CH"> Schweiz</label>
-      <label class="fp-row"><input type="checkbox" id="fLand_FOREIGN"> Ausland</label>
+      <div class="fp-h" data-i18n="fp_land">Land</div>
+      <label class="fp-row"><input type="checkbox" id="fLand_CH"> <span data-i18n="land_ch">Schweiz</span></label>
+      <label class="fp-row"><input type="checkbox" id="fLand_FOREIGN"> <span data-i18n="land_foreign">Ausland</span></label>
     </div>
     <div class="fp-sec">
-      <div class="fp-h">Kanton</div>
+      <div class="fp-h" data-i18n="fp_kanton">Kanton</div>
       <div class="fp-checks" id="fKantonList"></div>
     </div>
   </div>
   <div class="fp-foot">
-    <button type="button" class="reset" id="fReset">Alle Filter zurücksetzen</button>
+    <button type="button" class="reset" id="fReset" data-i18n="reset_all">Alle Filter zurücksetzen</button>
   </div>
 </aside>
+<div class="modal-scrim" id="dlscrim" hidden>
+  <div class="modal" id="dlmodal" role="dialog" aria-modal="true" data-i18n-aria="dl_title" aria-label="Download">
+    <div class="modal-head">
+      <span class="modal-title" data-i18n="dl_title">Herunterladen</span>
+      <button type="button" class="fp-close" id="dlclose" data-i18n-aria="dl_close" aria-label="Schliessen">×</button>
+    </div>
+    <div class="modal-body">
+      <button type="button" class="dl-opt" id="dlHtml">
+        <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true"><path d="M4.5 2.5h7l4 4v11h-11z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M11.5 2.5v4h4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+        <span class="dl-txt"><b data-i18n="dl_html">Report (HTML)</b><span data-i18n="dl_html_desc">Diesen interaktiven Bericht als HTML-Datei speichern</span></span>
+      </button>
+      <button type="button" class="dl-opt" id="dlGeo">
+        <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true"><path d="M10 2.2c-2.6 0-4.5 2-4.5 4.5 0 3.3 4.5 8.6 4.5 8.6s4.5-5.3 4.5-8.6c0-2.5-1.9-4.5-4.5-4.5z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="10" cy="6.7" r="1.7" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="dl-txt"><b data-i18n="dl_geojson">GeoJSON</b><span data-i18n="dl_geojson_desc">Gebäude- und Grundstückspunkte (WGS84) für GIS</span></span>
+      </button>
+      <button type="button" class="dl-opt" id="dlXlsx">
+        <svg viewBox="0 0 20 20" width="22" height="22" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 8h15M2.5 12h15M8 3.5v13M12.5 3.5v13" stroke="currentColor" stroke-width="1.1"/></svg>
+        <span class="dl-txt"><b data-i18n="dl_xlsx">Excel (.xlsx)</b><span data-i18n="dl_xlsx_desc">Drei Tabellen: Befunde, Gebäude, Grundstücke</span></span>
+      </button>
+    </div>
+  </div>
+</div>
 <main id="main">
   <div class="filters" id="filters"></div>
   <div class="cards" id="cards"></div>
   <div class="charts">
     <div class="chart-col">
       <div class="panel">
-        <h2>Findings by severity</h2>
+        <h2 data-i18n="chart_by_severity">Findings by severity</h2>
         <div id="sevbars"></div>
       </div>
       <div class="panel">
-        <h2>Findings by type</h2>
+        <h2 data-i18n="chart_by_type">Findings by type</h2>
         <div id="typebars"></div>
       </div>
     </div>
     <div class="panel">
-      <h2>Findings by category</h2>
+      <h2 data-i18n="chart_by_category">Findings by category</h2>
       <div id="bars"></div>
-      <div class="map-note">Click any bar to filter; click it again to clear.</div>
+      <div class="map-note" data-i18n="chart_click_hint">Click any bar to filter; click it again to clear.</div>
     </div>
   </div>
   <div class="panel mb">
-    <h2>Map — click a table row to zoom; click a parcel to load its ÖREB polygon</h2>
+    <h2 data-i18n="map_title">Map — click a table row to zoom; click a parcel to load its ÖREB polygon</h2>
     <div class="map-legend" aria-hidden="true">
-      <span><i style="width:10px;height:10px;border-radius:50%;background:var(--c-building)"></i>Building</span>
-      <span><i style="width:10px;height:10px;border-radius:50%;background:var(--c-parcel)"></i>Parcel</span>
-      <span><i style="width:12px;height:12px;border-radius:50%;background:var(--c-parcel);outline:2px solid var(--c-parcel-line)"></i>Parcel flagged far</span>
-      <span><i style="width:18px;border-top:2px dashed var(--slate-400)"></i>Distance to building cluster</span>
+      <span><i style="width:10px;height:10px;border-radius:50%;background:var(--c-building)"></i><span data-i18n="legend_building">Building</span></span>
+      <span><i style="width:10px;height:10px;border-radius:50%;background:var(--c-parcel)"></i><span data-i18n="legend_parcel">Parcel</span></span>
+      <span><i style="width:12px;height:12px;border-radius:50%;background:var(--c-parcel);outline:2px solid var(--c-parcel-line)"></i><span data-i18n="legend_parcel_far">Parcel flagged far</span></span>
+      <span><i style="width:18px;border-top:2px dashed var(--slate-400)"></i><span data-i18n="legend_distance">Distance to building cluster</span></span>
     </div>
     <div id="map" role="region" aria-label="Map of flagged parcels and building clusters"></div>
     <div class="map-note" id="mapnote" aria-live="polite"></div>
@@ -1214,13 +1277,13 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   <div class="panel">
     <div class="toolbar">
       <span class="seg" id="viewseg" role="tablist" aria-label="Record view">
-        <button role="tab" data-view="findings" class="on" aria-selected="true">Findings</button>
-        <button role="tab" data-view="buildings" aria-selected="false">Buildings</button>
-        <button role="tab" data-view="parcels" aria-selected="false">Parcels</button>
+        <button role="tab" data-view="findings" class="on" aria-selected="true" data-i18n="tab_findings">Findings</button>
+        <button role="tab" data-view="buildings" aria-selected="false" data-i18n="tab_buildings">Buildings</button>
+        <button role="tab" data-view="parcels" aria-selected="false" data-i18n="tab_parcels">Parcels</button>
       </span>
       <select id="statussel" aria-label="Filter by status"></select>
-      <label class="chk" id="farwrap"><input type="checkbox" id="farchk"> far only</label>
-      <input type="search" id="q" placeholder="Search…" aria-label="Search table">
+      <label class="chk" id="farwrap"><input type="checkbox" id="farchk"> <span data-i18n="far_only">far only</span></label>
+      <input type="search" id="q" data-i18n-aria="search_aria" aria-label="Search table">
     </div>
     <div class="tablewrap" role="tabpanel" aria-label="Records">
       <table><thead><tr id="head"></tr></thead><tbody id="rows"></tbody></table>
@@ -1230,7 +1293,7 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
 </main>
 <footer class="footer">
   <div class="footer-info">
-    <span>Datenquelle:</span>
+    <span data-i18n="footer_source">Datenquelle:</span>
     <a href="https://api3.geo.admin.ch" target="_blank" rel="noopener">geo.admin.ch API</a>
     <span aria-hidden="true">·</span>
     <a href="https://www.housing-stat.ch/de/home.html" target="_blank" rel="noopener">GWR</a>
@@ -1239,14 +1302,36 @@ _HTML_TEMPLATE = r"""<!DOCTYPE html>
   </div>
   <div class="footer-meta" id="meta"></div>
   <div class="footer-links">
-    <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener">Quellcode</a>
-    <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
-    <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Kontakt</a>
+    <a href="https://github.com/bbl-dres/geo-check" target="_blank" rel="noopener" data-i18n="footer_quellcode">Quellcode</a>
+    <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer_legal">Rechtliches</a>
+    <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer_contact">Kontakt</a>
   </div>
 </footer>
 <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" onerror="window._nomap=1"></script>
 <script>
 const DATA = /*__DATA__*/;
+const I18N = /*__I18N__*/;
+const LANGS = ["de","fr","it","en"];
+let LANG = "de";
+const tr = k => { const e = I18N[k]; return e ? (e[LANG] || e.de || k) : k; };  // I18N is key-centric: {key:{de,fr,it,en}}
+const interp = (s,a) => a ? s.replace(/\{(\w+)\}/g,(m,k)=> k in a ? a[k] : m) : s;
+const t = (k,a) => interp(tr(k), a);
+const sevName = s => t("sev_"+String(s||"").toLowerCase());
+const typeName = k => t(k==="building" ? "type_building" : "type_parcel");
+const langSel = document.getElementById("lang");
+function applyI18n(){
+  document.documentElement.lang = LANG;
+  document.title = t("page_title");
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.setAttribute("placeholder", t(el.dataset.i18nPh)));
+  document.querySelectorAll("[data-i18n-title]").forEach(el => el.setAttribute("title", t(el.dataset.i18nTitle)));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  const mEl = document.getElementById("meta");
+  if(mEl){ const m = DATA.meta;
+    mEl.textContent = t("footer_meta", {generated:m.generated,
+      geb:m.gebaeude||t("card_buildings"), gst:m.grundstuecke||t("card_parcels"), thr:m.threshold}); }
+  if(langSel) langSel.value = LANG;
+}
 const SEVRANK = {HIGH:0, MED:1, LOW:2};
 const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const num = v => (v===""||v==null) ? null : +v;
@@ -1258,37 +1343,37 @@ DATA.buildings.forEach(b => { if(b.lat!=="") PT["b|"+b.we+"|"+b.id]={lat:b.lat,l
 DATA.parcels.forEach(p => { if(p.lat!=="") PT["p|"+p.we+"|"+p.id]={lat:p.lat,lon:p.lon,egrid:p.egrid,name:p.name,far:p.far===true}; });
 let MAP=null, MAPREADY=false;
 
-const statusBadge = s => s ? `<span class="badge st-${s}">${esc(s)}</span>` : "";
-const check = v => v===true?'<span class="yes">✓<span class="sr-only"> yes</span></span>'
-                 : v===false?'<span class="no">✗<span class="sr-only"> no</span></span>':"";
-const mapLink = u => u?`<a href="${u}" target="_blank" rel="noopener">↗<span class="sr-only"> open in maps</span></a>`:"";
+const statusBadge = s => s ? `<span class="badge st-${s}">${esc(t("st_"+s))}</span>` : "";
+const check = v => v===true?`<span class="yes">✓<span class="sr-only"> ${esc(t("check_yes"))}</span></span>`
+                 : v===false?`<span class="no">✗<span class="sr-only"> ${esc(t("check_no"))}</span></span>`:"";
+const mapLink = u => u?`<a href="${u}" target="_blank" rel="noopener">↗<span class="sr-only"> ${esc(t("map_open"))}</span></a>`:"";
 const farLink = f => { const g=GMAP[f.we+"|"+f.sap_id];
-  return (f.category==="PARCEL_FAR"&&g)?` <a href="https://www.google.com/maps?q=${g.plat},${g.plon}" target="_blank">↗</a>`:""; };
+  return (f.category==="PARCEL_FAR"&&g)?` <a href="https://www.google.com/maps?q=${g.plat},${g.plon}" target="_blank" rel="noopener">↗</a>`:""; };
 
 const VIEWS = {
   findings:{data:DATA.findings, sort:"severity", search:["we","sap_id","name","key","detail","gemeinde","suggested_egrid"],
     cols:[
-      {k:"severity",t:"Sev",h:f=>`<span class="badge ${f.severity}">${f.severity}</span>`},
-      {k:"category",t:"Category",h:f=>esc(DATA.labels[f.category]||f.category)},
-      {k:"we",t:"WE",c:"mono"},{k:"sap_id",t:"id",c:"mono"},{k:"name",t:"Name"},
-      {k:"key",t:"EGID / E-GRID",c:"mono"},{k:"distance_m",t:"Dist (m)",n:true},
-      {k:"suggested_egrid",t:"Suggested E-GRID",c:"mono sug"},{k:"gemeinde",t:"Municipality"},
-      {k:"detail",t:"Detail",h:f=>esc(f.detail)+farLink(f)},
+      {k:"severity",th:"col_sev",h:f=>`<span class="badge ${f.severity}">${esc(sevName(f.severity))}</span>`},
+      {k:"category",th:"col_category",h:f=>esc(t("cat_"+f.category))},
+      {k:"we",th:"col_we",c:"mono"},{k:"sap_id",th:"col_id",c:"mono"},{k:"name",th:"col_name"},
+      {k:"key",th:"col_key",c:"mono"},{k:"distance_m",th:"col_dist",n:true},
+      {k:"suggested_egrid",th:"col_suggested",c:"mono sug"},{k:"gemeinde",th:"col_municipality"},
+      {k:"detail",th:"col_detail",h:f=>esc(t("detail_"+f.msg, f.args))+farLink(f)},
     ]},
   buildings:{data:DATA.buildings, sort:"we", search:["we","id","name","egid","gwr_egrid","gemeinde","kanton"],
     cols:[
-      {k:"we",t:"WE",c:"mono"},{k:"id",t:"id",c:"mono"},{k:"name",t:"Name"},{k:"kanton",t:"Kt"},
-      {k:"egid",t:"EGID",c:"mono"},{k:"status",t:"Status",h:b=>statusBadge(b.status)},
-      {k:"gwr_egrid",t:"GWR E-GRID",c:"mono"},{k:"in_we",t:"In WE?",h:b=>check(b.in_we)},
-      {k:"gemeinde",t:"Municipality"},{k:"maps",t:"Map",h:b=>mapLink(b.maps)},
+      {k:"we",th:"col_we",c:"mono"},{k:"id",th:"col_id",c:"mono"},{k:"name",th:"col_name"},{k:"kanton",th:"col_kt"},
+      {k:"egid",th:"col_egid",c:"mono"},{k:"status",th:"col_status",h:b=>statusBadge(b.status)},
+      {k:"gwr_egrid",th:"col_gwr_egrid",c:"mono"},{k:"in_we",th:"col_in_we",h:b=>check(b.in_we)},
+      {k:"gemeinde",th:"col_municipality"},{k:"maps",th:"col_map",h:b=>mapLink(b.maps)},
     ]},
   parcels:{data:DATA.parcels, sort:"we", search:["we","id","name","egrid","gemeinde","kanton"],
     cols:[
-      {k:"we",t:"WE",c:"mono"},{k:"id",t:"id",c:"mono"},{k:"name",t:"Name"},{k:"kanton",t:"Kt"},
-      {k:"egrid",t:"E-GRID",c:"mono"},{k:"status",t:"Status",h:p=>statusBadge(p.status)},
-      {k:"matches",t:"Matches bldg?",h:p=>check(p.matches)},{k:"dist",t:"Dist (m)",n:true},
-      {k:"far",t:"Far",h:p=>p.far===true?'<span class="badge HIGH">FAR</span>':""},
-      {k:"gemeinde",t:"Municipality"},{k:"maps",t:"Map",h:p=>mapLink(p.maps)},
+      {k:"we",th:"col_we",c:"mono"},{k:"id",th:"col_id",c:"mono"},{k:"name",th:"col_name"},{k:"kanton",th:"col_kt"},
+      {k:"egrid",th:"col_egrid",c:"mono"},{k:"status",th:"col_status",h:p=>statusBadge(p.status)},
+      {k:"matches",th:"col_matches",h:p=>check(p.matches)},{k:"dist",th:"col_dist",n:true},
+      {k:"far",th:"col_far",h:p=>p.far===true?`<span class="badge HIGH">${esc(t("far_badge"))}</span>`:""},
+      {k:"gemeinde",th:"col_municipality"},{k:"maps",th:"col_map",h:p=>mapLink(p.maps)},
     ]},
 };
 
@@ -1323,6 +1408,7 @@ function syncURL(){
   if(!ST.exAbgang)p.set("xa","0"); if(!ST.exLoevm)p.set("xl","0");
   if(!ST.exParking)p.set("xp","0"); if(!ST.exInfra)p.set("xg","0");
   if(ST.land.length)p.set("land",ST.land.join(",")); if(ST.kanton.length)p.set("kt",ST.kanton.join(","));
+  if(LANG!=="de")p.set("lang",LANG);
   const qs = p.toString();
   try{ history.replaceState(null,"", qs?"#"+qs:location.pathname+location.search); }
   catch(e){ if(location.hash.slice(1)!==qs) location.hash=qs; }
@@ -1345,12 +1431,11 @@ function loadURL(){
   ST.exParking=p.get("xp")!=="0"; ST.exInfra=p.get("xg")!=="0";
   ST.land=(p.get("land")||"").split(",").filter(v=>LAND_ALL.includes(v));
   ST.kanton=(p.get("kt")||"").split(",").filter(Boolean);
+  const L=p.get("lang"); let stored=""; try{ stored=localStorage.getItem("oereb_lang")||""; }catch(e){}
+  LANG = LANGS.includes(L) ? L : (LANGS.includes(stored) ? stored : "de");
 }
 
-// ---- meta + cards ----
-const m = DATA.meta;
-document.getElementById("meta").textContent =
-  `Generated ${m.generated} · ${m.gebaeude||"buildings"} + ${m.grundstuecke||"parcels"} · far-threshold ${m.threshold} m`;
+// ---- cards ----
 // summary cards follow the active filters (scope on all; the findings filters
 // sev/cat drill the building & parcel counts, matching the table tabs).
 function renderCards(){
@@ -1368,15 +1453,14 @@ function renderCards(){
   const wes=new Set(); inB.forEach(b=>wes.add(b.we)); inP.forEach(p=>wes.add(p.we));
   const ncat=new Set(ff.map(f=>f.category)).size;
   document.getElementById("cards").innerHTML = [
-    {n:inB.length, l:"Buildings", s:`${inB.filter(b=>b.land==="CH").length} CH · ${inB.filter(b=>has(b.status)).length} with EGID · ${inB.filter(b=>b.status==="found").length} in GWR`},
-    {n:inP.length, l:"Parcels", s:`${inP.filter(p=>has(p.status)).length} with E-GRID · ${inP.filter(p=>p.status==="found").length} in ÖREB`},
-    {n:wes.size, l:"Wirtschaftseinheiten", s:`${new Set(ff.map(f=>f.we)).size.toLocaleString()} with findings`},
-    {n:ff.length, l:"Findings", s:`across ${ncat} categor${ncat===1?"y":"ies"}`},
+    {n:inB.length, l:t("card_buildings"), s:t("card_b_sub",{ch:inB.filter(b=>b.land==="CH").length, egid:inB.filter(b=>has(b.status)).length, gwr:inB.filter(b=>b.status==="found").length})},
+    {n:inP.length, l:t("card_parcels"), s:t("card_p_sub",{egrid:inP.filter(p=>has(p.status)).length, oereb:inP.filter(p=>p.status==="found").length})},
+    {n:wes.size, l:t("card_we"), s:t("card_we_sub",{n:new Set(ff.map(f=>f.we)).size.toLocaleString()})},
+    {n:ff.length, l:t("card_findings"), s:t("card_f_sub",{n:ncat})},
   ].map(c=>`<div class="card"><div class="n">${c.n.toLocaleString()}</div><div class="l">${esc(c.l)}</div><div class="s">${esc(c.s)}</div></div>`).join("");
 }
 
 // ---- charts (cross-filtered: each chart excludes its own dimension) ----
-const SEVNAME = {HIGH:"High", MED:"Medium", LOW:"Low"};
 const TYPECOL = {building:"#1d4ed8", parcel:"#0d8b96"};
 // scope pre-filter (filter panel): object-class exclusions + land + kanton.
 // Applied to findings, charts, both record tables, and the drill-down.
@@ -1408,20 +1492,20 @@ function renderCharts(){
   const sc={HIGH:0,MED:0,LOW:0}; findingsMatching("sev").forEach(f=>sc[f.severity]++);
   const mSv=Math.max(1,sc.HIGH,sc.MED,sc.LOW);
   document.getElementById("sevbars").innerHTML=["HIGH","MED","LOW"].map(s=>{const on=ST.sev.includes(s);
-    return `<button type="button" class="bar ${on?"sel":""}" data-sev="${s}" aria-pressed="${on}" aria-label="Filter by severity ${SEVNAME[s]}, ${sc[s]} findings"><span class="bar-label">${SEVNAME[s]}</span><span class="bar-track"><span class="bar-fill ${s}" style="width:${Math.round(sc[s]/mSv*100)}%"></span></span><span class="bar-n">${sc[s].toLocaleString()}</span></button>`;}).join("");
+    return `<button type="button" class="bar ${on?"sel":""}" data-sev="${s}" aria-pressed="${on}" aria-label="${esc(sevName(s))}, ${sc[s]}"><span class="bar-label">${esc(sevName(s))}</span><span class="bar-track"><span class="bar-fill ${s}" style="width:${Math.round(sc[s]/mSv*100)}%"></span></span><span class="bar-n">${sc[s].toLocaleString()}</span></button>`;}).join("");
   document.querySelectorAll("#sevbars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.sev;pickFindingsView();ST.sev=(ST.sev.length===1&&ST.sev[0]===v)?[]:[v];ST.page=1;renderAll();});
   // type (cross-filter excl. type): buildings vs parcels — horizontal bars (blue/teal)
   const tc={building:0,parcel:0}; findingsMatching("type").forEach(f=>{if(tc[f.kind]!=null)tc[f.kind]++;});
   const mT=Math.max(1,tc.building,tc.parcel);
-  const TYPENAME={building:"Buildings",parcel:"Parcels"};
   document.getElementById("typebars").innerHTML=["building","parcel"].map(k=>{const on=ST.type.includes(k);
-    return `<button type="button" class="bar ${on?"sel":""}" data-type="${k}" aria-pressed="${on}" aria-label="Filter by type ${TYPENAME[k]}, ${tc[k]} findings"><span class="bar-label">${TYPENAME[k]}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round(tc[k]/mT*100)}%;background:${TYPECOL[k]}"></span></span><span class="bar-n">${tc[k].toLocaleString()}</span></button>`;}).join("");
+    return `<button type="button" class="bar ${on?"sel":""}" data-type="${k}" aria-pressed="${on}" aria-label="${esc(typeName(k))}, ${tc[k]}"><span class="bar-label">${esc(typeName(k))}</span><span class="bar-track"><span class="bar-fill" style="width:${Math.round(tc[k]/mT*100)}%;background:${TYPECOL[k]}"></span></span><span class="bar-n">${tc[k].toLocaleString()}</span></button>`;}).join("");
   document.querySelectorAll("#typebars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.type;pickFindingsView();ST.type=(ST.type.length===1&&ST.type[0]===v)?[]:[v];ST.page=1;renderAll();});
   // category (cross-filter excl. category)
   const cc={}; findingsMatching("cat").forEach(f=>cc[f.category]=(cc[f.category]||0)+1);
   const mC=Math.max(1,...DATA.categories.map(c=>cc[c.key]||0));
   document.getElementById("bars").innerHTML=DATA.categories.map(c=>{const n=cc[c.key]||0;
-    return `<button type="button" class="bar ${ST.cat===c.key?"sel":""}" data-cat="${c.key}" aria-pressed="${ST.cat===c.key}" aria-label="Filter by category ${esc(c.label)}, ${n} findings"><span class="bar-label">${esc(c.label)}</span><span class="bar-track"><span class="bar-fill ${c.severity}" style="width:${Math.round(n/mC*100)}%"></span></span><span class="bar-n">${n.toLocaleString()}</span></button>`;}).join("");
+    const lbl=t("cat_"+c.key);
+    return `<button type="button" class="bar ${ST.cat===c.key?"sel":""}" data-cat="${c.key}" aria-pressed="${ST.cat===c.key}" aria-label="${esc(lbl)}, ${n}"><span class="bar-label">${esc(lbl)}</span><span class="bar-track"><span class="bar-fill ${c.severity}" style="width:${Math.round(n/mC*100)}%"></span></span><span class="bar-n">${n.toLocaleString()}</span></button>`;}).join("");
   document.querySelectorAll("#bars .bar").forEach(b=>b.onclick=()=>{const v=b.dataset.cat;pickFindingsView();ST.cat=(ST.cat===v?"ALL":v);ST.page=1;renderAll();});
 }
 
@@ -1494,13 +1578,13 @@ function renderControls(){
   elStatus.style.display=fnd?"none":"";
   elFar.style.display=par?"":"none";
   if(!fnd){
-    elStatus.innerHTML='<option value="ALL">All statuses</option>'+
-      statusOptions(ST.view).map(o=>`<option value="${o}">${o}</option>`).join("");
+    elStatus.innerHTML=`<option value="ALL">${esc(t("status_all"))}</option>`+
+      statusOptions(ST.view).map(o=>`<option value="${o}">${esc(t("st_"+o))}</option>`).join("");
     elStatus.value=ST.status;
   }
   elFarChk.checked=ST.far;
   if(elQ.value!==ST.q) elQ.value=ST.q;
-  elQ.placeholder = fnd?"Search WE, id, name, key, detail…":"Search WE, id, name, E-GRID, municipality…";
+  elQ.placeholder = fnd ? t("search_ph_findings") : t("search_ph_records");
 }
 
 // "Alle Filter zurücksetzen" returns to the DEFAULT view (the 4 object-class exclusions
@@ -1512,26 +1596,26 @@ function renderFilters(){
   const el=document.getElementById("filters");
   const pills=[];
   // findings filters are global (drive charts + Findings table + tab drill-down)
-  if(ST.sev.length) pills.push({k:"Severity", v:ST.sev.map(s=>SEVNAME[s]||s).join(", "), clr:()=>ST.sev=[]});
-  if(ST.cat!=="ALL") pills.push({k:"Category", v:DATA.labels[ST.cat]||ST.cat, clr:()=>ST.cat="ALL"});
-  if(ST.type.length) pills.push({k:"Type", v:ST.type.map(t=>t==="building"?"Buildings":"Parcels").join(", "), clr:()=>ST.type=[]});
+  if(ST.sev.length) pills.push({k:t("pill_severity"), v:ST.sev.map(s=>sevName(s)).join(", "), clr:()=>ST.sev=[]});
+  if(ST.cat!=="ALL") pills.push({k:t("pill_category"), v:t("cat_"+ST.cat), clr:()=>ST.cat="ALL"});
+  if(ST.type.length) pills.push({k:t("pill_type"), v:ST.type.map(x=>typeName(x)).join(", "), clr:()=>ST.type=[]});
   // record-tab filters are view-specific
-  if(ST.view!=="findings" && ST.status!=="ALL") pills.push({k:"Status", v:ST.status, clr:()=>ST.status="ALL"});
-  if(ST.view==="parcels" && ST.far) pills.push({k:"", v:"Only far", clr:()=>ST.far=false});
-  if(ST.q) pills.push({k:"Search", v:`“${ST.q}”`, clr:()=>ST.q=""});
+  if(ST.view!=="findings" && ST.status!=="ALL") pills.push({k:t("pill_status"), v:t("st_"+ST.status), clr:()=>ST.status="ALL"});
+  if(ST.view==="parcels" && ST.far) pills.push({k:"", v:t("pill_far"), clr:()=>ST.far=false});
+  if(ST.q) pills.push({k:t("pill_search"), v:`“${ST.q}”`, clr:()=>ST.q=""});
   // scope filters (drawer) appear as pills too — every active filter is shown, for consistency
-  ST.land.forEach(v=>pills.push({k:"Land", v:v==="CH"?"Schweiz":"Ausland", clr:()=>ST.land=ST.land.filter(x=>x!==v)}));
-  ST.kanton.forEach(v=>pills.push({k:"Kanton", v:v, clr:()=>ST.kanton=ST.kanton.filter(x=>x!==v)}));
-  if(ST.exAbgang) pills.push({k:"ohne", v:"Abgang", clr:()=>ST.exAbgang=false});
-  if(ST.exLoevm) pills.push({k:"ohne", v:"Löschvermerk", clr:()=>ST.exLoevm=false});
-  if(ST.exParking) pills.push({k:"ohne", v:"Parkplätze", clr:()=>ST.exParking=false});
-  if(ST.exInfra) pills.push({k:"ohne", v:"Infrastrukturgefässe", clr:()=>ST.exInfra=false});
+  ST.land.forEach(v=>pills.push({k:t("pill_land"), v:t(v==="CH"?"land_ch":"land_foreign"), clr:()=>ST.land=ST.land.filter(x=>x!==v)}));
+  ST.kanton.forEach(v=>pills.push({k:t("pill_kanton"), v:v, clr:()=>ST.kanton=ST.kanton.filter(x=>x!==v)}));
+  if(ST.exAbgang) pills.push({k:t("pill_without"), v:t("class_abgang"), clr:()=>ST.exAbgang=false});
+  if(ST.exLoevm) pills.push({k:t("pill_without"), v:t("class_loevm"), clr:()=>ST.exLoevm=false});
+  if(ST.exParking) pills.push({k:t("pill_without"), v:t("class_parking"), clr:()=>ST.exParking=false});
+  if(ST.exInfra) pills.push({k:t("pill_without"), v:t("class_infra"), clr:()=>ST.exInfra=false});
   if(!pills.length){ el.style.display="none"; el.innerHTML=""; return; }
   el.style.display="";
   el.innerHTML = pills.map((p,i)=>
     `<span class="pill">${p.k?`<span class="k">${esc(p.k)}</span> `:""}<b>${esc(p.v)}</b>`+
-    `<button type="button" class="pill-x" data-i="${i}" aria-label="Remove filter ${esc((p.k?p.k+" ":"")+p.v)}">×</button></span>`).join("")+
-    `<button type="button" class="reset" id="resetf">Alle Filter zurücksetzen</button>`;
+    `<button type="button" class="pill-x" data-i="${i}" aria-label="${esc(t("pill_remove",{v:(p.k?p.k+" ":"")+p.v}))}">×</button></span>`).join("")+
+    `<button type="button" class="reset" id="resetf">${esc(t("reset_all"))}</button>`;
   el.querySelectorAll(".pill-x").forEach(b=>b.onclick=()=>{ pills[+b.dataset.i].clr(); ST.page=1; renderAll(); });
   document.getElementById("resetf").onclick=clearFilters;
 }
@@ -1586,7 +1670,7 @@ function renderTable(){
   document.getElementById("head").innerHTML=V.cols.map(c=>{
     const sortState=k===c.k?(dir===1?"ascending":"descending"):"none";
     const glyph=k===c.k?(dir===1?" ▲":" ▼"):" ↕";
-    return `<th scope="col" aria-sort="${sortState}"><button type="button" class="th-sort" data-k="${c.k}">${c.t}<span aria-hidden="true">${glyph}</span></button></th>`;
+    return `<th scope="col" aria-sort="${sortState}"><button type="button" class="th-sort" data-k="${c.k}">${esc(t(c.th))}<span aria-hidden="true">${glyph}</span></button></th>`;
   }).join("");
   document.querySelectorAll("#head .th-sort").forEach(b=>b.onclick=()=>{const kk=b.dataset.k;ST.dir=(ST.sort===kk)?-ST.dir:1;ST.sort=kk;ST.page=1;renderTable();syncURL();});
   document.getElementById("rows").innerHTML = pageRows.length ? pageRows.map(r=>{
@@ -1598,18 +1682,18 @@ function renderTable(){
     }).join("");
     return `<tr data-k="${l.k}" data-we="${esc(l.we)}" data-id="${esc(l.id)}" data-egrid="${esc(l.egrid)}">${cells}</tr>`;
   }).join("")
-   : `<tr><td colspan="${V.cols.length}" style="padding:24px;text-align:center;color:var(--gray);background:var(--surface)">No rows match the current filters. <button type="button" class="reset" id="resetf2">Reset filters</button></td></tr>`;
+   : `<tr><td colspan="${V.cols.length}" style="padding:24px;text-align:center;color:var(--gray);background:var(--surface)">${esc(t("no_rows"))} <button type="button" class="reset" id="resetf2">${esc(t("reset_filters"))}</button></td></tr>`;
   const r2=document.getElementById("resetf2"); if(r2) r2.onclick=clearFilters;
   // pager — count (left) · page nav (middle) · page size (right); consistent across tabs
-  const left = total ? `${(start+1).toLocaleString()}–${end.toLocaleString()} of ${total.toLocaleString()}` : "0 of 0";
+  const left = total ? t("pg_range",{a:(start+1).toLocaleString(), b:end.toLocaleString(), total:total.toLocaleString()}) : t("pg_zero");
   document.getElementById("pager").innerHTML =
-    `<span class="pg-left">${left}</span>`+
+    `<span class="pg-left">${esc(left)}</span>`+
     `<span class="pg-mid">`+
-      `<button id="pgprev" ${ST.page<=1?"disabled":""}>‹ prev</button>`+
-      `<span>page ${ST.page} / ${pages}</span>`+
-      `<button id="pgnext" ${ST.page>=pages?"disabled":""}>next ›</button>`+
+      `<button id="pgprev" ${ST.page<=1?"disabled":""}>${esc(t("pg_prev"))}</button>`+
+      `<span>${esc(t("pg_page",{p:ST.page,pages:pages}))}</span>`+
+      `<button id="pgnext" ${ST.page>=pages?"disabled":""}>${esc(t("pg_next"))}</button>`+
     `</span>`+
-    `<span class="pg-right">Rows: <select id="pgsize" aria-label="Rows per page">`+
+    `<span class="pg-right">${esc(t("pg_rows"))} <select id="pgsize" data-i18n-aria="pg_rows_aria" aria-label="Rows per page">`+
       PAGE_SIZES.map(s=>`<option value="${s}" ${s===ST.pageSize?"selected":""}>${s}</option>`).join("")+
     `</select></span>`;
   const go=n=>{ST.page=Math.min(pages,Math.max(1,n));renderTable();syncURL();
@@ -1620,7 +1704,9 @@ function renderTable(){
   updateMap(rows);   // map follows the (full, unpaginated) filtered set
 }
 
-function renderAll(){ renderControls(); renderPanel(); renderCards(); renderCharts(); renderFilters(); renderTable(); syncURL(); }
+function renderAll(){ applyI18n(); renderControls(); renderPanel(); renderCards(); renderCharts(); renderFilters(); renderTable(); syncURL(); }
+
+if(langSel) langSel.onchange = () => { LANG = langSel.value; try{ localStorage.setItem("oereb_lang", LANG); }catch(e){} renderAll(); };
 
 loadURL();
 renderAll();
@@ -1664,11 +1750,11 @@ async function loadPolygon(egrid){
 }
 function focusOnMap(k,we,id,egrid){
   const pt = PT[k+"|"+we+"|"+id];
-  if(!pt){ if(MAPNOTE) MAPNOTE.textContent="No map location for this row (not resolved in GWR/ÖREB)."; return; }
+  if(!pt){ if(MAPNOTE) MAPNOTE.textContent=t("map_no_loc"); return; }
   if(!MAP||!MAPREADY) return;
   if(focusPopup) focusPopup.remove();
   focusPopup = new maplibregl.Popup({offset:10}).setLngLat([pt.lon,pt.lat])
-    .setHTML(`<b>${k==="p"?"Parcel":"Building"} ${esc(we)} · ${esc(id)}</b><br>${esc(pt.name||"")}`).addTo(MAP);
+    .setHTML(`<b>${esc(k==="p"?t("map_popup_parcel"):t("map_popup_building"))} ${esc(we)} · ${esc(id)}</b><br>${esc(pt.name||"")}`).addTo(MAP);
   MAP.flyTo({center:[pt.lon,pt.lat], zoom:17, duration:RM?0:700});
   if(k==="p" && egrid) loadPolygon(egrid); else clearPolygon();
 }
@@ -1695,8 +1781,7 @@ function updateMap(rows){
   const conn=DATA.geo.filter(g=>seen.has("p|"+g.we+"|"+g.id)).map(g=>({type:"Feature",
     geometry:{type:"LineString",coordinates:[[g.clon,g.clat],[g.plon,g.plat]]},properties:{}}));
   MAP.getSource("conn").setData({type:"FeatureCollection",features:conn});
-  if(MAPNOTE) MAPNOTE.textContent =
-    `${feats.length.toLocaleString()} located element(s) in this view · blue = buildings, teal = parcels · click a parcel for its ÖREB polygon`;
+  if(MAPNOTE) MAPNOTE.textContent = t("map_note_view",{n:feats.length.toLocaleString()});
   const sig=ST.view+":"+feats.length;
   if(feats.length && sig!==lastMapSig){ lastMapSig=sig; fitFeats(feats); }
 }
@@ -1704,7 +1789,7 @@ function updateMap(rows){
 (function(){
   if(window._nomap || typeof maplibregl==="undefined"){
     document.getElementById("map").style.display="none";
-    MAPNOTE.textContent="Map unavailable (needs the MapLibre CDN / internet).";
+    MAPNOTE.textContent=t("map_unavailable");
     return;
   }
   MAP = new maplibregl.Map({container:"map",
@@ -1733,7 +1818,7 @@ function updateMap(rows){
     ["buildings","parcels"].forEach(layer=>{
       MAP.on("click",layer,e=>{ const p=e.features[0].properties;
         new maplibregl.Popup({offset:10}).setLngLat(e.lngLat)
-          .setHTML(`<b>${p.k==="p"?"Parcel":"Building"} ${esc(p.we)} · ${esc(p.id)}</b><br>${esc(p.name||"")}`).addTo(MAP);
+          .setHTML(`<b>${esc(p.k==="p"?t("map_popup_parcel"):t("map_popup_building"))} ${esc(p.we)} · ${esc(p.id)}</b><br>${esc(p.name||"")}`).addTo(MAP);
         if(p.k==="p"&&p.egrid) loadPolygon(p.egrid); });
       MAP.on("mouseenter",layer,()=>MAP.getCanvas().style.cursor="pointer");
       MAP.on("mouseleave",layer,()=>MAP.getCanvas().style.cursor="");
@@ -1742,6 +1827,103 @@ function updateMap(rows){
     renderTable();   // populate the map with the current filtered rows
   });
 })();
+
+// ---- download modal (HTML / GeoJSON / Excel — all generated client-side, offline) ----
+const elDlBtn=document.getElementById("dlbtn"), elDlScrim=document.getElementById("dlscrim");
+function openDl(o){ elDlScrim.hidden=!o; elDlBtn.setAttribute("aria-expanded",o?"true":"false"); if(o) document.getElementById("dlclose").focus(); }
+elDlBtn.onclick=()=>openDl(elDlScrim.hidden);
+document.getElementById("dlclose").onclick=()=>{ openDl(false); elDlBtn.focus(); };
+elDlScrim.onclick=e=>{ if(e.target===elDlScrim){ openDl(false); elDlBtn.focus(); } };
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !elDlScrim.hidden){ openDl(false); elDlBtn.focus(); } });
+
+function downloadBlob(name, mime, data){
+  const url = URL.createObjectURL(new Blob([data], {type:mime}));
+  const a = document.createElement("a"); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url), 1000);
+}
+// 1) the interactive report itself (re-serialise the live document — reopens identically)
+function exportHtml(){ downloadBlob("oereb-report.html","text/html;charset=utf-8",
+  "<!DOCTYPE html>\n"+document.documentElement.outerHTML); }
+// 2) GeoJSON — every located building + parcel as a WGS84 point (raw, stable field names)
+function exportGeoJSON(){
+  const feats=[];
+  DATA.buildings.forEach(b=>{ if(b.lat!==""&&b.lon!=="") feats.push({type:"Feature",
+    geometry:{type:"Point",coordinates:[+b.lon,+b.lat]},
+    properties:{kind:"building",we:b.we,id:b.id,name:b.name,kanton:b.kanton,land:b.land,
+      egid:b.egid,status:b.status,gwr_egrid:b.gwr_egrid,in_we:b.in_we,gemeinde:b.gemeinde}}); });
+  DATA.parcels.forEach(p=>{ if(p.lat!==""&&p.lon!=="") feats.push({type:"Feature",
+    geometry:{type:"Point",coordinates:[+p.lon,+p.lat]},
+    properties:{kind:"parcel",we:p.we,id:p.id,name:p.name,kanton:p.kanton,land:p.land,
+      egrid:p.egrid,status:p.status,matches:p.matches,dist_m:p.dist,far:p.far===true,gemeinde:p.gemeinde}}); });
+  downloadBlob("oereb-export.geojson","application/geo+json",
+    JSON.stringify({type:"FeatureCollection",features:feats}));
+}
+// 3) Excel (.xlsx) — three sheets in the current UI language; minimal OOXML in a
+//    store-method ZIP, no library (so it works offline / from file://).
+const enc = new TextEncoder();
+const CRC = (()=>{ const tbl=new Uint32Array(256); for(let n=0;n<256;n++){ let c=n;
+  for(let k=0;k<8;k++) c=c&1?0xEDB88320^(c>>>1):c>>>1; tbl[n]=c>>>0; } return tbl; })();
+function crc32(u8){ let c=0xFFFFFFFF; for(let i=0;i<u8.length;i++) c=CRC[(c^u8[i])&0xFF]^(c>>>8); return (c^0xFFFFFFFF)>>>0; }
+function colLetter(i){ let s=""; i++; while(i>0){ const m=(i-1)%26; s=String.fromCharCode(65+m)+s; i=(i-m-1)/26|0; } return s; }
+function xmlEsc(v){ return String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function sheetXml(rows, numCols){
+  let body="";
+  rows.forEach((row,ri)=>{ let cells="";
+    row.forEach((val,ci)=>{ const ref=colLetter(ci)+(ri+1);
+      if(ri>0 && numCols.has(ci) && val!=="" && val!=null && isFinite(val)) cells+=`<c r="${ref}"><v>${Number(val)}</v></c>`;
+      else cells+=`<c r="${ref}" t="inlineStr"><is><t xml:space="preserve">${xmlEsc(val)}</t></is></c>`;
+    });
+    body+=`<row r="${ri+1}">${cells}</row>`; });
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${body}</sheetData></worksheet>`;
+}
+function zip(files){   // files: [{name, data:Uint8Array}] — store method (no compression)
+  const u16=n=>[n&255,(n>>8)&255], u32=n=>[n&255,(n>>8)&255,(n>>16)&255,(n>>24)&255];
+  const chunks=[], central=[]; let off=0;
+  files.forEach(f=>{ const name=enc.encode(f.name), crc=crc32(f.data), sz=f.data.length;
+    const lfh=[].concat([0x50,0x4b,0x03,0x04],u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(sz),u32(sz),u16(name.length),u16(0));
+    chunks.push(new Uint8Array(lfh), name, f.data);
+    central.push(new Uint8Array([].concat([0x50,0x4b,0x01,0x02],u16(20),u16(20),u16(0),u16(0),u16(0),u16(0),u32(crc),u32(sz),u32(sz),u16(name.length),u16(0),u16(0),u16(0),u16(0),u32(0),u32(off),Array.from(name))));
+    off += lfh.length+name.length+sz; });
+  const cdStart=off; let cdSize=0; central.forEach(c=>cdSize+=c.length);
+  const eocd=new Uint8Array([].concat([0x50,0x4b,0x05,0x06],u16(0),u16(0),u16(files.length),u16(files.length),u32(cdSize),u32(cdStart),u16(0)));
+  const parts=[...chunks,...central,eocd]; let total=0; parts.forEach(p=>total+=p.length);
+  const out=new Uint8Array(total); let o=0; parts.forEach(p=>{ out.set(p,o); o+=p.length; });
+  return out;
+}
+function exportXlsx(){
+  const fH=["col_sev","col_category","col_we","col_kind","col_id","col_name","col_key","col_detail","col_suggested","col_dist","col_municipality","col_ort","col_land","col_kt"].map(t);
+  const fRows=[fH]; DATA.findings.forEach(f=>fRows.push([sevName(f.severity),t("cat_"+f.category),f.we,typeName(f.kind),f.sap_id,f.name,f.key,t("detail_"+f.msg,f.args),f.suggested_egrid,f.distance_m,f.gemeinde,f.ort,f.land,f.kanton]));
+  const bH=["col_we","col_id","col_name","col_kt","col_land","col_egid","col_status","col_gwr_egrid","col_in_we","col_municipality","col_lat","col_lon"].map(t);
+  const yn=v=>v===true?t("check_yes"):v===false?t("check_no"):"";
+  const bRows=[bH]; DATA.buildings.forEach(b=>bRows.push([b.we,b.id,b.name,b.kanton,b.land,b.egid,t("st_"+b.status),b.gwr_egrid,yn(b.in_we),b.gemeinde,b.lat,b.lon]));
+  const pH=["col_we","col_id","col_name","col_kt","col_land","col_egrid","col_status","col_matches","col_dist","col_far","col_municipality","col_lat","col_lon"].map(t);
+  const pRows=[pH]; DATA.parcels.forEach(p=>pRows.push([p.we,p.id,p.name,p.kanton,p.land,p.egrid,t("st_"+p.status),yn(p.matches),p.dist,(p.far===true?t("far_badge"):""),p.gemeinde,p.lat,p.lon]));
+  const sheets=[
+    {name:t("tab_findings"),  xml:sheetXml(fRows, new Set([9]))},
+    {name:t("tab_buildings"), xml:sheetXml(bRows, new Set([10,11]))},
+    {name:t("tab_parcels"),   xml:sheetXml(pRows, new Set([8,10,11]))},
+  ];
+  const NS="http://schemas.openxmlformats.org/", REL=NS+"officeDocument/2006/relationships";
+  const ct=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="${NS}package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>`+
+    sheets.map((s,i)=>`<Override PartName="/xl/worksheets/sheet${i+1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")+`</Types>`;
+  const dotrels=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="${NS}package/2006/relationships"><Relationship Id="rId1" Type="${REL}/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
+  const wb=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<workbook xmlns="${NS}spreadsheetml/2006/main" xmlns:r="${REL}"><sheets>`+
+    sheets.map((s,i)=>`<sheet name="${xmlEsc(s.name)}" sheetId="${i+1}" r:id="rId${i+1}"/>`).join("")+`</sheets></workbook>`;
+  const wbr=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="${NS}package/2006/relationships">`+
+    sheets.map((s,i)=>`<Relationship Id="rId${i+1}" Type="${REL}/worksheet" Target="worksheets/sheet${i+1}.xml"/>`).join("")+`</Relationships>`;
+  const files=[
+    {name:"[Content_Types].xml", data:enc.encode(ct)},
+    {name:"_rels/.rels", data:enc.encode(dotrels)},
+    {name:"xl/workbook.xml", data:enc.encode(wb)},
+    {name:"xl/_rels/workbook.xml.rels", data:enc.encode(wbr)},
+    ...sheets.map((s,i)=>({name:`xl/worksheets/sheet${i+1}.xml`, data:enc.encode(s.xml)})),
+  ];
+  downloadBlob("oereb-export.xlsx","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", zip(files));
+}
+document.getElementById("dlHtml").onclick=()=>{ openDl(false); exportHtml(); };
+document.getElementById("dlGeo").onclick =()=>{ openDl(false); exportGeoJSON(); };
+document.getElementById("dlXlsx").onclick=()=>{ openDl(false); exportXlsx(); };
 </script>
 </body>
 </html>
@@ -1848,7 +2030,9 @@ def main() -> None:
         print("Offline mode: using cached API responses only")
 
     print("Analysing ...")
-    buildings, parcels, we_rows, findings = analyse(buildings, parcels, client, args.threshold)
+    i18n = load_i18n()                                   # key-centric: {key: {de,fr,it,en}}
+    i18n_en = {k: v.get("en", "") for k, v in i18n.items()}
+    buildings, parcels, we_rows, findings = analyse(buildings, parcels, client, args.threshold, i18n_en)
 
     b_fields = ["bukr", "we", "id", "name", "land", "kanton", "ort", "plz",
                 "strasse", "hausnr", "egid", "egid_status", "gwr_egrid",
@@ -1876,7 +2060,7 @@ def main() -> None:
     write_csv(os.path.join(out_dir,"findings.csv"), findings, f_fields)
     write_html_report(os.path.join(out_dir, "report.html"), buildings, parcels,
                       we_rows, findings, args.threshold,
-                      {"gebaeude": geb_path, "grundstuecke": gst_path})
+                      {"gebaeude": geb_path, "grundstuecke": gst_path}, i18n)
 
     report(buildings, parcels, we_rows, findings, args.threshold)
     print(f"\n  Output written to: {out_dir}")

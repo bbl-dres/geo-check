@@ -1,10 +1,10 @@
-# Geo-Check — GWR Validator
+# GWR Validator
 
-Browser-only tool to verify your building records against the official Swiss **Gebäude- und Wohnungsregister (GWR)**. Upload CSV/XLSX, enrich each row via the public GWR API, review on map + table, export the enriched results. Part of the [`geo-check`](../README.md) repo.
+Browser-only tool to verify your building records against the official Swiss **Gebäude- und Wohnungsregister (GWR)**. Upload a CSV/XLSX file, enrich each row via the public GWR API, review on map + table, and export the enriched results. Part of the [`geo-check`](../README.md) repo.
 
 ## Live app
 
-https://bbl-dres.github.io/geo-check/gwr-check/
+<https://bbl-dres.github.io/geo-check/gwr-check/>
 
 The repository root [`/`](https://bbl-dres.github.io/geo-check/) redirects here.
 
@@ -17,10 +17,10 @@ graph LR
     C --> D["Download<br/>enriched file"]
 ```
 
-1. **Upload** — CSV/Excel with at minimum `internal_id` and `egid` columns
-2. **Enrich** — each EGID is looked up via the public GWR API; address, coordinates, building type, etc. compared and scored (0–100)
-3. **Review** — interactive map (MapLibre GL) + sortable/filterable table
-4. **Download** — CSV, Excel, or GeoJSON
+1. **Upload** — a CSV/Excel file with at minimum `internal_id` and `egid` columns.
+2. **Enrich** — each EGID is looked up via the public GWR API; address, coordinates, building type, etc. are compared and scored (0–100).
+3. **Review** — on an interactive map (MapLibre GL) and a sortable/filterable table.
+4. **Download** — as CSV, Excel, or GeoJSON.
 
 ## Features
 
@@ -31,10 +31,6 @@ graph LR
 - **PDF report** — per-building report with recommendations and map excerpt (`jsPDF` lazy-loaded)
 - **Export** — CSV (semicolon, UTF-8 BOM), Excel (results + summary), GeoJSON
 - **Multilingual UI** — DE / FR / IT / EN
-
-## Privacy
-
-All processing happens in the browser. No backend, no database, no cookies. Only the EGID (a public identifier) is sent to the GWR API.
 
 ## Input format
 
@@ -53,6 +49,10 @@ All processing happens in the browser. No backend, no database, no cookies. Only
 | `comment` | No | Free text |
 
 Headers are matched case-insensitively with common aliases (`plz` → `zip`, `hausnummer` → `street_number`). Sample: [`assets/demo-buildings.csv`](assets/demo-buildings.csv).
+
+## Privacy
+
+All processing happens in the browser. No backend, no database, no cookies. Only the EGID (a public identifier) is sent to the GWR API.
 
 ## Running locally
 
@@ -95,6 +95,17 @@ gwr-check/
     └── geo-check-SAP-002-*.pdf
 ```
 
+## Tech stack
+
+Vanilla JavaScript (ES6 modules), no build step. External libraries are loaded via CDN:
+
+| Library | Purpose |
+|---|---|
+| [MapLibre GL JS](https://maplibre.org/) | Interactive map |
+| [Papa Parse](https://www.papaparse.com/) | CSV parsing |
+| [SheetJS](https://sheetjs.com/) | Excel parsing & export |
+| [jsPDF](https://github.com/parallax/jsPDF) | PDF report (lazy-loaded) |
+
 ## Data sources
 
 | Source | Use | API |
@@ -105,15 +116,6 @@ gwr-check/
 | [swisstopo WMTS](https://www.swisstopo.admin.ch/) | Aerial imagery | Free, no key |
 
 All swisstopo APIs are public and require no API key.
-
-## Libraries (all via CDN)
-
-| Library | Purpose |
-|---|---|
-| [MapLibre GL JS](https://maplibre.org/) | Interactive map |
-| [Papa Parse](https://www.papaparse.com/) | CSV parsing |
-| [SheetJS](https://sheetjs.com/) | Excel parsing & export |
-| [jsPDF](https://github.com/parallax/jsPDF) | PDF report (lazy-loaded) |
 
 ## License
 

@@ -1,0 +1,884 @@
+{
+  "page_title": {
+    "de": "Liegenschaften-Inventar – Prüfbericht — BBL",
+    "fr": "Inventaire immobilier – Rapport de contrôle — OFCL",
+    "it": "Inventario immobiliare – Rapporto di verifica — UFCL",
+    "en": "Real-estate inventory – Audit report — FOBL"
+  },
+  "office": {
+    "de": "Bundesamt für Bauten und Logistik BBL",
+    "fr": "Office fédéral des constructions et de la logistique OFCL",
+    "it": "Ufficio federale delle costruzioni e della logistica UFCL",
+    "en": "Federal Office for Buildings and Logistics FOBL"
+  },
+  "report_title": {
+    "de": "Liegenschaften-Inventar – Prüfbericht",
+    "fr": "Inventaire immobilier – Rapport de contrôle",
+    "it": "Inventario immobiliare – Rapporto di verifica",
+    "en": "Real-estate inventory – Audit report"
+  },
+  "skip_link": {
+    "de": "Direkt zum Bericht",
+    "fr": "Aller au rapport",
+    "it": "Vai al rapporto",
+    "en": "Skip to report"
+  },
+  "lang_label": {
+    "de": "Sprache",
+    "fr": "Langue",
+    "it": "Lingua",
+    "en": "Language"
+  },
+  "nav_ruleset": {
+    "de": "Regelwerk",
+    "fr": "Jeu de règles",
+    "it": "Set di regole",
+    "en": "Rule set"
+  },
+  "nav_ruleset_title": {
+    "de": "Regelwerk – alle Prüfregeln (öffnet RULE-SET.md auf GitHub)",
+    "fr": "Jeu de règles – toutes les règles de contrôle (ouvre RULE-SET.md sur GitHub)",
+    "it": "Set di regole – tutte le regole di verifica (apre RULE-SET.md su GitHub)",
+    "en": "Rule set – all check rules (opens RULE-SET.md on GitHub)"
+  },
+  "nav_filter": {
+    "de": "Filter",
+    "fr": "Filtre",
+    "it": "Filtro",
+    "en": "Filter"
+  },
+  "filter_title": {
+    "de": "Filter",
+    "fr": "Filtre",
+    "it": "Filtro",
+    "en": "Filter"
+  },
+  "filter_close": {
+    "de": "Filter schliessen",
+    "fr": "Fermer le filtre",
+    "it": "Chiudi il filtro",
+    "en": "Close filter"
+  },
+  "fp_severity": {
+    "de": "Schweregrad",
+    "fr": "Gravité",
+    "it": "Gravità",
+    "en": "Severity"
+  },
+  "fp_type": {
+    "de": "Typ",
+    "fr": "Type",
+    "it": "Tipo",
+    "en": "Type"
+  },
+  "fp_classes": {
+    "de": "Objektklassen",
+    "fr": "Classes d'objets",
+    "it": "Classi di oggetti",
+    "en": "Object classes"
+  },
+  "fp_classes_hint": {
+    "de": "(angekreuzt = ausgeblendet)",
+    "fr": "(coché = masqué)",
+    "it": "(spuntato = nascosto)",
+    "en": "(checked = hidden)"
+  },
+  "fp_land": {
+    "de": "Land",
+    "fr": "Pays",
+    "it": "Paese",
+    "en": "Country"
+  },
+  "fp_kanton": {
+    "de": "Kanton",
+    "fr": "Canton",
+    "it": "Cantone",
+    "en": "Canton"
+  },
+  "sev_high": {
+    "de": "Hoch",
+    "fr": "Élevée",
+    "it": "Alta",
+    "en": "High"
+  },
+  "sev_med": {
+    "de": "Mittel",
+    "fr": "Moyenne",
+    "it": "Media",
+    "en": "Medium"
+  },
+  "sev_low": {
+    "de": "Niedrig",
+    "fr": "Faible",
+    "it": "Bassa",
+    "en": "Low"
+  },
+  "sev_high_tag": {
+    "de": "· Fehler",
+    "fr": "· Erreur",
+    "it": "· Errore",
+    "en": "· Error"
+  },
+  "sev_med_tag": {
+    "de": "· Warnung",
+    "fr": "· Avertissement",
+    "it": "· Avviso",
+    "en": "· Warning"
+  },
+  "sev_low_tag": {
+    "de": "· Hinweis",
+    "fr": "· Remarque",
+    "it": "· Nota",
+    "en": "· Note"
+  },
+  "type_building": {
+    "de": "Gebäude",
+    "fr": "Bâtiments",
+    "it": "Edifici",
+    "en": "Buildings"
+  },
+  "type_parcel": {
+    "de": "Grundstücke",
+    "fr": "Parcelles",
+    "it": "Particelle",
+    "en": "Parcels"
+  },
+  "class_abgang": {
+    "de": "Abgang (ABGA…)",
+    "fr": "Sortie (ABGA…)",
+    "it": "Uscita (ABGA…)",
+    "en": "Disposal (ABGA…)"
+  },
+  "class_loevm": {
+    "de": "Löschvermerk (LÖVM…)",
+    "fr": "Radiation (LÖVM…)",
+    "it": "Cancellazione (LÖVM…)",
+    "en": "Deletion note (LÖVM…)"
+  },
+  "class_parking": {
+    "de": "Parkplätze (…PP…)",
+    "fr": "Places de parc (…PP…)",
+    "it": "Posteggi (…PP…)",
+    "en": "Parking (…PP…)"
+  },
+  "class_infra": {
+    "de": "Infrastrukturgefässe (GR)",
+    "fr": "Objets d'infrastructure (GR)",
+    "it": "Oggetti d'infrastruttura (GR)",
+    "en": "Infrastructure objects (GR)"
+  },
+  "land_ch": {
+    "de": "Schweiz",
+    "fr": "Suisse",
+    "it": "Svizzera",
+    "en": "Switzerland"
+  },
+  "land_foreign": {
+    "de": "Ausland",
+    "fr": "Étranger",
+    "it": "Estero",
+    "en": "Foreign"
+  },
+  "reset_all": {
+    "de": "Alle Filter zurücksetzen",
+    "fr": "Réinitialiser tous les filtres",
+    "it": "Reimposta tutti i filtri",
+    "en": "Reset all filters"
+  },
+  "card_buildings": {
+    "de": "Gebäude",
+    "fr": "Bâtiments",
+    "it": "Edifici",
+    "en": "Buildings"
+  },
+  "card_parcels": {
+    "de": "Grundstücke",
+    "fr": "Parcelles",
+    "it": "Particelle",
+    "en": "Parcels"
+  },
+  "card_we": {
+    "de": "Wirtschaftseinheiten",
+    "fr": "Unités économiques",
+    "it": "Unità economiche",
+    "en": "Economic units"
+  },
+  "card_findings": {
+    "de": "Befunde",
+    "fr": "Constats",
+    "it": "Rilievi",
+    "en": "Findings"
+  },
+  "card_b_sub": {
+    "de": "{ch} CH · {egid} mit EGID · {gwr} im GWR",
+    "fr": "{ch} CH · {egid} avec EGID · {gwr} dans le RegBL",
+    "it": "{ch} CH · {egid} con EGID · {gwr} nel RegEd",
+    "en": "{ch} CH · {egid} with EGID · {gwr} in GWR"
+  },
+  "card_p_sub": {
+    "de": "{egrid} mit E-GRID · {oereb} im ÖREB",
+    "fr": "{egrid} avec E-GRID · {oereb} dans le cadastre RDPPF",
+    "it": "{egrid} con E-GRID · {oereb} nel catasto RDPP",
+    "en": "{egrid} with E-GRID · {oereb} in ÖREB"
+  },
+  "card_we_sub": {
+    "de": "{n} mit Befund",
+    "fr": "{n} avec constat",
+    "it": "{n} con rilievo",
+    "en": "{n} with findings"
+  },
+  "card_f_sub": {
+    "de": "über {n} Kategorien",
+    "fr": "dans {n} catégories",
+    "it": "in {n} categorie",
+    "en": "across {n} categories"
+  },
+  "chart_by_severity": {
+    "de": "Befunde nach Schweregrad",
+    "fr": "Constats par gravité",
+    "it": "Rilievi per gravità",
+    "en": "Findings by severity"
+  },
+  "chart_by_type": {
+    "de": "Befunde nach Typ",
+    "fr": "Constats par type",
+    "it": "Rilievi per tipo",
+    "en": "Findings by type"
+  },
+  "chart_by_category": {
+    "de": "Befunde nach Kategorie",
+    "fr": "Constats par catégorie",
+    "it": "Rilievi per categoria",
+    "en": "Findings by category"
+  },
+  "chart_click_hint": {
+    "de": "Balken anklicken zum Filtern; erneut klicken zum Aufheben.",
+    "fr": "Cliquez sur une barre pour filtrer ; recliquez pour annuler.",
+    "it": "Clicca una barra per filtrare; clicca di nuovo per annullare.",
+    "en": "Click a bar to filter; click it again to clear."
+  },
+  "map_title": {
+    "de": "Karte — Tabellenzeile anklicken zum Zoomen; Grundstück anklicken lädt sein ÖREB-Polygon",
+    "fr": "Carte — cliquez une ligne pour zoomer ; cliquez une parcelle pour charger son polygone RDPPF",
+    "it": "Mappa — clicca una riga per ingrandire; clicca una particella per caricarne il poligono RDPP",
+    "en": "Map — click a table row to zoom; click a parcel to load its ÖREB polygon"
+  },
+  "legend_building": {
+    "de": "Gebäude",
+    "fr": "Bâtiment",
+    "it": "Edificio",
+    "en": "Building"
+  },
+  "legend_parcel": {
+    "de": "Grundstück",
+    "fr": "Parcelle",
+    "it": "Particella",
+    "en": "Parcel"
+  },
+  "legend_parcel_far": {
+    "de": "Grundstück als weit markiert",
+    "fr": "Parcelle marquée éloignée",
+    "it": "Particella segnalata lontana",
+    "en": "Parcel flagged far"
+  },
+  "legend_distance": {
+    "de": "Distanz zum Gebäudecluster",
+    "fr": "Distance au groupe de bâtiments",
+    "it": "Distanza dal gruppo di edifici",
+    "en": "Distance to building cluster"
+  },
+  "map_unavailable": {
+    "de": "Karte nicht verfügbar (benötigt MapLibre-CDN / Internet).",
+    "fr": "Carte indisponible (nécessite le CDN MapLibre / Internet).",
+    "it": "Mappa non disponibile (richiede il CDN MapLibre / Internet).",
+    "en": "Map unavailable (needs the MapLibre CDN / internet)."
+  },
+  "map_note_view": {
+    "de": "{n} verortete Element(e) in dieser Ansicht · blau = Gebäude, grün = Grundstücke · Grundstück anklicken für ÖREB-Polygon",
+    "fr": "{n} élément(s) localisé(s) dans cette vue · bleu = bâtiments, vert = parcelles · cliquez une parcelle pour le polygone RDPPF",
+    "it": "{n} elemento/i localizzato/i in questa vista · blu = edifici, verde = particelle · clicca una particella per il poligono RDPP",
+    "en": "{n} located element(s) in this view · blue = buildings, green = parcels · click a parcel for its ÖREB polygon"
+  },
+  "map_no_loc": {
+    "de": "Keine Kartenposition für diese Zeile (nicht im GWR/ÖREB aufgelöst).",
+    "fr": "Aucune position cartographique pour cette ligne (non résolue dans le RegBL/RDPPF).",
+    "it": "Nessuna posizione sulla mappa per questa riga (non risolta nel RegEd/RDPP).",
+    "en": "No map location for this row (not resolved in GWR/ÖREB)."
+  },
+  "map_popup_building": {
+    "de": "Gebäude",
+    "fr": "Bâtiment",
+    "it": "Edificio",
+    "en": "Building"
+  },
+  "map_popup_parcel": {
+    "de": "Grundstück",
+    "fr": "Parcelle",
+    "it": "Particella",
+    "en": "Parcel"
+  },
+  "tab_findings": {
+    "de": "Befunde",
+    "fr": "Constats",
+    "it": "Rilievi",
+    "en": "Findings"
+  },
+  "tab_buildings": {
+    "de": "Gebäude",
+    "fr": "Bâtiments",
+    "it": "Edifici",
+    "en": "Buildings"
+  },
+  "tab_parcels": {
+    "de": "Grundstücke",
+    "fr": "Parcelles",
+    "it": "Particelle",
+    "en": "Parcels"
+  },
+  "status_all": {
+    "de": "Alle Status",
+    "fr": "Tous les statuts",
+    "it": "Tutti gli stati",
+    "en": "All statuses"
+  },
+  "far_only": {
+    "de": "nur weit entfernte",
+    "fr": "éloignées seulement",
+    "it": "solo lontane",
+    "en": "far only"
+  },
+  "search_ph_findings": {
+    "de": "WE, ID, Name, Schlüssel, Detail suchen…",
+    "fr": "Rechercher UE, ID, nom, clé, détail…",
+    "it": "Cerca UE, ID, nome, chiave, dettaglio…",
+    "en": "Search WE, id, name, key, detail…"
+  },
+  "search_ph_records": {
+    "de": "WE, ID, Name, E-GRID, Gemeinde suchen…",
+    "fr": "Rechercher UE, ID, nom, E-GRID, commune…",
+    "it": "Cerca UE, ID, nome, E-GRID, comune…",
+    "en": "Search WE, id, name, E-GRID, municipality…"
+  },
+  "search_aria": {
+    "de": "Tabelle durchsuchen",
+    "fr": "Rechercher dans le tableau",
+    "it": "Cerca nella tabella",
+    "en": "Search table"
+  },
+  "st_found": {
+    "de": "gefunden",
+    "fr": "trouvé",
+    "it": "trovato",
+    "en": "found"
+  },
+  "st_notfound": {
+    "de": "nicht gefunden",
+    "fr": "introuvable",
+    "it": "non trovato",
+    "en": "not found"
+  },
+  "st_missing": {
+    "de": "fehlt",
+    "fr": "manquant",
+    "it": "mancante",
+    "en": "missing"
+  },
+  "st_foreign": {
+    "de": "Ausland",
+    "fr": "étranger",
+    "it": "estero",
+    "en": "foreign"
+  },
+  "st_error": {
+    "de": "Fehler",
+    "fr": "erreur",
+    "it": "errore",
+    "en": "error"
+  },
+  "st_unchecked": {
+    "de": "ungeprüft",
+    "fr": "non vérifié",
+    "it": "non verificato",
+    "en": "unchecked"
+  },
+  "pg_range": {
+    "de": "{a}–{b} von {total}",
+    "fr": "{a}–{b} sur {total}",
+    "it": "{a}–{b} di {total}",
+    "en": "{a}–{b} of {total}"
+  },
+  "pg_zero": {
+    "de": "0 von 0",
+    "fr": "0 sur 0",
+    "it": "0 di 0",
+    "en": "0 of 0"
+  },
+  "pg_page": {
+    "de": "Seite {p} / {pages}",
+    "fr": "page {p} / {pages}",
+    "it": "pagina {p} / {pages}",
+    "en": "page {p} / {pages}"
+  },
+  "pg_prev": {
+    "de": "‹ zurück",
+    "fr": "‹ préc.",
+    "it": "‹ prec.",
+    "en": "‹ prev"
+  },
+  "pg_next": {
+    "de": "weiter ›",
+    "fr": "suiv. ›",
+    "it": "succ. ›",
+    "en": "next ›"
+  },
+  "pg_rows": {
+    "de": "Zeilen:",
+    "fr": "Lignes :",
+    "it": "Righe:",
+    "en": "Rows:"
+  },
+  "pg_rows_aria": {
+    "de": "Zeilen pro Seite",
+    "fr": "Lignes par page",
+    "it": "Righe per pagina",
+    "en": "Rows per page"
+  },
+  "pill_severity": {
+    "de": "Schweregrad",
+    "fr": "Gravité",
+    "it": "Gravità",
+    "en": "Severity"
+  },
+  "pill_category": {
+    "de": "Kategorie",
+    "fr": "Catégorie",
+    "it": "Categoria",
+    "en": "Category"
+  },
+  "pill_type": {
+    "de": "Typ",
+    "fr": "Type",
+    "it": "Tipo",
+    "en": "Type"
+  },
+  "pill_status": {
+    "de": "Status",
+    "fr": "Statut",
+    "it": "Stato",
+    "en": "Status"
+  },
+  "pill_search": {
+    "de": "Suche",
+    "fr": "Recherche",
+    "it": "Ricerca",
+    "en": "Search"
+  },
+  "pill_land": {
+    "de": "Land",
+    "fr": "Pays",
+    "it": "Paese",
+    "en": "Country"
+  },
+  "pill_kanton": {
+    "de": "Kanton",
+    "fr": "Canton",
+    "it": "Cantone",
+    "en": "Canton"
+  },
+  "pill_without": {
+    "de": "ohne",
+    "fr": "sans",
+    "it": "senza",
+    "en": "without"
+  },
+  "pill_far": {
+    "de": "Nur weit entfernte",
+    "fr": "Éloignées seulement",
+    "it": "Solo lontane",
+    "en": "Only far"
+  },
+  "pill_remove": {
+    "de": "Filter entfernen {v}",
+    "fr": "Retirer le filtre {v}",
+    "it": "Rimuovi filtro {v}",
+    "en": "Remove filter {v}"
+  },
+  "col_sev": {
+    "de": "Schw.",
+    "fr": "Grav.",
+    "it": "Grav.",
+    "en": "Sev"
+  },
+  "col_category": {
+    "de": "Kategorie",
+    "fr": "Catégorie",
+    "it": "Categoria",
+    "en": "Category"
+  },
+  "col_we": {
+    "de": "WE",
+    "fr": "UE",
+    "it": "UE",
+    "en": "WE"
+  },
+  "col_id": {
+    "de": "ID",
+    "fr": "ID",
+    "it": "ID",
+    "en": "id"
+  },
+  "col_name": {
+    "de": "Name",
+    "fr": "Nom",
+    "it": "Nome",
+    "en": "Name"
+  },
+  "col_key": {
+    "de": "EGID / E-GRID",
+    "fr": "EGID / E-GRID",
+    "it": "EGID / E-GRID",
+    "en": "EGID / E-GRID"
+  },
+  "col_dist": {
+    "de": "Distanz (m)",
+    "fr": "Distance (m)",
+    "it": "Distanza (m)",
+    "en": "Dist (m)"
+  },
+  "col_suggested": {
+    "de": "Vorschlag E-GRID",
+    "fr": "E-GRID proposé",
+    "it": "E-GRID proposto",
+    "en": "Suggested E-GRID"
+  },
+  "col_municipality": {
+    "de": "Gemeinde",
+    "fr": "Commune",
+    "it": "Comune",
+    "en": "Municipality"
+  },
+  "col_detail": {
+    "de": "Detail",
+    "fr": "Détail",
+    "it": "Dettaglio",
+    "en": "Detail"
+  },
+  "col_kt": {
+    "de": "Kt",
+    "fr": "Ct",
+    "it": "Ct",
+    "en": "Kt"
+  },
+  "col_egid": {
+    "de": "EGID",
+    "fr": "EGID",
+    "it": "EGID",
+    "en": "EGID"
+  },
+  "col_status": {
+    "de": "Status",
+    "fr": "Statut",
+    "it": "Stato",
+    "en": "Status"
+  },
+  "col_gwr_egrid": {
+    "de": "GWR E-GRID",
+    "fr": "E-GRID RegBL",
+    "it": "E-GRID RegEd",
+    "en": "GWR E-GRID"
+  },
+  "col_in_we": {
+    "de": "in WE?",
+    "fr": "dans UE ?",
+    "it": "in UE?",
+    "en": "In WE?"
+  },
+  "col_egrid": {
+    "de": "E-GRID",
+    "fr": "E-GRID",
+    "it": "E-GRID",
+    "en": "E-GRID"
+  },
+  "col_matches": {
+    "de": "stimmt mit Geb.?",
+    "fr": "concorde bât. ?",
+    "it": "concorda edif.?",
+    "en": "Matches bldg?"
+  },
+  "col_far": {
+    "de": "Weit",
+    "fr": "Éloignée",
+    "it": "Lontana",
+    "en": "Far"
+  },
+  "col_map": {
+    "de": "Karte",
+    "fr": "Carte",
+    "it": "Mappa",
+    "en": "Map"
+  },
+  "no_rows": {
+    "de": "Keine Zeilen entsprechen den aktuellen Filtern.",
+    "fr": "Aucune ligne ne correspond aux filtres actuels.",
+    "it": "Nessuna riga corrisponde ai filtri attuali.",
+    "en": "No rows match the current filters."
+  },
+  "reset_filters": {
+    "de": "Filter zurücksetzen",
+    "fr": "Réinitialiser les filtres",
+    "it": "Reimposta i filtri",
+    "en": "Reset filters"
+  },
+  "check_yes": {
+    "de": "ja",
+    "fr": "oui",
+    "it": "sì",
+    "en": "yes"
+  },
+  "check_no": {
+    "de": "nein",
+    "fr": "non",
+    "it": "no",
+    "en": "no"
+  },
+  "map_open": {
+    "de": "in Karte öffnen",
+    "fr": "ouvrir dans la carte",
+    "it": "apri nella mappa",
+    "en": "open in maps"
+  },
+  "far_badge": {
+    "de": "WEIT",
+    "fr": "ÉLOIGNÉE",
+    "it": "LONTANA",
+    "en": "FAR"
+  },
+  "footer_source": {
+    "de": "Datenquelle:",
+    "fr": "Source des données :",
+    "it": "Fonte dei dati:",
+    "en": "Data source:"
+  },
+  "footer_quellcode": {
+    "de": "Quellcode",
+    "fr": "Code source",
+    "it": "Codice sorgente",
+    "en": "Source code"
+  },
+  "footer_legal": {
+    "de": "Rechtliches",
+    "fr": "Mentions légales",
+    "it": "Note legali",
+    "en": "Legal"
+  },
+  "footer_contact": {
+    "de": "Kontakt",
+    "fr": "Contact",
+    "it": "Contatto",
+    "en": "Contact"
+  },
+  "footer_meta": {
+    "de": "Erstellt {generated} · {geb} + {gst} · Weit-Schwellenwert {thr} m",
+    "fr": "Généré {generated} · {geb} + {gst} · seuil d'éloignement {thr} m",
+    "it": "Generato {generated} · {geb} + {gst} · soglia di lontananza {thr} m",
+    "en": "Generated {generated} · {geb} + {gst} · far-threshold {thr} m"
+  },
+  "cat_PARCEL_FAR": {
+    "de": "Grundstück weit vom Gebäudecluster",
+    "fr": "Parcelle éloignée du groupe de bâtiments",
+    "it": "Particella lontana dal gruppo di edifici",
+    "en": "Parcel far from building cluster"
+  },
+  "cat_SINGLE_PAIR_FILL": {
+    "de": "Einzelpaar: E-GRID automatisch ergänzbar",
+    "fr": "Paire unique : E-GRID complétable automatiquement",
+    "it": "Coppia unica: E-GRID completabile automaticamente",
+    "en": "Single-pair: E-GRID can be auto-filled"
+  },
+  "cat_SINGLE_PAIR_MISMATCH": {
+    "de": "Einzelpaar: E-GRID widerspricht GWR",
+    "fr": "Paire unique : E-GRID en désaccord avec le RegBL",
+    "it": "Coppia unica: E-GRID in disaccordo con il RegEd",
+    "en": "Single-pair: E-GRID disagrees with GWR"
+  },
+  "cat_INVALID_EGRID": {
+    "de": "E-GRID nicht im ÖREB gefunden",
+    "fr": "E-GRID introuvable dans le RDPPF",
+    "it": "E-GRID non trovato nel RDPP",
+    "en": "E-GRID not found in ÖREB"
+  },
+  "cat_INVALID_EGID": {
+    "de": "EGID nicht im GWR gefunden",
+    "fr": "EGID introuvable dans le RegBL",
+    "it": "EGID non trovato nel RegEd",
+    "en": "EGID not found in GWR"
+  },
+  "cat_GWR_EGRID_NOT_IN_SAP": {
+    "de": "GWR-Parzelle des Gebäudes fehlt in der WE",
+    "fr": "Parcelle RegBL du bâtiment absente de l'UE",
+    "it": "Particella RegEd dell'edificio assente dall'UE",
+    "en": "Building's GWR parcel missing from WE"
+  },
+  "cat_MISSING_EGRID": {
+    "de": "Grundstück ohne / mit Null-E-GRID",
+    "fr": "Parcelle sans E-GRID / E-GRID nul",
+    "it": "Particella senza E-GRID / E-GRID nullo",
+    "en": "Parcel has no / zero E-GRID"
+  },
+  "cat_MISSING_EGID": {
+    "de": "CH-Gebäude ohne EGID",
+    "fr": "Bâtiment CH sans EGID",
+    "it": "Edificio CH senza EGID",
+    "en": "CH building has no EGID"
+  },
+  "cat_NONCH_WITH_EGID": {
+    "de": "Nicht-CH-Gebäude trägt eine EGID",
+    "fr": "Bâtiment non-CH portant un EGID",
+    "it": "Edificio non-CH con un EGID",
+    "en": "Non-CH building carries an EGID"
+  },
+  "detail_MISSING_EGID": {
+    "de": "CH-Gebäude ohne EGID im SAP",
+    "fr": "Bâtiment CH sans EGID dans SAP",
+    "it": "Edificio CH senza EGID in SAP",
+    "en": "CH building has no EGID in SAP"
+  },
+  "detail_INVALID_EGID": {
+    "de": "EGID nicht im GWR gefunden (veraltet oder falsch)",
+    "fr": "EGID introuvable dans le RegBL (obsolète ou erroné)",
+    "it": "EGID non trovato nel RegEd (obsoleto o errato)",
+    "en": "EGID not found in GWR (stale or wrong)"
+  },
+  "detail_NONCH_WITH_EGID": {
+    "de": "Nicht-CH-Gebäude ({land}) trägt unerwartet eine EGID",
+    "fr": "Bâtiment non-CH ({land}) portant un EGID de façon inattendue",
+    "it": "Edificio non-CH ({land}) con un EGID in modo inatteso",
+    "en": "non-CH building ({land}) unexpectedly carries an EGID"
+  },
+  "detail_GWR_EGRID_NOT_IN_SAP": {
+    "de": "GWR-Parzelle des Gebäudes ist nicht unter den SAP-Grundstücken der WE (evtl. fehlendes Grundstück oder falscher Schlüssel)",
+    "fr": "La parcelle RegBL du bâtiment ne figure pas parmi les parcelles SAP de l'UE (parcelle manquante ou clé erronée)",
+    "it": "La particella RegEd dell'edificio non è tra le particelle SAP dell'UE (particella mancante o chiave errata)",
+    "en": "building's GWR parcel is not among this WE's SAP parcels (possible missing parcel or wrong key)"
+  },
+  "detail_MISSING_EGRID": {
+    "de": "Grundstück ohne / mit Null-E-GRID im SAP",
+    "fr": "Parcelle sans E-GRID / E-GRID nul dans SAP",
+    "it": "Particella senza E-GRID / E-GRID nullo in SAP",
+    "en": "parcel has no / zero E-GRID in SAP"
+  },
+  "detail_INVALID_EGRID": {
+    "de": "E-GRID nicht im ÖREB-Kataster gefunden (veraltet oder falsch)",
+    "fr": "E-GRID introuvable dans le cadastre RDPPF (obsolète ou erroné)",
+    "it": "E-GRID non trovato nel catasto RDPP (obsoleto o errato)",
+    "en": "E-GRID not found in OEREB cadastre (stale or wrong)"
+  },
+  "detail_SINGLE_PAIR_MISMATCH": {
+    "de": "Einzelpaar: SAP-E-GRID '{egrid}' ≠ GWR-Parzelle des Gebäudes '{bg}'",
+    "fr": "Paire unique : E-GRID SAP '{egrid}' ≠ parcelle RegBL du bâtiment '{bg}'",
+    "it": "Coppia unica: E-GRID SAP '{egrid}' ≠ particella RegEd dell'edificio '{bg}'",
+    "en": "single building + single parcel: SAP E-GRID '{egrid}' != building's GWR parcel '{bg}'"
+  },
+  "detail_SINGLE_PAIR_FILL": {
+    "de": "Einzelpaar: E-GRID des Grundstücks fehlt — GWR-Parzelle des Gebäudes übernehmen",
+    "fr": "Paire unique : E-GRID de la parcelle manquant — reprendre la parcelle RegBL du bâtiment",
+    "it": "Coppia unica: E-GRID della particella mancante — riprendere la particella RegEd dell'edificio",
+    "en": "single building + single parcel: parcel E-GRID is missing — assign the building's GWR parcel"
+  },
+  "detail_PARCEL_FAR": {
+    "de": "Grundstück {d} m von den WE-Gebäuden entfernt (> {thr} m) — vermutlich falscher E-GRID",
+    "fr": "Parcelle à {d} m des bâtiments de l'UE (> {thr} m) — E-GRID probablement erroné",
+    "it": "Particella a {d} m dagli edifici dell'UE (> {thr} m) — E-GRID probabilmente errato",
+    "en": "parcel is {d} m from the WE buildings (> {thr} m) — likely wrong E-GRID"
+  },
+  "detail_PARCEL_FAR_xm": {
+    "de": "Grundstück {d} m von den WE-Gebäuden entfernt (> {thr} m) — Grundstück in {pgem}, Gebäude in {bgem} — vermutlich falscher E-GRID",
+    "fr": "Parcelle à {d} m des bâtiments de l'UE (> {thr} m) — parcelle à {pgem}, bâtiments à {bgem} — E-GRID probablement erroné",
+    "it": "Particella a {d} m dagli edifici dell'UE (> {thr} m) — particella a {pgem}, edifici a {bgem} — E-GRID probabilmente errato",
+    "en": "parcel is {d} m from the WE buildings (> {thr} m) — parcel in {pgem}, buildings in {bgem} — likely wrong E-GRID"
+  },
+  "nav_download": {
+    "de": "Download",
+    "fr": "Télécharger",
+    "it": "Scarica",
+    "en": "Download"
+  },
+  "dl_title": {
+    "de": "Herunterladen",
+    "fr": "Télécharger",
+    "it": "Scarica",
+    "en": "Download"
+  },
+  "dl_close": {
+    "de": "Schliessen",
+    "fr": "Fermer",
+    "it": "Chiudi",
+    "en": "Close"
+  },
+  "dl_html": {
+    "de": "Bericht (HTML)",
+    "fr": "Rapport (HTML)",
+    "it": "Rapporto (HTML)",
+    "en": "Report (HTML)"
+  },
+  "dl_html_desc": {
+    "de": "Diesen interaktiven Bericht als HTML-Datei speichern",
+    "fr": "Enregistrer ce rapport interactif en HTML",
+    "it": "Salva questo rapporto interattivo in HTML",
+    "en": "Save this interactive report as an HTML file"
+  },
+  "dl_geojson": {
+    "de": "GeoJSON",
+    "fr": "GeoJSON",
+    "it": "GeoJSON",
+    "en": "GeoJSON"
+  },
+  "dl_geojson_desc": {
+    "de": "Gebäude- und Grundstückspunkte (WGS84) für GIS",
+    "fr": "Points des bâtiments et parcelles (WGS84) pour SIG",
+    "it": "Punti di edifici e particelle (WGS84) per GIS",
+    "en": "Building & parcel points (WGS84) for GIS"
+  },
+  "dl_xlsx": {
+    "de": "Excel (.xlsx)",
+    "fr": "Excel (.xlsx)",
+    "it": "Excel (.xlsx)",
+    "en": "Excel (.xlsx)"
+  },
+  "dl_xlsx_desc": {
+    "de": "Drei Tabellen: Befunde, Gebäude, Grundstücke",
+    "fr": "Trois feuilles : constats, bâtiments, parcelles",
+    "it": "Tre fogli: rilievi, edifici, particelle",
+    "en": "Three sheets: findings, buildings, parcels"
+  },
+  "col_land": {
+    "de": "Land",
+    "fr": "Pays",
+    "it": "Paese",
+    "en": "Country"
+  },
+  "col_lat": {
+    "de": "Lat",
+    "fr": "Lat",
+    "it": "Lat",
+    "en": "Lat"
+  },
+  "col_lon": {
+    "de": "Lon",
+    "fr": "Lon",
+    "it": "Lon",
+    "en": "Lon"
+  },
+  "col_kind": {
+    "de": "Typ",
+    "fr": "Type",
+    "it": "Tipo",
+    "en": "Type"
+  },
+  "col_ort": {
+    "de": "Ort",
+    "fr": "Lieu",
+    "it": "Località",
+    "en": "Place"
+  }
+}
