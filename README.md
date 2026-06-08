@@ -8,18 +8,23 @@
 [![MapLibre GL JS](https://img.shields.io/badge/MapLibre_GL_JS-v4.7-396CB2?logo=maplibre&logoColor=white)](https://maplibre.org/)
 [![Swiss Federal Admin](https://img.shields.io/badge/org-Swiss_Federal_Admin-d8232a)](https://www.bbl.admin.ch/)
 
-A collection of tools for working with Swiss building and parcel data — built around the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/), the [ÖREB cadastre](https://www.cadastre.ch/en/oereb.html), and [swisstopo](https://www.swisstopo.admin.ch/) APIs.
+A collection of tools for working with Swiss building and parcel data — built around the official [Gebäude- und Wohnungsregister (GWR)](https://www.housing-stat.ch/), the [ÖREB cadastre](https://www.cadastre.ch/en/oereb.html), and [swisstopo APIs](https://docs.geo.admin.ch/).
 
 This repo is a **monorepo of independent projects**: several browser apps plus one command-line tool. Each lives in its own folder with its own detailed README — this page is just the overview. The browser apps are static (no build step) and deploy to GitHub Pages; the CLI tool runs locally.
 
 ## Apps
 
-### GWR Validator
+### ÖREB Parcel Search
 
-Verify your building records against the official GWR. Upload a CSV/Excel file, enrich each row against the public GWR API, review the results on a map + table, and export the enriched file. All processing happens in the browser — no data leaves your device. **This is the main app; the repo root redirects here.**
+Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, postcode, or canton. Autocomplete, area calculation, and direct links to the official ÖREB extracts. Also does **batch CSV** lookups, and is bundled with a companion Python script for raw XML extracts. Multilingual: DE / FR / IT.
 
-- Live demo: <https://bbl-dres.github.io/geo-check/gwr-check/>
-- Source code: [`gwr-check/`](gwr-check/)
+- Live demo: <https://bbl-dres.github.io/geo-check/oereb-search/>
+- Source code: [`oereb-search/`](oereb-search/)
+
+<p align="center">
+  <img src="assets/preview-oereb-1.jpg" width="45%" style="vertical-align: top;"/>
+  <img src="assets/preview-oereb-2.jpg" width="45%" style="vertical-align: top;"/>
+</p>
 
 ### GWR Building Search
 
@@ -28,12 +33,16 @@ Look up individual buildings in the GWR by EGID, address, municipality, postcode
 - Live demo: <https://bbl-dres.github.io/geo-check/gwr-search/>
 - Source code: [`gwr-search/`](gwr-search/)
 
-### ÖREB Parcel Search
+### GWR Validator
 
-Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, postcode, or canton. Autocomplete, area calculation, and direct links to the official ÖREB extracts. Also does **batch CSV** lookups, and is bundled with a companion Python script for raw XML extracts. Multilingual: DE / FR / IT.
+Verify your building records against the official GWR. Upload a CSV/Excel file, enrich each row against the public GWR API, review the results on a map + table, and export the enriched file. All processing happens in the browser — no data leaves your device. **This is the main app; the repo root redirects here.**
 
-- Live demo: <https://bbl-dres.github.io/geo-check/oereb-search/>
-- Source code: [`oereb-search/`](oereb-search/)
+- Live demo: <https://bbl-dres.github.io/geo-check/gwr-check/>
+- Source code: [`gwr-check/`](gwr-check/)
+
+<p align="center">
+  <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
+</p>
 
 ### Data-Quality Prototype
 
@@ -44,6 +53,10 @@ Project-management-style mockup for building-data quality workflows: multi-sourc
 
 - Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
 - Source code: [`prototype-quality/`](prototype-quality/)
+
+<p align="center">
+  <img src="prototype-quality/assets/preview1.jpg" width="90%"/>
+</p>
 
 ## Command-line tool
 
