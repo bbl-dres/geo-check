@@ -57,6 +57,18 @@ Validate BBL **SAP** building & parcel master data against the Swiss national re
 - Source code: [`oereb-check/`](oereb-check/)
 - Rule catalogue: [`oereb-check/RULE-SET.md`](oereb-check/RULE-SET.md)
 
+## Deprecated
+
+### Data-Quality Prototype (deprecated)
+
+> [!CAUTION]
+> Unofficial mockup for demonstration only; its backend database is no longer online.
+
+Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across five dimensions, a kanban board with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine.
+
+- Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
+- Source code: [`prototype-quality/`](prototype-quality/)
+
 ## Running locally
 
 The browser apps have no build step. Serve the repo root with any static file server and open the app's path:
@@ -73,17 +85,6 @@ Each app lives at its own path (e.g. `/oereb-search/`). The Data-Quality Prototy
 
 **GitHub Pages:** every push to `main` deploys the static apps automatically. Old bookmarks for `/app-oereb/` and `/prototype-pm/` keep working via redirect stubs that point to `/oereb-search/` and `/prototype-quality/` respectively.
 
-## Deprecated
-
-### Data-Quality Prototype (deprecated)
-
-> [!CAUTION]
-> Unofficial mockup for demonstration only; its backend database is no longer online.
-
-Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across five dimensions, a kanban board with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine.
-
-- Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
-- Source code: [`prototype-quality/`](prototype-quality/)
 
 ## License
 
