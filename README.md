@@ -26,12 +26,16 @@ Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, postcode,
   <img src="assets/preview-oereb-2.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
+---
+
 ### GWR Building Search
 
 Look up individual buildings in the GWR by EGID, address, municipality, postcode, BFS number, or canton. Shows the full building profile (identification, classification, structure, heating, dwellings), resolves coded fields to readable DE/FR/IT labels, and maps the building. Also does **batch CSV** lookups. Sibling of ÖREB Parcel Search — same UI, different register.
 
 - Live demo: <https://bbl-dres.github.io/geo-check/gwr-search/>
 - Source code: [`gwr-search/`](gwr-search/)
+
+---
 
 ### GWR Validator
 
@@ -42,20 +46,6 @@ Verify your building records against the official GWR. Upload a CSV/Excel file, 
 
 <p align="center">
   <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
-</p>
-
-### Data-Quality Prototype
-
-> [!CAUTION]
-> Deprecated — unofficial mockup for demonstration only, and its backend database is no longer online.
-
-Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across five dimensions, a kanban board with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine.
-
-- Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
-- Source code: [`prototype-quality/`](prototype-quality/)
-
-<p align="center">
-  <img src="prototype-quality/assets/preview1.jpg" width="90%"/>
 </p>
 
 ## Command-line tool
@@ -82,6 +72,22 @@ Each app lives at its own path (e.g. `/oereb-search/`). The Data-Quality Prototy
 ## Deployment
 
 **GitHub Pages:** every push to `main` deploys the static apps automatically. Old bookmarks for `/app-oereb/` and `/prototype-pm/` keep working via redirect stubs that point to `/oereb-search/` and `/prototype-quality/` respectively.
+
+## Deprecated
+
+### Data-Quality Prototype (deprecated)
+
+> [!CAUTION]
+> Unofficial mockup for demonstration only; its backend database is no longer online.
+
+Project-management-style mockup for building-data quality workflows: multi-source validation (GEOREF / SAP RE-FX / GWR), confidence scoring across five dimensions, a kanban board with inline correction tracking, role-based auth (Supabase), and a Deno + Hono rule engine.
+
+- Live demo: <https://bbl-dres.github.io/geo-check/prototype-quality/>
+- Source code: [`prototype-quality/`](prototype-quality/)
+
+<p align="center">
+  <img src="prototype-quality/assets/preview1.jpg" width="90%"/>
+</p>
 
 ## License
 
