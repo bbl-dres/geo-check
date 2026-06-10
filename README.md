@@ -30,6 +30,9 @@ Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, postcode,
 
 ### GWR Building Search
 
+> [!TIP]
+> Also see the official GWR query form: https://www.housing-stat.ch/de/data/query/egid.html
+
 Look up individual buildings in the GWR by EGID, address, municipality, postcode, BFS number, or canton. Shows the full building profile (identification, classification, structure, heating, dwellings), resolves coded fields to readable DE/FR/IT labels, and maps the building. Also does **batch CSV** lookups. Sibling of ÖREB Parcel Search — same UI, different register.
 
 - Live demo: <https://bbl-dres.github.io/geo-check/gwr-search/>
