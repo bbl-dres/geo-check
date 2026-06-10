@@ -53,7 +53,7 @@ Verify your building records against the official GWR. Upload a CSV/Excel file, 
 
 ## Command-line tool
 
-### BBL ÖREB-Check
+### ÖREB Validator
 
 Validate BBL **SAP** building & parcel master data against the Swiss national registers — it flags parcels whose **E-GRID** foreign key (and buildings whose **EGID**) is wrong, missing, or stale by cross-checking each key's coordinates against the swisstopo API. A standard-library **Python** script (no `pip install`) that runs locally against a SAP export and writes CSVs plus a self-contained, multilingual (DE / FR / IT / EN) interactive HTML report. Unlike the browser apps it isn't deployed to GitHub Pages — its inputs/outputs embed internal master data, so they're git-ignored.
 
