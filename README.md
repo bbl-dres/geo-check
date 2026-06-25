@@ -40,17 +40,6 @@ Look up individual buildings in the GWR by EGID, address, municipality, postcode
 
 ---
 
-### GWR Validator
-
-Verify your building records against the official GWR. Upload a CSV/Excel file, enrich each row against the public GWR API, review the results on a map + table, and export the enriched file. All processing happens in the browser — no data leaves your device. **This is the main app; the repo root redirects here.**
-
-- Live demo: <https://bbl-dres.github.io/geo-check/gwr-check/>
-- Source code: [`gwr-check/`](gwr-check/)
-
-<p align="center">
-  <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
-</p>
-
 ## Command-line tool
 
 ### ÖREB Validator
@@ -61,6 +50,17 @@ Validate BBL **SAP** building & parcel master data against the Swiss national re
 - Rule catalogue: [`oereb-check/RULE-SET.md`](oereb-check/RULE-SET.md)
 
 ## Deprecated
+
+### GWR Validator (deprecated)
+
+Verify your building records against the official GWR. Upload a CSV/Excel file, enrich each row against the public GWR API, review the results on a map + table, and export the enriched file. All processing happens in the browser — no data leaves your device. **This is the main app; the repo root redirects here.**
+
+- Live demo: <https://bbl-dres.github.io/geo-check/gwr-check/>
+- Source code: [`gwr-check/`](gwr-check/)
+
+<p align="center">
+  <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
+</p>
 
 ### Data-Quality Prototype (deprecated)
 
