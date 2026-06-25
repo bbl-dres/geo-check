@@ -30,6 +30,9 @@ Search the Swiss ÖREB cadastre by municipality, EGRID, parcel number, postcode,
 
 ### GWR Building Search
 
+> [!TIP]
+> Also see the official GWR query form: https://www.housing-stat.ch/de/data/query/egid.html
+
 Look up individual buildings in the GWR by EGID, address, municipality, postcode, BFS number, or canton. Shows the full building profile (identification, classification, structure, heating, dwellings), resolves coded fields to readable DE/FR/IT labels, and maps the building. Also does **batch CSV** lookups. Sibling of ÖREB Parcel Search — same UI, different register.
 
 - Live demo: <https://bbl-dres.github.io/geo-check/gwr-search/>
@@ -37,7 +40,18 @@ Look up individual buildings in the GWR by EGID, address, municipality, postcode
 
 ---
 
-### GWR Validator
+## Command-line tool
+
+### ÖREB Validator
+
+Validate BBL **SAP** building & parcel master data against the Swiss national registers — it flags parcels whose **E-GRID** foreign key (and buildings whose **EGID**) is wrong, missing, or stale by cross-checking each key's coordinates against the swisstopo API. A standard-library **Python** script (no `pip install`) that runs locally against a SAP export and writes CSVs plus a self-contained, multilingual (DE / FR / IT / EN) interactive HTML report. Unlike the browser apps it isn't deployed to GitHub Pages — its inputs/outputs embed internal master data, so they're git-ignored.
+
+- Source code: [`oereb-check/`](oereb-check/)
+- Rule catalogue: [`oereb-check/RULE-SET.md`](oereb-check/RULE-SET.md)
+
+## Deprecated
+
+### GWR Validator (deprecated)
 
 Verify your building records against the official GWR. Upload a CSV/Excel file, enrich each row against the public GWR API, review the results on a map + table, and export the enriched file. All processing happens in the browser — no data leaves your device. **This is the main app; the repo root redirects here.**
 
@@ -47,17 +61,6 @@ Verify your building records against the official GWR. Upload a CSV/Excel file, 
 <p align="center">
   <img src="assets/preview-gwr-check-1.jpg" width="90%"/>
 </p>
-
-## Command-line tool
-
-### BBL ÖREB-Check
-
-Validate BBL **SAP** building & parcel master data against the Swiss national registers — it flags parcels whose **E-GRID** foreign key (and buildings whose **EGID**) is wrong, missing, or stale by cross-checking each key's coordinates against the swisstopo API. A standard-library **Python** script (no `pip install`) that runs locally against a SAP export and writes CSVs plus a self-contained, multilingual (DE / FR / IT / EN) interactive HTML report. Unlike the browser apps it isn't deployed to GitHub Pages — its inputs/outputs embed internal master data, so they're git-ignored.
-
-- Source code: [`oereb-check/`](oereb-check/)
-- Rule catalogue: [`oereb-check/RULE-SET.md`](oereb-check/RULE-SET.md)
-
-## Deprecated
 
 ### Data-Quality Prototype (deprecated)
 
