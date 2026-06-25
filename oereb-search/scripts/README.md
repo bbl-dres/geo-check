@@ -44,3 +44,4 @@ Per row, `Flaeche_m2` is either the numeric area from `<LandRegistryArea>` or on
 - Per-request timeout: 120 s. `WITHIMAGES=false`, `GEOMETRY=false` (lean responses).
 - TLS warnings are suppressed via `urllib3.disable_warnings` — some cantonal services use self-signed or chain-incomplete certs.
 - The script is sequential (one HTTP request at a time). For large input lists, consider chunking by canton and running in parallel.
+- Requests via the API of the Canton of Vaud times out after 20 requests. It is necessary to chunk requests into lists of 20 entries.
