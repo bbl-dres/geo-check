@@ -40,7 +40,10 @@ plus the parcel/E-GRID logic of [`../oereb-check/`](../oereb-check/).
 4. **Switzerland-aware.** ~1 100 foreign properties (embassies, consulates)
    legitimately have no Swiss EGID/E-GRID; they are marked `foreign`, not
    flagged as missing. See [CHECKING-RULES.md §4](CHECKING-RULES.md).
-5. **Maps are optional.** The product is a *checking engine + report*, not a map
+5. **Worldwide-ready.** The portfolio is worldwide; today's rules target the
+   Swiss registers, so the model stays register-neutral (e.g. `region`, not
+   `canton`) to allow extending checks to non-CH buildings later.
+6. **Maps are optional.** The product is a *checking engine + report*, not a map
    tool. Coordinates are first-class **data** (used for distance rules); a map
    is at most a secondary view, never the primary surface.
 
@@ -51,7 +54,10 @@ plus the parcel/E-GRID logic of [`../oereb-check/`](../oereb-check/).
 All default sources are public, keyless, and CORS-enabled, so they work from a
 static page (even `file://`). Coordinates are requested in **LV95 (EPSG:2056,
 metres)** so distances are exact planar calculations; WGS84 (`sr=4326`) is
-available for mapping.
+available for mapping. Reprojection between WGS84 and LV95 uses **proj4js** with
+the EPSG:2056 definition **bundled explicitly** (it is *not* among proj4's
+built-in defs, and the swisstopo approximate formula is one-way only); all
+distances are computed in LV95 metres.
 
 | Source | Role | Layer / endpoint | Key? |
 |---|---|---|---|
@@ -75,6 +81,11 @@ available for mapping.
   the batch. Results are cached per run; a not-found EGID is cached as `null`.
 - **Parcels:** `find` by `egris_egrid`, returning centroid + geometry + area.
 - Throttle between batches (~300 ms) to stay friendly to the public API.
+- **Transient failures** (network / 5xx / **429**) get bounded exponential
+  backoff honouring `Retry-After`; only a definitive **404** becomes `not_found`,
+  a persistent transient failure becomes `error` (above) — the two are never
+  conflated. The per-run cache is persisted (`localStorage`/IndexedDB keyed by
+  EGID/E-GRID, separate namespaces) so a reload **resumes** rather than re-querying.
 
 ---
 
@@ -95,7 +106,7 @@ Building / Parcel ── carries one Confidence {total + 5 dimension scores}
 | Entity | What it is | Key |
 |---|---|---|
 | **CheckRun** | One execution over an uploaded dataset; holds metadata, options, source-file info, and the produced findings/confidence. | run id (timestamp) |
-| **EconomicUnit (WE)** | The grouping that ties buildings and parcels together (the SAP *Wirtschaftseinheit*); the scope for cross-checks like parcel-far and building↔parcel linkage. | `we` |
+| **EconomicUnit (WE)** | The grouping that ties buildings and parcels together (the SAP *Wirtschaftseinheit*); the scope for cross-checks like parcel-far and building↔parcel linkage. | `economic_unit` |
 | **Building** | One building record reconciled against GWR. | `internal_id` |
 | **Parcel** | One parcel/land record reconciled against the ÖREB cadastre. | `internal_id` |
 | **SourceField** | One comparable attribute, four facets (§4). | — |
@@ -107,6 +118,29 @@ The **EconomicUnit** grouping is what makes parcel/land data useful as an
 *additional input* rather than a separate silo: a building's GWR parcel can be
 cross-checked against the parcels recorded for the same WE
 ([CHECKING-RULES.md §QP](CHECKING-RULES.md)).
+
+### 3.1 Run metadata & reproducibility
+
+Every CheckRun carries a `run_meta` block (also written to `run.json`, §10) so a
+run is **reproducible and evolvable** — the registers and geo.admin layers change
+underneath us, so the same input yields different output next month unless we
+record *what was used*. The **first** thing the loader checks is `schema_version`.
+
+```jsonc
+"run_meta": {
+  "schema_version": "1.0",                 // model version — gate on load
+  "app_version": "…", "rules_version": "…", "codes_version": "…",
+  "run_id": "…", "started_at": "…", "finished_at": "…",   // timestamps passed in, not generated
+  "sources": [ { "name": "GWR", "url": "…", "layer": "ch.bfs.gebaeude_wohnungs_register", "queried_at": "…" }, … ],
+  "thresholds": { "coord_near_m": 50, "coord_far_m": 500, "parcel_far_m": 500,
+                  "addr_similarity": 0.7, "area_tol_pct": 10, "mismatch_count": 3 },
+  "input_files": [ { "name": "…", "sha256": "…", "rows": 0, "encoding": "…", "delimiter": "…" } ]
+}
+```
+
+Thresholds live here (not hard-coded magic numbers), so a finding can always be
+explained by the constants in force, and `sources[].queried_at` records the
+register vintage behind every finding.
 
 ---
 
@@ -154,6 +188,13 @@ resolves to a finer status used by the report and the rules:
 | `mismatch` | values differ beyond tolerance |
 | `empty` | one side missing → not comparable (excluded from scoring) |
 
+**Coordinates are one logical field.** The four tidy columns `wgs84_lat`/`wgs84_lon`
+and `lv95_e`/`lv95_n` are *data* columns kept for export/GIS; they are **not**
+reconciled per-axis. The location is reconciled **once** as a point — distance in
+LV95 → a single `location` SourceField whose `match`/status is the distance verdict
+plus a scalar `distance_m` (§6). There is no independent `lv95_e.match` vs
+`lv95_n.match`; a point either matches within tolerance or it doesn't.
+
 ---
 
 ## 5. Input data model
@@ -171,10 +212,13 @@ real-world exports map without manual editing.
 |---|:---:|---|---|---|
 | `internal_id` | ✅ | — | — | Unique record id (e.g. SAP `WE/Gebäude`). |
 | `egid` | ✅ | Identification | `egid` | Foreign key into GWR. Positive integer, else `skipped`. |
-| `we` | ○ | — | — | Economic-unit id; enables cross-checks. |
-| `name` | ○ | — | — | Display label; also drives default exclusions (§9 of rules). |
+| `egrid` | ○ | Identification | `egrid` | The parcel the building stands on. Often blank in the source and can be missing; GWR supplies the authoritative value. |
+| `economic_unit` | ○ | — | — | Economic-unit id; enables cross-checks. |
+| `name` | ○ | — | — | SAP free-text label (Bezeichnung) — display + token source for exclusions/Baurecht/STWE. **Not** an address; never address-compared. |
+| `object_type` | ○ | — | — | Object/usage type (Nutzungsart): building / parking / infrastructure / … — drives exclusions and rule scoping. |
+| `tenure` | ○ | — | — | `owned` / `mandate` / `rented` / `baurecht` / `stwe` — drives **exception suppression** (ID-001, ID-010, QP-003, ID-007). If absent, markers are parsed from `name` (`BR z`, `DDP`, `serv.`, `STWE`, `Miteigentum`). |
 | `country` | ○ | Address | — | `CH` vs foreign → drives Switzerland-awareness. |
-| `canton` | ○ | Address | `gdekt` | |
+| `region` | ○ | Address | `gdekt` | Administrative subdivision: canton in CH, state/province elsewhere. |
 | `municipality` | ○ | Address | `ggdename` | |
 | `bfs_nr` | ○ | Address | `ggdenr` | Municipality number. |
 | `zip` | ○ | Address | `dplz4` | |
@@ -182,15 +226,26 @@ real-world exports map without manual editing.
 | `street` | ○ | Address | `strname` | |
 | `house_number` | ○ | Address | `deinr` | |
 | `address_suffix` | ○ | Address | — | |
-| `lat`, `lng` *or* `coord_e`, `coord_n` | ○ | Location | `geometry` / `gkode`,`gkodn` | WGS84 **or** LV95; LV95 preferred for distance. |
+| `wgs84_lat` | ○ | Location | `geometry.y` | WGS84 latitude (EPSG:4326). |
+| `wgs84_lon` | ○ | Location | `geometry.x` | WGS84 longitude (EPSG:4326). |
+| `lv95_e` | ○ | Location | `gkode` | LV95 easting (EPSG:2056, m) — preferred for distance. |
+| `lv95_n` | ○ | Location | `gkodn` | LV95 northing (EPSG:2056, m) — preferred for distance. |
 | `building_category` | ○ | Classification | `gkat` | GKAT code. |
 | `building_class` | ○ | Classification | `gklas` | GKLAS code. |
 | `building_status` | ○ | Classification | `gstat` | GSTAT code. |
 | `construction_period` | ○ | Classification | `gbaup` | GBAUP code. |
-| `year_built` | ○ | Classification | `gbauj` | |
-| `floors` | ○ | Measurements | `gastw` | |
+| `construction_year` | ○ | Classification | `gbauj` | |
+| `floors_total` | ○ | Measurements | `gastw` | Total storeys. GWR (`gastw`) tracks **only** the total. |
+| `floors_above` | ○ | Measurements | — | Storeys above ground. No GWR counterpart — checked later via an estimation model. |
+| `floors_below` | ○ | Measurements | — | Storeys below ground. No GWR counterpart — checked later via an estimation model. |
 | `dwellings` | ○ | Measurements | `ganzwhg` | |
-| `building_area` | ○ | Measurements | `garea` | m². |
+| `area_footprint_m2` | ○ | Measurements | `garea` | Building footprint area, m². The one area GWR carries. |
+| `area_floor_total_m2` | ○ | Measurements | — | Total gross floor area, m². No GWR counterpart — estimation model (future). |
+| `area_floor_above_m2` | ○ | Measurements | — | Gross floor area above ground, m². No GWR counterpart — estimation model (future). |
+| `area_floor_below_m2` | ○ | Measurements | — | Gross floor area below ground, m². No GWR counterpart — estimation model (future). |
+| `volume_total_m3` | ○ | Measurements | — | Total building volume, m³. No GWR counterpart — external/estimation (future). |
+| `volume_above_m3` | ○ | Measurements | — | Building volume above ground, m³. No GWR counterpart — external/estimation (future). |
+| `volume_below_m3` | ○ | Measurements | — | Building volume below ground, m³. No GWR counterpart — external/estimation (future). |
 | `comment` | ○ | — | — | Pass-through, never validated. |
 
 Only `internal_id` + `egid` are required; every other column, if present,
@@ -203,12 +258,13 @@ official value. Absent columns simply don't contribute findings or confidence.
 |---|:---:|---|---|---|
 | `internal_id` | ✅ | — | — | Unique parcel record id. |
 | `egrid` | ✅ | Identification | `egris_egrid` | Foreign key into the cadastre. `CH`+12 alphanum, else `missing`/`skipped`. |
-| `we` | ○ | — | — | Ties the parcel to its building cluster. |
-| `name` | ○ | — | — | Drives exclusions (e.g. parking `PP`). |
+| `economic_unit` | ○ | — | — | Ties the parcel to its building cluster. |
+| `name` | ○ | — | — | SAP free-text label — drives exclusions (parking `PP`) and Baurecht/STWE tokens. |
+| `tenure` | ○ | — | — | `owned` / `baurecht` / `stwe` / … — see buildings; drives exception suppression. |
 | `country` | ○ | — | — | Foreign-awareness. |
 | `municipality` | ○ | Address | — | |
-| `canton` | ○ | Address | — | |
-| `parcel_area` | ○ | Measurements | `flaeche` | m². |
+| `region` | ○ | Address | — | |
+| `area_parcel_m2` | ○ | Measurements | `flaeche` | Parcel area, m². |
 
 ### 5.3 Validation & normalisation at intake
 
@@ -217,6 +273,15 @@ official value. Absent columns simply don't contribute findings or confidence.
   (status, not an error).
 - `egrid` is normalised; `0000000000`/blank/format-invalid ⇒ `missing`.
 - A building/parcel with `country ≠ CH` and no key ⇒ `foreign` (not flagged).
+- **Legitimate-exception flags:** `tenure` is taken from its column if present,
+  else inferred from `name` tokens — Baurecht/servitude (`/BR\s*z|DDP|servitude|
+  Dienstbarkeit/i`) and condominium (`/STWE|Stockwerk|Miteigentum/i`). These flags
+  *suppress or downgrade* the rules those constellations legitimately trip
+  (see [CHECKING-RULES.md §4](CHECKING-RULES.md)), they are not findings in themselves.
+- Coordinates: supply WGS84 (`wgs84_lat`/`wgs84_lon`) and/or LV95
+  (`lv95_e`/`lv95_n`); a missing CRS is derived by **reprojection (proj4js,
+  bundled EPSG:2056 def)**. The two pairs are **one** point — location match and
+  `distance_m` are computed once, in LV95 (see §4, §6).
 - Headers and values trimmed; numbers parsed locale-tolerantly.
 
 ---
@@ -231,19 +296,21 @@ SourceField and the object carries its lookup status and confidence.
 ```jsonc
 {
   "internal_id": "1502/AA",
-  "we": "1502",
-  "lookup_status": "matched",        // matched | not_found | skipped | foreign
+  "economic_unit": "1502",
+  "lookup_status": "matched",        // matched | not_found | skipped | foreign | error
   "egid":  { "internal": "1231641", "official": "1231641", "correction": "", "match": true },
-  "egrid": { "internal": "",        "official": "CH807…",  "correction": "", "match": false }, // building's GWR parcel
+  "egrid": { "internal": "",        "official": "CH807…",  "correction": "", "match": false }, // building's own parcel FK — missing here, GWR fills it
   "street":       { "internal": "Beaulieustr.", "official": "Beaulieustrasse", "correction": "", "match": true },
   "house_number": { "internal": "2", "official": "2", "correction": "", "match": true },
   "zip":          { "internal": "3012", "official": "3012", "correction": "", "match": true },
   "locality":     { "internal": "Bern", "official": "Bern", "correction": "", "match": true },
-  "lat": { "internal": "46.958", "official": "46.9579", "correction": "", "match": true },
-  "lng": { "internal": "7.431",  "official": "7.4312",  "correction": "", "match": true },
+  // location = ONE logical field, reconciled as a point (LV95 distance), not per-axis:
+  "wgs84_lat": "46.958", "wgs84_lon": "7.431",      // your coords — plain typed columns
+  "lv95_e": "2600672",   "lv95_n": "1199663",       // (the missing CRS is reprojected at intake)
+  "location": { "internal_lv95": [2600672, 1199663], "official_lv95": [2600669, 1199660], "correction": null, "match": true },
   "building_status": { "internal": "1004", "official": "1004", "correction": "", "match": true },
   "...": "…remaining classification & measurement fields…",
-  "distance_m": 12,                  // internal vs official coordinate (LV95)
+  "distance_m": 12,                  // internal vs official location (LV95) — full precision, rounded only at render
   "confidence": { "total": 96, "identification": 100, "address": 100, "location": 100, "classification": 100, "measurements": null },
   "findings": ["GEO-… ", "…"]        // rule_ids that fired on this object
 }
@@ -254,9 +321,10 @@ SourceField and the object carries its lookup status and confidence.
 | value | meaning |
 |---|---|
 | `matched` | key resolved in the register; fields reconciled. |
-| `not_found` | key syntactically valid but absent in the register (stale/wrong). |
+| `not_found` | key syntactically valid but **definitively** absent in the register (HTTP 404 after retries) — stale/wrong. |
 | `skipped` | key missing or malformed → not looked up. |
 | `foreign` | non-CH object legitimately without a Swiss key. |
+| `error` | **transient** lookup failure (network / 5xx / 429 after retries). **Not** a `not_found`; the key checks are *not evaluated* (`skipped-no-data`), so ID-003/ID-006 must **not** fire on it — otherwise a network blip becomes a permanent "not found" in the report. |
 
 **Official record fields fetched & resolved.** From GWR (buildings): `egid`,
 `egrid`, `strname`, `deinr`, `dplz4`, `dplzname`, `ggdename`, `ggdenr`, `gdekt`,
@@ -279,9 +347,14 @@ how well its fields agree with the official register. Adopted from
 |---|---|---|
 | **Identification** | `egid`, `egrid` | 0.30 |
 | **Address** | `zip`, `locality`, `street`, `house_number` | 0.30 |
-| **Location** | `lat`/`lng` (or `coord_e`/`coord_n`) | 0.20 |
-| **Classification** | `building_category`, `building_class`, `building_status`, `construction_period`, `year_built` | 0.10 |
-| **Measurements** | `floors`, `dwellings`, `building_area`, `parcel_area` | 0.10 |
+| **Location** | `location` (the coordinate point, compared by LV95 distance — **one** field, not four) | 0.20 |
+| **Classification** | `building_category`, `building_class`, `building_status`, `construction_period`, `construction_year` | 0.10 |
+| **Measurements** | `floors_total`, `dwellings`, `area_footprint_m2`, `area_parcel_m2` | 0.10 |
+
+> Fields without a register counterpart — `floors_above`/`floors_below`, the
+> `area_floor_*` areas, and the `volume_*` measurements — are carried as data but
+> **excluded from match-based confidence** until a reference (e.g. a storey- or
+> volume-estimation model) supplies an `official` value.
 
 **Per-dimension score** — share of *present* fields that are *resolved*:
 
@@ -289,9 +362,16 @@ how well its fields agree with the official register. Adopted from
 dimension_score = round( resolved / present × 100 )
 
 present   = fields where internal OR official has data
-resolved  = fields where match === true  OR  correction is set
+resolved  = fields where match === true            (verified against the register)
+            OR correction is set                   (asserted by a reviewer)
           → null if present === 0  (dimension excluded from the total)
 ```
+
+> **Asserted ≠ verified.** A `correction` counts as resolved, but it is a human
+> *assertion*, not a register match (a reviewer may knowingly override a stale
+> register). Any record carrying ≥ 1 correction is flagged `adjusted: true` and
+> its score labelled "incl. asserted values", so confidence stays traceable and
+> can't be silently inflated by typing a value.
 
 **Overall** — weighted mean, with weight redistributed away from null
 dimensions (so a record with no measurement data isn't penalised for it):
@@ -301,18 +381,30 @@ total = round( Σ(dimension_score × weight) / Σ(weight) )   over non-null dime
         clamped to [0, 100]
 ```
 
+**Coverage guard.** `total` is only meaningful when enough fields were actually
+comparable. Each object also carries `coverage = comparable_fields / expected_fields`;
+when fewer than **3** fields were comparable (e.g. a `not_found` building where
+only the key resolved), the tier is **`insufficient evidence`**, *not* OK — a
+thin comparison must never masquerade as high quality.
+
+**Error cap.** If a record carries any **open `error`-level finding**, its
+confidence is capped at the **Critical** tier (≤ 49). A demolished building, a
+duplicate key, or a far parcel can therefore never read OK — confidence and the
+findings headline ([CHECKING-RULES.md §11](CHECKING-RULES.md)) cannot disagree.
+
 **Confidence tiers** (for filtering & colour priority):
 
 | tier | range |
 |---|---|
-| **OK** | ≥ 80 |
+| **OK** | ≥ 80 (and no open error, ≥ 3 fields compared) |
 | **Warning** | 50 – 79 |
-| **Critical** | < 50 |
+| **Critical** | < 50 (or any open error finding) |
+| **insufficient evidence** | < 3 fields comparable (tier not assigned) |
 
-> Confidence answers *"how aligned is this record overall?"*; **findings**
-> (§ next) answer *"which specific rules failed?"*. The two are complementary —
-> a record can be high-confidence yet still carry one `info` finding, or
-> low-confidence with a single decisive `error`.
+> Confidence answers *"how aligned is this record overall?"*; **findings** answer
+> *"which specific rules failed?"*. They are coherent **by construction**: an open
+> `error` finding caps confidence below OK (above), so a record reads
+> high-confidence only when it carries at most `warning`/`hint` findings.
 
 ---
 
@@ -328,15 +420,21 @@ unit of `findings.csv`.
 | `rule_set` | `identification` / `address` / `location` / `classification` / `measurements` / `crosscheck`. |
 | `object_kind` | `building` / `parcel` / `crosscheck`. |
 | `internal_id` | The object the finding is about. |
-| `we` | Economic unit (for grouping). |
+| `economic_unit` | Economic unit (for grouping). |
 | `field` | Affected field (nullable for object-level findings). |
 | `message` | Human-readable detail (multilingual via message-key + args, like `../oereb-check/`). |
 | `suggested_value` | Proposed correction when derivable (e.g. the GWR parcel E-GRID), else empty. |
 | `distance_m` | Distance in metres (location rules only). |
 | `detected_at` | Run timestamp. |
 | `status` | `open` / `corrected` / `accepted` / `dismissed` (workflow, §9). |
+| `finding_id` | **Stable fingerprint** = `internal_id + rule_id + field + hash(official_value)` — re-attaches accepted/dismissed decisions across re-runs and **re-opens** when the official value changes (§9). |
+| `evaluation` | `passed` / `finding` / `skipped-no-data` / `error` — so a *skipped* check is auditable, never mistaken for a pass. |
+| `heuristic` | `true` for probabilistic rules (GEO-003/004, ADR similarity), `false` for deterministic ones (ID-002) — the report can separate "certain" from "likely". |
+| `evidence_url` | Permalink to the official extract (geo.admin GWR/cadastre map) — restores the predecessor's `maps_url`. |
+| `owner` | Responsible unit / mandant for the finding (mandates BBL manages for others). |
 
-Findings are sorted by severity, then rule set, then WE.
+Findings are sorted by severity, then rule set, then WE (ties broken by
+`internal_id` for a total, reproducible order).
 
 ---
 
@@ -361,8 +459,15 @@ open ──corrected──▶ corrected        (user supplied a value)
  └──dismissed─▶ dismissed            (false positive / legitimate exception, e.g. Baurecht)
 ```
 
-This is deliberately minimal: enough to triage a run and export the decisions,
-without reintroducing a backend.
+**Decision persistence.** `accepted`/`dismissed` decisions are stored against the
+finding's stable `finding_id` fingerprint (§8), not its row position — so on the
+next quarterly re-upload they re-attach to the same finding. A decision
+**re-opens automatically** when the underlying official value changes (the
+`hash(official_value)` component differs), so a dismissal can't mask a register
+that has since moved.
+
+This is deliberately minimal: enough to triage a run, persist decisions, and
+export a SAP-actionable worklist (§10), without reintroducing a backend.
 
 ---
 
@@ -376,12 +481,14 @@ without reintroducing a backend.
 | **`we_summary.csv`** | One row per economic unit: counts of buildings/parcels, findings by severity, mean confidence. |
 | **GeoJSON** | Located buildings + parcels as WGS84 points/polygons with raw + English property names, for GIS. *(Map is optional; this is the data export.)* |
 | **`report.html`** | Self-contained interactive report (embedded JSON): findings by severity & rule set, the sortable/filterable/searchable findings + records tables, confidence tiers, default exclusions, DE/FR/IT/EN. A map is an optional secondary tab, not the centrepiece. |
-| **`run.json`** | Machine-readable snapshot of the whole CheckRun (records + findings + confidence + corrections) for round-tripping or downstream tooling. |
+| **`corrections_for_sap.csv`** | Approved corrections as a SAP-actionable worklist: `(economic_unit, internal_id, field, old_value, new_value, evidence_url, approver, status)`. The operational hand-off — write-back to SAP is **manual / out of scope**. |
+| **`run.json`** | Machine-readable snapshot of the whole CheckRun (records + findings + confidence + corrections) **plus `run_meta` (§3.1)**, `schema_version`-gated on load, for round-tripping or downstream tooling. |
 
 **Security note (carried from `../oereb-check/`):** when embedding the dataset
-as a JS literal in `report.html`, escape `<`, `>`, `&`, U+2028, U+2029 to
-`\uXXXX` so a record value can't break out of the `<script>` tag, and route all
-table cells through HTML-escaping.
+as a JS literal in `report.html`, escape `<` → `\u003C` (this alone neutralises
+the `</script>` and `<!--` breakout vectors), plus `>` → `\u003E`, `&` →
+`\u0026`, and U+2028 / U+2029 to their `\uXXXX` escapes, and route all table
+cells through HTML-escaping.
 
 ---
 
@@ -389,9 +496,9 @@ table cells through HTML-escaping.
 
 | Code | Field | Examples |
 |---|---|---|
-| **GKAT** | Building category | 1021 single-family, 1025 multi-family, 1060 non-residential |
-| **GSTAT** | Building status | 1004 existing, 1003 under construction, 1007 demolished |
-| **GKLAS** | Building class | 1110–1277 detailed use classes |
+| **GKAT** | Building category (coarse, 6 values) | 1010 temporary, 1020 residential-only, 1030 residential + secondary use, 1040 partly residential, 1060 non-residential, 1080 special structure |
+| **GSTAT** | Building status | 1004 existing, 1003 under construction, 1005 not usable, 1007 demolished, 1008 not realised |
+| **GKLAS** | Building class (fine; this is where single-/multi-family lives) | 1110 single-family, 1121 two-dwelling, 1122 three-or-more-dwelling, 1130 collective housing, 1211 hotel, 1220 office, 1271/1276/1277/1278 agricultural, … |
 | **GBAUP** | Construction period | 8011 (pre-1919) … 8023 (post-2015) |
 | **GKSCE** | Coordinate source | 901 official survey, 903 building permit, … |
 | **EGID** | Building identifier | federal building key (→ GWR) |
